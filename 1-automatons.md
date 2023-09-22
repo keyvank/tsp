@@ -97,7 +97,7 @@ A wildcard version of this table would look like this:
 |   1   |   0   |   X   |
 
 
-![4 different wire states](assets/wires.png "Smth")
+![4 different wire states](assets/wires.png)
 
 Based on our definition of a wire, we can provide a Python implementation:
 
@@ -241,6 +241,8 @@ Here is an example of a NOT gate, built with a type P and a type N transistor:
 Now that we've got familiar with transistors, it's the time to examine the most primitive logic-gates 
 
 A NAND gate is a logic-gate that outputs 0 if and only if both of its inputs are 1. It's basically an AND gate which its output is inverted. It can be proven that you can build all of the primitive logic gates (AND, OR, NOT), using different combinations of this single gate. It's the mother gate of all logic circuits. Although, it would be very inefficient to build everything with NANDS in practice, for the sake of simplicity, we'll stick to NAND and will try to build other gates by connecting NAND gates to each other.
+
+![NAND gate with transistors](assets/nand.png)
 
 It turns out that we can build NAND gates with strong and accurate output signals using 4 transistors (x2 Type-N and x2 Type-P). Let's prototype a NAND using our simulated N/P transistors!
 
