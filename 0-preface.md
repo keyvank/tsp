@@ -1,0 +1,16 @@
+# The Super Programmer
+
+## Intro
+
+Legos were my favorite toys as a kindergarten student. It was one of the only toys I could use to build stuff that didn't exist before. It let me bring my imaginations into the real world, and nothing satisfies a curious mind more than the ability to build unique structures out of simple pieces.
+
+Years later, seeing my cousin building robots by typing some characters on the screen and "programming" it into something he called a "microcontroller", triggered the same parts in my brain, as playing with lego pieces. I didn't know the English alphabet those days, so I was just seeing different symbols coming on the screen after every keystrokes. The fact that certain ordering of some symbols could cause some kind of unique behavior was blowing my mind. I would copy/paste the codes on my cousin's book on his computer for free, just to see that a behavior emerges when I put some kind of "cheat-code" on his computer. I began to appreciate the power of characters. Characters were my new lego pieces, but there was an important difference, it was impossible to run out of characters. I could literally use billions of them to build different behaviors.
+
+After around 20 years, I still get super excited when I build something I find magnificent by putting the right symbols in the right order. I was curious enough to study and deeply understand many applications of computers that have made significant impact in our everyday life but nobody gives them the attention they deserve these days, so I decided to gather all these information in one place and write this book.
+
+When I started writing this book, I was expecting it to be a merely technical book with a lot of codes included, targetting only programmers as its audience, but I ended up writing a lot of history, philosophy and even human anatomy! So the book could be a good read for non-programmers too!
+
+The Super Programmer is all about ideas, and how they have evolved through time, leading to the impressive technology we have today. I wanted this book to have least dependency to technologies, so that the codes do not get obsolete over time. I first thought of writing the codes in some pseudo-coding language, but I personally believe that pseudo-codes are not coherent enough, so I decided to choose and stick with a popular language like Python, which as of today, is a programming language that is known by many other engineers and scientists.
+
+Throughout this book, I’m going to show you the inspirations that human beings got from the nature, in order to build technology. Humans themselves have always been a great  source of inspiration for building tech. You are going to read the phrase “The Creator” in this book a lot of times. The Creator can have different meanings for different people. Religious people may interpret it as God, and people with materialistic views may interpret it as the nature and the process of evolution. Either way, there is no doubt that there has been immense amount of intelligence behind the mind who/which created life. Engineering ideas that The Creator used to build life has been a great source of inspiration for the technology we have today. In many parts of the book, we are going to put our feet into The Creator's shoe and try to understand what has been going in its/his mind when engineering us.
+
