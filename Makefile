@@ -1,2 +1,2 @@
-all:
-	pandoc --pdf-engine=pdfroff --output=out.pdf *.md
+pdf:
+	pandoc --output=out.pdf *.md

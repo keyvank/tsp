@@ -96,6 +96,9 @@ A wildcard version of this table would look like this:
 |   0   |   1   |   X   |
 |   1   |   0   |   X   |
 
+
+![4 different wire states](assets/wires.png "Smth")
+
 Based on our definition of a wire, we can provide a Python implementation:
 
 ```python=
