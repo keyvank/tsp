@@ -1,3 +1,5 @@
+\pagebreak
+
 # Automatons
 
 ## When the dominos fall
@@ -35,7 +37,7 @@ Because of these properties, we can build complicated and dense cause/effect cha
 
 Here is a very stupid example of a transistor: Imagine there is a human that has a wire in his hand. This person turns the mechanical switch to ON state only when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!
 
-## Emulate electrical circuits
+## Taming the electrons
 
 Practically, if you want to build a real logic circuit and synthesize it on real silicone, you would describe your circuit in a hardware-description-language. Two most famous as of today are VLSI/Verilog. Since this book is about ideas we will try to emulate the same concept in Python programming language.
 
@@ -52,6 +54,8 @@ If you remember high-school physics, you know that the potential energy of an ob
 The reason it takes energy to lift an object roots back to the fact that giant masses attract each other, a.k.a the universal law of gravitation ($F=G\frac{m_1m_2}{r^2}$). Since a very similar law also exists in the microscopic world (Electrons attract protons and defeat electrons, $F=k_e\frac{q_1q_2}{r^2}$), we have a similar concept of "potential energy" in the electromagnetic world too. It takes energy to pull two electrical charges of different types (Positive/Negative) from each other, and when you do so, and then release them, they will start moving to each other and release their energy.
 
 That's basically the way batteries work, they try to make potential differences by moving electrons to higher "heights", and when you let them fall (By connecting a wire from the negative pole of the battery to the positive pole), the electrons will start to fall through the wire. So when we say "Voltage", we mean a difference of height/potential-energy. We don't exactly know what is the absolute height/potential-energy of points A and B, but we certainly know the height/potential difference!
+
+## Wires
 
 Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. A wire in our emulation can have 4 different states:
 
@@ -141,6 +145,8 @@ class Wire:
 ```
 
 Here on lines 13 and 18 we are also defining two static methods `zero()` and `one()` that return wires that are connected to the positive or negative poles of a battery.
+
+## Magical switch
 
 A transistor is an electronic component which typically accepts 2 wires as inputs and has a single output. These wires are called, base, emitter and collector. When the voltage of the base wire is above/below a threshold, the value of the emitter wire is copied into the collector wire. Otherwise, the collector wire will be on the Free state.
 
@@ -240,6 +246,9 @@ Here is an example of a NOT gate, built with a type P and a type N transistor:
 
 Now that we've got familiar with transistors, it's the time to examine the most primitive logic-gates 
 
+## Mother of the gates
+
+
 A NAND gate is a logic-gate that outputs 0 if and only if both of its inputs are 1. It's basically an AND gate which its output is inverted. It can be proven that you can build all of the primitive logic gates (AND, OR, NOT), using different combinations of this single gate. It's the mother gate of all logic circuits. Although, it would be very inefficient to build everything with NANDS in practice, for the sake of simplicity, we'll stick to NAND and will try to build other gates by connecting NAND gates to each other.
 
 ![NAND gate with transistors](assets/nand.png)
@@ -290,6 +299,8 @@ Once we have a triple adder ready, we can proceed and create multi-bit adders. L
 
 Before designing more complicated gates, make sure you are able to create a working simulation of a 8-bit adder using the primitive elements we simulated in the previous sections.
 
+## When addition is subtraction
+
 So far we have been able to implement the add operation by combining N and P transistors. Our add operation is limited to 8-bits, which means, the input and output values are all in the range $[0,255]$. If you try to add two numbers, which their sum is more than 255, you will still get a number in range $[0,255]$. This happens since a number bigger than 255 can not be represented by 8-bits and an ***overflow*** will happen. If you look carefully, you will notice that what we have designed isn't doing a regular add operation we are used to in elementary school mathematics, but it's and addition that is done in a finite-field. This means, the addition results are mod-ed by 256:
 
 $a \oplus b = (a + b) \mod 256$
@@ -305,6 +316,8 @@ Surprisingly, the number $246$, acts really like a $-10$. Try adding $246$ to $1
 
 It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!
 
+## Try to remember
+
 What we care about right now is to design a circuit which is able to run arbitrary algorithms for us! An algorithm is nothing but a list of operations that need to be executed. So far we have been experimenting with state-less circuits, circuits that didn't need to memorize or remember anything in order to do their job. Obviously, you can't get much creative with circuits that do now store anything from the past, thus, we are going to talk about ways we can store data on a digital circuit circuit and keep it through time!
 
 When you were a child, you have most probably tried to put a light-switch in a middle state. If the switch had been in good condition and quality, you know how frustrating it can get to do it! The concept of ***memory*** emerges when a system with multiple possible states can only stabilize in a single state at a time, and once it gets stable, the state can only be changed by an external force. A light-switch can be used as a single-bit memory cell. 
@@ -317,32 +330,13 @@ Fortunately, there are ways you can build circuits with multiple possible states
 2. Give up, and try to simulate a memory-cell component without doing low-level transistor simulations.
 
 
-
-### Multiplexer
+***Multiplexer***
 
 A gate that gets $2^n$ value bits and $n$ address bits and will output the values existing at the requested position as its output. A multiplexer with static inputs can be considered as a ROM. (Read-Only Memory)
 
-
-### Latch
+***Latch***
 
 A gate that has 2 states and is stable on a single state. Imagine the values of $2^n$ latches connect to a $n$ bit multiplexer. We will have a RAM! (It's read-only though)
-
-### Processor
-
-We have three 8-bit registers named A, B and C made of flipflops. On every clock, all supported possible operations on A, B are calculated, but only one of them is stored on C, based on the opcode
-
- - `SETA [value]` Set A
- - `SETB [value]` Set B
- - `ADD` Add A and B and put the result in C
- - `MUL` Multiply A and B and put the result in C
- - `LOAD` Load value at A from RAM and put the result in C
- - `STORE` Store C in RAM at A
- - `MOVA`
- - `MOVB` 
- - `LOAD [ADDR]` Loads value at ADDR on C
- - `SETA`
-
-
 
 
 ## Computer
