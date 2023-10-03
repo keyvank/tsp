@@ -70,12 +70,13 @@ Unfortunately, we are not technologically advanced enough to build dynamic brain
 
 In order to have a solid and symmetric brain, which is able to learn without losing its uniform shape, we'll need cause/effect gates that are general purpose and can change their behavior.
 
-
-
-
 We can model and-gate as a continuous function on floating point values! We can design a function such that returns 0 by default and approaches 1 only when both its input value are close to 1.
 
+![A general-purpose gate which can switch its behavior to AND and OR based on a parameter](assets/gpgate.png)
+
 Why modelling a gate as a floating point function is beneficial for us? Because we can take derivative of a continuous function!
+
+![A more advanced and tunable general purpose gate, a neuron](assets/neuron.png)
 
 Once upon a time, two nobel prize winners were studying brain cells 1873
 
