@@ -208,6 +208,18 @@ def length(self):
     return math.sqrt(self.dot(self))
 ```
 
+Another useful operation is multiplication of a vector by an scalar. We are going to override the
+multiplication operator in order to have this operation in our `Vec` class:
+
+```python
+def __mul__(self, other):
+    return Vec(
+        self.x * other,
+        self.y * other,
+        self.z * other,
+    )
+```
+
 Normal of a vector $\vec{A}$ is defined as a vector with length $1$ that has the same direction
 as vector $\vec{A}$. Based on the definition, we can calculate the normal vector by dividing the
 elements of the vector by the length of the vector:
@@ -216,15 +228,52 @@ $norm(\vec{A})=\frac{\vec{A}}{|\vec{A}|}$
 
 ```python
 def norm(self):
-    length = self.length()
-    return Vec(
-        self.x / length,
-        self.y / length,
-        self.z / length,
-    )
+    len_inv = 1 / self.length()
+    return self * len_inv
 ```
 
+Although your compiler's optimizer will do the job for you, it's generally better to calculate
+the inverse of a number and multiply it with your variables, instead of dividing the variables
+by a number, since multiplication is a much cheaper operation and will take much less clock 
+cycles of your CPU compared to divisions.
 
 ![Shooting rays from an imaginary eye](assets/rtc.png)
 
+Assuming our imaginary eye is located at $\vec{E}$, looking at an object that is located on a
+target $\vec{T}$, we may assume what is being seen by the eye is reflected on a square plane 
+located with a distance of $1$, which its center is $\vec{C}$. Obviously, the direction of 
+$\vec{EC}$ should be equal with $\vec{ET}$. Since the size of $\vec{EC}$ should be 1, we may
+conclude that $\vec{EC}$ is the normalized vesion of $\vec{ET}$.
+
+Now, assuming we have the position of the left-down corner of this plane ($\vec{LD}$), and we 
+want to render a $W \times H$ resolution image, we may loop through each of the pixels on the 
+image and calculate the corresponding 3D point located on the 3D plane (Let's name it 
+$\vec{P_{ij}}$), in order to calculate the ray that starts from $E$and goes in the direction 
+of $\vec{EP_{ij}}$.
+
+$\vec{P_{ij}}=\vec{LD}+\frac{i}{W}\vec{R}+\frac{j}{H}\vec{U}$
+
+Let's hold the position and direction of a ray in a seperate `Ray` class:
+
+```python
+class Ray:
+    def __init__(self, pos, dir):
+        self.pos = pos
+        self.dir = dir
+```
+
+We can use the PPM image generator we developed in the previous sections in order to calculate
+a ray-traced scene. We just need to reimplement the `color_of` function:
+
+```python
+def color_of(x, y, width, height):
+    p = ld + (x / width) * r + (y / height) * u
+    direction = (e - p).norm()
+    ray = Ray(e, direction)
+    return trace_ray(ray)
+```
+
+
+
 ![Calculation of eye-generated rays](assets/eye.png)
+
