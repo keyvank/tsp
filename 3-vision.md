@@ -134,3 +134,97 @@ Drawing a line
 Drawing a circle
 
  > Why do we use electrical cause effects? Because they are small and fast, and can easily be routed by metal wires Fastest cause effect type is light
+
+
+### Ray Tracing
+
+The Ray-Tracing algorithm for generating 3D computer images is all about tracing 
+the route a photon goes through when reaching our eyes. You can assume that photons 
+are like particles that are emitted from light sources, as if a lamp is shooting out
+a lot of ultra tiny balls. These balls change their colors when they hit objects and 
+absorb their colors, and finally some of them reach our eyes, letting us to see the 
+world around us. Since photons move on straight lines, we can study their behavior 
+with mathematical vectors. Since we live in a 3D world, the movements of our photons
+can be analyzed using 3D vectors. A 3D vector is nothing but a tuple of 3 floating-point
+numbers. A 3D vector can be used for storing the position or direction of a photon.
+
+
+```python
+class Vec:
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+```
+
+There are two very special and interesting operations that can be done on 3D vectors:
+
+1. Dot-product: Calculates how aligned the vectors are. The dot-product of two vectors 
+   is in its maximum when both vectors are pointing at the same direction. The dot-product
+   of two vectors is a scalar value, which can be calculated in two ways:
+   * $\vec{A}.\vec{B} = A_x.B_x + A_y.B_y + A_z.B_z$
+   * $\vec{A}.\vec{B} = |\vec{A}|.|\vec{B}|.sin(\theta)$
+2. Cross-product: Calculates how perpendicular two vectors are. The length of cross-product
+   of two vectors is in its maximum when the vectors are perpendicular with each other. The
+   result of a cross-product is a vector, that is perpendicular to both vectors, and its length
+   is equal with the product of length of the vectors multiplied with cosine of their angle.
+   Assuming the cross-product of $\vec{A}$ and $\vec{B}$ is $\vec{C}$, the elements of $\vec{C}$
+   can can be calculated with the following formula:
+
+   * $C_x = A_y.B_z + A_z.B_y$
+   * $C_y = A_z.B_x + A_x.B_z$
+   * $C_z = A_x.B_y + A_y.B_x$
+
+   Alternatively, you can calculate the length of a cross-product using this formula:
+   * $|\vec{C}| = |\vec{A}|.|\vec{B}|.cos(\theta)$
+
+Let's go ahead and implement these operations as methods on our `Vec` class:
+
+```python
+def dot(self, other):
+    return self.x * other.x + self.y * other.y + self.z * other.z
+
+def cross(self, other):
+    return Vec(
+        self.y * other.z + self.z * other.y,
+        self.z * other.x + self.x * other.z,
+        self.x * other.y + self.y * other.x,
+    )
+```
+
+Reminding you of high-school math, a 2D vector's length could be calculated by summing the square
+of vector elements and taking its root, the length of a 3D vector can also be calculated using a
+similar approach:
+
+$|\vec{A}|=\sqrt{A_x^2 + A_y^2 + A_z^2}$
+
+Alternatively, we can calculate the length of a vector by taking the square root of the vector, 
+dotted with itself:
+
+$|\vec{A}|=\sqrt{\vec{A}.\vec{A}}$
+
+```python
+def length(self):
+    return math.sqrt(self.dot(self))
+```
+
+Normal of a vector $\vec{A}$ is defined as a vector with length $1$ that has the same direction
+as vector $\vec{A}$. Based on the definition, we can calculate the normal vector by dividing the
+elements of the vector by the length of the vector:
+
+$norm(\vec{A})=\frac{\vec{A}}{|\vec{A}|}$
+
+```python
+def norm(self):
+    length = self.length()
+    return Vec(
+        self.x / length,
+        self.y / length,
+        self.z / length,
+    )
+```
+
+
+![Shooting rays from an imaginary eye](assets/rtc.png)
+
+![Calculation of eye-generated rays](assets/eye.png)
