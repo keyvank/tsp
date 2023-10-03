@@ -88,7 +88,83 @@ We can now conclude that, we don't need to store a mapping of size $2^n$ ($\alph
 
 Generating the an $n$ bit key for a n-character to n-character encryption algorithm is as easy as throwing a coin for $n$ times and fortunately, **we all trust the coin flips already!**
 
-Electronic Cash revolution
+### Signatures
+
+```python
+P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+
+
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+
+def modinv(a):
+    g, x, y = egcd(a, P)
+    if g != 1:
+        raise Exception("modular inverse does not exist")
+    else:
+        return x % P
+
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def is_zero(self):
+        return (self.x is None) and (self.y is None)
+
+    def is_valid(self):
+        return self.is_zero() or (self.y**2) % P == (self.x**3 + 7) % P
+
+    def __neg__(self):
+        return Point(self.x, P - self.y)
+
+    def __add__(self, other):
+        if self.is_zero():
+            return other
+        elif other.is_zero():
+            return self
+        elif self.x == other.x and self.y != other.y:
+            return Point(None, None)
+
+        if self.x == other.x and self.y == other.y:
+            m = (3 * self.x * self.x) * modinv((2 * self.y) % P)
+        else:
+            m = (self.y - other.y) * modinv((self.x - other.x) % P)
+
+        x = m * m - self.x - other.x
+        return Point(
+            x % P,
+            (-(self.y + m * (x - self.x))) % P,
+        )
+
+    def __str__(self):
+        if self.is_zero():
+            return "Point(Inf)"
+        else:
+            return f"Point({self.x}, {self.y})"
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+
+G = Point(
+    0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+    0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8,
+)
+
+print((G + G) + G == G + (G + G))
+```
+
+### Electronic Cash revolution
 
 You may already know that I am from Iran, a mysterious country under plenty of sanctions, withholding me from doing any financial activity with people outside our isolated world. We don't have international credit-cards in Iran, and our banking system is completely isolated from the rest of the world (At least when I'm writing this book!). As a young, passionate programmer, spending his teenage years working on "open-source" projects, I was dreaming of getting donations for the work I was publishing online, but I couldn't find any way I could accept money from people on the internet. I couldn't even have something like a PayPal account, it was like a dead-end for me, but you know the end of the story, I found about Bitcoin. I don't remember exactly if I myself looked for an "uncontrollable" (Permissionless?) way of receiving money and found Bitcoin as a result, or a Bitcoin company popped onto my eyes while surfing the internet, anyways, Bitcoin was a saviour for me.
 
@@ -118,7 +194,11 @@ This means the network will have two possible states after hearing those two tra
 * State #1 Alice: 8 - Bob: 5 - Charlie: 2
 * State #2 Alice: 5 - Bob: 8 - Charlie: 2
 
-Charlie can buy a product from both Alice and Bob by sending the same 3 coins to them, effectively spending his coins twice. The problem arises due to the fact that the servers in our network can not agree on the state. Some servers may stop in the #1 state and some in #2. This problem is known as the Double-Spending problem.
+Charlie can buy a product from both Alice and Bob by sending the same 3 coins to them, effectively spending his coins twice. The problem arises due to the fact that the servers in our network can not agree on the state. Some servers may stop in the #1 state and some in #2, and both states are indeed valid. This problem is known as the Double-Spending problem, and the reason it happens is that the servers can't decide which transaction occurred first.
 
-The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state.
+The classic approach in solving the double-spending problem is to have a central authority deciding the order of transactions. Imagine writing two cheques for Alice and Bob, spending 3 of your coins (While you only have 5). If they go to the bank and try to cash out the cheque at the exact same time, only one of the cheques will pass, since there is a single server somewhere, timestamping the transactions as they happen, disallowing a transaction to happen in case of insufficient balance.
+
+The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state, without needing a centralized authority. As its inventor describe Bitcoin, Proof-of-Work is a decentralized method for "timestamping" transactions.
+
+
 
