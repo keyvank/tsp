@@ -329,15 +329,51 @@ Fortunately, there are ways you can build circuits with multiple possible states
 1. Break the update loop, when the state of the wires do not change after a few iterations (Meaning that the system has entered a stable state).
 2. Give up, and try to simulate a memory-cell component without doing low-level transistor simulations.
 
+---
+
+So far, we have been able to design a circuit that stays stable in a single state, and we can set its state by triggering it through an auxillary port we call "enable". This circuit is known as a Latch, and since it's hard to simulate it using bare transistors (Since there will be infinite loops which are unhandled by our simulator, as discussed), we are going to hardcode its behavior using plain Python code. It will have a fairly simple logic. It will accept a data and an enable wire as its inputs, and will have a single output. The output pin will output the current state of the Latch, and when 'enable' is 0, it will ignore the 'data' pin and won't change its state. As soon as the enable pin gets 1, the value of data pin will be copied to the internal state of the latch. We can describe the behavior of a Latch like this:
+
+| Enable | Data | Output     |
+|--------|------|------------|
+| 0      | 0    | s          |
+| 0      | 1    | s          |
+| 1      | 0    | 0 (s <= 0) |
+| 1      | 1    | 1 (s <= 1) |
+
+A latch is an electronic component that can store a single bit of information. Later on this book, we will be building a computer with memory-cells of size 8-bit (A.k.a a byte). So it might make sense to put 8 of these latches together as a separate component in order to build our memory-cells, registers and RAMs. We'll just need to put the latches in a row and connect their enable pins together. The resulting component will have 9 input wires and 8 output wires.
+
+## Make it count!
+
+Considering that now we know how to build memory-cells and maintain a state in our circuits, we can know build circuits that can maintain an state/memory and behave according to it! Let's build something useful out of it!
+
+A very simple yet useful circuit you can build, using adders and memory-cells, is a counter. A counter can be made by feeding in the incremented value of the output of a 8-bit memory cell, back as its input. The challenge is now to capture the memory cell input value by trigerring the cell to update its inner value by setting its enable pin to 1.
+
+The enable input should be set to 1 for a very VERY short time, otherwise, the circuit will enter and unstable state. As soon as the input of the memory-cell is captures, the output will also change in a short time, and if the value of enable field is still 1, the circuit will keep incrementing and updating its internal state. The duration which the enable wire is 1 should be short enough, so that the incrementor component doesn't have enough time to update its output. In fact, we will need to connect a pulse generator to the enable pin in order to make our counter circuit work correctly, and the with of the pulse should be smaller than the duration by which the output of the incrementor circuit is updated.
+
+One way we can have such pulses is to connect a regular clock generator to an edge-detector.
+
+
+
+## Chaotic access
+
+Now imagine we have a big number of these 8-bit memory cells which are identified by different addresses. We would like to build an electronic component which enabled us to read and write a memory-cell (Out of many memory-cells), given its address. We will call it a RAM, since we can access arbitrary and random addresses without losing speed (It's hard to randomly move on a disk-storage). In case of a RAM with 256 memory-cells (Each 8-bit), we'll need 17 input wires and 8 output wires.
+
+The inputs are as follows:
+
+1. 8 wires, choosing the memory-cell we want to read/write
+2. 8 wires, containing the data to be written on the chosen cell when enable is 1
+3. 1 enable wire
+
+And the output will be the data inside the chosen address.
+
+The memory-cells in our RAM will need to know when to allow write operation. For each 8-bit memory cell, enable is set 1 when the chosen address is equal with the cell's address AND the enable pin of the RAM is also 1: `(addr == cell_index) & enable`
+
+We will also need to route the output of the chosen cell to the output of a RAM. We can use a multiplexer component here.
+
 
 ***Multiplexer***
 
 A gate that gets $2^n$ value bits and $n$ address bits and will output the values existing at the requested position as its output. A multiplexer with static inputs can be considered as a ROM. (Read-Only Memory)
-
-***Latch***
-
-A gate that has 2 states and is stable on a single state. Imagine the values of $2^n$ latches connect to a $n$ bit multiplexer. We will have a RAM! (It's read-only though)
-
 
 ## Computer
 

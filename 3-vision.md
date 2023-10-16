@@ -146,6 +146,30 @@ Drawing a circle
 
 ## Ray Tracing
 
+3D computer rendering is probably the most complicated and interesting way a computer
+can stimulate our vision. Our perception is evolved in a way to understand our 3-dimensional
+space and world. Being able to generate arbitrary 3D looking images with a computer brings 
+us infinite possibilities. Nowadays people are trying to immerse themselves into virtual worlds
+by putting computer screens really close to their eyes, which renders photorealistic images.
+There are many methods and algorithms by which we can 3D computer images, we are going to 
+implement two of the most important ones in this book. One of those methods will give you very
+photorealistic outputs with high rendering times, while the other method gives you inaccurate 
+outputs but is fast enough to generate images in real-time, making it perfect for 3D games.
+
+Surprisingly (Or obviously for some!), the rendering algorithm that gives you real-looking
+outputs is much simpler to implement, so let's dive in!
+
+Ray-Tracing, as its name suggests is an algorithm, inspired by the science of physics, that
+tries to generate 3D scenes by predicting and tracking the way photons move in imaginary
+3D environements. Since there are infinite number of photons coming out of a light source,
+it might seem infeasible to generate images with this method. But the fact is, most of
+the photons coming out of a light source end up somewere that do not have any impact on
+out final image (They do not reach our imaginary eyes). We only care about those photons
+that reach our virtual eye/camera. Given this fact we can get clever and do this simulation
+in a much more efficient way! We just need to go backwards. We will generate rays from our
+virtual eye and see if they will end up on a lit source! This is the core idea behind the
+Ray-Tracing algorithm!
+
 The Ray-Tracing algorithm for generating 3D computer images is all about tracing 
 the route a photon goes through when reaching our eyes. You can assume that photons 
 are like particles that are emitted from light sources, as if a lamp is shooting out

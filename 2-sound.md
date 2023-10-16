@@ -244,9 +244,16 @@ After playing some melodies by generating different frequencies in a sequence, y
 
 It's not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.
 
-Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have 
+Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!
+
+Here are some other forms you can oscillate a speaker. Try hearing them all!
+
+##
 
 **Different oscillators - Sawtooth - Square - Triangle**
+
+
+
 **ADSR**
 
 
