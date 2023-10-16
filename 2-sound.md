@@ -248,13 +248,17 @@ Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a
 
 Here are some other forms you can oscillate a speaker. Try hearing them all!
 
-##
-
 **Different oscillators - Sawtooth - Square - Triangle**
 
-
-
 **ADSR**
+
+Hearing all these compositions of different oscillators, you may still notice that the sounds are far from being pleasant to your ears, and one of the main reasons is that the intensity of those sounds is constant in time, while in real-world, a note gets loud with a delay, and will smoothly lose its intensity as time passes. One way we can bring such effect in our simulation is to actually manipulate the volume of our oscillator through time.
+
+One of those methods, known as ADSR (Attack, Delay, Sustain, Release), assumes that a musical note starts with a volume of 0, quickly reaches its peak volume and then quickly gets down to relatively quieter volume, stays there for a longer time and then starts decreasing its intensity until it reaches zero.
+
+These timings might be different for different instruments, and they do not neccessarrily change linearly. For the sake of simplicity, we will assume the changes all happen in a linear fashion. Here is a graph:
+
+[ADSR chart]
 
 
 How can we emulate an ear in a computer
