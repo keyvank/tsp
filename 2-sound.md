@@ -250,6 +250,80 @@ Here are some other forms you can oscillate a speaker. Try hearing them all!
 
 **Different oscillators - Sawtooth - Square - Triangle**
 
+## Sine
+
+```python
+import math
+
+def Sine(freq):
+    def f(t):
+        return math.sin(2 * math.pi * freq * t)
+    return f
+```
+
+## Square
+
+```python
+import math
+
+def Square(freq):
+    def f(t):
+        if math.floor(2 * t) % 2 == 0:
+            return 1
+        else:
+            return -1
+    return f
+```
+
+## Sawtooth
+
+```python
+def Sawtooth(freq):
+    def f(t):
+        ...
+    return f
+```
+
+## Triangle
+
+```python
+def Triangle(freq):
+    def f(t):
+        ...
+    return f
+```
+
+## Delay
+
+```python
+def Delay(sampler, delay):
+    def f(t):
+        return sampler(t - delay)
+    return f
+```
+
+## Compose
+
+```python
+def Compose(samplers):
+    def f(t):
+        v = sum([sampler(t) for sampler in samplers])
+        return v
+    return f
+```
+
+## Playing notes
+
+```python
+music = Compose([
+    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 0),
+    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 1.5),
+    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 3),
+    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 4.5),
+])
+```
+
+
 **ADSR**
 
 Hearing all these compositions of different oscillators, you may still notice that the sounds are far from being pleasant to your ears, and one of the main reasons is that the intensity of those sounds is constant in time, while in real-world, a note gets loud with a delay, and will smoothly lose its intensity as time passes. One way we can bring such effect in our simulation is to actually manipulate the volume of our oscillator through time.
@@ -260,16 +334,64 @@ These timings might be different for different instruments, and they do not necc
 
 [ADSR chart]
 
+Fortunately, applying an ADSR effect is as simple as multiplying the ADSR function with the oscillator function!
+
+```python
+def Adsr(sampler, a_dur, d_dur, s_dur, r_dur, a_level, s_level):
+    def f(t):
+        if t < 0:
+            coeff = 0
+        elif t < a_dur:
+            coeff = (t / a_dur) * a_level
+        elif t < a_dur + d_dur:
+            coeff = a_level - ((t - a_dur) / s_dur) * (a_level - s_level)
+        elif t < a_dur + d_dur + s_dur:
+            coeff = s_level
+        elif t < a_dur + d_dur + s_dur + r_dur:
+            coeff = s_level - ((t - a_dur - d_dur - s_dur) / r_dur) * s_level
+        else:
+            coeff = 0
+        return sampler(t) * coeff
+    return f
+```
+
+## Macro Music Language
+
+Macro Music Language (MML) is a very old and deprecated music description language for storing melodies on computers. MML was originally designed to be used in video games back in 70s, so you probably can't find a lot of software that can play MML files, though I chose to introduce and implement this format since it's fairly simple to implement and there are plenty of music available in this format which you can test your synthesizer with. Here is a brief spec of this language:
+
+[TODO: MML Spec]
+
+[TODO: MML Composer]
+
+```python
+def ComposeMML(mml):
+    return Compose([
+        # ...
+    ])
+```
+
+## Frequency Modulation
+
+One of the interesting sounds you can try to generate is the sound of a siren. A siren is a device that can generate a loud sound, with alternating frequency. The frequency is alternated itself in a sine pattern. Assuming the sound's frequency alternates between $f_1$ and $f_2$, we can calculate frequency, by time, as follows:
+
+$f=f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}$
+
+We already know altering the intensity of a sound is as simple as applying a coefficient to its sampler function. If you multiply the above function with an oscillator, its volume will alternate. Knowing that we can generate sine wave with frequency $f$ with $sin(2.\pi.f)$, you may conclude that the sound of a siren can be modeled by substituting $f$ with the alternating $f$ formula:
+
+$sin(2.\pi.(f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}))$
+
+Try to generate and play this sound. It will sound weird, not at all like a siren. But why?
+
+[TODO: Frequency modulation]
 
 How can we emulate an ear in a computer
-
 
 $X_k=\sum\limits_{n=0}^{N-1}{x_n.e^{-i2\pi kn/N}}$
 
 
-Reverb, sound tracing and …
+## Reverb, sound tracing and …
 
-Sound is data
+## Sound is data
 
 Distribute sound, radio stations
 
