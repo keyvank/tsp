@@ -593,3 +593,7 @@ Sometimes you'll need to move a number from one memory cell to another
 Keep in mind that the program above gets ASCII characters as its input and outputs another ASCII character which its code is the sum of the input codes.
 
 ## FPGAs
+
+## CHIP-8
+
+## Operating Systems
