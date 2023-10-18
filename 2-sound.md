@@ -393,7 +393,7 @@ $X_k=\sum\limits_{n=0}^{N-1}{x_n.e^{-i2\pi kn/N}}$
 
 ## Sound is data
 
-Distribute sound, radio stations
+## Distribute sound, radio stations
 
 Antenna heinrich hertz 1887
 
