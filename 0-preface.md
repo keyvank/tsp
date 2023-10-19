@@ -20,7 +20,21 @@ Throughout this book, I’m going to show you the inspirations that human beings
 
 This book is for curious people who are eager to learn some of the most fundamental topics of computer and software engineering. The topics presented in this books, although very interesting in opinion, are some of the most underrated and least discussed fields of computer programming. This book is about the old technology, the technology we are using everyday, but we refuse to learn and extend as an average engineer. The literature around each of those topics is so large that, only specialists will ever be motivated to learn them.
 
-The Super Programmer is for the programmers who don't want to limit their knowledge and skills on a very narrow area of software engineering.
+The Super Programmer is for the programmers who don't want to limit their knowledge and skills on a very narrow area of software engineering. The Super Programmer is for programmers who can't sleep at night when they don't exactly understand how something in their computer works.
+
+There is a famous quote, attributed to Albert Einstein, which says: 'You do not really understand something unless you can explain it to your grandmother.'. Not only I emphasize on this quote, I would like to extend this quote and claim that, you don't understand something unless you can explain it to your computer. Computers are dumb. You have to explain them every little detail, and you can't skip anything. If you are able to describe a something to a computer in a way that it can correctly simulate it, then you surely understand that thing!
+
+Computers give you the ability to test and experiment stuff without actually owning the physical version of them. You can literally simulate an atomic bomb in your computer and throw it in your imaginary world to see what happens. You can simulate a rocket that travels to Mars, as a tiny step, towards your dream of opening a space company. You can describe a 3D environment, and try to understand how it feels to be there, by putting your imaginary eyes in there and calculating what it will perceive, as a computer image. Computers let you to experiment anything you can ever imagine without spending anything other than some of your time and talent.
+
+The Super Programmer is going to show you "what can be done", and not "how can be done". You are not going to learn data-structure and algorithms here, but you are going to learn how you can embrace your creativity by using simple tools you already know. Thus in many parts of this book, we are going to apply the simplest and least-efficient solutions possible, because it's a better way to learn new things.
+
+Some might argue that not all software engineers will ever need to learn any of the topics taught in this book. That's partially true. As an average programmer, you are not going to use any of these knowledge in your everyday work. Even if you do, you are probably not going to get creative and make anything substantially new out of them. Since the book is about the old technology, most of the topics discussed in this book are already studied and developed as much as they could be.
+
+So why are we doing this? There are several reasons:
+
+- You can use the problem-solving strategies and patterns you learn in this book in your everyday job too!
+- The book allows you walk through the entire world-map of technology, and when you do this, nothing will be able scare you. 
+- It's fun!
 
 ## How to make the most of this book?
 
@@ -33,3 +47,11 @@ Chapter 4 is all about the cool parts of artificial intelligence. We will discus
 In the final chapter, we will learn how people can use math for bringing trust into their wild digital world. We will start by learning the history of cryptography, and how people can encrypt and sign digital documents with their digital identities. We will discuss the electronic-cash revolution and see how math can help us to save ourselves from the evil and escape some of the limitations governments put on us. We will discuss ways we can convincingly prove people that we know something, without revealing it, and see how we can use these methods for building truly private cryptocurrencies.
 
 Without a doubt, people love things they have built on their own more than anything else. If you are planning to implement the codes in this book on your own, I suggest you to do it in a programming language other than Python. Writing the codes in Python might make you feel you are not doing anything new, and you may really end up copying and pasting what you read in the book. On the other hand, by rewriting all the logic in another language, you will force yourself to translate what you are reading, leading to a much deeper understanding of what is happening. It will also give you the feeling of creating something new, increasing your dopamine levels and motivation!
+
+## What do I need to know?
+
+As previously noted, although the book is about ideas and not the implementations, and I didn't want to make the content in this book dependant on a specific programming language, I still chose to write the codes in a real programming language instead of using pseudo-codes. Pseudo-codes assume that the reader is a human and does not have the coherency of a real programming language, which is what we care in this book.
+
+I found Python programming language a good choice, since it's the first (Or second?) most popular language among all the developers in the world. I thought Python is the English language of the programmer community. Python isn't the right choice for implementing many of the topics we are discussing in this book (Since efficiency is very important in most of them), but it's one of the easiest languages you can use for prototyping things and learning the concepts.
+
+Therefore you will need to know the basics of Python programming. Some knowledge of *NIX operating systems can become handy in some parts of the book.
