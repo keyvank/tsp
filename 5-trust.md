@@ -199,3 +199,42 @@ Charlie can buy a product from both Alice and Bob by sending the same 3 coins to
 The classic approach in solving the double-spending problem is to have a central authority deciding the order of transactions. Imagine writing two cheques for Alice and Bob, spending 3 of your coins (While you only have 5). If they go to the bank and try to cash out the cheque at the exact same time, only one of the cheques will pass, since there is a single server somewhere, timestamping the transactions as they happen, disallowing a transaction to happen in case of insufficient balance.
 
 The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state, without needing a centralized authority. As its inventor describe Bitcoin, Proof-of-Work is a decentralized method for "timestamping" transactions.
+
+## The most precious spam-fighter!
+
+Back in 1997, Adam Back, a british cryptographer and cypherpunk, invented something called HashCash. HashCash was a method people could use to fight with denial-of-service attacks (Excessive number of requests trying to get a service down). The idea was to require users to solve a moderately hard puzzle before allowing them to use the service. The solution could also be used as a spam filter (Imagine recipients only accept a mail in their inbox when a solved HashCash puzzle is attached to the mail). HashCash was assuming that we can make the life of attackers/spammers much harder, by requiring them to put significant computation resources for every request/email they make.
+
+The puzzle was to find certain inputs for a hash function such that the output is below a threshold. I can't explain this better than a piece of Python code:
+
+```python
+import hashlib
+
+
+def h(inp):
+    return int.from_bytes(hashlib.sha256(inp).digest(), byteorder="little")
+
+
+MAX_VAL = 2 << 256 - 1
+THRESHOLD = MAX_VAL // 10000000
+
+MY_EMAIL = b"Hey, I'm not trying to spam you! :)"
+
+i = 0
+while True:
+    if h(MY_EMAIL + i.to_bytes(8, "little")) < THRESHOLD:
+        print("Nonce:", i)
+        break
+    i += 1
+
+```
+
+Imagine a fair dice with 6 sides.
+
+- If you want to get a 1, you must approximately roll the dice for $\frac{6}{1}=6$ timess.
+- If you want to get a $\leq 2$, you must approximately roll the dice for $\frac{6}{2}=3$ timess.
+- If you want to get a $\leq 3$, you must approximately roll the dice for $\frac{6}{3}=2$ timess.
+- If you want to get a $\leq 6$, you must approximately roll the dice for $\frac{6}{3}=1$ timess.
+
+The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between $0$ to $2^{256}-1$. In order to get an output below $\theta$, you will need to try different inputs (Roll the dice) for $\frac{2^{256}}{\theta}$ times.
+
+In our hashcash example, we require the email sender to "work" approximately as much as running SHA-256 for 1 million times!
