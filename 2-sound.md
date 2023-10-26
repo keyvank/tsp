@@ -443,6 +443,34 @@ parec > record.wav
 pacat < record.wav
 ```
 
+Another interesting thing to experiment is to pipe the the `parec`'s output into `pacat`. Spoiler alert! Your voice will be echoed:
+
+```
+parec | pacat
+```
+
+Now let's try to pass the `parec`'s input through a filter that we'll write in Python, and hear its output via `pacat`:
+
+`parec | python3 filter.py | pacat`
+
+Here is a simple filter that allows only half of the samples to go through (`filter.py`):
+
+```python
+import sys, struct
+
+def get():
+    return struct.unpack('h', sys.stdin.buffer.read(2))[0] / 32767
+
+def put(x):
+    sys.stdout.buffer.write(struct.pack("h", int(x * 32767)))
+
+while True:
+    get() # Skip one sample
+    put(get())
+```
+
+You will hear a high-pitched version of your voice! (Since skipping the waves-samples will make the waves in the input sound to seem like they are alternating two times faster).
+
 So far, we have had done a lot of experiments using the `pacat` command, and now it's the time to see what can be done if we allow other computers to receive wave-samples. We have learnt to compose sounds, now its time to decompose them!
 
 Telephone 1896 grahambell
