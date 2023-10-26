@@ -427,6 +427,24 @@ Studying waves and how you can utilize them to connect people together is a fasc
 
 ## Distribute sound, radio stations
 
+Sound is the primary medium of communication for humans, but unfortunately, speaking becomes ineffective when your audience is far away, and the reason is that sound waves lose energy as they propagate in the space.
+The world was a very different place before the invention of telecommunication technologies. The only way you could communicate with your beloved ones (Who were far away), was to send them physical letters. In the best case, your letter could be delivered in the time it took to transfer a physical object from you to your destination (Which was not very fast obviously). There are faster things in universe by which you can transfer messages of course, light is an example. Lights are also waves, just like sounds, but unfortunately we can't "hear" electromagnetic waves, so we can't use them directly, as a medium of "verbal" communication. We can try to design an intermediary language for translating sentences to visual effects and vice versa. The simplest example of such protocol, is some coding technique known as Morse codes.
+
+Invented in the 1830s by an American artist, Samuel Morse (Yes, sometimes artists are pioneers of technology), Morse code is a method for encoding/decoding latin-alphabet letters into a series of signals (Electrical or visual). It is worth noting that Morse-codes are designed in a way such that the most frequent letters in latin-alphabet have shorter signal representations.
+
+![International Morse-codes](assets/morse.png){ width=250px }
+
+## Hearing with your computer
+
+PulseAudio's `pacat` program lets you to put raw audio samples on your computer's speakers. On the other hand, there is another program `parec` which allows you to record audio samples. `pacat` puts whatever it gets through stdin on your computer's speaker, while `parec` puts audio samples it gets through your computer's microphone on stdout. Using these commands together you can record and play audio:
+
+```
+parec > record.wav
+pacat < record.wav
+```
+
+So far, we have had done a lot of experiments using the `pacat` command, and now it's the time to see what can be done if we allow other computers to receive wave-samples. We have learnt to compose sounds, now its time to decompose them!
+
 Telephone 1896 grahambell
 
 Alec Reeves - inventor of pcm 1930s
