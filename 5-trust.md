@@ -235,6 +235,18 @@ Imagine a fair dice with 6 sides.
 - If you want to get a $\leq 3$, you must approximately roll the dice for $\frac{6}{3}=2$ timess.
 - If you want to get a $\leq 6$, you must approximately roll the dice for $\frac{6}{3}=1$ timess.
 
-The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between $0$ to $2^{256}-1$. In order to get an output below $\theta$, you will need to try different inputs (Roll the dice) for $\frac{2^{256}}{\theta}$ times.
+The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between $0$ to $2^{256}-1$. In order to get an output below $\theta$, you will need to try different inputs (Roll the dice) for $\frac{2^{256}}{\theta}$ times. You can roll a hash-function by "slightly" changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).
 
-In our hashcash example, we require the email sender to "work" approximately as much as running SHA-256 for 1 million times!
+In our HashCash example, we require the email sender to "work" approximately as much as running SHA-256 for 1 million times!
+
+## Chaining proofs of work!
+
+Satoshi Nakamoto discovered a interesting fact about proof-of-work puzzles. After solving a proof-of-work puzzle, you can append some more data to the whole thing and try to solve the proof of work puzzle again for the new data.
+
+Suppose we first find $nonce_0$ such that: $H(data_0 | nonce_0) < \theta$. We then append $data_1$ to the hash of old data and find $nonce_1$ such that $H(H(data_0 | nonce_0) | data_1 | nonce_1) < \theta$
+
+Solving a proof-of-work puzzle on $H(data_0 | nonce_0) | data_1$, not only proves that you have worked hard on commiting to $data_1$, but also shows that you have put equal amount of work to also commit on $data_0$, for one more time, and that is because altering $data_0$ not only invalidates the first proof-of-work, but also the second proof-of-work. Assuming that it takes 1 minute to find an appropriate nonce for a piece of data, altering $data_0$ would invalidate both $nonce_0$ and $nonce_1$, meaning that you should find the values for $nonce_0$ and $nonce_1$ again, requiring you two solve 2 proof-of-work puzzles, spending two minutes of your CPU time. The longer the chain is, the harder it becomes to alter older data.
+
+## Proof-of-Work on financial transactions
+
+Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted.
