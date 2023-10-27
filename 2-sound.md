@@ -543,6 +543,8 @@ plt.show()
 
 Assuming our sample-rate is $2^n$, the $get_freqs$ function will get an array of size $2^n$ (The signal samples), and will return an array of size $2^{n-1}$. The $i$th element of this array tells your the presence of a sine wave with $i$Hz frequency in your input signal. The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency $f$, you need to at least have $2f$ samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).
 
+![An example of undersampling, the sampled signal seems to be a sine wave wit lower frequency](assets/nyquist.png)
+
 Humans are able to hear sounds with frequencies as high as around 20000Hz, that's why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).
 
 ## Noises, noises everywhere...
