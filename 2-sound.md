@@ -489,6 +489,61 @@ So far, we have had done a lot of experiments using the `pacat` command, and now
 
 The disturbance doesn’t necessarily need to happen in the air, for example you can basically build devices that can disturb the water in a pool in one side and build a device to detect and listen to the disturbances in the other side of the pool. Using these two, two computers may communicate with each other through water waves!
 
+## Fourier Transform
+
+Fourier-Transform is a method/algorithm by which you can extract frequencies within a wave-form. Remember we could generate sounds that were compositions of two sine-waves with different frequencies? When hearing those sounds, your brain is able to successfully recognize the presence of two different frequencies in what it hears, and that is actually why we are able to understand what someone is saying in a crowded environment with a lot of noise. Our brain is able to focus on a certain frequency (Which is the frequency-range of your friend's larynx). If our brains are able to decompose sounds by their frequency, it's reasonable to think that computers can do that too. Fourier-Transform is the answer. Given a list of signal samples, it will tell you what frequencies are present in that signal. Here is an example:
+
+```python
+import cmath  # Math for complex numbers
+import math
+import matplotlib.pyplot as plt
+
+
+def fft(x):
+    N = len(x)
+    if N <= 1:
+        return x
+    even = fft(x[0::2])
+    odd = fft(x[1::2])
+    T = [cmath.exp(-2j * cmath.pi * k / N) * odd[k] for k in range(N // 2)]
+    return [even[k] + T[k] for k in range(N // 2)] + [
+        even[k] - T[k] for k in range(N // 2)
+    ]
+
+
+def get_freqs(x):
+    result = [abs(v) / (len(x) / 2) for v in fft(x)]
+    return result[: len(x) // 2]
+
+
+def sine(freq, t):
+    return math.sin(2 * math.pi * freq * t)
+
+
+def sampler(t):
+    return sum(
+        [
+            sine(440, t)
+            + 5 * sine(1000, t)
+            + 2 * sine(2000, t)
+            + 0.5 * sine(9000, t)
+            + 8 * sine(16000, t)
+        ]
+    )
+
+
+samples = [sampler(t / 32768) for t in range(32768)]
+freqs = get_freqs(samples)
+
+plt.plot(freqs)
+plt.show()
+```
+
+
+Assuming our sample-rate is $2^n$, the $get_freqs$ function will get an array of size $2^n$ (The signal samples), and will return an array of size $2^{n-1}$. The $i$th element of this array tells your the presence of a sine wave with $i$Hz frequency in your input signal. The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency $f$, you need to at least have $2f$ samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).
+
+Humans are able to hear sounds with frequencies as high as around 20000Hz, that's why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).
+
 ## Noises, noises everywhere...
 
 Unfortunately, the air is full of noises, if you start speaking while two computers are transmitting data through audio, the disruption may corrupt data, leading unwanted data to be sent on the destination computer. Even the echo/reflections of the sound in the environment may have negative effects (Remember, all waves share similar traits, reflections happen for electromagnetic waves too)
