@@ -250,3 +250,91 @@ Solving a proof-of-work puzzle on $H(data_0 | nonce_0) | data_1$, not only prove
 ## Proof-of-Work on financial transactions
 
 Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted.
+
+## Inventing a new math
+
+The math we are used to, is all about different operations you can perform on numbers. You can add them, subtract them, multiply them or divide them by each other. These operations (If you are not really into math) only make sense if the operands are number. For example, you can't add an apple to an orange, it's meaningless, because the definition of addition is meaningless in case of fruits. But let's assume it's possible, and try to invent some new kind of math for fruits. Imagine the fruits we are working with in our new math are: Apple, Orange and Banana. There are 9 different possibilies when fruits are added together ($3 \times 3$), and since the result of adding two fruits is also a fruit, there will be a total of $3^9$ ways we can invent the $+$ operation on fruits. Here is an example:
+
+|   A    |   B    | A + B  |
+|--------|--------|--------|
+| Apple  | Apple  | Orange |
+| Apple  | Orange | Orange |
+| Apple  | Banana | Apple  |
+| Orange | Apple  | Banana |
+| Orange | Orange | Orange |
+| Orange | Banana | Banana |
+| Banana | Apple  | Apple  |
+| Banana | Orange | Orange |
+| Banana | Banana | Banana |
+
+Unfortunately, the math we have just invented on fruits does not obey some of the properties we are used to when adding numbers. For example, you might expect that $Orange + Banana$ is equal with $Banana + Orange$, but in our new, randomly invented math, that's not the case. There are other missing features too, for example: $(Apple + Orange) + Banana$ is not equal with $Apple + (Orange + Banana)$! Try to redesign the $+$ operation, so that we have the mentioned properties in our fruit-math too.
+
+Here is an example of a fruit-math that perfectly obeys the mentioned laws:
+
+|   A    |   B    | A + B  |
+|--------|--------|--------|
+| Apple  | Apple  | Apple  |
+| Apple  | Orange | Orange |
+| Apple  | Banana | Banana |
+| Orange | Apple  | Orange |
+| Orange | Orange | Banana |
+| Orange | Banana | Apple  |
+| Banana | Apple  | Banana |
+| Banana | Orange | Apple  |
+| Banana | Banana | Orange |
+
+Let's make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that's ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be $3^9$ different possible defintions for $\times$. If we start with a random table, we will lose some of the properties $\times$ operator has on regular numbers. In case of regular numbers, we know that $a \times b$ is equal with $b \times a$. There is also one very unique and important property that we have on regular numbers. $a \times (b + c)$ is equal with $a \times b + a \times c$. Try to design $\times$ operator on fruits so that it obeys these properties too. You will probably reach to a table like this: 
+
+|   A    |   B    | A * B  |
+|--------|--------|--------|
+| Apple  | Apple  | Apple  |
+| Apple  | Orange | Apple  |
+| Apple  | Banana | Apple  |
+| Orange | Apple  | Apple  |
+| Orange | Orange | Orange |
+| Orange | Banana | Banana |
+| Banana | Apple  | Apple  |
+| Banana | Orange | Banana |
+| Banana | Banana | Orange |
+
+Since there are limited number of addition/multiplication tables that obey math rules we are used to, we can conclude that there are very few varities of math we can design for Apples, Bananas and Oranges. One clever way to easily extract new fruit-maths is to use substitute the fruits in our current tables with another permutation of fruits (E.g. change Apple->Banana, Banana->Orange and Orange->Apple). But who are we going to fool! These tables are still somehow equal with the first table, and we haven't really invented a new math! There is even a scientific word for it, the tables generated this way are actually isomorph with each other, or in other words, there exists a mapping for the elements in the first table, that migrates us to the second table!
+
+Strangely, out of $3^9.3^9$ possible ways we can invent a math for fruits (Assuming we want to fill the addition and multiplication tables), only few of them are valid and behave as expected, and all of those valid maths are isomorph with each other, meaning that effectively, we only have a single kind of math, in case we have 3 number of elements! Mathematicians refer these kind of maths as: ***Finite-fields***
+
+Now imagine we use substitute Apples, Oranges and Bananas with numbers under 3 (0, 1, 2), respectively (Obviously, we will get an isomorph). Here is how the addition and multiplication tables will look like:
+
+| A | B | A + B |
+|---|---|-------|
+| 0 | 0 | 0     |
+| 0 | 1 | 1     |
+| 0 | 2 | 2     |
+| 1 | 0 | 1     |
+| 1 | 1 | 2     |
+| 1 | 2 | 0     |
+| 2 | 0 | 2     |
+| 2 | 1 | 0     |
+| 2 | 2 | 1     |
+
+| A | B | A * B |
+|---|---|-------|
+| 0 | 0 | 0     |
+| 0 | 1 | 0     |
+| 0 | 2 | 0     |
+| 1 | 0 | 0     |
+| 1 | 1 | 1     |
+| 1 | 2 | 2     |
+| 2 | 0 | 0     |
+| 2 | 1 | 2     |
+| 2 | 2 | 1     |
+
+Strangely, we can see that the addition/multiplication tables are basically just modular addition/multiplication! (I.e addition and multiplication modulo 3).
+
+
+## Diffie-Hellman
+
+We have two people who want to send a physical letter to each other. They can send their letters through a postman (Who unfortunately is very nosy!). They don't want the postman to read the letter. Sender and receiver both have a lock and its key that can put on the box. They can't send their keys to each other! How can the sender send privately send the letter?
+
+1. The sender puts the letter in the box and locks it and sends it to the receiver.
+2. The receiver locks the box with his key too, and sends it back to the sender.
+3. The sender opens his own lock and sends it back to the receiver.
+4. The receiver may now open the box and read the letter.
