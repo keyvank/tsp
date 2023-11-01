@@ -547,6 +547,18 @@ Assuming our sample-rate is $2^n$, the $get_freqs$ function will get an array of
 
 Humans are able to hear sounds with frequencies as high as around 20000Hz, that's why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).
 
+## Dummiest Modulation Algorithm Ever (DMAE)
+
+Assuming that we can generate waves of a single frequency in one machine, and recognize the existence of that exact frequency in another machine, let's try to design an algorithm to transfer data through audio, by encoding the bits into sound waves on one sides, and decoding them, converting back the audio waves into bits on other side (The encoding/decoding parts are usually referred as Modulation and Demodulation).
+
+Let's start by simply generating a sine wave of frequency $f_d$ (Data frequency) when we want to transmit a 1, and avoid generating it when we want to transmit a 0. On the other computer, we will listen to the sound samples and perform a fourier transform on them. Whenever we recognize a $f_d$ frequency, we will output a 1, and otherwise a 0. Obviously, we have to agree on a fixed time interval by which bits are sent, otherwise we wont know how many consecutive 0s (Or 1s) are meant to be received in case the receiver is the presence/absence of $f_d$ is being detected for a long period of time.
+
+As an extra feature, we would like to let the other machine know whenever we have finished sending our data. Right know, we will probably stop generating any sound when there are no more bits to be sent. The receiver machine is not able to know whether we are out of bits, or we are just sending a lot of 0 bits. A simple solution to that problem is to include another frequency $f_e$ in our generated signal, which is only generated when there are data to be sent.
+
+![Transferring bits through three signals](assets/modulation.png)
+
+In this case, the receiver will only accept bits when the $f_e$ frequency is also present in the received signal (Besides presence or absence of data frequency).
+
 ## Noises, noises everywhere...
 
 Unfortunately, the air is full of noises, if you start speaking while two computers are transmitting data through audio, the disruption may corrupt data, leading unwanted data to be sent on the destination computer. Even the echo/reflections of the sound in the environment may have negative effects (Remember, all waves share similar traits, reflections happen for electromagnetic waves too)
