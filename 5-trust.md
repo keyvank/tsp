@@ -251,6 +251,96 @@ Solving a proof-of-work puzzle on $H(data_0 | nonce_0) | data_1$, not only prove
 
 Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted.
 
+
+## It's time to commit
+
+Now you probably have an accurate intitution on how cryptographic hash functions work (If you are convinced that the Proof-of-Work algorithm really works). But it's also good to know the formal definition of a cryptographic hash function. A cryptographic hash function is a function that is:
+
+1. Collision-resistant: It's hard to find a pair of $x$ and $y$ where $H(x)=H(y)$.
+2. Preimage-resistant: Given $y$, it's hard to find $x$ where $H(x)=y$.
+3. Second-perimage-resistant: Given $H(x_1)=y$, it's hard to find $x_2$ where $H(x_2)=y$.
+
+Besides generating proofs of work, there are other interesting things you can do with hash functions. In general, cryptographic hash functions let you to commit to a secret value, and reveal it later.
+
+### Cryptographic games
+
+A useful example is when you want to play the Rock/Paper/Scissors with your friend over phone. You can agree to shout out your choice simulatanously, but there is always the chance that your friend may hear your choice and make his choice based on that, always winning the game. What if you guys want to play Rock/Paper/Scissors over physical letters? It'll become much harder to prevent cheatings! Cryptographic hash functions come handy here:
+
+1. Alice chooses his option $a$, but instead of revealing $a \in \{R, P, S\}$, she reveals $H(a)$.
+2. Just like Alice, Bob chooses $b \in \{R, P, S\}$, and reveals $H(b)$.
+3. Now both Alice and Bob know that their opponent has made his choice and commited to it, so they can reveal their choices.
+4. They both will check if their opponent's choice matches with their commited value (If it doesn't, it means the opponent is cheating).
+5. If everything is alright, winner is determined according to $a$ and $b$.
+
+There is a hack to this approach. Since the options are very limited, both Alice and Bob can pre-compute a table of all possible choices and their respective hashes. Then they'll be able to know their opponent's movement based on their commited value. We can prevent this by introducing an extra random value appended to the input of the hash function, known as a *salt*. (It's dangerous to directly store the passwords of the users in a web-application's database. It's also dangerous to store hashes of the passwords, since many users choose weak passwords and attackers may build pre-computed tables by trying many different popular passwords, just like what an attacker can do in the Rock/Paper/Scissors game we just designed, so you have probably seen that a random salt is added to the user's password before applying the hash function. The salt is stored on the database for later verifications).
+
+It's nice to remember: Whenever you are designing a cryptographic protocol and would like to prevent attacks based on precomputed-tables, adding a salt is a efficient and good solution.
+
+The following Python code will let you to generate commitments for participating in a cryptographic Rock/Paper/Scissors game:
+
+```python
+import random, hashlib
+
+choice = input("Choice? (R/P/S)")
+assert choice in ["R", "P", "S"]
+
+# Generate a random 16 letter alphanumeric salt
+salt = "".join(random.choice("0123456789ABCDEF") for i in range(16))
+
+commit = hashlib.sha256((choice + salt).encode("ascii")).hexdigest()
+
+print("Salt (Reveal it later!):", salt)
+print("Commit:", commit)
+
+# Reveal choice and salt later
+```
+
+After both you and your opponent have got the commitments of each other, you may now reveal your choices and respective salts. The following Python3 program may be used for finding the winner:
+
+```python
+import hashlib
+
+alice_choice = input("Alice choice? ")
+alice_salt = input("Alice salt? ")
+alice_commit = input("Alice commitment? ")
+
+if alice_choice not in ["R", "P", "S"]:
+    print("Alice has made an invalid move!")
+
+if (
+    alice_commit
+    != hashlib.sha256((alice_choice + alice_salt).encode("ascii")).hexdigest()
+):
+    print("Alice is cheating!")
+
+bob_choice = input("Bob choice? ")
+bob_salt = input("Bob salt? ")
+bob_commit = input("Bob commitment? ")
+
+if bob_choice not in ["R", "P", "S"]:
+    print("Bob has made an invalid move!")
+
+if bob_commit != hashlib.sha256((bob_choice + bob_salt).encode("ascii")).hexdigest():
+    print("Bob is cheating!")
+
+# Winner may now be determined based on alice_choice and bob_choice!
+print("Alice:", alice_choice)
+print("Bob:", bob_choice)
+```
+
+### Commiting to a set of values
+
+Not only you can commit to a single value, but you can commit to multiple values, and later prove and reveal the existence of a certain value in the set. Here is a silly cryptographic game where commiting to a set of values might be useful. Imagine I have chosen a number between 0 to 1000, and I want you to make 20 guesses on what my number is. You may take 20 random guesses and commit to it by taking the hash of a comma seperated string, containing all of your guesses. You can then reveal your guesses and I can check:
+
+1. If you really have only chosen 20 numbers, and not more (Just split the comma-seperated string by `,` and check its length)
+2. If your guess list includes my number
+
+Now, there is problem. What if the guess list is very large? (Imagine millions of numbers). You have to reveal all of my guesses, otherwise I can't check if your commitment matches your numbers. Is there any way I can prove existence of a certain number in my list, without revealing all other numbers I have in the list? (Both for privacy and performance reasons). There is!
+
+Binary trees are your best friend, any time you want to optimize the space-efficiency or computation-efficiency of something related to computer science!
+
+![Making a tree out of the values you want to commit on!](assets/merkle.png)
+
 ## Inventing a new math
 
 The math we are used to, is all about different operations you can perform on numbers. You can add them, subtract them, multiply them or divide them by each other. These operations (If you are not really into math) only make sense if the operands are number. For example, you can't add an apple to an orange, it's meaningless, because the definition of addition is meaningless in case of fruits. But let's assume it's possible, and try to invent some new kind of math for fruits. Imagine the fruits we are working with in our new math are: Apple, Orange and Banana. There are 9 different possibilies when fruits are added together ($3 \times 3$), and since the result of adding two fruits is also a fruit, there will be a total of $3^9$ ways we can invent the $+$ operation on fruits. Here is an example:
@@ -338,3 +428,30 @@ We have two people who want to send a physical letter to each other. They can se
 2. The receiver locks the box with his key too, and sends it back to the sender.
 3. The sender opens his own lock and sends it back to the receiver.
 4. The receiver may now open the box and read the letter.
+
+## Do my computation!
+
+I have always been very curious about different ways we can write programs. Object Oriented, Functional, imperative and etc, all require different kinds of thinking, and it was always exciting for me to learn new languages that introduces a new kind of thinking. Years I have been out of languages that were truly introducing a conpletely new concept, but R1CS is one of the most interesting ways you can program stuff.
+
+R1CS doesn’t actually give you a set of instructions to write your program with, it is not a language at all. It’s a way you can force someone to perform the computation you desire, by solving math equations.
+
+R1CS, short for Rank-1 Constraint System, is a form of math equation which has only a single multiplication among its variables.
+
+Imagine I give you the following equations and ask you to find all possible x, y and z values that satisfy all the equations at the same time.
+
+1. $a \times (1-a)=0$
+2. $b \times (1-b)=0$
+3. $a \times b=c$
+
+Obviously, since the first and second equations are just quadratic equations, they have two roots, which are zero and one. Knowing the different possible values for a and b we can write a table for it.
+
+| a | b | c |
+|---|---|---|
+| 0 | 0 | 0 |
+| 1 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 1 | 1 |
+
+You can see that the table is identical with a logical and gate. We can do or gates too, the last constraint needs to be:
+
+$(1-a) \times (1-b)=(1-c)$
