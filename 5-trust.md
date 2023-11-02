@@ -90,6 +90,10 @@ Generating the an $n$ bit key for a n-character to n-character encryption algori
 
 ## Signatures
 
+Finite-field elements that we just build are not the only strange kind of group elements besides regular numbers. Matrices exist too, you can define addition and multiplication operations on grids of numbers, and it will behave just as regular numbers.
+
+There is also one very weird kind of group that mathematicians have discovered,
+
 ```python
 P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 
@@ -468,9 +472,11 @@ Obviously, since the first and second equations are just quadratic equations, th
 | 0 | 1 | 0 |
 | 1 | 1 | 1 |
 
-You can see that the table is identical with a logical and gate. We can do or gates too, the last constraint needs to be:
+You can see that the table is identical with a logical and gate. We can do OR gates too, the last constraint needs to be:
 
 $(1-a) \times (1-b)=(1-c)$
+
+You might think that you can’t do much by simply just multiplying and adding variables with each other, but the truth is, this particular way of representing programs is actually able to represent any program you can ever imagine. The fact that you can emulate logical gates is enough for concluding that the representation is able to emulate any kind of hardware!
 
 ### Migrating to bit representations
 
