@@ -429,6 +429,22 @@ We have two people who want to send a physical letter to each other. They can se
 3. The sender opens his own lock and sends it back to the receiver.
 4. The receiver may now open the box and read the letter.
 
+![The box can be locked with two locks at the same time, needed both parties to remove their locks in order to open the box](assets/lock.png)
+
+### Stealth addresses!
+
+The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn't want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private). 
+
+ - Bob generates a key $m$ (Master private key), and computes $M = g^m$ (Master public key), where $g$ is a commonly-agreed generator point for the elliptic curve.
+ - Alice generates an ephemeral key $r$, and publishes the ephemeral public key $R = g^r$.
+ - Alice can compute a shared secret $S = M^r$, and Bob can compute the same shared secret $S = m^R$ (Very similar to Diffie–Hellman key exchange we just discussed).
+ - A new public-key can be derived for Bob: $P = M + g^{hash(S)}$ (Elliptic-curve point addition).
+ - Bob (and Bob alone, since he only knows the value of $m$) can compute corresponding private-key $p = m + hash(S)$ (Scalar addition).
+
+Now, the receiver may listen to all ephemeral points broadcasted in the network and will try to see if any message is being sent to the corresponding derived public-keys, and see if someone was meaning to communicate with him. In this scheme, only the receiver is able to know that someone is communicating with him, and not anyone else.
+
+[TODO]
+
 ## Do my computation!
 
 I have always been very curious about different ways we can write programs. Object Oriented, Functional, imperative and etc, all require different kinds of thinking, and it was always exciting for me to learn new languages that introduces a new kind of thinking. Years I have been out of languages that were truly introducing a conpletely new concept, but R1CS is one of the most interesting ways you can program stuff.
@@ -455,3 +471,25 @@ Obviously, since the first and second equations are just quadratic equations, th
 You can see that the table is identical with a logical and gate. We can do or gates too, the last constraint needs to be:
 
 $(1-a) \times (1-b)=(1-c)$
+
+### Migrating to bit representations
+
+Obviously, since we can emulate logical operators through plain math operations, we can do pretty amazing stuff too, but the variables in our circuits are normally holding numerical values, and not bits. Fortunately, there are ways we can migrate a numerical variable into its bit representation, by putting constraints like this:
+
+- $a_0 \times (1-a_0) = 0$
+- $a_1 \times (1-a_1) = 0$
+- $a_2 \times (1-a_2) = 0$
+- $\vdots$
+- $a_{n-1} \times (1-a_{n-1}) = 0$
+- $2^0a_0 + 2^1a_1 + 2^2a_2 + \dots + 2^{n-1}a_{n-1} = a$
+
+Assuming the original value is in the variable $a$, given these constraints, the solver has no way but to put the bit representation of $a$ into the variables $a_0, a_1, \dots, a_{n-1}$.
+
+### Checking zeroness
+
+Given three two variables $a$ and $z$ (And a auxiallary variable $tmp$), we would like to check if the value of $a$ is zero, by enforcing the value of $z$ to be 1 in case $a=0$ and make it $0$ otherwise.
+
+- $z = -tmp * a + 1$
+- $z * a = 0$
+
+Now, if $a$ is not zero, $z$ has no choice but to be zero in order to satisfy the second constraint. If $z$ is 0, then $tmp$ should be set to inverse of $a$ in order to satisfy the first constraint. Inverse of $a$ exists, since $a$ is not zero. If $a$ is zero, then the first constraint is reduced to $z=1$.
