@@ -489,6 +489,13 @@ So far, we have had done a lot of experiments using the `pacat` command, and now
 
 The disturbance doesn’t necessarily need to happen in the air, for example you can basically build devices that can disturb the water in a pool in one side and build a device to detect and listen to the disturbances in the other side of the pool. Using these two, two computers may communicate with each other through water waves!
 
+In real world, what your computer is generating is an electrical signal that is given to a speaker. You can connect the exact same wire to other things too. In fact:
+
+- Connect that wire to a speaker, and the data will propagate through air.
+- Connect that wire directly to the destination computer, and the data will propagate through the electrons in the wire.
+- Connect that wire to an antenna, and the data will propagate through space.
+- Connect that wire to a light-emitter within a optical fiber cable, and the data will propagate through visible light.
+
 ## Fourier Transform
 
 Fourier-Transform is a method/algorithm by which you can extract frequencies within a wave-form. Remember we could generate sounds that were compositions of two sine-waves with different frequencies? When hearing those sounds, your brain is able to successfully recognize the presence of two different frequencies in what it hears, and that is actually why we are able to understand what someone is saying in a crowded environment with a lot of noise. Our brain is able to focus on a certain frequency (Which is the frequency-range of your friend's larynx). If our brains are able to decompose sounds by their frequency, it's reasonable to think that computers can do that too. Fourier-Transform is the answer. Given a list of signal samples, it will tell you what frequencies are present in that signal. Here is an example:
