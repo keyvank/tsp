@@ -46,6 +46,23 @@ Galielo Galilei's law of inertia states that:
 
 - If you put an object in the state of motion, it will move forever if no external forces are applied on it
 
+## Exciting Electronics
+
+Here we will dicuss core and interesting ideas behind electronics
+
+### Ohm's Law
+
+$V=RI$
+
+### Kirchhoff's Law
+
+### Alternating vs Direct current
+
+How diodes can convert AC to DC
+
+### When capacitors finally become useful
+
+Capacitors are DC blockers!
 
 ## Controlling the world
 
