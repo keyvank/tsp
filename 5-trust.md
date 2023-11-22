@@ -499,3 +499,6 @@ Given three two variables $a$ and $z$ (And a auxiallary variable $tmp$), we woul
 - $z * a = 0$
 
 Now, if $a$ is not zero, $z$ has no choice but to be zero in order to satisfy the second constraint. If $z$ is 0, then $tmp$ should be set to inverse of $a$ in order to satisfy the first constraint. Inverse of $a$ exists, since $a$ is not zero. If $a$ is zero, then the first constraint is reduced to $z=1$.
+
+## Computer programs inside polynomials
+
