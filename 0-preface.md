@@ -2,6 +2,16 @@
 
 # The Super Programmer
 
+## Preface
+
+The book you are going to read is the result exploring different areas in computer science for more than 15 years. The idea of writing a book like this began around 8 years ago, when I was around 17 years old. That time, I was mostly focused on learning computer graphics and 3D rendering algorithm. The idea of generating 3D images by calculating the RGB values of the pixels was so interesting to me, that made me want to teach it to every programmer I knew. Unfortunately, not every programmer I knew was interested to learn low-level stuff like this, so instead of trying to teach what I learnt, I decided to write a book for it. I was sure I will have audience for it, there are lots of nerd programmers around the world who are thirsty to learn something more than web-applications.
+
+So, I started to write that book, named it "Programming the Visuals", and I remember I made a lot of progress! Not sure what exactly happened, but I got a bit discouraged after finding it hard to fill a book with content. I found myself explaining everything I wanted to explain in less than 40 pages, and well 40 pages is not enough for a technical book. I didn't want to litter my book with all the details of different rendering algorithms. I just wanted to explain the core idea, in very simple words and with easy-to-understand code examples. My goal in my book was to introduce this very specific field of computer science to people, hoping that they will get encouraged enough to learn anything else they'll need by themselves.
+
+My computer graphics book remained untouched for years, during which I took a bachelor's degree in computer engineering and did deep dives into other interesting fields of computer science too. University was one of the places in which I got clues on what to learn next. In fact, I didn't learn much in the university, because contrary to what many people say, university professors do not really get deep in what they teach. They will tell you a lot of headlines, but they'll never get deep in any of them. And that makes sense too, you can't expect to get super deep in everything in a relatively short period of time. Chances are you will get specialized knowledge in only one of the fields of computer science.
+
+\pagebreak
+
 ## Intro
 
 Legos were my favorite toys as a kindergarten student. It was one of the only toys I could use to build stuff that didn't exist before. It let me bring my imaginations into the real world, and nothing satisfies a curious mind more than the ability to build unique structures out of simple pieces.
