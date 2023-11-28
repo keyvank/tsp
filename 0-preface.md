@@ -10,6 +10,12 @@ So, I started to write that book, named it "Programming the Visuals", and I reme
 
 My computer graphics book remained untouched for years, during which I took a bachelor's degree in computer engineering and did deep dives into other interesting fields of computer science too. University was one of the places in which I got clues on what to learn next. In fact, I didn't learn much in the university, because contrary to what many people say, university professors do not really get deep in what they teach. They will tell you a lot of headlines, but they'll never get deep in any of them. And that makes sense too, you can't expect to get super deep in everything in a relatively short period of time. Chances are you will get specialized knowledge in only one of the fields of computer science.
 
+The fact that you can only get successful by getting deep in only one of the many fields of computer science didn't stopped me from learning them. After getting comfortable with generating pixels, I started to learn building computers, operating-systems, and all of the low-level stuff many programmers avoid to learn. Unfortunately, being a really talented hardware engineer doesn't necessarily mean you are also good in some of the topics which are normally known by physicists and electrical engineers, and those topics are still vital in developing many fascinating forms of software. So I thaught myself generating waves, signals and sounds and tried to understand how can I transfer data through them. After the advent of LLMs, and AI driven image-generation models, I also got convinced that that's the next thing I should get deep in. So I developed deep-learning libraries from scratch and built language-models on top of them.
+
+I transformed myself from a day-to-day web-developer into a programmer that knows ***the starting point*** of building any kind of technology and hopefully can help getting the progress of technology back on track, in case a catastrophic event happens on Earth and all we have is gone.
+
+After boosting my knowledge by learning all those stuff, I felt that it's the time to extend my 40-page computer graphics book, and the result is this book!
+
 \pagebreak
 
 ## Intro
