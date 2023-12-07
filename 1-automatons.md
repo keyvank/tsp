@@ -4,15 +4,11 @@
 
 ## Which came first? The chicken or the egg?
 
-That's not what I was exactly thinking of when I decided to write this section.
-
 Imagine for a second, one day a catastrophic event will happen and we will lose all the technology we once had. Nothing but ashes will remain, and our situation will be similar to humans millions of years ago, with one difference: We still can read, and fortunately, there are plenty of books available explaining how our modern technology worked. Now here is an interesting quesiton: How much time will it take to reach the point of advancement we are in right now?
 
-My prediction is, we will get back on track only after a few decades, and the only reason this could take longer than expected is that, you will need tools, for building other tools. Obviously, we can't start building a x86-64 CPU even though we have the specification and the detailed design of that CPU, we will first need to rebuild tools that we need for building complex electronic circuits. If we are completely out of technology (As we assumed), we will need to learn again how can we get the materials we want out of the earth and combine them 
+My prediction is, we will get back on track only after a few decades, and the only reason this could take longer than expected is that, you will need tools, for building other tools. Obviously, we can't start building a modern CPU even though we have the specification and the detailed design of that CPU, we will first need to rebuild tools that we need for building complex electronic circuits. If we are completely out of technology (As we assumed), we will need to learn again how can we find and extract the materials we want out of the earth and use them to build the simple tools we'll need, which will then be used for building more complicated tools. Here is a very important fact that makes all the technological progress we have had viable: ***technology can help accelerating its own creation!***
 
-Here is a very important fact that makes all the technological progress we have had viable: technology can help accelerating its own creation!
-
-Just like the chicken and egg paradox, I was always wondering how people built the very first compilers and assemblers for the first time? What language did they use for describing the very first assembly languages? Did they have to write the early assembler programs directly in 0s and 1s? After a bit of research, I figured that the answer is yes. In fact, the procedure is as follows:
+Just like the chicken and egg paradox, I was always wondering how people built the very first compilers and assemblers for the first time? What language did they use for describing the very first assembly languages? Did they have to write the early assembler programs directly in 0s and 1s? After a bit of research, I figured that the answer is yes. In fact, as an example, the process of building a C compiler for the first time is as follows:
 
 1. You write a C compiler directly in machine-assembly,
 2. You'll rewrite the same C compiler in C.
@@ -21,7 +17,7 @@ Just like the chicken and egg paradox, I was always wondering how people built t
 
 See this beautiful loop here? Technology maintains and reproduces itself, which kind of means, ***technology is a form of life***! The simpler computer language (In this example, machine-assembly) helped the C-compiler to emerge, but after the compiler started to live, it could stand on its own feet. We won't need the machine-assembly implementation of it anymore, since there is nothing preventing us to describe a C-compiler in the C programming language!
 
-Now let's get back to our original question. Which one was first? The chicken or the egg? If you look through the history of evolution, you will see that the creatures millions of years ago were not reproducing by dropping eggs. Basic living cells for example, they never had to reproduce like that, they would only cut themselves into two pieces. As living creatures get more complicated, phenomena like dropping eggs will "slowly" start to emerge.
+Now let's get back to our original question. Which one was first? The chicken or the egg? If you look through the history of evolution, you will see that the creatures millions of years ago were not reproducing by dropping eggs. Basic living cells for example, they never had to reproduce like that, they would only cut themselves into two pieces. As living creatures get more complicated, phenomena like dropping eggs will "slowly" start to emerge. The very first chicken-like animal which started to put eggs didn't necessarrily come out of an egg. It could just be a mutation that emerged the egging behavior for a new generation, just like how a C compiler started to live, without depending on a assembly implementation of it!
 
 ## When the dominos fall
 
