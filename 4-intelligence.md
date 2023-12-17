@@ -194,17 +194,38 @@ Large Language Models are perhaps the most important invention of our decade (20
 
 **Embedding**
 
+An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into $k$-dimensional vector of numbers.
+
+* Propagation: `Y=T[X]`
+* Backpropagation: `dT[X]/dX += delta`
+
 **MatMul**
+
+Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron's input is the weighed sum of all outputs of previous neurons.
+
+* Propagation: `Y=MX`
+* Backpropagation: `dY/dM += X` and `dY/dX += M`
 
 **ReLU**
 
+ReLU is an activation function to provide non-linearty in a Neural-Network. It's a better alternative for vanilla sigmoid function, since the sigmoid function's closeness to zero can decrease the training speed a lot.
+
+* Propagation: `Y=X if X > 0 else 0`
+* Backpropagation: `dY/dX += 1 if X > 0 else 0`
+
 **LayerNorm**
 
-**Mask**
+LayerNorm is a creative approach 
 
 **Softmax**
 
+Softmax layer is used to convert the outputs of a layer into a probability distribution (Making each output a number between 0 to 1, where sum of all outputs is equal with 1).
+
+**Mask**
+
 **CrossEntropy**
+
+CrossEntropy is a strategy for calculating the error of a neural network. A CrossEntropy layer accepts a probability distribution as its input, therefore a cross-entropy layer comes after a Softmax layer. In a cross-entropy layer, error is minimized when the output probability of the desired output is 1 and all other outputs are zero.
 
 ## Language
 
