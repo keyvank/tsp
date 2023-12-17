@@ -164,10 +164,135 @@ The Kirchhoff's law on the other hand, states that the sum of incoming and outgo
 
 Now let's see how these laws can help us analyze a circuit.
 
-Before getting to the example, I would like to introduce you a new, imaginary source of electricity, referred as a current source. As opposed to voltage sources which try to keep the potential difference between two points on a specific number, current sources try to keep the current stable on a chosen number. Current sources are imaginary and do not exist in the real world. You can somehow emulate them though! Imagine building a "smart" voltage source that can measure the current and increase/decrease its voltage accordingly to keep the current on a specific number. As opposed to a voltage source where short circuits are not permitted, in current sources, you have to make sure that electrons coming out of the source will eventualy get back to the source. Otherwise, the zeroness of current will cause the ovltage to become infinity which definitely is not what we want!
+### Analyzing circuits
+
+Analyzing an electronic circuit is all about predicting and calculating the amount of current and voltage of every point in the circuiy. Obviously, the voltage of every two points directly connected through a wire is always equal. Electronic components are connected together through wires, and your circuit consists of junctions where 2 or more components meet. Since the voltage value of all the points in a junction are equal, there is only one voltage to be calculated. Let's refer to this intersection points of components as ***nodes***. In the example circuit in figure X, there are X nodes. Our goal is to calculate the voltage of all the nodes in any given time.
+
+An electronic component can be defined by the amount of current it allows to pass given the voltages applied on its pins. For example, a resistor's ability to pass electrons is linearly dependent to the amount of voltage difference applied on its pins.
+
+$i=\frac{V_a - V_b}{R}$
+
+There are components that have non-linear behaviors too! For example, a diode has a exponential behavior. The more voltage difference applied in correct direction, it allows exponentially more current to pass, and apply the voltage difference in reverse direction, and it will become like a resistor with infinite resistance.
+
+$i=ae^{b(V_a - V_b)}$
+
+(The coefficients $a$ and $b$ depends on the diode)
+
+There are also some electronic components with time-dependent behaviors. Their current output depends on the input applied to them in the past too. A capactitor for example. If the capacitor is already charged, it allows no current, while an uncharged capacitor allows infinite current. We can also define a capacitor's behavior through a formula:
+
+$i=C\frac{d(V_a-V_b)}{dt}$
+
+I would like to introduce you a new, imaginary source of electricity, referred as a current source. As opposed to voltage sources which try to keep the potential difference between two points on a specific number, current sources try to keep the current stable on a chosen number. Current sources are imaginary and do not exist in the real world. You can somehow emulate them though! Imagine building a "smart" voltage source that can measure the current and increase/decrease its voltage accordingly to keep the current on a specific number. As opposed to a voltage source where short circuits are not permitted, in current sources, you have to make sure that electrons coming out of the source will eventualy get back to the source. Otherwise, the zeroness of current will cause the ovltage to become infinity which definitely is not what we want!
 
 The reason I'm introducing current sources is that, it's much easier to analyze circuits that use current-sources instead of voltage sources (For now!).
 
+$i = I$
+
+By summing all of currents flowing into each node, we will get a set of equations. Given Kirchhoff's law, we know that these functions must be equal to zero. This puts a constraint on the voltages of the nodes in out system, helping us to find the correct voltage of each node.
+
+In other words, the problem of solving the circuit is reduced to finding the solution of a system of equations.
+
+### Newton, Newton verywhere
+
+Finding the roots of arbitrary functions has always been an interesting problem for ancient mathematicians. It's interesting to know that it took almost X years to find a general method for calculating the roots of a simple quadratic equation, let alone more complicated function!
+
+Newton, besides doing Physics, has always been a pioneer in mathematics and one of his discoveries, was a numerical method for finding the roots of any arbitrary function (With known derivative). The method, which is known as Newton-Raphson nowadays (Thanks to the simplification Raphson did to the algorithm), is an iterative algorithm which tries to guess the root of the function, and make its guess better and better through iterations, until reaching to a final answer!
+
+$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$
+
+Here is a Python code that tries to find the root of simple single-input/single-output function through this method:
+
+$f(x) = x^3 - 4x^2 - x + 5$
+
+$f'(x) = 3x^2 - 8x - 1$
+
+```python=
+def f(x):
+    return x**3 - 4 * x**2 - x + 5
+
+
+def f_prime(x):
+    return 3 * x**2 - 8 * x - 1
+
+
+guess = 0.5
+
+for _ in range(10):
+    guess = guess - f(guess) / f_prime(guess)
+
+print(guess, f(guess))
+```
+
+And the output is: `1.16296185677753 0.0`
+
+Fortunately, a very similar approach can be applied for finding the root of a multi-input/multi-output function. (Here, a electronic circuit can be mapped into a multi-input/multi-output function, where the inputs are voltages of the nodes, and the outputs are the sum of currents flowing into the nodes)
+
+The derivative of a multi-input/multi-output function is known as the **Jacobian** of that function. We have been working with Jacobians while training neural-networks too!
+
+Assuming that our function accepts $3$ inputs and gives out $3$ outputs, the Jacobian of that function will be a $3 \times 3$ matrix:
+
+$F'(X) = \begin{bmatrix}
+  \frac{\partial f_0(X)}{\partial x_0} & 
+    \frac{\partial f_0(X)}{\partial x_1} & 
+    \frac{\partial f_0(X)}{\partial x_2} \\
+  \frac{\partial f_1(X)}{\partial x_0} & 
+    \frac{\partial f_1(X)}{\partial x_1} & 
+    \frac{\partial f_1(X)}{\partial x_2} \\
+  \frac{\partial f_2(X)}{\partial x_0} & 
+    \frac{\partial f_2(X)}{\partial x_1} & 
+    \frac{\partial f_2(X)}{\partial x_2}
+\end{bmatrix}$
+
+Where: $X = (x_0, x_1, x_2)$ and $F(X) = (f_0(X), f_1(X), f_2(X))$
+
+In the Newton Raphson method, in each iteration, we were dividing the result of the function at previous guess, by the result of the derivative of the function at that guess. Since the derivative of our function is now a matrix, we have to find the inverse of the Jacobian matrix in order to perform the formula. The iteration formula becomes:
+
+$X_{n+1} = X_n - F'(X_n)^{-1}.F(X_n)$
+
+Now, the only remaining challenge is coverting a circuit to a multi-input/multi-output function, and then, by finding the root of that function through the Newton-Raphson method, the circuit is solved!
+
+Let's dive into the implementation:
+
+[TODO]
+
+Let's assume we have $n$ nodes. Applying the Kirchhoff's law will give us $n$ equations that need to be zeroed (See the number of inputs and outputs in our multi-input/multi-output function is equal).
+
+Each function is in fact the sum of contribution of different components connected to it. So a first step could be creating a framework in which components may add their contributions to the node functions.
+
+Let's assume each function is represented as a sum of sub-functions (If there are $k$ components connected to the $i$th node, the corresponding node function will be the sum of $k$ sub-functions: $f_i(X) = f_{i,0}(X) + f_{i,1}(X) + \dots + f_{i,k-1}(X)$)
+
+Since the nodes are simple variables that need to be calculated by a solver, it might make more sense to instantiate `Var` instances when introducing new nodes.
+
+```python=
+class Var:
+    def __init__(self, index):
+        self.index = index # Keep track of the index of variable
+        self.value = 0
+```
+
+### When stables and unstables meet!
+
+Revisiting capacitors, we know they are elements that resist against `stability` of the voltage applied to them. (E.g if you connect a DC voltage-source to them, they will slowly get charged and cancel out the voltage of the DC voltage source, resisting against flow of electrons)
+
+On the other hand, inductors are components that resist against `unstability` of the current flowing in them. If you suddenly connect a voltage source to them, you may not see a sharp change in the current flowing in an inductor (As opposed to a capacitor, or even a simple resistor), but the current will go up slowly, and if you disconnect the voltage source, current will not get zero instantly, but it will slowly approach zero (Very similar to law of intertia in mechanics!)
+
+In fact, both capacitors and inductors somehow store energy, but in different ways. A capacitor stores energy as a potential difference between its plates, but an inductor stores energy as a magnetic field inside a coil.
+
+Both capacitors and inductors are kind of ***resistors***. The capacitor's resistance is higher when the input voltage is stable (Infinite resistance on a DC voltage source and lower resistance in a AC voltage source or any form of alternationing voltages). On the other hand, an inductor's resistance is 0 when the voltage applied to it is stable, and it's resistance increases as it's input voltage source alternates faster (E.g a high-frequency AC voltage source)
+
+In the circuit shown in figure X, if you apply DC voltages, the voltage of $V_1$ in the circuit with capacitor will eventually become zero, while the voltage in the circuit with inductor will slowly increase and become $V$. Now, replace the DC voltage source with a AC one and slowly increase its frequency, the situation will be reversed! You will see higher voltages in the capacitor circuit and lower voltages in the inductor circuit.
+
+We can somehow claim that, capacitors are ***high-pass filters***. They pass current better when their input alternates faster (I.e with higher frequency), whereas inductors are ***low-pass filters***, since they allow better flow of electrons when the input signal is alternating slowly (Or no alternation at all).
+
+Now, here is a fascinating idea: by combining a capacitor and an inductor together, we'll have a circuit that has minimum resistance in certain frequency! This magical frequency can be calculated using this formula:
+
+$f = \frac{1}{2 \pi \sqrt{LC}}$
+
+where $C$ is the capacitor's capacitance in Farads and $L$ is inductor's inductance in Henries.
+
+Remember both capacitors and inductors could be used for storing energy? Not only you use a pair of capacitor and inductor for creating a dynamic resistor with minimized resistance in a certain frequency, but also you can trap energy in them, and that energy will oscillate between the capacitor and inductor with the same frequency! This means, you can build an alternating source of voltage with this magical pair, and that oscillation is something that has effects on the space around it. It makes disturbances that propagates in the space! (Recall the second chapter where we discussed waves)
+
+The oscillation made by this loop can be routed to a long piece of metal, amplifying the impact it has in the space. A bigger surprise is that, if you have another capacitor-inductor loop (With same frequency) somewhere else, a slight oscillation will also be induced on the second loop. This revolutionary idea was first proposed by the German physicist, Heinrich Hertz.
 
 
 ### Alternating vs Direct current
