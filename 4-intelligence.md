@@ -155,6 +155,37 @@ Why modelling a gate as a floating point function is beneficial for us? Because 
 
 Once upon a time, two nobel prize winners were studying brain cells 1873
 
+### Myserious black boxes
+
+Neural networks seem to be blackboxes that can learn anything. It has been proven that they can see, understand or even reason about stuff. Neural Network are known to be *universal function approximators*. Given some samples of inputs/outputs of a function, neural networks may learn that function and try to predict correct outputs, given ***new inputs***, inputs they have never seen before.
+
+Before feeding a neural network your input data, you have to convert it into numbers. You can encode them anyway you want, and then feed them to a neural network (Which will give you some other numbers), and you may again iterpret the numbers anyway you want, and you can make the network "learn" the way you encode/decode data and try to predict correct outputs given inputs.
+
+Some example encodings:
+
+- Given the location, area and age of a house, predict its price
+
+There are many ways you can encode a location into numbers:
+
+1. Convert it to two floating point numbers, longitude and latitude.
+2. Assume there are $n$ number of locations, feed the location as a $n$ dimensional tuple, where $i$th elements shows how close the actual location is to the predefined locaiton.
+
+The area/age could also be fed:
+
+1. Directly as a number in $mm^2$ or years
+2. Interpolated between 0 to 1 (By calculating $\frac{area}{area_{max}}$)
+
+And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.
+
+Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!
+
+### Language
+
+Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important
+
+1. We didn't know a perfect encoding/decoding strategy for text data
+2. We didn't put enough hardware for training language models
+
 ## Gate layers
 
 ## Computation graphs
