@@ -143,6 +143,63 @@ Drawing a circle
 
  > Why do we use electrical cause effects? Because they are small and fast, and can easily be routed by metal wires Fastest cause effect type is light
 
+### Having fun with the pixels
+
+When learning computer graphics, before jumping to complicated algorithms like 3D rendering, there are some other stuff you can do to leverage your power of manipulating pixels.
+
+There are plenty of things you can draw on a 2D surface. Let's start with drawing a simple 2D line. A 2d line may be defined by its slope and offset:
+
+$y = ax + b$
+
+Given two points, you can find the corresponding $a$ and $b$ that passes through this line too. Assuming the points are: $P_1 = (x_1, y_1)$ and $P_2 = (x_2, y_2)$:
+
+$a = \frac{y_2 - y_1}{x_2 - x_1}$
+
+$b = -ax_2 + y_2$
+
+Let's have a class for working with lines!
+
+```python=
+class Line:
+    def __init__(self, slope: float, offset: float:
+        self.slope = slope
+        self.offset = offset
+    
+    def get_y(self, x: float):
+        return self.slope * x + self.offset
+
+    @staticmethod
+    def from_points(a: Vec2D, b: Vec2D) -> Line:
+        slope = (b.y - a.y) / (b.x - a.x)
+        offset = -slope * b.x + a.x
+        return Line(slope, offset)
+
+```
+
+Here is something interesting to draw with simple lines:
+
+[TODO]
+
+#### Circle
+
+A circle can be defined given its center and radius. Just like the `Line` class, we may also have a `Circle` class:
+
+```python=
+class Circle:
+    def __init__(self, center: Vec2D, radius: float):
+        self.center = center
+        self.radius = radius
+```
+
+### Fractals
+
+One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:
+
+#### Serpinski Triangle
+
+#### Koch Snowflake
+
+#### Julia sets
 
 ## Ray Tracing
 
@@ -315,4 +372,121 @@ of photons that are going through that ray for us.
 
 Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)
 
-In the rasterization algorithm, instead of emitting rays abd finding the object that it intersects with and calculating its color, we will try to map the 3D points of an object into 2D points on your computer screen through mathematical formula. In other words, when rendering each frame, we loop through the objects in our scene, and all of the 3D points that make those objects, and we will apply a function which convert a triplet $(x, y, z)$ to a pair of floats $(x,y)$.
+In the rasterization algorithm, instead of emitting rays abd finding the object that it intersects with and calculating its color, we will try to map the 3D points of an object into 2D points on your computer screen through mathematical formula. In other words, when rendering each frame, we loop through the objects in our scene, and all of the 3D points that make those objects, and we will apply a function which convert a triplet $(x, y, z)$ to a pair of floats $(x,y)$. We then fill those pixels on the screen!
+
+Since it is impractical to represent a 3D object by its points (A 3D object it made of infinite number of points), we usually represent them by a bunch of 3D triangles. Looping through the triangles of an object, using the same 3D-to-2D point conversion formula, we can convert a 3D triangle to a 2D one. We just have to apply the function on all three 3D vertices of the triangle in order to get the respective 2D ones.
+
+Filling a 2D triangle on an image is a straightforward process. Before getting into the more complicated parts, let's first draw a triangle on a PPM image, given the 2D position of its vertices. It's good to defined classes for storing 2D points and triangles, so let's first create a class named `Vec2D` which stores two floating point numbers and another class named `Triangle2D` for storing three `Vec2D`s. Our PPM triangle renderer should accept a `Triangle2D` and fill the pixels within that triangle.
+
+```python=
+class Vec2D:
+    def __init__(self, x: float, y: float):
+        self.x = x
+        self.y = y
+
+
+class Triangle2D:
+    def __init__(self, a: Vec2D, b: Vec2D, c: Vec2D):
+        self.a = a
+        self.b = b
+        self.c = c
+```
+
+### Matrices, programmable math objects!
+
+When doing ray tracing, we exactly knew where are imaginary eye/camera is, but so far in the rasterization algorithm, we were assuming that the eye/camera is placed at the origin point $(0,0,0)$. So, how could we move in this 3D scene and see it from different perspectives? The solution is a bit different compared to what we were doing in a ray tracer. Here, instead of moving/rotating the camera around the world, we move/rotate all of the objects in that world, in order to make it feel like the camera is placed in a different location! Since we are working with 3D points, before passing the points to the rendering function, we have to apply a ***transformation*** function to put the point in a different location.
+
+These transformations are done through matrices! There are matrices that apply certain geometric changes when being multiplicated with vectors.
+
+Assuming our points are represented in 4D vectors where the last element is 1, we can invent a matrix that can move a point by adding a offset vector to it when multiplied with the original vector. This matrix is known as ***translation*** matrix. Assuming we want to move our vector $(x, y, z)$ by $(T_x, T_y, T_z)$, the translation matrix works as follows:
+
+$\begin{bmatrix} 1 && 0 && 0 && T_x \\ 0 && 1 && 0 && T_y \\ 0 && 0 && 1 && T_z \\ 0 && 0 && 0 && 1 \end{bmatrix} \times \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} = \begin{bmatrix} x + T_x \\ y + T_y \\ z + T_z \\ 1 \end{bmatrix}$
+
+ (We have to add a fourth element in order to make these matrices work)
+
+Nothing explains the concept better than a piece of code. Since all of the transformation matrices we use in this section are 4 by 4 matrices, let's define a `Matrix4x4` class for this use and add methods for creating different transformation matrices:
+
+```python=
+class Matrix4x4:
+    def __init__(self, rows):
+        self.rows = rows
+
+    @staticmethod
+    def translate(offset: Vec3D):
+        return Matrix4x4([
+            [1, 0, 0, offset.x],
+            [0, 1, 0, offset.y],
+            [0, 0, 1, offset.z],
+            [0, 0, 0, 1]
+        ])
+    
+    def apply(self, vec: Vec3D):
+        # ...
+
+```
+
+Now, here is an interesting fact about transformation matrices: because of the *Associative Property of Multiplication* of matrices ($A \times (B \times C)=(A \times  B) \times C$), they combined with each other, resulting in new 4x4 transformation matrices that behave as if each matrix is applied to the vector independently. This literally means that you can compress infinite number of transformation matrices into a single matrix. As an example, if you multiply two translation matrices which move a point by $(T_{x_1},T_{y_1},T_{z_1})$ and $(T_{x_2},T_{y_2},T_{z_2})$ respectively, you will get a new translation matrix that moves a point by: $(T_{x_1} + T_{x_2},T_{y_1} + T_{y_2},T_{z_1} + T_{z_2})$.
+
+Transformation matrices are not limited to moving points by an offset. There are transformation matrices for rotating objects around different axis too!
+
+$R_x(\theta) = \begin{bmatrix}
+1 && 0 && 0 && 0 \\
+0 && cos(\theta) && -sin(\theta) && 0 \\
+0 && sin(\theta) && cos(\theta) && 0 \\
+0 && 0 && 0 && 1
+\end{bmatrix}$
+
+$R_y(\theta) = \begin{bmatrix}
+ cos(\theta) && 0 && -sin(\theta) && 0 \\
+0 && 1 && 0 && 0 \\
+sin(\theta) && 0 && cos(\theta) && 0 \\
+0 && 0 && 0 && 1
+\end{bmatrix}$
+
+$R_z(\theta) = \begin{bmatrix}
+cos(\theta) && -sin(\theta) && 0 && 0 \\
+sin(\theta) && cos(\theta) && 0 && 0 \\
+0 && 0 && 1 && 0 \\
+0 && 0 && 0 && 1
+\end{bmatrix}$
+
+### Camera matrix
+
+Recall that we move/rotate the world around us instead of placing a camera in an arbitrary position rotation, there is a shortcut way for transforming the world as if a camera at $\vec{P}$ is looking at a target $\vec{T}$, and its upper-side is pointing at $\vec{U}$. This matrix can be created as follows:
+
+$T = \begin{bmatrix}
+1 && 0 && 0 && 0 \\
+0 && 1 && 0 && 0 \\
+0 && 0 && 1 && 0 \\
+-P_x && -P_y && -P_z && 1
+\end{bmatrix}$
+
+$F = normalize(T - P)$
+
+$R = normalize(U \times F)$
+
+$U = F \times R$
+
+$O = \begin{bmatrix}
+R_x && U_x && F_x && 0 \\
+R_y && U_y && F_y && 0 \\
+R_z && U_z && F_z && 0 \\
+-P_x && -P_y && -P_z && 1
+\end{bmatrix}$
+
+Then the look-at matrix $L$ can be calculated as follows:
+
+$L = O \times T$
+
+### The magical matrix
+
+The perspective law says that the distance between 2 points look less when the points get farther of our eyes. There is a magical transformation matrix, called the ***perspective*** transformation matrix, which applies this effect for us:
+
+$\begin{bmatrix}
+1 / \frac{tan(p_fov / 2)}{p_asp_rat} && 0 && 0 && 0 \\
+0 && \frac{1}{tan(p_fov / 2)} && 0 && 0 \\
+0 && 0 && \frac{-(p_far + p_near)}{p_far - p_near} && \frac{-2 * p_far * p_near}{p_far - p_near} \\
+0 && 0 && -1 && 0
+\end{bmatrix}$
+
+### Barycentric coordinates
