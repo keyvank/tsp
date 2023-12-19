@@ -201,6 +201,8 @@ An embedding layer is basically a array which you can access its elements. It's 
 
 **MatMul**
 
+Let's say we have $n$ neurons in a layer, each accepting the outputs of the $m$ neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!
+
 Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron's input is the weighed sum of all outputs of previous neurons.
 
 * Propagation: `Y=MX`
