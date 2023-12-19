@@ -483,10 +483,44 @@ $L = O \times T$
 The perspective law says that the distance between 2 points look less when the points get farther of our eyes. There is a magical transformation matrix, called the ***perspective*** transformation matrix, which applies this effect for us:
 
 $\begin{bmatrix}
-1 / \frac{tan(p_fov / 2)}{p_asp_rat} && 0 && 0 && 0 \\
-0 && \frac{1}{tan(p_fov / 2)} && 0 && 0 \\
-0 && 0 && \frac{-(p_far + p_near)}{p_far - p_near} && \frac{-2 * p_far * p_near}{p_far - p_near} \\
+\frac{1}{tan(\frac{FOV}{2})a} && 0 && 0 && 0 \\
+0 && \frac{1}{tan(\frac{FOV}{2})} && 0 && 0 \\
+0 && 0 && \frac{-(Z_{far} + Z_{near})}{Z_{far} - Z_{near}} && \frac{-2 Z_{far} Z_{near}}{Z_{far} - Z_{near}} \\
 0 && 0 && -1 && 0
 \end{bmatrix}$
 
+Where $FOV$ is field-of-view in radians (Normally $\frac{\pi}{4}$), $a$ is the aspect ratio (Your screen width divided by height), and $Z_{near}$ and $Z_{far}$ the closest and farthest objects you can see in the rendered image.
+
+Assuming the output of this multiplication is $(x,y,z,w)$, by dividing the $x$ and $y$ components by $w$, you will get a pair of numbers between $-1$ and $1$, which tell you where on the computer screen should this point be rendered. We can map these numbers to points on screen with resolution $W \times H$:
+
+$P=(W\frac{\frac{x}{w}+1}{2},H\frac{\frac{y}{w}+1}{2})$
+
+### 3D Cube
+
+With the tools we created in the previous sections, we are now able to render a simple 3D cube. Each side of a cube is a square, and therefore consists of two triangles. We will be coloring each side of the cube with a unique color, so that sides are distinguishable with each other.
+
+First, we will need a data structure for storing 3D shapes. Our data structure will be storing the 3D triangles making that object. Let's create a Python class for this purpose and call it `Mesh`. We will also implement different static-methods generating Mesh objects for different 3D shapes. Let's start with a simple cube-builder:
+
+```python=
+class Mesh:
+    def __init__(self, trigs):
+        self.trigs = trigs
+
+    @staticmethod
+    def cube(pos: Vec3D, size: Vec3D):
+        return Mesh(
+            [
+                Vec3D(pos.x, pos.y, pos.z), Vec3D(pos.x + size.x, pos.y, pos.z), Vec3D(pos.x, pos.y + size.y, pos.z), 
+                Vec3D(pos.x + size.x, pos.y, pos.z), Vec3D(pos.x, pos.y + size.y, pos.z), Vec3D(pos.x + size.x, pos.y + size.y, pos.z),
+                Vec3D(pos.x, pos.y, pos.z), Vec3D(pos.x + size.x, pos.y, pos.z), Vec3D(pos.x, pos.y + size.y, pos.z + size.z), 
+                Vec3D(pos.x + size.x, pos.y, pos.z), Vec3D(pos.x, pos.y + size.y, pos.z), Vec3D(pos.x + size.x, pos.y + size.y, pos.z + size.z),
+                # TODO
+            ]
+        )
+```
+
 ### Barycentric coordinates
+
+In the previous section, we saw how to draw a boring 3D cube with each side filled with a single color. Sometimes you'll want to use an image instead of a plain color on the sides of your object.
+
+Putting image textures on a triangle is a straightforward process: when drawing the 2D triangle, for each of the pixels you are putting on the screen, you must somehow calculate the respective location on an image that the color should be fetched from.
