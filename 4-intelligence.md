@@ -194,7 +194,7 @@ Large Language Models are perhaps the most important invention of our decade (20
 
 **Embedding**
 
-An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into $k$-dimensional vector of numbers.
+An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into $k$-dimensional vector of numbers. An embedding layer is always put as the first layer in a network, since its inputs are integer indices to elements of a table.
 
 * Propagation: `Y=T[X]`
 * Backpropagation: `dT[X]/dX += delta`
@@ -217,17 +217,34 @@ ReLU is an activation function to provide non-linearty in a Neural-Network. It's
 
 **LayerNorm**
 
-LayerNorm is a creative approach 
+LayerNorm is a creative approach for fighting with a problem known as vanishing-gradients. Sometimes when you put plenty of layers in a network, a slight change in the first layers will have enormous impact in the output (Which causes the gradients of the early layers to be very small), or there are times when the early layers have very small impact on the outputs (The gradients will become very high, or explode, in this case). Layer-normalization is a technique by which you can decrease the probability of a vanishing/exploding gradients, by consistently keeping the output-ranges of your layers in a fixed range. This is done by normalizing the data flowing through the layers through a normalization function.
+
+The layer accepts a vector of floating point numbers as input and gives out a vector with same size as output, where the outputs are the standardized version of inputs.
 
 **Softmax**
 
 Softmax layer is used to convert the outputs of a layer into a probability distribution (Making each output a number between 0 to 1, where sum of all outputs is equal with 1).
 
+$Y_i = \frac{e^{X_i}}{e^{X_0}+e^{X_1}+\dots+e^{X_{k-1}}}$
+
+In a softmax layer, each output element depends on the output of all neurons in the previous layer, therefore, the derivative of a softmax layer, is a matrix, so we have to calculate its Jacobian!
+
 **Mask**
 
 **CrossEntropy**
 
-CrossEntropy is a strategy for calculating the error of a neural network. A CrossEntropy layer accepts a probability distribution as its input, therefore a cross-entropy layer comes after a Softmax layer. In a cross-entropy layer, error is minimized when the output probability of the desired output is 1 and all other outputs are zero.
+CrossEntropy is a strategy for calculating the error of a neural network, where. A CrossEntropy layer accepts a probability distribution as its input, therefore a cross-entropy layer comes after a Softmax layer. In a cross-entropy layer, error is minimized when the output probability of the desired output is 1 and all other outputs are zero. In this scheme, we expect the error of the network to be maximized when the output of the desired neuron is 0, and to be minimized when the output of that neuron is 1. Such behavior can be obtained with a function like $\frac{1}{x}$ or $-log(x)$!
+
+A cross-entropy layer accepts a probability distribution (A bunch of floating point numbers) as input, and produces a single floating point number, representing the error of the network, as its output. The error is defined as:
+
+$E=-log(X[t])$
+
+where $T$ is the index of the desired class. When $X[t]$ is 0, the error is $\inf$, and when $X[t]$ is 1, the error is $0$. You might first think that we have to consider the outputs of other neurons too, when calculating the error of the network (E.g, we have to somehow increase the error, when the elements other than the one with index $t$ are not zero, but this is not needed! Assuming that the input to an cross-entropy layer is a probability distribution, forcing the probability of the desired element to become 1, forces the probability of all other non-desired elements to become 0, *automatically*)
+
+Such a strategy for calculating the error of the network forces the network to learn to select a single option among a set of options. Examples of such use cases are:
+
+- Given a 2D array of pixels, decide if there is a cat, dog, or a human in the picture (An image classifier)
+- Given an array of words, decide what word is the next word (A language-model)
 
 ## Language
 
