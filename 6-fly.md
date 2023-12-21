@@ -294,6 +294,11 @@ Remember both capacitors and inductors could be used for storing energy? Not onl
 
 The oscillation made by this loop can be routed to a long piece of metal, amplifying the impact it has in the space. A bigger surprise is that, if you have another capacitor-inductor loop (With same frequency) somewhere else, a slight oscillation will also be induced on the second loop. This revolutionary idea was first proposed by the German physicist, Heinrich Hertz.
 
+![RLC circuit current](assets/rlc.png){ width=300px }
+
+### Hello World!
+
+![Astable Multivibrator's output](assets/astable.png){ width=300px }
 
 ### Alternating vs Direct current
 
