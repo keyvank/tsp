@@ -436,6 +436,7 @@ class Qubit:
         self.oneness = oneness
 
 ```
+***Bell's Inequality***
 
 ## Brainfuck
 
