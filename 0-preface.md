@@ -74,3 +74,20 @@ As previously noted, although the book is about ideas and not the implementation
 I found Python programming language a good choice, since it's the first (Or second?) most popular language among all the developers in the world. I thought Python is the English language of the programmer community. Python isn't the right choice for implementing many of the topics we are discussing in this book (Since efficiency is very important in most of them), but it's one of the easiest languages you can use for prototyping things and learning the concepts.
 
 Therefore you will need to know the basics of Python programming. Some knowledge of *NIX operating systems can become handy in some parts of the book.
+
+## How did I write this book?
+
+As someone who had never written a book before, I found the process very unclear. I wasn't sure what text-editing software/format I should use for easier conversion to other formats. I had to add a lot of code-snippets and math equations in my book, so clearly Microsoft Word wasn't the most convenient option (At least I wasn't sure how can I do it efficiently with a word-processor like Microsoft Office). Besides that, I am personally not a fan of LaTeX. I find the syntax hard and I wasn't really willing to learn LaTeX and I wanted to put my focus on writing the actual text instead. My choice was Markdown language. It is very easy to use and there are plenty of software out there which I can use for converting a `.md` file to `.html`, `.pdf`, `.tex` and etc. Also, in case I needed to perform some costum, automated transformations on my text, Markdown is one of the easiest languages to parse and generate!
+
+I wrote different chapters in separate `.md` files, and then I wrote a `Makefile` to concatenate all of them in a single `.pdf` file. I then used a Linux program named `pandoc` for doing so.
+
+Here is how my `Makefile` script looked like:
+
+```Makefile
+pdf:
+	pandoc --toc --output=out.pdf *.md # Convert MD files to a PDF file
+	pdfunite cover.pdf out.pdf tsp.pdf # Add the book cover
+	pdftotext tsp.pdf - | wc -w # Show me the word-cound
+```
+
+The `--toc` flag generated the Table of Contents section for me automatically (Based on Markdown headers: `#`, `##`, ...), and I also had another `.pdf` file containing the cover of my book, which I concatenated with the pandoc's output. I was tracking my process by word-count.
