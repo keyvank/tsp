@@ -88,6 +88,47 @@ We can now conclude that, we don't need to store a mapping of size $2^n$ ($\alph
 
 Generating the an $n$ bit key for a n-character to n-character encryption algorithm is as easy as throwing a coin for $n$ times and fortunately, **we all trust the coin flips already!**
 
+Although this method can be mathematically proven to be secure (In fact, the method has a name: the one-time padding algorithm), it is not practical, and the reason is that, the keys are not reusable.
+Suppose we have two messages $m_1$ and $m_2$, and a key $k$ which we’ll use for encrypting both messages:
+
+$M_1 = m_1 \oplus k$
+
+$M_2 = m_2 \oplus k$
+
+An eavesdropper cannot guess what $m_1$ is by knowing $M_1$, but in case he also has a second encrypted message $M_2$, he can add these two messages together and an something interesting will happen:
+
+$M_1 \oplus M_2 = m_1 \oplus k \oplus m_2 \oplus k = (m_1 \oplus m_2) + (k \oplus k) = m_1 \oplus m_2$
+
+If you take the xor of a number with itself, they will cancel-out each other and you will get zero, so the $k \oplus k$ part is removed from the equation and what you get is basically the sum of messages, which means: $M_1 \oplus M_2 = m_1 \oplus m_2$, which is definitely a dangerous leak.
+
+To show the importance of the leak, let’s say we want to encrypt two images using this method.
+
+By adding the encrypted images together, you will get a new image which is leaking a lot of information on what the encrypted messages contain.
+
+[IMG]
+
+So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages $M_1$ and $M_2$ are only obfuscated when the keys used to encrypt them are different:
+
+$M_1 = m_1 \oplus k_1$
+
+$M_2 = m_2 \oplus k_2$
+
+$M_1 + M_2 = (m_1 \oplus m_2) \oplus (k_1 \oplus k_1)$
+
+The summation of two random keys $k_1$ and $k_2$ (If both of the keys are totally random and independent with each other), is somehow like a new encryption key $k_3 = k_1 \oplus k_2$ which has all the randomness properties of $k_1$ and $k_2$. This means that $M_1 + M_2$ will remain encrypted:
+
+$M_1 + M_2 = (m_1 \oplus m_2) \oplus k_3$
+
+Unfortunately, our limited computer memory prevents the parties from storing inifinitely large keys, but what if we want to use the provable secure-ness of the one-time padding algorithm, by only having a single key with limited size? There are tricks we can achieve that! A very clever way is to define a function that gets a key $k$ with a small, fixed-size, and try to expand the binary string to an arbitary length. There are several ways we can do that. A naive method (That just came to my mind while writing this, and has potentially critical security problems!) is to somehow concatenate a pseudo-random binary string to the current string, which is dependent on the current string. An obvious tool for generating such a thing (Based on what we learnt in previous section), is a hash function!
+
+```python
+def expand(k, n):
+    result = k
+    while len(result) < n:
+        result += hash(result)
+    return result
+```
+
 ## Signatures
 
 Finite-field elements that we just build are not the only strange kind of group elements besides regular numbers. Matrices exist too, you can define addition and multiplication operations on grids of numbers, and it will behave just as regular numbers.
