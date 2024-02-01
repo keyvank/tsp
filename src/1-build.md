@@ -1,5 +1,3 @@
-\pagebreak
-
 # Build!
 
 ## Which came first? The chicken or the egg?
@@ -66,9 +64,9 @@ Release what you have in your hand and let it fall. The heavy object will hit th
 
 Now you know the answer! When you lifted the heavy object, you actually gave energy to it, and when you let it fall, the energy you gave got released! Physicist call this energy as potential energy. A lifted object has the potential to do work (Work is done by consuming energy), that's probably why we refer it as potential energy!
 
-If you remember high-school physics, you know that the potential energy of an object can be calculated with the formula: $u=mgh$ where $m$ is the mass of the object, $h$ is its height from the ground, and $g$ is earth's gravity constant (Which is around $9.807$). Given this formula, when the object lies on the ground, $h$ is 0 thus the potential energy is also 0. A very important question, does that mean, an object that lies on the ground does not have any potential energy? Well, it has! Take a shovel, dig the ground under the object, and the object will fall into the hole. The point is, the equation is giving you the potential difference, not the actual potential energy of that object! A more correct version of that equation would be: $\varDelta{u}=mg\varDelta{h}$, which says, the potential energy difference between two points A and B is $mg$ times the difference of their heights! It's relative!
+If you remember high-school physics, you know that the potential energy of an object can be calculated with the formula: \\(u=mgh\\) where \\(m\\) is the mass of the object, \\(h\\) is its height from the ground, and \\(g\\) is earth's gravity constant (Which is around \\(9.807\\)). Given this formula, when the object lies on the ground, \\(h\\) is 0 thus the potential energy is also 0. A very important question, does that mean, an object that lies on the ground does not have any potential energy? Well, it has! Take a shovel, dig the ground under the object, and the object will fall into the hole. The point is, the equation is giving you the potential difference, not the actual potential energy of that object! A more correct version of that equation would be: \\(\varDelta{u}=mg\varDelta{h}\\), which says, the potential energy difference between two points A and B is \\(mg\\) times the difference of their heights! It's relative!
 
-The reason it takes energy to lift an object roots back to the fact that giant masses attract each other, a.k.a the universal law of gravitation ($F=G\frac{m_1m_2}{r^2}$). Since a very similar law also exists in the microscopic world (Electrons attract protons and defeat electrons, $F=k_e\frac{q_1q_2}{r^2}$), we have a similar concept of "potential energy" in the electromagnetic world too. It takes energy to pull two electrical charges of different types (Positive/Negative) from each other, and when you do so, and then release them, they will start moving to each other and release their energy.
+The reason it takes energy to lift an object roots back to the fact that giant masses attract each other, a.k.a the universal law of gravitation (\\(F=G\frac{m_1m_2}{r^2}\\)). Since a very similar law also exists in the microscopic world (Electrons attract protons and defeat electrons, \\(F=k_e\frac{q_1q_2}{r^2}\\)), we have a similar concept of "potential energy" in the electromagnetic world too. It takes energy to pull two electrical charges of different types (Positive/Negative) from each other, and when you do so, and then release them, they will start moving to each other and release their energy.
 
 That's basically the way batteries work, they try to make potential differences by moving electrons to higher "heights", and when you let them fall (By connecting a wire from the negative pole of the battery to the positive pole), the electrons will start to fall through the wire. So when we say "Voltage", we mean a difference of height/potential-energy. We don't exactly know what is the absolute height/potential-energy of points A and B, but we certainly know the height/potential difference!
 
@@ -318,18 +316,18 @@ Before designing more complicated gates, make sure you are able to create a work
 
 ## When addition is subtraction
 
-So far we have been able to implement the add operation by combining N and P transistors. Our add operation is limited to 8-bits, which means, the input and output values are all in the range $[0,255]$. If you try to add two numbers, which their sum is more than 255, you will still get a number in range $[0,255]$. This happens since a number bigger than 255 can not be represented by 8-bits and an ***overflow*** will happen. If you look carefully, you will notice that what we have designed isn't doing a regular add operation we are used to in elementary school mathematics, but it's and addition that is done in a finite-field. This means, the addition results are mod-ed by 256:
+So far we have been able to implement the add operation by combining N and P transistors. Our add operation is limited to 8-bits, which means, the input and output values are all in the range \\([0,255]\\). If you try to add two numbers, which their sum is more than 255, you will still get a number in range \\([0,255]\\). This happens since a number bigger than 255 can not be represented by 8-bits and an ***overflow*** will happen. If you look carefully, you will notice that what we have designed isn't doing a regular add operation we are used to in elementary school mathematics, but it's and addition that is done in a finite-field. This means, the addition results are mod-ed by 256:
 
-$a \oplus b = (a + b) \mod 256$
+\\(a \oplus b = (a + b) \mod 256\\)
 
 It is good to know that finite-fields have interesting properties:
 
-1. $(a \oplus b) \oplus c = a \oplus (b \oplus c)$
-2. For every non-zero number $x \in \mathbb{F}$, there is a number $y$, where $x \oplus y = 0$. $y$ is know as the negative of $x$.
+1. \\((a \oplus b) \oplus c = a \oplus (b \oplus c)\\)
+2. For every non-zero number \\(x \in \mathbb{F}\\), there is a number \\(y\\), where \\(x \oplus y = 0\\). \\(y\\) is know as the negative of \\(x\\).
 
-In a finite-field, the negative of a number can be calculated by subtracting that number from the field-size (Here the size of our field is $2^8=256$). E.g negative of $10$ is $256-10=246$, so $10 \oplus 246 = 0$.
+In a finite-field, the negative of a number can be calculated by subtracting that number from the field-size (Here the size of our field is \\(2^8=256\\)). E.g negative of \\(10\\) is \\(256-10=246\\), so \\(10 \oplus 246 = 0\\).
 
-Surprisingly, the number $246$, acts really like a $-10$. Try adding $246$ to $15$. You will get $246 \oplus 15 = 5$ which is equal with $15 + (-10)$! This has a important meaning, we can perform subtraction without designing a new circuit! We'll just need to negate the number. Calculating the negative of a number is like taking the XOR of that number (Which is equal with $255 - a$), and adding $1$ to it (Which makes it $256 - a$ which is our definition of negation). This is known as the two's-complement form of a number.
+Surprisingly, the number \\(246\\), acts really like a \\(-10\\). Try adding \\(246\\) to \\(15\\). You will get \\(246 \oplus 15 = 5\\) which is equal with \\(15 + (-10)\\)! This has a important meaning, we can perform subtraction without designing a new circuit! We'll just need to negate the number. Calculating the negative of a number is like taking the XOR of that number (Which is equal with \\(255 - a\\)), and adding \\(1\\) to it (Which makes it \\(256 - a\\) which is our definition of negation). This is known as the two's-complement form of a number.
 
 It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!
 
@@ -413,7 +411,7 @@ We will also need to route the output of the chosen cell to the output of a RAM.
 
 ***Multiplexer***
 
-A gate that gets $2^n$ value bits and $n$ address bits and will output the values existing at the requested position as its output. A multiplexer with static inputs can be considered as a ROM. (Read-Only Memory)
+A gate that gets \\(2^n\\) value bits and \\(n\\) address bits and will output the values existing at the requested position as its output. A multiplexer with static inputs can be considered as a ROM. (Read-Only Memory)
 
 ## Computer
 

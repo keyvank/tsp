@@ -1,0 +1,386 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Think! - The Super Programmer</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-build.html"><strong aria-hidden="true">1.</strong> Build!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html" class="active"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Super Programmer</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="think"><a class="header" href="#think">Think!</a></h1>
+<h2 id="yins-and-yangs"><a class="header" href="#yins-and-yangs">Yins and Yangs</a></h2>
+<p>Years ago when I was a high-school student, once our Chemistry teacher wanted take an oral quiz from us. He randomly chose a student, brought him to the blackboard and asked him an unusual question. Why does a proton has positive electrical charge, while an electron has negative electrical charge? Why isn't it the other way round?</p>
+<p>The question has a fairly simple answer, negativity and positivity are merely names assigned to these primitive particles, so that we can analyze their behaviors. The question is like asking why humans with male reproductive systems are called men, while humans with female reproductive systems are called women? The student got confused and couldn't answer the question anyway. I still adore that teacher for asking these kind of meta-questions, because sometimes, learning is not all about memorizing things.</p>
+<p>Genders and electrical charges are not the only dualities in our universe. In fact, we have infinite concepts in our unverse that has duals. Good and bad, happiness and sadness, light and dark, love and hate, forward and backward, angel and devil, heaven and hell, or even zeros and ones in our computers, they are all examples of dualities.</p>
+<p>In many of these duals, one thing refers to the presence of something while the other things refers to the absence of that thing. In context of zeros and  ones, we can say one refers to existence of some quantity while zero defines absence of it.</p>
+<p>There is a famous saying, that love and hate are two sides of the same coin. In fact, all duals are actually the sides of a single coin. A coin would not exist if it didn't have two sides. That's also true for all other duals. Happiness wouldn't exist if there wasn't any sadness. Positive numbers wouldn't exist if there weren't any negative numbers (If we didn't have negative numbers, our algebra would become bugos).</p>
+<p>Here are some other coin samples and their analogical sides!</p>
+<ul>
+<li>Data is the coin, zeros and ones are its sides.</li>
+<li>Feeling is the coin, happiness and sadness are its sides.</li>
+<li>Ethics is the coin, good and bad are its sides.</li>
+<li>Emotion is the coin, love and hate are its sides.</li>
+</ul>
+<p>You can see that many of these interesting phenomena emerge when we try to pull &quot;numbness&quot; from two sides and break it into into two pieces that when come together again, they become numb again. (E.g You feel numb when you are neither happy or sad or you get zero when you add the negative (dual) of a number to itself).</p>
+<p>Some of these halvenings are conceptual, meaning that they are not something emerged in our universe like protons and electrons, or women and men. And example is negative and positive numbers, or real and imaginary numbers. We can somehow argue that negative and positive numbers are things that exist even if our universe does not exist (Or can't we? Nobody knows that at least).</p>
+<p>And some of them are reflections of these conceptual Yin and Yangs. The fact that some living creatures have genders only emerged after millions of years of evolution. In fact many living creatures did not have genders and they split into two only after evolution decided to mimick duality, maybe because duality is good.</p>
+<p>A hard, solid piece of rock is a creature that perhaps doesn't experience any of the human feelings. A rock doesn't fall in love, or become happy or sad. A rock will experience no pain, doesn't need to breath and eat to survive, you might think that a rock has a wonderful life (And in some ways, it has).</p>
+<p>A rock's luckiness perhaps partly comes back to the fact that it has a fairly simple structure. If you study the molecular structure of a rock, you will see that a rock is built of a limited set of atoms, orderly placed along each other, which makes it a very hard break. A human being on the other hand has a much more complicated structure, and we can't see the perfect atomical ordering of a rock in a human body too. While a rock has a wonderful life, its life is very boring (From the viewpoint of an observer), a human life on the other hand, despite having sadness, pain and suffer, is much more interesting and worth living. Nature's goal has never been to build a long-lasting life, without any happiness and pain like a rock, but to build a life that maximizes <em><strong>interestigness</strong></em>.</p>
+<p>You might now already know that I'm going to talk about one of the most interesting laws of physics, the second law of thermodynamics. This law was first discovered by Sadi Carnot, the french Physicist, who discovered that you can't build a motor engine that is able to convert 100% of the heat energy into mechanical work, and some of the energy will always be wasted. In other words, there is a efficiency limit in a system that converts heat into mechanical work. The same law can be expressed in other ways too, for example, you can't build a refrigerator (Or an air conditioner) that is able to decrease the temperature of a closed area, without disposing a higher heat (Higher than the amount reduced in the closed area) outside that area.</p>
+<p>Heat is some kind of chaos and disorder in atoms. When atoms take energy, they start to move in directions in a chaotic way. The more they move, the hotter they become. We can measure how chaotic the elements of a system (E.g. the atoms inside a closed area) are, and call it the Entropy of that system.</p>
+<p>Given the definition of Entropy, we can redefine the second law of thermodynamics in another words: <em><strong>The entropy of the universe always increases.</strong></em> I.e the sum of disordered-ness of all elements in our universe always gets higher, which again means, I can't decrease the heat in my room in a sunny day without generating even more heat into the universe. You might now think that we are making the earth warmer by building air conditioners, but the truth is the heat is radiated into the universe!</p>
+<h2 id="our-path-towards-artificial-general-intelligence"><a class="header" href="#our-path-towards-artificial-general-intelligence">Our path towards Artificial General Intelligence</a></h2>
+<p>Here we are going to talk about a philosophical approach of building consciousness in computers.</p>
+<p>So we have been doing years and years of research on things so called Artificial Intelligence and Machine Learning, but what I'm talking about here is Artificial General Intelligence, something more than a multilayer regression model used for classifying and prediction.
+Perhaps the reason we have had a giant progress in development of Machine Learning models is all about money. These things are useful in the world we live in, we can build self-driving cars, smart recommender systems and ...
+We can't just build a business out of a human-level intelligent system. (Edit: When I wrote this paragraph, LLMs were not as sophisticated as they are today! Things are very different now)</p>
+<h3 id="learning-is-not-enough-genetic-matters"><a class="header" href="#learning-is-not-enough-genetic-matters">Learning is not enough, genetic matters</a></h3>
+<p>You can try teaching Kant Philosophy or General Theory of Relativity to your dog, but I bet it would be disappointing. The mere ability to learn is not enough, the way a brain is wired matters, and that only changes through what we call evolution.</p>
+<h3 id="biological-simulation-isnt-the-right-path"><a class="header" href="#biological-simulation-isnt-the-right-path">Biological simulation isn't the right path</a></h3>
+<p>Although researching on biological side of things could be helpful, but doing it excessively could </p>
+<h3 id="we-are-so-close-to-agi"><a class="header" href="#we-are-so-close-to-agi">We are so close to AGI!</a></h3>
+<p>You can hear people saying that our computers can't even simulate the brain of a bee.
+Humans are smart, nature is dumb, the only thing that is making nature superior than us in engineering self-aware creatures is its vast ability to experiment different random things. Nature can create amazing stuff, but nature is not good at optimizing things. Think of it this way: </p>
+<h3 id="the-environment"><a class="header" href="#the-environment">The Environment</a></h3>
+<p>You want your lovely artificial creature to learn and do amazing things by himself? The first step is to give him the opportunity to do so! How can you expect a chatbot to magically understand the concept of self-awareness without giving it the chance to explore the world and distinguish himself with others?
+Humans are impressive and amazing, but the environment that was complex (yet not overly complicated) and creative enough that gave organisms the opportunity to evolve to the level of human mind is just brilliant. It's not about how to build a brain, but more about how to build an appropriate <strong>environment</strong> where a brain can evolve.</p>
+<h2 id="lets-act-like-a-god"><a class="header" href="#lets-act-like-a-god">Let's act like a God</a></h2>
+<p>The very first thing we need for creation of a self-aware creature, is a <em><strong>goal</strong></em>. Simplest form of a goal is <em><strong>survival</strong></em>, which simply means, to exist. In order to make existence a goal, we need to put concepts and things which harms the existence of that creature. We can make the creature dependent on some concept and intentionally take it away from him. Let's call that concept:</p>
+<p><em>Look, but don't touch. Touch, but don't taste. Taste, but don't swallow...</em></p>
+<h3 id="we-cant-afford-infinite-randomness"><a class="header" href="#we-cant-afford-infinite-randomness">We can't afford infinite randomness</a></h3>
+<p>The infinite monkey theorem states that a single monkey randomly hitting the keys of a keyboard for an infinite amount of time can write any given text, even complete works of Shakespear. But our computer resources, as opposed to the atoms in our universe, is limited. So we can't build intelligence by bruteforcing simulated atoms in a simulated world!</p>
+<h3 id="death-genes-weapon-for-survival"><a class="header" href="#death-genes-weapon-for-survival">Death, gene's weapon for survival</a></h3>
+<p>There is no reason for a cell, organism or creature to get old and die, as soon as in some part of its code, it is programmed to restore itself by consuming the materials around him (aka food). But most of the animals die (There are some exceptions, some kind of Marjan in Japan never dies by aging), why that happens?
+Paradoxically, the death phenomenon can be an important reason why human-level intelligence exists!
+Only the genes who die after sometime, will survive.
+The population will boom in an unexpected way and that could lead to the extinction of that specy.</p>
+<p>Charles Darwin was always wondering why depression exists.</p>
+<h3 id="consciousness-is-a-loop"><a class="header" href="#consciousness-is-a-loop">Consciousness is a loop</a></h3>
+<p>There are several evidences supporting the idea, that consciousness is the result of a loop in our nervous system, created during the evolution. Simple creatures do not have it, and the loop gets stronger and stronger when we reach to homo-sapiens. A loop in the input/output gateways of our brain make the &quot;thinking of thinking&quot; phenomenon possible.</p>
+<p>People with schizophrenia cannot distinguish between feedback inputs and environmental inputs, so they may hear sounds, that do not exist in real world, driving them crazy.  Thinking is like talking without making sounds, and redirecting it back to your brain without hearing it. A healthy brain would expect to hear a sound whenever it talks. Whenever this expectation is somehow broken, the brain cannot recognize if the voice it is hearing is external or it is somebody else inside his brain. It is kind of brain's failure in removing its own voice's echo.</p>
+<h3 id="how-to-experiment-self-awareness"><a class="header" href="#how-to-experiment-self-awareness">How to experiment self-awareness?</a></h3>
+<p><em>In an experiment known as the &quot;rouge test,&quot; mothers wiped a bit of rouge on the noses of their children and placed them in front of a mirror. Before 15 months, children look at the reflection and see a red spot on the nose in the mirror, but they don't realize that the red spot is on their own nose. When children are between 15 and 24 months, they begin to realize that the reflection they see is their own, and they either point to the red nose or try to wipe away the rouge. In other words, they understand that the reflection in the mirror is more than a familiar face–it is their own face.</em></p>
+<h3 id="last-step-abstract-thinking"><a class="header" href="#last-step-abstract-thinking">Last step, abstract thinking</a></h3>
+<p>Your creature is now able to find food, escape from dangers, communicate with others and be self-aware. Congratulations! You just built a dog! So what's next? What makes homo-sapiens different with ordinary mammals? People say its our ability to think about things that do not exist. 
+Abstract Thinking isn't a MUST in our world to survive (That's why most animals can't write poems or do math in order to survive), but having it happened to be extremely helpful. Abstract Thinking helped us to unite under the name of </p>
+<h2 id="the-game-of-life"><a class="header" href="#the-game-of-life">The Game of Life</a></h2>
+<p>The Game of Life is a very simple environment and set of rules in which creatures and evolve. It was created by the famous mathematician, John Horton Conway to demonstrate, as its name suggests, how a living creature can evolve in a simple environment with simple rules. The model is straightforward. It is a two-dimensional infinite plane of squares, in which each square can be either on or off. Conway's artificial world has 4 rules:</p>
+<ol>
+<li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
+<li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+<li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
+<li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
+</ol>
+<p>The state of the world in each timestamp in Conway's Game of Life is purely dependent on previous state of the game.</p>
+<h2 id="evolution-is-decentralized"><a class="header" href="#evolution-is-decentralized">Evolution is decentralized</a></h2>
+<p>Humans have always had the dream of replicating themselves by building creatures that have the intellectualual abilities of a human (Or even beyond). You can see how much we fantasize about human-made intelligence in the books, paintings, movies and etc.</p>
+<p>The struggles in building artificial creatures has a long story, but the very first recorded design of a humanoid robot was done in around 1495 by the famous italian polymath, Leonardo Da Vinci.</p>
+<p>If you are here to learn about artificial intelligence algorithms, I’m afraid to say you are in the wrong place. We are mostly going to learn about biological inspired algorithms for reaching AGI, because I believe nature has the answers for most of the questions already.</p>
+<p>Long story short, interesting things can emerge as a result of many things gathering together, making “complex” system. People have written many books in this matter, in order to amaze you by the fact that intelligence can evolve by connecting many simple things to each other, but here I assume that you are already amazed and want to know how to actually build those stuff? </p>
+<p>I would like to remind you the first chapter, where we claimed that interesting things can happen when cause and effect chains of the same type are connected together. That's also the building block of a computer, a lot of logic gates connect together to cause desired behaviors. Interestingly, a human/biological brain is also similar to a logical circuits and digital computers in some ways. A lot of smaller units called neurons are connected together, leading to behaviors we typically call intelligence. There is a huge difference between a digital circuit and a biological brain though. A biological brain is made through the process of evolution, while a digital computer is carefully designed and made by a human, baked on pieces of silicone. When you design a digital computer, you exactly know what you want from it. You want it to make your life easier by running calculations and algorithms that take thousands of years when done by hand. When you do know what you exactly want from something, you can organize it into pieces, where each piece does one and only one independent thing very well, and then connect the solutions of subproblems together, solving the original problem. In case of a digital computer, the subproblems are:</p>
+<ul>
+<li>Storing data -&gt; FlipFlop circuits</li>
+<li>Doing math -&gt; Adder circuits</li>
+<li>Running instructions -&gt; Program Counters</li>
+<li>...</li>
+</ul>
+<p>The fact that the original solution is a combination of solutions of subproblems, means that the solution does not have a symmetric structure. By symmetric, I mean you can't expect the part that solves problem A to be also able to solve problem B. You can't expect a memory-cell to be able to add two numbers. Although they both are logical circuits that accept electrical causes as inputs and produce electrical effects as outputs (And thus they can connect to each other), they have whole entirely different structures.</p>
+<p>As humans, it is difficult for us to discover and design decentralized solutions for problems, while it is easy for us to break the problem into subproblems, and find solutions for the subproblems instead.</p>
+<p>Interestingly, it's completely the way around for the nature. It's much easier for the nature to design decentralized solutions for the problems, but it's hard for it to break the problem into subproblems, and solve the original problem by solving the subproblems.</p>
+<p>Perhaps these are all the reasons why biological brains have very solid, symmetrical structures with complex and magical behaviors and why digital computers are very organized and easy to analyze. I would like to call biological brains and digital computers as dynamic brains and static brains respectively.</p>
+<p>Let's define a static brain as a network of gates that are static and do not change their behaviors over time. While a dynamic brain is a network of gates in which the gates themselves can change their behavior and turn into other gates. A static brain is a well organized brain designed by an intelligent creature, in which each part does exactly one thing and cannot change its original behavior when needed (E.g An AND gate cannot change into an OR gate), while a dynamic brain is a network of general-purpose gates evolved by the nature to solve more general problems (E.g. maximizing a goal, like survival, pleasure, etc).</p>
+<p>An AND gate inside a computer can only act as an AND gate. It can't change itself to an OR gate when needed. A structure like this may seem boring in the first place, since it can only do one thing and can't change its behavior over time (The neurons/gates in a biological brain can transform, leading to different behaviors). But we can actually bring some flexibility and ability to learn by adding a separate concept known as a memory, which can contain a program and an state. The static circuit's only ability is to fetch an instruction from the memory, and change the state of the system from A to B, per clock cycle. The system's ability to learn comes from it's ability to store an state.</p>
+<p>In a dynamic brain on the other hand, the learning can happen inside the connections. There isn't a separate module known as memory in a dynamic brain, but the learning happens when the connections between the neurons and the neurons themselves transform. If we are trying to build an artificial general intelligence, it might make more sense to try to mimick the brain instead of trying to fake intelligence by putting conditional codes that we ourselves have designed.</p>
+<p>Unfortunately, we are not technologically advanced enough to build dynamic brains, but we can emulate a dynamic brain inside an algorithm that can run on a static brain. The dynamic gates will be imaginary entities inside a digital memory that can trigger other imaginary gates.</p>
+<h2 id="tunable-gates"><a class="header" href="#tunable-gates">Tunable gates</a></h2>
+<p>In order to have a solid and symmetric brain, which is able to learn without losing its uniform shape, we'll need cause/effect gates that are general purpose and can change their behavior.</p>
+<p>We can model and-gate as a continuous function on floating point values! We can design a function such that returns 0 by default and approaches 1 only when both its input value are close to 1.</p>
+<p><img src="assets/gpgate.png" alt="A general-purpose gate which can switch its behavior to AND and OR based on a parameter" /></p>
+<p>Why modelling a gate as a floating point function is beneficial for us? Because we can take derivative of a continuous function!</p>
+<p><img src="assets/neuron.png" alt="A more advanced and tunable general purpose gate, a neuron" /></p>
+<p>Once upon a time, two nobel prize winners were studying brain cells 1873</p>
+<h3 id="myserious-black-boxes"><a class="header" href="#myserious-black-boxes">Myserious black boxes</a></h3>
+<p>Neural networks seem to be blackboxes that can learn anything. It has been proven that they can see, understand or even reason about stuff. Neural Network are known to be <em>universal function approximators</em>. Given some samples of inputs/outputs of a function, neural networks may learn that function and try to predict correct outputs, given <em><strong>new inputs</strong></em>, inputs they have never seen before.</p>
+<p>Before feeding a neural network your input data, you have to convert it into numbers. You can encode them anyway you want, and then feed them to a neural network (Which will give you some other numbers), and you may again iterpret the numbers anyway you want, and you can make the network &quot;learn&quot; the way you encode/decode data and try to predict correct outputs given inputs.</p>
+<p>Some example encodings:</p>
+<ul>
+<li>Given the location, area and age of a house, predict its price</li>
+</ul>
+<p>There are many ways you can encode a location into numbers:</p>
+<ol>
+<li>Convert it to two floating point numbers, longitude and latitude.</li>
+<li>Assume there are \(n\) number of locations, feed the location as a \(n\) dimensional tuple, where \(i\)th elements shows how close the actual location is to the predefined locaiton.</li>
+</ol>
+<p>The area/age could also be fed:</p>
+<ol>
+<li>Directly as a number in \(mm^2\) or years</li>
+<li>Interpolated between 0 to 1 (By calculating \(\frac{area}{area_{max}}\))</li>
+</ol>
+<p>And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.</p>
+<p>Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!</p>
+<h3 id="language"><a class="header" href="#language">Language</a></h3>
+<p>Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important</p>
+<ol>
+<li>We didn't know a perfect encoding/decoding strategy for text data</li>
+<li>We didn't put enough hardware for training language models</li>
+</ol>
+<h2 id="gate-layers"><a class="header" href="#gate-layers">Gate layers</a></h2>
+<h2 id="computation-graphs"><a class="header" href="#computation-graphs">Computation graphs</a></h2>
+<h2 id="different-layers"><a class="header" href="#different-layers">Different layers</a></h2>
+<p><strong>Embedding</strong></p>
+<p>An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into \(k\)-dimensional vector of numbers. An embedding layer is always put as the first layer in a network, since its inputs are integer indices to elements of a table.</p>
+<ul>
+<li>Propagation: <code>Y=T[X]</code></li>
+<li>Backpropagation: <code>dT[X]/dX += delta</code></li>
+</ul>
+<p><strong>MatMul</strong></p>
+<p>Let's say we have \(n\) neurons in a layer, each accepting the outputs of the \(m\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!</p>
+<p>Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron's input is the weighed sum of all outputs of previous neurons.</p>
+<ul>
+<li>Propagation: <code>Y=MX</code></li>
+<li>Backpropagation: <code>dY/dM += X</code> and <code>dY/dX += M</code></li>
+</ul>
+<p><strong>ReLU</strong></p>
+<p>ReLU is an activation function to provide non-linearty in a Neural-Network. It's a better alternative for vanilla sigmoid function, since the sigmoid function's closeness to zero can decrease the training speed a lot.</p>
+<ul>
+<li>Propagation: <code>Y=X if X &gt; 0 else 0</code></li>
+<li>Backpropagation: <code>dY/dX += 1 if X &gt; 0 else 0</code></li>
+</ul>
+<p><strong>LayerNorm</strong></p>
+<p>LayerNorm is a creative approach for fighting with a problem known as vanishing-gradients. Sometimes when you put plenty of layers in a network, a slight change in the first layers will have enormous impact in the output (Which causes the gradients of the early layers to be very small), or there are times when the early layers have very small impact on the outputs (The gradients will become very high, or explode, in this case). Layer-normalization is a technique by which you can decrease the probability of a vanishing/exploding gradients, by consistently keeping the output-ranges of your layers in a fixed range. This is done by normalizing the data flowing through the layers through a normalization function.</p>
+<p>The layer accepts a vector of floating point numbers as input and gives out a vector with same size as output, where the outputs are the standardized version of inputs.</p>
+<p><strong>Softmax</strong></p>
+<p>Softmax layer is used to convert the outputs of a layer into a probability distribution (Making each output a number between 0 to 1, where sum of all outputs is equal with 1).</p>
+<p>\(Y_i = \frac{e^{X_i}}{e^{X_0}+e^{X_1}+\dots+e^{X_{k-1}}}\)</p>
+<p>In a softmax layer, each output element depends on the output of all neurons in the previous layer, therefore, the derivative of a softmax layer, is a matrix, so we have to calculate its Jacobian!</p>
+<p><strong>Mask</strong></p>
+<p><strong>CrossEntropy</strong></p>
+<p>CrossEntropy is a strategy for calculating the error of a neural network, where. A CrossEntropy layer accepts a probability distribution as its input, therefore a cross-entropy layer comes after a Softmax layer. In a cross-entropy layer, error is minimized when the output probability of the desired output is 1 and all other outputs are zero. In this scheme, we expect the error of the network to be maximized when the output of the desired neuron is 0, and to be minimized when the output of that neuron is 1. Such behavior can be obtained with a function like \(\frac{1}{x}\) or \(-log(x)\)!</p>
+<p>A cross-entropy layer accepts a probability distribution (A bunch of floating point numbers) as input, and produces a single floating point number, representing the error of the network, as its output. The error is defined as:</p>
+<p>\(E=-log(X[t])\)</p>
+<p>where \(T\) is the index of the desired class. When \(X[t]\) is 0, the error is \(\inf\), and when \(X[t]\) is 1, the error is \(0\). You might first think that we have to consider the outputs of other neurons too, when calculating the error of the network (E.g, we have to somehow increase the error, when the elements other than the one with index \(t\) are not zero, but this is not needed! Assuming that the input to an cross-entropy layer is a probability distribution, forcing the probability of the desired element to become 1, forces the probability of all other non-desired elements to become 0, <em>automatically</em>)</p>
+<p>Such a strategy for calculating the error of the network forces the network to learn to select a single option among a set of options. Examples of such use cases are:</p>
+<ul>
+<li>Given a 2D array of pixels, decide if there is a cat, dog, or a human in the picture (An image classifier)</li>
+<li>Given an array of words, decide what word is the next word (A language-model)</li>
+</ul>
+<h2 id="language-1"><a class="header" href="#language-1">Language</a></h2>
+<h2 id="vision"><a class="header" href="#vision">Vision</a></h2>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="3-see.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="5-trust.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="3-see.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="5-trust.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

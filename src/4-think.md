@@ -1,5 +1,3 @@
-\pagebreak
-
 # Think!
 
 ## Yins and Yangs
@@ -168,12 +166,12 @@ Some example encodings:
 There are many ways you can encode a location into numbers:
 
 1. Convert it to two floating point numbers, longitude and latitude.
-2. Assume there are $n$ number of locations, feed the location as a $n$ dimensional tuple, where $i$th elements shows how close the actual location is to the predefined locaiton.
+2. Assume there are \\(n\\) number of locations, feed the location as a \\(n\\) dimensional tuple, where \\(i\\)th elements shows how close the actual location is to the predefined locaiton.
 
 The area/age could also be fed:
 
-1. Directly as a number in $mm^2$ or years
-2. Interpolated between 0 to 1 (By calculating $\frac{area}{area_{max}}$)
+1. Directly as a number in \\(mm^2\\) or years
+2. Interpolated between 0 to 1 (By calculating \\(\frac{area}{area_{max}}\\))
 
 And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.
 
@@ -194,14 +192,14 @@ Large Language Models are perhaps the most important invention of our decade (20
 
 **Embedding**
 
-An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into $k$-dimensional vector of numbers. An embedding layer is always put as the first layer in a network, since its inputs are integer indices to elements of a table.
+An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into \\(k\\)-dimensional vector of numbers. An embedding layer is always put as the first layer in a network, since its inputs are integer indices to elements of a table.
 
 * Propagation: `Y=T[X]`
 * Backpropagation: `dT[X]/dX += delta`
 
 **MatMul**
 
-Let's say we have $n$ neurons in a layer, each accepting the outputs of the $m$ neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!
+Let's say we have \\(n\\) neurons in a layer, each accepting the outputs of the \\(m\\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!
 
 Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron's input is the weighed sum of all outputs of previous neurons.
 
@@ -225,7 +223,7 @@ The layer accepts a vector of floating point numbers as input and gives out a ve
 
 Softmax layer is used to convert the outputs of a layer into a probability distribution (Making each output a number between 0 to 1, where sum of all outputs is equal with 1).
 
-$Y_i = \frac{e^{X_i}}{e^{X_0}+e^{X_1}+\dots+e^{X_{k-1}}}$
+\\(Y_i = \frac{e^{X_i}}{e^{X_0}+e^{X_1}+\dots+e^{X_{k-1}}}\\)
 
 In a softmax layer, each output element depends on the output of all neurons in the previous layer, therefore, the derivative of a softmax layer, is a matrix, so we have to calculate its Jacobian!
 
@@ -233,13 +231,13 @@ In a softmax layer, each output element depends on the output of all neurons in 
 
 **CrossEntropy**
 
-CrossEntropy is a strategy for calculating the error of a neural network, where. A CrossEntropy layer accepts a probability distribution as its input, therefore a cross-entropy layer comes after a Softmax layer. In a cross-entropy layer, error is minimized when the output probability of the desired output is 1 and all other outputs are zero. In this scheme, we expect the error of the network to be maximized when the output of the desired neuron is 0, and to be minimized when the output of that neuron is 1. Such behavior can be obtained with a function like $\frac{1}{x}$ or $-log(x)$!
+CrossEntropy is a strategy for calculating the error of a neural network, where. A CrossEntropy layer accepts a probability distribution as its input, therefore a cross-entropy layer comes after a Softmax layer. In a cross-entropy layer, error is minimized when the output probability of the desired output is 1 and all other outputs are zero. In this scheme, we expect the error of the network to be maximized when the output of the desired neuron is 0, and to be minimized when the output of that neuron is 1. Such behavior can be obtained with a function like \\(\frac{1}{x}\\) or \\(-log(x)\\)!
 
 A cross-entropy layer accepts a probability distribution (A bunch of floating point numbers) as input, and produces a single floating point number, representing the error of the network, as its output. The error is defined as:
 
-$E=-log(X[t])$
+\\(E=-log(X[t])\\)
 
-where $T$ is the index of the desired class. When $X[t]$ is 0, the error is $\inf$, and when $X[t]$ is 1, the error is $0$. You might first think that we have to consider the outputs of other neurons too, when calculating the error of the network (E.g, we have to somehow increase the error, when the elements other than the one with index $t$ are not zero, but this is not needed! Assuming that the input to an cross-entropy layer is a probability distribution, forcing the probability of the desired element to become 1, forces the probability of all other non-desired elements to become 0, *automatically*)
+where \\(T\\) is the index of the desired class. When \\(X[t]\\) is 0, the error is \\(\inf\\), and when \\(X[t]\\) is 1, the error is \\(0\\). You might first think that we have to consider the outputs of other neurons too, when calculating the error of the network (E.g, we have to somehow increase the error, when the elements other than the one with index \\(t\\) are not zero, but this is not needed! Assuming that the input to an cross-entropy layer is a probability distribution, forcing the probability of the desired element to become 1, forces the probability of all other non-desired elements to become 0, *automatically*)
 
 Such a strategy for calculating the error of the network forces the network to learn to select a single option among a set of options. Examples of such use cases are:
 

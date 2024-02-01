@@ -1,5 +1,3 @@
-\pagebreak
-
 # Trust!
 
 I want to tell you a fascination fact about baby humans. Until some age, they can’t distinguish between themselves and others. The concept of “me” is not evolved in their brains, and they might believe in singularity.
@@ -33,17 +31,17 @@ A harder to crack version of a substitution cipher uses random character mapping
 
 Al-Kindi proposed that we can make frequency analysis methods less effective by using polyalphabetic substititutions. So far we have been describing monoalphabetic substitutions, which means, single characters are encrypted to single character. In a polyalplabetic substitution cipher, multiple letters are substituted with multiple letters. In order to apply frequency analysis attack on a 2-by-2 polyalphabetic substitution cipher, we have to calculate frequencies of aa, ab, ac, .., zx, zy, zz. Analysis gets much harder when the length of mappings is increased.
 
-Discovering the fact that a polyalphabetic substitution cipher is hard to decode (Even with frequency analysis methods), was a huge progress in cryptography. But there is a problem: in order to encrypt and decrypt using n-character to n-character polyalphabetic substitution ciphers, we have to create a unique n-character to n-character mapping, and both the encryptor and decryptor should have a copy of it (Let's call this mapping the ***secret key***). Assuming our target alphabet has $\alpha$ letters, and we want to substitute $n$ characters per block, our mapping should have $\alpha^n$ entries. In case of English language (Without ponctuation marks), we have 26 character. Let's say we would like to use 5-character to 5-character ciphers for encryptions, then our code-book would need to have $26^5 = 11881376$ entries, which is already a very giant secret key for a very weak encryption/decryption algorithm.
+Discovering the fact that a polyalphabetic substitution cipher is hard to decode (Even with frequency analysis methods), was a huge progress in cryptography. But there is a problem: in order to encrypt and decrypt using n-character to n-character polyalphabetic substitution ciphers, we have to create a unique n-character to n-character mapping, and both the encryptor and decryptor should have a copy of it (Let's call this mapping the ***secret key***). Assuming our target alphabet has \\(\alpha\\) letters, and we want to substitute \\(n\\) characters per block, our mapping should have \\(\alpha^n\\) entries. In case of English language (Without ponctuation marks), we have 26 character. Let's say we would like to use 5-character to 5-character ciphers for encryptions, then our code-book would need to have \\(26^5 = 11881376\\) entries, which is already a very giant secret key for a very weak encryption/decryption algorithm.
 
-Let's analyze the problem by using more primitive pieces of data as our source texts. Imagine we are working with binary strings. In a binary string, smallest piece of information is stored inside a bit, which can be either 0 or 1. Our alphabet has 2 characters in a binary string so $\alpha=2$. Now let's say we want to use a monoalphabetic cipher for encrypting/decrypting the string. so we should create a 1-bit to 1-bit mapping for our encryption algorithm. There are only two ways we can build such a mapping!
+Let's analyze the problem by using more primitive pieces of data as our source texts. Imagine we are working with binary strings. In a binary string, smallest piece of information is stored inside a bit, which can be either 0 or 1. Our alphabet has 2 characters in a binary string so \\(\alpha=2\\). Now let's say we want to use a monoalphabetic cipher for encrypting/decrypting the string. so we should create a 1-bit to 1-bit mapping for our encryption algorithm. There are only two ways we can build such a mapping!
 
-$enc_1(0) = 0 \\
-enc_1(1) = 1$
+\\(enc_1(0) = 0 \\
+enc_1(1) = 1\\)
 
 And:
 
-$enc_2(0) = 1 \\
-enc_2(1) = 0$
+\\(enc_2(0) = 1 \\
+enc_2(1) = 0\\)
 
 
 This cipher is very easy to crack. All you have to do as an attacker is to read the cipher text, if it already means something, you have successfully decrypted it, otherwise just swap the bits (I.e change zeros to ones and vice versa), and then, if the source text has some meaningful information and a 1bit-to-1bit encryption algorithm is used, you will get the source text!
@@ -54,33 +52,33 @@ Instead of storing the entries for each bit (Which takes 2 bits), we can use a s
 
 Let's switch to a polyalphabetic cipher, mapping 2 character to 2 characters each time now. There exist 4 possible substitution mappings now:
 
-$enc_1(00) = 00 \\
+\\(enc_1(00) = 00 \\
 enc_1(01) = 01 \\
 enc_1(10) = 10 \\
-enc_1(11) = 11$
+enc_1(11) = 11\\)
 
-Compressed version: $00$
+Compressed version: \\(00\\)
 
-$enc_2(00) = 01 \\
+\\(enc_2(00) = 01 \\
 enc_2(01) = 00 \\
 enc_2(10) = 11 \\
-enc_2(11) = 10$
+enc_2(11) = 10\\)
 
-Compressed version: $01$
+Compressed version: \\(01\\)
 
-$enc_3(00) = 10 \\
+\\(enc_3(00) = 10 \\
 enc_3(01) = 11 \\
 enc_3(10) = 00 \\
-enc_3(11) = 01$
+enc_3(11) = 01\\)
 
-Compressed version: $10$
+Compressed version: \\(10\\)
 
-$enc_4(00) = 11 \\
+\\(enc_4(00) = 11 \\
 enc_4(01) = 10 \\
 enc_4(10) = 01 \\
-enc_4(11) = 00$
+enc_4(11) = 00\\)
 
-Compressed version: $11$
+Compressed version: \\(11\\)
 
 Just like how we compressed the 1-char to 1-char mappings into a single bit, we can compress the 4 possible 2-char to 2-char mappings into two bits (Instead of passing all the 4 entries). For each bit of the compressed secret key, we just have to tell if the corresponding bit should be swapped or not.
 
@@ -95,22 +93,22 @@ Some properties of a random string:
 
 ### XOR is the answer to everything
 
-We can now conclude that, we don't need to store a mapping of size $2^n$ ($\alpha=2$ since we are working with binary strings) in order to encrypt/decrypt binary texts. We just need to store a key of size $n$ bits, which shows us, for each bit, whether we should swap the corresponding bit or not.
+We can now conclude that, we don't need to store a mapping of size \\(2^n\\) (\\(\alpha=2\\) since we are working with binary strings) in order to encrypt/decrypt binary texts. We just need to store a key of size \\(n\\) bits, which shows us, for each bit, whether we should swap the corresponding bit or not.
 
-Generating the an $n$ bit key for a n-character to n-character encryption algorithm is as easy as throwing a coin for $n$ times and fortunately, **we all trust the coin flips already!**
+Generating the an \\(n\\) bit key for a n-character to n-character encryption algorithm is as easy as throwing a coin for \\(n\\) times and fortunately, **we all trust the coin flips already!**
 
 Although this method can be mathematically proven to be secure (In fact, the method has a name: the one-time padding algorithm), it is not practical, and the reason is that, the keys are not reusable.
-Suppose we have two messages $m_1$ and $m_2$, and a key $k$ which we’ll use for encrypting both messages:
+Suppose we have two messages \\(m_1\\) and \\(m_2\\), and a key \\(k\\) which we’ll use for encrypting both messages:
 
-$M_1 = m_1 \oplus k$
+\\(M_1 = m_1 \oplus k\\)
 
-$M_2 = m_2 \oplus k$
+\\(M_2 = m_2 \oplus k\\)
 
-An eavesdropper cannot guess what $m_1$ is by knowing $M_1$, but in case he also has a second encrypted message $M_2$, he can add these two messages together and an something interesting will happen:
+An eavesdropper cannot guess what \\(m_1\\) is by knowing \\(M_1\\), but in case he also has a second encrypted message \\(M_2\\), he can add these two messages together and an something interesting will happen:
 
-$M_1 \oplus M_2 = m_1 \oplus k \oplus m_2 \oplus k = (m_1 \oplus m_2) + (k \oplus k) = m_1 \oplus m_2$
+\\(M_1 \oplus M_2 = m_1 \oplus k \oplus m_2 \oplus k = (m_1 \oplus m_2) + (k \oplus k) = m_1 \oplus m_2\\)
 
-If you take the xor of a number with itself, they will cancel-out each other and you will get zero, so the $k \oplus k$ part is removed from the equation and what you get is basically the sum of messages, which means: $M_1 \oplus M_2 = m_1 \oplus m_2$, which is definitely a dangerous leak.
+If you take the xor of a number with itself, they will cancel-out each other and you will get zero, so the \\(k \oplus k\\) part is removed from the equation and what you get is basically the sum of messages, which means: \\(M_1 \oplus M_2 = m_1 \oplus m_2\\), which is definitely a dangerous leak.
 
 To show the importance of the leak, let’s say we want to encrypt two images using this method.
 
@@ -118,19 +116,19 @@ By adding the encrypted images together, you will get a new image which is leaki
 
 [IMG]
 
-So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages $M_1$ and $M_2$ are only obfuscated when the keys used to encrypt them are different:
+So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages \\(M_1\\) and \\(M_2\\) are only obfuscated when the keys used to encrypt them are different:
 
-$M_1 = m_1 \oplus k_1$
+\\(M_1 = m_1 \oplus k_1\\)
 
-$M_2 = m_2 \oplus k_2$
+\\(M_2 = m_2 \oplus k_2\\)
 
-$M_1 + M_2 = (m_1 \oplus m_2) \oplus (k_1 \oplus k_1)$
+\\(M_1 + M_2 = (m_1 \oplus m_2) \oplus (k_1 \oplus k_1)\\)
 
-The summation of two random keys $k_1$ and $k_2$ (If both of the keys are totally random and independent with each other), is somehow like a new encryption key $k_3 = k_1 \oplus k_2$ which has all the randomness properties of $k_1$ and $k_2$. This means that $M_1 + M_2$ will remain encrypted:
+The summation of two random keys \\(k_1\\) and \\(k_2\\) (If both of the keys are totally random and independent with each other), is somehow like a new encryption key \\(k_3 = k_1 \oplus k_2\\) which has all the randomness properties of \\(k_1\\) and \\(k_2\\). This means that \\(M_1 + M_2\\) will remain encrypted:
 
-$M_1 + M_2 = (m_1 \oplus m_2) \oplus k_3$
+\\(M_1 + M_2 = (m_1 \oplus m_2) \oplus k_3\\)
 
-Unfortunately, our limited computer memory prevents the parties from storing inifinitely large keys, but what if we want to use the provable secure-ness of the one-time padding algorithm, by only having a single key with limited size? There are tricks we can achieve that! A very clever way is to define a function that gets a key $k$ with a small, fixed-size, and try to expand the binary string to an arbitary length. There are several ways we can do that. A naive method (That just came to my mind while writing this, and has potentially critical security problems!) is to somehow concatenate a pseudo-random binary string to the current string, which is dependent on the current string. An obvious tool for generating such a thing (Based on what we learnt in previous section), is a hash function!
+Unfortunately, our limited computer memory prevents the parties from storing inifinitely large keys, but what if we want to use the provable secure-ness of the one-time padding algorithm, by only having a single key with limited size? There are tricks we can achieve that! A very clever way is to define a function that gets a key \\(k\\) with a small, fixed-size, and try to expand the binary string to an arbitary length. There are several ways we can do that. A naive method (That just came to my mind while writing this, and has potentially critical security problems!) is to somehow concatenate a pseudo-random binary string to the current string, which is dependent on the current string. An obvious tool for generating such a thing (Based on what we learnt in previous section), is a hash function!
 
 ```python
 def expand(k, n):
@@ -286,12 +284,12 @@ while True:
 
 Imagine a fair dice with 6 sides.
 
-- If you want to get a 1, you must approximately roll the dice for $\frac{6}{1}=6$ timess.
-- If you want to get a $\leq 2$, you must approximately roll the dice for $\frac{6}{2}=3$ timess.
-- If you want to get a $\leq 3$, you must approximately roll the dice for $\frac{6}{3}=2$ timess.
-- If you want to get a $\leq 6$, you must approximately roll the dice for $\frac{6}{3}=1$ timess.
+- If you want to get a 1, you must approximately roll the dice for \\(\frac{6}{1}=6\\) timess.
+- If you want to get a \\(\leq 2\\), you must approximately roll the dice for \\(\frac{6}{2}=3\\) timess.
+- If you want to get a \\(\leq 3\\), you must approximately roll the dice for \\(\frac{6}{3}=2\\) timess.
+- If you want to get a \\(\leq 6\\), you must approximately roll the dice for \\(\frac{6}{3}=1\\) timess.
 
-The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between $0$ to $2^{256}-1$. In order to get an output below $\theta$, you will need to try different inputs (Roll the dice) for $\frac{2^{256}}{\theta}$ times. You can roll a hash-function by "slightly" changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).
+The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \\(0\\) to \\(2^{256}-1\\). In order to get an output below \\(\theta\\), you will need to try different inputs (Roll the dice) for \\(\frac{2^{256}}{\theta}\\) times. You can roll a hash-function by "slightly" changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).
 
 In our HashCash example, we require the email sender to "work" approximately as much as running SHA-256 for 1 million times!
 
@@ -299,9 +297,9 @@ In our HashCash example, we require the email sender to "work" approximately as 
 
 Satoshi Nakamoto discovered a interesting fact about proof-of-work puzzles. After solving a proof-of-work puzzle, you can append some more data to the whole thing and try to solve the proof of work puzzle again for the new data.
 
-Suppose we first find $nonce_0$ such that: $H(data_0 | nonce_0) < \theta$. We then append $data_1$ to the hash of old data and find $nonce_1$ such that $H(H(data_0 | nonce_0) | data_1 | nonce_1) < \theta$
+Suppose we first find \\(nonce_0\\) such that: \\(H(data_0 | nonce_0) < \theta\\). We then append \\(data_1\\) to the hash of old data and find \\(nonce_1\\) such that \\(H(H(data_0 | nonce_0) | data_1 | nonce_1) < \theta\\)
 
-Solving a proof-of-work puzzle on $H(data_0 | nonce_0) | data_1$, not only proves that you have worked hard on commiting to $data_1$, but also shows that you have put equal amount of work to also commit on $data_0$, for one more time, and that is because altering $data_0$ not only invalidates the first proof-of-work, but also the second proof-of-work. Assuming that it takes 1 minute to find an appropriate nonce for a piece of data, altering $data_0$ would invalidate both $nonce_0$ and $nonce_1$, meaning that you should find the values for $nonce_0$ and $nonce_1$ again, requiring you two solve 2 proof-of-work puzzles, spending two minutes of your CPU time. The longer the chain is, the harder it becomes to alter older data.
+Solving a proof-of-work puzzle on \\(H(data_0 | nonce_0) | data_1\\), not only proves that you have worked hard on commiting to \\(data_1\\), but also shows that you have put equal amount of work to also commit on \\(data_0\\), for one more time, and that is because altering \\(data_0\\) not only invalidates the first proof-of-work, but also the second proof-of-work. Assuming that it takes 1 minute to find an appropriate nonce for a piece of data, altering \\(data_0\\) would invalidate both \\(nonce_0\\) and \\(nonce_1\\), meaning that you should find the values for \\(nonce_0\\) and \\(nonce_1\\) again, requiring you two solve 2 proof-of-work puzzles, spending two minutes of your CPU time. The longer the chain is, the harder it becomes to alter older data.
 
 ## Proof-of-Work on financial transactions
 
@@ -312,9 +310,9 @@ Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on bat
 
 Now you probably have an accurate intitution on how cryptographic hash functions work (If you are convinced that the Proof-of-Work algorithm really works). But it's also good to know the formal definition of a cryptographic hash function. A cryptographic hash function is a function that is:
 
-1. Collision-resistant: It's hard to find a pair of $x$ and $y$ where $H(x)=H(y)$.
-2. Preimage-resistant: Given $y$, it's hard to find $x$ where $H(x)=y$.
-3. Second-perimage-resistant: Given $H(x_1)=y$, it's hard to find $x_2$ where $H(x_2)=y$.
+1. Collision-resistant: It's hard to find a pair of \\(x\\) and \\(y\\) where \\(H(x)=H(y)\\).
+2. Preimage-resistant: Given \\(y\\), it's hard to find \\(x\\) where \\(H(x)=y\\).
+3. Second-perimage-resistant: Given \\(H(x_1)=y\\), it's hard to find \\(x_2\\) where \\(H(x_2)=y\\).
 
 Besides generating proofs of work, there are other interesting things you can do with hash functions. In general, cryptographic hash functions let you to commit to a secret value, and reveal it later.
 
@@ -322,11 +320,11 @@ Besides generating proofs of work, there are other interesting things you can do
 
 A useful example is when you want to play the Rock/Paper/Scissors with your friend over phone. You can agree to shout out your choice simulatanously, but there is always the chance that your friend may hear your choice and make his choice based on that, always winning the game. What if you guys want to play Rock/Paper/Scissors over physical letters? It'll become much harder to prevent cheatings! Cryptographic hash functions come handy here:
 
-1. Alice chooses his option $a$, but instead of revealing $a \in \{R, P, S\}$, she reveals $H(a)$.
-2. Just like Alice, Bob chooses $b \in \{R, P, S\}$, and reveals $H(b)$.
+1. Alice chooses his option \\(a\\), but instead of revealing \\(a \in \{R, P, S\}\\), she reveals \\(H(a)\\).
+2. Just like Alice, Bob chooses \\(b \in \{R, P, S\}\\), and reveals \\(H(b)\\).
 3. Now both Alice and Bob know that their opponent has made his choice and commited to it, so they can reveal their choices.
 4. They both will check if their opponent's choice matches with their commited value (If it doesn't, it means the opponent is cheating).
-5. If everything is alright, winner is determined according to $a$ and $b$.
+5. If everything is alright, winner is determined according to \\(a\\) and \\(b\\).
 
 There is a hack to this approach. Since the options are very limited, both Alice and Bob can pre-compute a table of all possible choices and their respective hashes. Then they'll be able to know their opponent's movement based on their commited value. We can prevent this by introducing an extra random value appended to the input of the hash function, known as a *salt*. (It's dangerous to directly store the passwords of the users in a web-application's database. It's also dangerous to store hashes of the passwords, since many users choose weak passwords and attackers may build pre-computed tables by trying many different popular passwords, just like what an attacker can do in the Rock/Paper/Scissors game we just designed, so you have probably seen that a random salt is added to the user's password before applying the hash function. The salt is stored on the database for later verifications).
 
@@ -399,7 +397,7 @@ Binary trees are your best friend, any time you want to optimize the space-effic
 
 ## Inventing a new math
 
-The math we are used to, is all about different operations you can perform on numbers. You can add them, subtract them, multiply them or divide them by each other. These operations (If you are not really into math) only make sense if the operands are number. For example, you can't add an apple to an orange, it's meaningless, because the definition of addition is meaningless in case of fruits. But let's assume it's possible, and try to invent some new kind of math for fruits. Imagine the fruits we are working with in our new math are: Apple, Orange and Banana. There are 9 different possibilies when fruits are added together ($3 \times 3$), and since the result of adding two fruits is also a fruit, there will be a total of $3^9$ ways we can invent the $+$ operation on fruits. Here is an example:
+The math we are used to, is all about different operations you can perform on numbers. You can add them, subtract them, multiply them or divide them by each other. These operations (If you are not really into math) only make sense if the operands are number. For example, you can't add an apple to an orange, it's meaningless, because the definition of addition is meaningless in case of fruits. But let's assume it's possible, and try to invent some new kind of math for fruits. Imagine the fruits we are working with in our new math are: Apple, Orange and Banana. There are 9 different possibilies when fruits are added together (\\(3 \times 3\\)), and since the result of adding two fruits is also a fruit, there will be a total of \\(3^9\\) ways we can invent the \\(+\\) operation on fruits. Here is an example:
 
 |   A    |   B    | A + B  |
 |--------|--------|--------|
@@ -413,7 +411,7 @@ The math we are used to, is all about different operations you can perform on nu
 | Banana | Orange | Orange |
 | Banana | Banana | Banana |
 
-Unfortunately, the math we have just invented on fruits does not obey some of the properties we are used to when adding numbers. For example, you might expect that $Orange + Banana$ is equal with $Banana + Orange$, but in our new, randomly invented math, that's not the case. There are other missing features too, for example: $(Apple + Orange) + Banana$ is not equal with $Apple + (Orange + Banana)$! Try to redesign the $+$ operation, so that we have the mentioned properties in our fruit-math too.
+Unfortunately, the math we have just invented on fruits does not obey some of the properties we are used to when adding numbers. For example, you might expect that \\(Orange + Banana\\) is equal with \\(Banana + Orange\\), but in our new, randomly invented math, that's not the case. There are other missing features too, for example: \\((Apple + Orange) + Banana\\) is not equal with \\(Apple + (Orange + Banana)\\)! Try to redesign the \\(+\\) operation, so that we have the mentioned properties in our fruit-math too.
 
 Here is an example of a fruit-math that perfectly obeys the mentioned laws:
 
@@ -429,7 +427,7 @@ Here is an example of a fruit-math that perfectly obeys the mentioned laws:
 | Banana | Orange | Apple  |
 | Banana | Banana | Orange |
 
-Let's make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that's ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be $3^9$ different possible defintions for $\times$. If we start with a random table, we will lose some of the properties $\times$ operator has on regular numbers. In case of regular numbers, we know that $a \times b$ is equal with $b \times a$. There is also one very unique and important property that we have on regular numbers. $a \times (b + c)$ is equal with $a \times b + a \times c$. Try to design $\times$ operator on fruits so that it obeys these properties too. You will probably reach to a table like this: 
+Let's make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that's ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be \\(3^9\\) different possible defintions for \\(\times\\). If we start with a random table, we will lose some of the properties \\(\times\\) operator has on regular numbers. In case of regular numbers, we know that \\(a \times b\\) is equal with \\(b \times a\\). There is also one very unique and important property that we have on regular numbers. \\(a \times (b + c)\\) is equal with \\(a \times b + a \times c\\). Try to design \\(\times\\) operator on fruits so that it obeys these properties too. You will probably reach to a table like this: 
 
 |   A    |   B    | A * B  |
 |--------|--------|--------|
@@ -445,7 +443,7 @@ Let's make our fruit-math more interesting. Addition is not the only operation w
 
 Since there are limited number of addition/multiplication tables that obey math rules we are used to, we can conclude that there are very few varities of math we can design for Apples, Bananas and Oranges. One clever way to easily extract new fruit-maths is to use substitute the fruits in our current tables with another permutation of fruits (E.g. change Apple->Banana, Banana->Orange and Orange->Apple). But who are we going to fool! These tables are still somehow equal with the first table, and we haven't really invented a new math! There is even a scientific word for it, the tables generated this way are actually isomorph with each other, or in other words, there exists a mapping for the elements in the first table, that migrates us to the second table!
 
-Strangely, out of $3^9.3^9$ possible ways we can invent a math for fruits (Assuming we want to fill the addition and multiplication tables), only few of them are valid and behave as expected, and all of those valid maths are isomorph with each other, meaning that effectively, we only have a single kind of math, in case we have 3 number of elements! Mathematicians refer these kind of maths as: ***Finite-fields***
+Strangely, out of \\(3^9.3^9\\) possible ways we can invent a math for fruits (Assuming we want to fill the addition and multiplication tables), only few of them are valid and behave as expected, and all of those valid maths are isomorph with each other, meaning that effectively, we only have a single kind of math, in case we have 3 number of elements! Mathematicians refer these kind of maths as: ***Finite-fields***
 
 Now imagine we use substitute Apples, Oranges and Bananas with numbers under 3 (0, 1, 2), respectively (Obviously, we will get an isomorph). Here is how the addition and multiplication tables will look like:
 
@@ -491,11 +489,11 @@ We have two people who want to send a physical letter to each other. They can se
 
 The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn't want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private). 
 
- - Bob generates a key $m$ (Master private key), and computes $M = g^m$ (Master public key), where $g$ is a commonly-agreed generator point for the elliptic curve.
- - Alice generates an ephemeral key $r$, and publishes the ephemeral public key $R = g^r$.
- - Alice can compute a shared secret $S = M^r$, and Bob can compute the same shared secret $S = m^R$ (Very similar to Diffie–Hellman key exchange we just discussed).
- - A new public-key can be derived for Bob: $P = M + g^{hash(S)}$ (Elliptic-curve point addition).
- - Bob (and Bob alone, since he only knows the value of $m$) can compute corresponding private-key $p = m + hash(S)$ (Scalar addition).
+ - Bob generates a key \\(m\\) (Master private key), and computes \\(M = g^m\\) (Master public key), where \\(g\\) is a commonly-agreed generator point for the elliptic curve.
+ - Alice generates an ephemeral key \\(r\\), and publishes the ephemeral public key \\(R = g^r\\).
+ - Alice can compute a shared secret \\(S = M^r\\), and Bob can compute the same shared secret \\(S = m^R\\) (Very similar to Diffie–Hellman key exchange we just discussed).
+ - A new public-key can be derived for Bob: \\(P = M + g^{hash(S)}\\) (Elliptic-curve point addition).
+ - Bob (and Bob alone, since he only knows the value of \\(m\\)) can compute corresponding private-key \\(p = m + hash(S)\\) (Scalar addition).
 
 Now, the receiver may listen to all ephemeral points broadcasted in the network and will try to see if any message is being sent to the corresponding derived public-keys, and see if someone was meaning to communicate with him. In this scheme, only the receiver is able to know that someone is communicating with him, and not anyone else.
 
@@ -511,9 +509,9 @@ R1CS, short for Rank-1 Constraint System, is a form of math equation which has o
 
 Imagine I give you the following equations and ask you to find all possible x, y and z values that satisfy all the equations at the same time.
 
-1. $a \times (1-a)=0$
-2. $b \times (1-b)=0$
-3. $a \times b=c$
+1. \\(a \times (1-a)=0\\)
+2. \\(b \times (1-b)=0\\)
+3. \\(a \times b=c\\)
 
 Obviously, since the first and second equations are just quadratic equations, they have two roots, which are zero and one. Knowing the different possible values for a and b we can write a table for it.
 
@@ -526,7 +524,7 @@ Obviously, since the first and second equations are just quadratic equations, th
 
 You can see that the table is identical with a logical and gate. We can do OR gates too, the last constraint needs to be:
 
-$(1-a) \times (1-b)=(1-c)$
+\\((1-a) \times (1-b)=(1-c)\\)
 
 You might think that you can’t do much by simply just multiplying and adding variables with each other, but the truth is, this particular way of representing programs is actually able to represent any program you can ever imagine. The fact that you can emulate logical gates is enough for concluding that the representation is able to emulate any kind of hardware!
 
@@ -534,23 +532,23 @@ You might think that you can’t do much by simply just multiplying and adding v
 
 Obviously, since we can emulate logical operators through plain math operations, we can do pretty amazing stuff too, but the variables in our circuits are normally holding numerical values, and not bits. Fortunately, there are ways we can migrate a numerical variable into its bit representation, by putting constraints like this:
 
-- $a_0 \times (1-a_0) = 0$
-- $a_1 \times (1-a_1) = 0$
-- $a_2 \times (1-a_2) = 0$
-- $\vdots$
-- $a_{n-1} \times (1-a_{n-1}) = 0$
-- $2^0a_0 + 2^1a_1 + 2^2a_2 + \dots + 2^{n-1}a_{n-1} = a$
+- \\(a_0 \times (1-a_0) = 0\\)
+- \\(a_1 \times (1-a_1) = 0\\)
+- \\(a_2 \times (1-a_2) = 0\\)
+- \\(\vdots\\)
+- \\(a_{n-1} \times (1-a_{n-1}) = 0\\)
+- \\(2^0a_0 + 2^1a_1 + 2^2a_2 + \dots + 2^{n-1}a_{n-1} = a\\)
 
-Assuming the original value is in the variable $a$, given these constraints, the solver has no way but to put the bit representation of $a$ into the variables $a_0, a_1, \dots, a_{n-1}$.
+Assuming the original value is in the variable \\(a\\), given these constraints, the solver has no way but to put the bit representation of \\(a\\) into the variables \\(a_0, a_1, \dots, a_{n-1}\\).
 
 ### Checking zeroness
 
-Given three two variables $a$ and $z$ (And a auxiallary variable $tmp$), we would like to check if the value of $a$ is zero, by enforcing the value of $z$ to be 1 in case $a=0$ and make it $0$ otherwise.
+Given three two variables \\(a\\) and \\(z\\) (And a auxiallary variable \\(tmp\\)), we would like to check if the value of \\(a\\) is zero, by enforcing the value of \\(z\\) to be 1 in case \\(a=0\\) and make it \\(0\\) otherwise.
 
-- $z = -tmp * a + 1$
-- $z * a = 0$
+- \\(z = -tmp * a + 1\\)
+- \\(z * a = 0\\)
 
-Now, if $a$ is not zero, $z$ has no choice but to be zero in order to satisfy the second constraint. If $z$ is 0, then $tmp$ should be set to inverse of $a$ in order to satisfy the first constraint. Inverse of $a$ exists, since $a$ is not zero. If $a$ is zero, then the first constraint is reduced to $z=1$.
+Now, if \\(a\\) is not zero, \\(z\\) has no choice but to be zero in order to satisfy the second constraint. If \\(z\\) is 0, then \\(tmp\\) should be set to inverse of \\(a\\) in order to satisfy the first constraint. Inverse of \\(a\\) exists, since \\(a\\) is not zero. If \\(a\\) is zero, then the first constraint is reduced to \\(z=1\\).
 
 ## Computer programs inside polynomials
 

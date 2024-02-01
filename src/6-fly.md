@@ -1,5 +1,3 @@
-\pagebreak
-
 # Fly!
 
 ## Skip if you are poor
@@ -52,13 +50,13 @@ Newton was a legend. Not only he discovered a very accurate theory for motion, h
 
 [TODO]
 
-Perhaps the most important discovery of Newton is his famous formula $F=ma$ which explains how the force applied to an object, the mass and its acceleration are related to each other.
+Perhaps the most important discovery of Newton is his famous formula \\(F=ma\\) which explains how the force applied to an object, the mass and its acceleration are related to each other.
 
-$v=\frac{dx}{dt}$
+\\(v=\frac{dx}{dt}\\)
 
-$a=\frac{dv}{dt}$
+\\(a=\frac{dv}{dt}\\)
 
-$x=\int{\int{a.dt}}=\frac{1}{2}at^2+v_0t+x_0$
+\\(x=\int{\int{a.dt}}=\frac{1}{2}at^2+v_0t+x_0\\)
 
 
 
@@ -80,7 +78,7 @@ I would say that studying electricity is one of the most important foundations o
 
 [TODO]
 
-Here is one of the reasons I don't like some of the electronics tutorials out there: they will tell you exactly, what a resistor is, how it works and why it works, but they'll never tell you when and where you should put a resistor in your circuit, and how you should calculate the resistance needed, in practical examples! E.g. by only knowing the Ohm's law $V=RI$, calculate the resistance needed to connect a 2V LED to a 5V battery!
+Here is one of the reasons I don't like some of the electronics tutorials out there: they will tell you exactly, what a resistor is, how it works and why it works, but they'll never tell you when and where you should put a resistor in your circuit, and how you should calculate the resistance needed, in practical examples! E.g. by only knowing the Ohm's law \\(V=RI\\), calculate the resistance needed to connect a 2V LED to a 5V battery!
 
 Here is the golden fact many resources do not directly tell you (Or do not emphasize as much as I'm going to do!), you can assume that any electronical component (Including LEDs) that consume electricity are acting like resistors (Even a piece of wire is a resistor). If they weren't resistors, they could consume infinite electrical current, even with very low voltages.
 
@@ -158,7 +156,7 @@ When analyzing circuits, there are two important laws in electricity that can he
 
 The Ohm's law, as previously discussed, describes the relation between the voltage, resistance and current.
 
-$V=RI$
+\\(V=RI\\)
 
 The Kirchhoff's law on the other hand, states that the sum of incoming and outgoing current to/from a point in a circuit is always equal. Assuming that we state an outgoing current as an incoming current that is negative, we can define Kirchhoff's current law: the algebraic sum of currents that meet at a point is zero.
 
@@ -170,23 +168,23 @@ Analyzing an electronic circuit is all about predicting and calculating the amou
 
 An electronic component can be defined by the amount of current it allows to pass given the voltages applied on its pins. For example, a resistor's ability to pass electrons is linearly dependent to the amount of voltage difference applied on its pins.
 
-$i=\frac{V_a - V_b}{R}$
+\\(i=\frac{V_a - V_b}{R}\\)
 
 There are components that have non-linear behaviors too! For example, a diode has a exponential behavior. The more voltage difference applied in correct direction, it allows exponentially more current to pass, and apply the voltage difference in reverse direction, and it will become like a resistor with infinite resistance.
 
-$i=ae^{b(V_a - V_b)}$
+\\(i=ae^{b(V_a - V_b)}\\)
 
-(The coefficients $a$ and $b$ depends on the diode)
+(The coefficients \\(a\\) and \\(b\\) depends on the diode)
 
 There are also some electronic components with time-dependent behaviors. Their current output depends on the input applied to them in the past too. A capactitor for example. If the capacitor is already charged, it allows no current, while an uncharged capacitor allows infinite current. We can also define a capacitor's behavior through a formula:
 
-$i=C\frac{d(V_a-V_b)}{dt}$
+\\(i=C\frac{d(V_a-V_b)}{dt}\\)
 
 I would like to introduce you a new, imaginary source of electricity, referred as a current source. As opposed to voltage sources which try to keep the potential difference between two points on a specific number, current sources try to keep the current stable on a chosen number. Current sources are imaginary and do not exist in the real world. You can somehow emulate them though! Imagine building a "smart" voltage source that can measure the current and increase/decrease its voltage accordingly to keep the current on a specific number. As opposed to a voltage source where short circuits are not permitted, in current sources, you have to make sure that electrons coming out of the source will eventualy get back to the source. Otherwise, the zeroness of current will cause the ovltage to become infinity which definitely is not what we want!
 
 The reason I'm introducing current sources is that, it's much easier to analyze circuits that use current-sources instead of voltage sources (For now!).
 
-$i = I$
+\\(i = I\\)
 
 By summing all of currents flowing into each node, we will get a set of equations. Given Kirchhoff's law, we know that these functions must be equal to zero. This puts a constraint on the voltages of the nodes in out system, helping us to find the correct voltage of each node.
 
@@ -198,13 +196,13 @@ Finding the roots of arbitrary functions has always been an interesting problem 
 
 Newton, besides doing Physics, has always been a pioneer in mathematics and one of his discoveries, was a numerical method for finding the roots of any arbitrary function (With known derivative). The method, which is known as Newton-Raphson nowadays (Thanks to the simplification Raphson did to the algorithm), is an iterative algorithm which tries to guess the root of the function, and make its guess better and better through iterations, until reaching to a final answer!
 
-$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$
+\\(x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}\\)
 
 Here is a Python code that tries to find the root of simple single-input/single-output function through this method:
 
-$f(x) = x^3 - 4x^2 - x + 5$
+\\(f(x) = x^3 - 4x^2 - x + 5\\)
 
-$f'(x) = 3x^2 - 8x - 1$
+\\(f'(x) = 3x^2 - 8x - 1\\)
 
 ```python=
 def f(x):
@@ -229,25 +227,25 @@ Fortunately, a very similar approach can be applied for finding the root of a mu
 
 The derivative of a multi-input/multi-output function is known as the **Jacobian** of that function. We have been working with Jacobians while training neural-networks too!
 
-Assuming that our function accepts $3$ inputs and gives out $3$ outputs, the Jacobian of that function will be a $3 \times 3$ matrix:
+Assuming that our function accepts \\(3\\) inputs and gives out \\(3\\) outputs, the Jacobian of that function will be a \\(3 \times 3\\) matrix:
 
-$F'(X) = \begin{bmatrix}
+\\[F'(X) = \begin{bmatrix}
   \frac{\partial f_0(X)}{\partial x_0} & 
     \frac{\partial f_0(X)}{\partial x_1} & 
-    \frac{\partial f_0(X)}{\partial x_2} \\
+    \frac{\partial f_0(X)}{\partial x_2} \\\\
   \frac{\partial f_1(X)}{\partial x_0} & 
     \frac{\partial f_1(X)}{\partial x_1} & 
-    \frac{\partial f_1(X)}{\partial x_2} \\
+    \frac{\partial f_1(X)}{\partial x_2} \\\\
   \frac{\partial f_2(X)}{\partial x_0} & 
     \frac{\partial f_2(X)}{\partial x_1} & 
     \frac{\partial f_2(X)}{\partial x_2}
-\end{bmatrix}$
+\end{bmatrix}\\]
 
-Where: $X = (x_0, x_1, x_2)$ and $F(X) = (f_0(X), f_1(X), f_2(X))$
+Where: \\(X = (x_0, x_1, x_2)\\) and \\(F(X) = (f_0(X), f_1(X), f_2(X))\\)
 
 In the Newton Raphson method, in each iteration, we were dividing the result of the function at previous guess, by the result of the derivative of the function at that guess. Since the derivative of our function is now a matrix, we have to find the inverse of the Jacobian matrix in order to perform the formula. The iteration formula becomes:
 
-$X_{n+1} = X_n - F'(X_n)^{-1}.F(X_n)$
+\\[X_{n+1} = X_n - F'(X_n)^{-1}.F(X_n)\\]
 
 Now, the only remaining challenge is coverting a circuit to a multi-input/multi-output function, and then, by finding the root of that function through the Newton-Raphson method, the circuit is solved!
 
@@ -255,11 +253,11 @@ Let's dive into the implementation:
 
 [TODO]
 
-Let's assume we have $n$ nodes. Applying the Kirchhoff's law will give us $n$ equations that need to be zeroed (See the number of inputs and outputs in our multi-input/multi-output function is equal).
+Let's assume we have \\(n\\) nodes. Applying the Kirchhoff's law will give us \\(n\\) equations that need to be zeroed (See the number of inputs and outputs in our multi-input/multi-output function is equal).
 
 Each function is in fact the sum of contribution of different components connected to it. So a first step could be creating a framework in which components may add their contributions to the node functions.
 
-Let's assume each function is represented as a sum of sub-functions (If there are $k$ components connected to the $i$th node, the corresponding node function will be the sum of $k$ sub-functions: $f_i(X) = f_{i,0}(X) + f_{i,1}(X) + \dots + f_{i,k-1}(X)$)
+Let's assume each function is represented as a sum of sub-functions (If there are \\(k\\) components connected to the \\(i\\)th node, the corresponding node function will be the sum of \\(k\\) sub-functions: \\(f_i(X) = f_{i,0}(X) + f_{i,1}(X) + \dots + f_{i,k-1}(X)\\))
 
 Since the nodes are simple variables that need to be calculated by a solver, it might make more sense to instantiate `Var` instances when introducing new nodes.
 
@@ -280,15 +278,15 @@ In fact, both capacitors and inductors somehow store energy, but in different wa
 
 Both capacitors and inductors are kind of ***resistors***. The capacitor's resistance is higher when the input voltage is stable (Infinite resistance on a DC voltage source and lower resistance in a AC voltage source or any form of alternationing voltages). On the other hand, an inductor's resistance is 0 when the voltage applied to it is stable, and it's resistance increases as it's input voltage source alternates faster (E.g a high-frequency AC voltage source)
 
-In the circuit shown in figure X, if you apply DC voltages, the voltage of $V_1$ in the circuit with capacitor will eventually become zero, while the voltage in the circuit with inductor will slowly increase and become $V$. Now, replace the DC voltage source with a AC one and slowly increase its frequency, the situation will be reversed! You will see higher voltages in the capacitor circuit and lower voltages in the inductor circuit.
+In the circuit shown in figure X, if you apply DC voltages, the voltage of \\(V_1\\) in the circuit with capacitor will eventually become zero, while the voltage in the circuit with inductor will slowly increase and become \\(V\\). Now, replace the DC voltage source with a AC one and slowly increase its frequency, the situation will be reversed! You will see higher voltages in the capacitor circuit and lower voltages in the inductor circuit.
 
 We can somehow claim that, capacitors are ***high-pass filters***. They pass current better when their input alternates faster (I.e with higher frequency), whereas inductors are ***low-pass filters***, since they allow better flow of electrons when the input signal is alternating slowly (Or no alternation at all).
 
 Now, here is a fascinating idea: by combining a capacitor and an inductor together, we'll have a circuit that has minimum resistance in certain frequency! This magical frequency can be calculated using this formula:
 
-$f = \frac{1}{2 \pi \sqrt{LC}}$
+\\(f = \frac{1}{2 \pi \sqrt{LC}}\\)
 
-where $C$ is the capacitor's capacitance in Farads and $L$ is inductor's inductance in Henries.
+where \\(C\\) is the capacitor's capacitance in Farads and \\(L\\) is inductor's inductance in Henries.
 
 Remember both capacitors and inductors could be used for storing energy? Not only you use a pair of capacitor and inductor for creating a dynamic resistor with minimized resistance in a certain frequency, but also you can trap energy in them, and that energy will oscillate between the capacitor and inductor with the same frequency! This means, you can build an alternating source of voltage with this magical pair, and that oscillation is something that has effects on the space around it. It makes disturbances that propagates in the space! (Recall the second chapter where we discussed waves)
 
@@ -328,7 +326,7 @@ Waves themselves can be represented as streams of values, where each value shows
 
 So far we have been able to detect signals and we didn't discussed much on how we can generate those signals. One easy way of generating such a signal is to charge a RLC loop with a voltage source and then disconnect it (You won't have alternations if you keep the voltage-source connected forever), so that the energy can swing in it. Unfortunately, the signal generated using this method is not a steady one and needs someone/something persistently connecting/disconnecting the voltage source to/from the RLC loop, otherwise the swing will not happen!
 
-We have to think of a circuit which is able to oscillate for us forever, without needing someone to connect/disconnect the voltage-source, or at-least make the process automated. An example of such a circuit is the Astable Multivibrator circuit we discussed in the previous sections. An astable multivibrator generates a square-wave instead of a sine-wave, but that's ok! You can still detect the oscillations of an Astable Multivibrators in the space. In fact, if you take the FFT of a square-wave, you will see that the a sine wave of frequency $f$ is presented in a square-wave of frequency $f$, and the only problem is that, there are also other signals present. Those extra signals are harmonies of $f$ ($\dots,\frac{f}{8},\frac{f}{4},\frac{f}{2},2f,4f,8f,\dots$).
+We have to think of a circuit which is able to oscillate for us forever, without needing someone to connect/disconnect the voltage-source, or at-least make the process automated. An example of such a circuit is the Astable Multivibrator circuit we discussed in the previous sections. An astable multivibrator generates a square-wave instead of a sine-wave, but that's ok! You can still detect the oscillations of an Astable Multivibrators in the space. In fact, if you take the FFT of a square-wave, you will see that the a sine wave of frequency \\(f\\) is presented in a square-wave of frequency \\(f\\), and the only problem is that, there are also other signals present. Those extra signals are harmonies of \\(f\\) (\\(\dots,\frac{f}{8},\frac{f}{4},\frac{f}{2},2f,4f,8f,\dots\\)).
 
 Using square-waves as a medium for transmitting data, although works in practice, might cause you legal problems! That's because not all frequencies are allowed to be sent since they can interfere with the signals sent by other entities. A square wave is in fact composed of inifinitely many different sine-frequencies, an many of those are restricted by the governments! The police might might come and arrest you when sending square-waves powerful enough to interfere with the national radio/television for example!
 
@@ -363,4 +361,4 @@ Capacitors are DC blockers!
 
 ## Controlling the world
 
-$u(t)=K_pe(t)+K_i\int_0^t{e(\tau)d\tau}+K_d\frac{de(t)}{dt}$
+\\(u(t)=K_pe(t)+K_i\int_0^t{e(\tau)d\tau}+K_d\frac{de(t)}{dt}\\)

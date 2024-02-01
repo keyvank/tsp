@@ -1,5 +1,3 @@
-\pagebreak
-
 # Hear!
 
 ## Human senses
@@ -62,11 +60,11 @@ So theoritically, if someone speaks in some frequency range, and someone else sp
 
 Enough talking, let's write a program to generate sounds of different frequencies, and their combinations, and then hear how it sounds. This will help you understand the concept much better!
 
-In order to generate a wave of frequency $f$, you can use this formula:
+In order to generate a wave of frequency \\(f\\), you can use this formula:
 
-$sin(2\pi ft)$
+\\(sin(2\pi ft)\\)
 
-There is a program in Linux distributions named `pacat`. PulseAudio Cat's goal is to allow you directly put sound samples on your computer's speaker. It does this at default rate of 44100 samples per second. By default, it gets signed 16bit integer from its standard input and plays it on your speaker by differentiating the voltage applied on the speakers magnet plate. When the sample has lowest possible value (-32768), maximum negative voltage is applied and the plate is pulled, and when the samples has highest possible value (32767), the plate is pushed. A sample of value 0 means zero voltage which means zero magnetic field and the plate remains in its orginal position. Given that the sample ratio is 44100, we should substitute the $t$ variable with $\frac{n}{44100}$ where $n$ is the sample number: $sin(2\pi f\frac{n}{44100})$
+There is a program in Linux distributions named `pacat`. PulseAudio Cat's goal is to allow you directly put sound samples on your computer's speaker. It does this at default rate of 44100 samples per second. By default, it gets signed 16bit integer from its standard input and plays it on your speaker by differentiating the voltage applied on the speakers magnet plate. When the sample has lowest possible value (-32768), maximum negative voltage is applied and the plate is pulled, and when the samples has highest possible value (32767), the plate is pushed. A sample of value 0 means zero voltage which means zero magnetic field and the plate remains in its orginal position. Given that the sample ratio is 44100, we should substitute the \\(t\\) variable with \\(\frac{n}{44100}\\) where \\(n\\) is the sample number: \\(sin(2\pi f\frac{n}{44100})\\)
 
 ```python=
 import sys
@@ -95,7 +93,7 @@ for _ in range(sample_rate * length):
     t += step
 ```
 
-`put(x)` function is getting a floating point value $-1 \leq x \leq 1$ as its input and putting a signed short integer between $-32768 \leq s \leq 32767$ into the stdout. It is the main gate which allows us to convert an electrical cause to a mechanical effect, by vibrating a magnetic plate in your computer!
+`put(x)` function is getting a floating point value \\(-1 \leq x \leq 1\\) as its input and putting a signed short integer between \\(-32768 \leq s \leq 32767\\) into the stdout. It is the main gate which allows us to convert an electrical cause to a mechanical effect, by vibrating a magnetic plate in your computer!
 
 Redirect your script's output to the `pacat` program and hear the voice of your program:
 
@@ -116,7 +114,7 @@ We are taking an average from `a` and `b` so that the output value remains betwe
 
 If you hear this function, you will actually notice that it consists of two sounds. Your brain can successfully decomposite the output wave into two sounds, and this is amazing! The reason that you can recognize the 440Hz and 660Hz sound in the output of this script is the same reason you can hear your friend in a loud room full of noise, your brain is able to decouple sounds with different frequencies.
 
-Now that we are able to generate sounds of different frequencies, I want you to do an experiment. Try generating frequencies that are of the form $2^nf$. E.g. try hearing these frequencies: $440, 880, 1760, 3520, \dots$
+Now that we are able to generate sounds of different frequencies, I want you to do an experiment. Try generating frequencies that are of the form \\(2^nf\\). E.g. try hearing these frequencies: \\(440, 880, 1760, 3520, \dots\\)
 
 ```python=
 def f(t):
@@ -133,7 +131,7 @@ def f(t):
 
 In the code above, we are generating different frequencies through time. We start with 440Hz, and we double the frequency every 1 second.
 
-Hear them carefully, and then compare how they sound when their frequency is doubled. Try a different coefficient. Generate sounds that are of the form: $1.5^nf$: $440, 660, 990, 1485, \dots$
+Hear them carefully, and then compare how they sound when their frequency is doubled. Try a different coefficient. Generate sounds that are of the form: \\(1.5^nf\\): \\(440, 660, 990, 1485, \dots\\)
 
 We can discover something very strange and important here. Sounds that are generated when the frequency is doubled each time, are very similar to each other (At least, to our brain). While in the second experiment, sounds seem to be different with each other. If the sounds that are generated in the first experiment are similar, then what makes them different?
 
@@ -164,7 +162,7 @@ S2 - ?Hz
 S1 - 1200Hz
 ```
 
-What is the definition of middle? Let's say, $C$ is in the middle of $A$ and $B$, when the distance between $C$ and $A$ is equal with the distance between $C$ and $B$. How is *distance* defined in case of frequencies? As a first guess, we can take the average of two S1 frequencies in order to find the S2 frequency.
+What is the definition of middle? Let's say, \\(C\\) is in the middle of \\(A\\) and \\(B\\), when the distance between \\(C\\) and \\(A\\) is equal with the distance between \\(C\\) and \\(B\\). How is *distance* defined in case of frequencies? As a first guess, we can take the average of two S1 frequencies in order to find the S2 frequency.
 
 ```
 S1 - 75Hz
@@ -182,9 +180,9 @@ As you can see in the calculations, you can get other S2 sounds by multiplying/d
 
 This is not the only way one can define the "middle" frequency here. Imagine instead of taking the average, we multiply the numbers, and take their square-root instead. This is called an "multiplicative" average, or a geometric mean (As opposed to an arithmetic-mean that we used in the first example):
 
-$m=\sqrt{ab}$
+\\(m=\sqrt{ab}\\)
 
-We know that the frequencies are doubled in each iteration, so $b=2a$. Substituting this in the equation we get: $m=\sqrt{2a^2}=a\sqrt{2}$
+We know that the frequencies are doubled in each iteration, so \\(b=2a\\). Substituting this in the equation we get: \\(m=\sqrt{2a^2}=a\sqrt{2}\\)
 
 ```
 S1 - 75Hz
@@ -198,25 +196,25 @@ S2 - 600 x sqrt(2) = 848.52Hz
 S1 - 1200Hz
 ```
 
-As you can see, both of these definitions of "middle" give us valid sounds (By valid, I mean they are frequencies that are same-feeling), that indeed are in the middle of the S1 frequncies. The first definition of "middle" gives us numbers that have same arithmetic distance with the S1 frequencies ($m-a=b-m$), while in the second definition, the results are numbers that have same multiplicative distance with the S1 frequencies ($\frac{m}{a}=\frac{b}{m}$). Unfortunately, each of these defintions of middle is giving us different middle frequencies.
+As you can see, both of these definitions of "middle" give us valid sounds (By valid, I mean they are frequencies that are same-feeling), that indeed are in the middle of the S1 frequncies. The first definition of "middle" gives us numbers that have same arithmetic distance with the S1 frequencies (\\(m-a=b-m\\)), while in the second definition, the results are numbers that have same multiplicative distance with the S1 frequencies (\\(\frac{m}{a}=\frac{b}{m}\\)). Unfortunately, each of these defintions of middle is giving us different middle frequencies.
 
 So, the million dollar question is, which one is the more appropriate defintion of "middle" here?
 
 Let's look to those numbers again, this time without considering the middle frequencies. Take 3 consecutive S1s in a row. (E.g `300Hz 600Hz 1200Hz`). By definition, if we take 3 consecutive sounds, the second one is in the middle of the first and third sound. If we forget about our artificial middle frequencies and take a stream of S1s as our reference sounds, are the middle frequencies the artithmetic or the geometric mean of the other frequencies? 
 
-Let's say our 3 consecutive sounds are $2^ka$, $2^{k+1}a$ and $2^{k+2}a$. How can we calculate the middle frequency if we only had the values for the first and the third frequency? Let's try both artithmetic and geometric means.
+Let's say our 3 consecutive sounds are \\(2^ka\\), \\(2^{k+1}a\\) and \\(2^{k+2}a\\). How can we calculate the middle frequency if we only had the values for the first and the third frequency? Let's try both artithmetic and geometric means.
 
-$m_a=\frac{2^ka+2^{k+2}a}{2}=\frac{2^k(a+4a)}{2}=5\times 2^{k-1}a$
+\\(m_a=\frac{2^ka+2^{k+2}a}{2}=\frac{2^k(a+4a)}{2}=5\times 2^{k-1}a\\)
 
-$m_g=\sqrt{2^ka \times 2^{k+2}a}=2^{k+1}a$
+\\(m_g=\sqrt{2^ka \times 2^{k+2}a}=2^{k+1}a\\)
 
 Obviously, geometric mean is the natural definition of "middle" in a raw stream of S1 frequencies, so it makes a lot of sense to define middle as the geometric mean.
 
-Good to mention that another bug also happens when we try to define middle frequencies with arithmetic means. Although S2 resides in the middle of two S1s, S1s do not reside in the middle of S2s! $\frac{112.5 + 225}{2} \neq 150$. This does not happen when we use geometric means: $\sqrt{106.06 \times 212.13}=150$.
+Good to mention that another bug also happens when we try to define middle frequencies with arithmetic means. Although S2 resides in the middle of two S1s, S1s do not reside in the middle of S2s! \\(\frac{112.5 + 225}{2} \neq 150\\). This does not happen when we use geometric means: \\(\sqrt{106.06 \times 212.13}=150\\).
 
 Fortunately, we have been able to find a way to halve frequency ranges and create new same-feeling sounds out of them! But are 2 sounds enough for making a song? Well, we don't have to stop here. We can still find the middle of a S1 and a S2 and define a new S3 sound. The middle of the gap between an S2 and the next S1 can also define a new S4 sound. We can build infinitely many sounds just by halving the frequency gaps!
 
-Enough explanation. Given that you now know how same-feeling sounds are derived, let's talk about the standard frequencies that are used in the music we hear everyday. Just like how we defined a base frequency S1 for deriving new sounds, music composers also defined a base frequency (That is 440Hz) and derived the other sounds out of it. They called their base frequency **A**, splitted the gap between two consecutive **A**s into 12 different sounds (Probably because 12 was big enough to make big variations of music and small enough so that the sounds remain distinguishable for human ears) and named the 11 other derived sounds as `A# B C C# D D# E F F# G G#`. How can you take 12 sounds out of a base frequency? New sounds can be derived by multiplying the previous sound by $\sqrt[12]2 \simeq 1.05946$. Starting from $A$ sound, if you do this 12 times, you get back to the next same-feeling A sound again, because $\sqrt[12]2^{12}=2$.
+Enough explanation. Given that you now know how same-feeling sounds are derived, let's talk about the standard frequencies that are used in the music we hear everyday. Just like how we defined a base frequency S1 for deriving new sounds, music composers also defined a base frequency (That is 440Hz) and derived the other sounds out of it. They called their base frequency **A**, splitted the gap between two consecutive **A**s into 12 different sounds (Probably because 12 was big enough to make big variations of music and small enough so that the sounds remain distinguishable for human ears) and named the 11 other derived sounds as `A# B C C# D D# E F F# G G#`. How can you take 12 sounds out of a base frequency? New sounds can be derived by multiplying the previous sound by \\(\sqrt[12]2 \simeq 1.05946\\). Starting from \\(A\\) sound, if you do this 12 times, you get back to the next same-feeling A sound again, because \\(\sqrt[12]2^{12}=2\\).
 
 ```
 A = 440Hz
@@ -372,13 +370,13 @@ def ComposeMML(mml):
 
 ## Frequency Modulation
 
-One of the interesting sounds you can try to generate is the sound of a siren. A siren is a device that can generate a loud sound, with alternating frequency. The frequency is alternated itself in a sine pattern. Assuming the sound's frequency alternates between $f_1$ and $f_2$, we can calculate frequency, by time, as follows:
+One of the interesting sounds you can try to generate is the sound of a siren. A siren is a device that can generate a loud sound, with alternating frequency. The frequency is alternated itself in a sine pattern. Assuming the sound's frequency alternates between \\(f_1\\) and \\(f_2\\), we can calculate frequency, by time, as follows:
 
-$f=f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}$
+\\(f=f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}\\)
 
-We already know altering the intensity of a sound is as simple as applying a coefficient to its sampler function. If you multiply the above function with an oscillator, its volume will alternate. Knowing that we can generate sine wave with frequency $f$ with $sin(2.\pi.f)$, you may conclude that the sound of a siren can be modeled by substituting $f$ with the alternating $f$ formula:
+We already know altering the intensity of a sound is as simple as applying a coefficient to its sampler function. If you multiply the above function with an oscillator, its volume will alternate. Knowing that we can generate sine wave with frequency \\(f\\) with \\(sin(2.\pi.f)\\), you may conclude that the sound of a siren can be modeled by substituting \\(f\\) with the alternating \\(f\\) formula:
 
-$sin(2.\pi.(f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}))$
+\\(sin(2.\pi.(f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}))\\)
 
 Try to generate and play this sound. It will sound weird, not at all like a siren. But why?
 
@@ -386,7 +384,7 @@ Try to generate and play this sound. It will sound weird, not at all like a sire
 
 How can we emulate an ear in a computer
 
-$X_k=\sum\limits_{n=0}^{N-1}{x_n.e^{-i2\pi kn/N}}$
+\\(X_k=\sum\limits_{n=0}^{N-1}{x_n.e^{-i2\pi kn/N}}\\)
 
 
 ## Reverb, sound tracing and …
@@ -475,15 +473,15 @@ By skipping one of the samples per every two sample, we were able to halven the 
 
 Looking carefully, by skipping the samples, what we are actually doing is taking the samples like this:
 
-$out[i] = in[2i]$
+\\(out[i] = in[2i]\\)
 
 Changing the coefficient to 3, makes our input sound 3 times faster. but what if we want to make it only x1.5 faster?
 
-$out[i] = in[1.5i]$
+\\(out[i] = in[1.5i]\\)
 
 Unfortunately, all kinds of digital signals which we process in a computer are discrete, meaning that they are sequences of numbers, the result of sampling the signal over a fixed interval, and you don’t directly have the signal in between two intervals. Although we don’t have the signal data between two intervals, we can predict them with a good accuracy! A very simple prediction model assumes that the distance between two consecutive samples goes through a line!
 
-In other words, you can assume that $inp[5.5] \simeq \frac{inp[5] + inp[6]}{2}$
+In other words, you can assume that \\(inp[5.5] \simeq \frac{inp[5] + inp[6]}{2}\\)
 
 So far, we have had done a lot of experiments using the `pacat` command, and now it's the time to see what can be done if we allow other computers to receive wave-samples. We have learnt to compose sounds, now its time to decompose them! Putting samples on your computer’s speaker allows you to make disturbance in the air around your computer’s speaker. The disturbance, as seen in the previous sections, will propagate in the space finally reach your ears and you will hear it. Computers can hear those disturbances too, through microphones. Using these two devices together you can build protocols with which computers can talk with each othrr, without any wire connection.
 
@@ -548,7 +546,7 @@ plt.show()
 
 ![The FFT result of a signal composed of 5 different sine frequencies](assets/fft.png)
 
-Assuming our sample-rate is $2^n$, the $get_freqs$ function will get an array of size $2^n$ (The signal samples), and will return an array of size $2^{n-1}$. The $i$th element of this array tells your the presence of a sine wave with $i$Hz frequency in your input signal. The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency $f$, you need to at least have $2f$ samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).
+Assuming our sample-rate is \\(2^n\\), the \\(get_freqs\\) function will get an array of size \\(2^n\\) (The signal samples), and will return an array of size \\(2^{n-1}\\). The \\(i\\)th element of this array tells your the presence of a sine wave with \\(i\\)Hz frequency in your input signal. The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency \\(f\\), you need to at least have \\(2f\\) samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).
 
 ![An example of undersampling, the sampled signal seems to be a sine wave wit lower frequency](assets/nyquist.png)
 
@@ -558,13 +556,13 @@ Humans are able to hear sounds with frequencies as high as around 20000Hz, that'
 
 Assuming that we can generate waves of a single frequency in one machine, and recognize the existence of that exact frequency in another machine, let's try to design an algorithm to transfer data through audio, by encoding the bits into sound waves on one sides, and decoding them, converting back the audio waves into bits on other side (The encoding/decoding parts are usually referred as Modulation and Demodulation).
 
-Let's start by simply generating a sine wave of frequency $f_d$ (Data frequency) when we want to transmit a 1, and avoid generating it when we want to transmit a 0. On the other computer, we will listen to the sound samples and perform a fourier transform on them. Whenever we recognize a $f_d$ frequency, we will output a 1, and otherwise a 0. Obviously, we have to agree on a fixed time interval by which bits are sent, otherwise we wont know how many consecutive 0s (Or 1s) are meant to be received in case the receiver is the presence/absence of $f_d$ is being detected for a long period of time.
+Let's start by simply generating a sine wave of frequency \\(f_d\\) (Data frequency) when we want to transmit a 1, and avoid generating it when we want to transmit a 0. On the other computer, we will listen to the sound samples and perform a fourier transform on them. Whenever we recognize a \\(f_d\\) frequency, we will output a 1, and otherwise a 0. Obviously, we have to agree on a fixed time interval by which bits are sent, otherwise we wont know how many consecutive 0s (Or 1s) are meant to be received in case the receiver is the presence/absence of \\(f_d\\) is being detected for a long period of time.
 
-As an extra feature, we would like to let the other machine know whenever we have finished sending our data. Right know, we will probably stop generating any sound when there are no more bits to be sent. The receiver machine is not able to know whether we are out of bits, or we are just sending a lot of 0 bits. A simple solution to that problem is to include another frequency $f_e$ in our generated signal, which is only generated when there are data to be sent.
+As an extra feature, we would like to let the other machine know whenever we have finished sending our data. Right know, we will probably stop generating any sound when there are no more bits to be sent. The receiver machine is not able to know whether we are out of bits, or we are just sending a lot of 0 bits. A simple solution to that problem is to include another frequency \\(f_e\\) in our generated signal, which is only generated when there are data to be sent.
 
 ![Transferring bits through three signals](assets/modulation.png)
 
-In this case, the receiver will only accept bits when the $f_e$ frequency is also present in the received signal (Besides presence or absence of data frequency).
+In this case, the receiver will only accept bits when the \\(f_e\\) frequency is also present in the received signal (Besides presence or absence of data frequency).
 
 ## Noises, noises everywhere...
 

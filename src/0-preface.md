@@ -1,5 +1,3 @@
-\pagebreak
-
 # The Super Programmer
 
 ## Preface
@@ -15,8 +13,6 @@ The fact that you can only get successful by getting deep in only one of the man
 I transformed myself from a day-to-day web-developer into a programmer that knows ***the starting point*** of building any kind of technology and hopefully can help getting the progress of technology back on track, in case a catastrophic event happens on Earth and all we have is gone.
 
 After boosting my knowledge by learning all those stuff, I felt that it's the time to extend my 40-page computer graphics book, and the result is this book!
-
-\pagebreak
 
 ## Intro
 
