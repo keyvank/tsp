@@ -14,6 +14,17 @@ I transformed myself from a day-to-day web-developer into a programmer that know
 
 After boosting my knowledge by learning all those stuff, I felt that it's the time to extend my 40-page computer graphics book, and the result is this book!
 
+## Support
+
+If you enjoy what I'm writing and would like to support my work, I would appreciate crypto donations! I attempted to distribute my work through computer programming publishers, but the consensus is that these kinds of tutorials won't sell well. Therefore, I have decided to continue TSP as an open-source hobby project!
+
+- Bitcoin: `bc1qjvcsjt57des7j4runchxalksueqlxgadx7fwll`
+- Ethereum: `0x1a34a6763f55887444ffbd8f8d4fae8197478675`
+
+Also, I'm thinking of allowing anyone to contribute in writing and editing of this book, so feel free to submit your shiny PRs!
+
+GitHub: [https://github.com/keyvank/tsp](https://github.com/keyvank/tsp)
+
 ## Intro
 
 Legos were my favorite toys as a kindergarten student. It was one of the only toys I could use to build stuff that didn't exist before. It let me bring my imaginations into the real world, and nothing satisfies a curious mind more than the ability to build unique structures out of simple pieces.
