@@ -1,6 +1,6 @@
 \pagebreak
 
-# Intelligence
+# Think!
 
 ## Yins and Yangs
 

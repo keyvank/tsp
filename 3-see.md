@@ -1,6 +1,6 @@
 \pagebreak
 
-# Vision
+# See!
 
 Vision is my (Or probably all people's) favorite way of sensing the world. Imagine out of 6 humans senses, you only could have one of them, which one would you choose?
 
