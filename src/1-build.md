@@ -2,55 +2,57 @@
 
 ## Which came first? The chicken or the egg?
 
-Imagine for a second, one day a catastrophic event will happen and we will lose all the technology we once had. Nothing but ashes will remain, and our situation will be similar to humans millions of years ago, with one difference: We still can read, and fortunately, there are plenty of books available explaining how our modern technology worked. Now here is an interesting quesiton: How much time will it take to reach the point of advancement we are in right now?
+Imagine, for a second, that a catastrophic event occurs, causing us to lose all the technology we once had. Nothing but ashes will remain, and our situation will be similar to that of humans millions of years ago, with one difference: We still can read, and fortunately, there are plenty of books available explaining how our modern technology worked. Now here is an interesting question: How much time will it take to reach the point of advancement we are in right now?
 
-My prediction is, we will get back on track only after a few decades, and the only reason this could take longer than expected is that, you will need tools, for building other tools. Obviously, we can't start building a modern CPU even though we have the specification and the detailed design of that CPU, we will first need to rebuild tools that we need for building complex electronic circuits. If we are completely out of technology (As we assumed), we will need to learn again how can we find and extract the materials we want out of the earth and use them to build the simple tools we'll need, which will then be used for building more complicated tools. Here is a very important fact that makes all the technological progress we have had viable: ***technology can help accelerating its own creation!***
+My prediction is that we will get back on track only after a few decades, and the only reason this could take longer than expected is that we will need tools for building other tools. Obviously, we can't start building a modern CPU even though we have the specification and the detailed design of that CPU. We will first need to rebuild tools that we need for building complex electronic circuits. If we are completely out of technology (as we assumed), we will need to learn again how we can find and extract the materials we want from the earth and use them to build the simple tools we'll need, which will then be used for building more complicated tools. Here is a very important fact that makes all the technological progress we have had viable: ***technology can help accelerate its own creation***!
 
-Just like the chicken and egg paradox, I was always wondering how people built the very first compilers and assemblers for the first time? What language did they use for describing the very first assembly languages? Did they have to write the early assembler programs directly in 0s and 1s? After a bit of research, I figured that the answer is yes. In fact, as an example, the process of building a C compiler for the first time is as follows:
+Just like the chicken and egg paradox, I was always wondering how people built the very first compilers and assemblers for the first time. What language did they use for describing the very first assembly languages? Did they have to write the early assembler programs directly in 0s and 1s? After a bit of research, I figured that the answer is yes. In fact, as an example, the process of building a C compiler for the first time is as follows:
 
-1. You write a C compiler directly in machine-assembly,
+1. You write a C compiler directly in machine-assembly (Or some other language),
 2. You'll rewrite the same C compiler in C.
 3. You'll compile the new source-code using the compiler written in assembly.
 4. Now you can completely ignore the assembly implementation, and assume that, your C compiler was written in C in the first place!
 
-See this beautiful loop here? Technology maintains and reproduces itself, which kind of means, ***technology is a form of life***! The simpler computer language (In this example, machine-assembly) helped the C-compiler to emerge, but after the compiler started to live, it could stand on its own feet. We won't need the machine-assembly implementation of it anymore, since there is nothing preventing us to describe a C-compiler in the C programming language!
+See this beautiful loop here? Technology maintains and reproduces itself, which kind of means, ***technology is a form of life!*** The simpler computer language (in this example, machine-assembly) helped the C-compiler to emerge, but after the compiler started to live, it could stand on its own feet. We won't need the machine-assembly implementation of it anymore, since there is nothing preventing us from describing a C-compiler in the C programming language!
 
-Now let's get back to our original question. Which one was first? The chicken or the egg? If you look through the history of evolution, you will see that the creatures millions of years ago were not reproducing by dropping eggs. Basic living cells for example, they never had to reproduce like that, they would only cut themselves into two pieces. As living creatures get more complicated, phenomena like dropping eggs will "slowly" start to emerge. The very first chicken-like animal which started to put eggs didn't necessarrily come out of an egg. It could just be a mutation that emerged the egging behavior for a new generation, just like how a C compiler started to live, without depending on a assembly implementation of it!
+Now let's get back to our original question. Which one was first, the chicken or the egg? If you look through the history of evolution, you will see that the creatures millions of years ago were not reproducing by dropping eggs. Basic living cells, for example, never had to reproduce like that; they would only cut themselves into two pieces. As living creatures get more complicated, phenomena like dropping eggs will "slowly" start to emerge. The very first chicken-like animal, which started to lay eggs, didn't necessarily come out of an egg. It could just be a mutation that brought about the egging behavior for a new generation, just like how a C compiler started to live, without depending on an assembly implementation of it!
 
 ## When the dominos fall
 
-If you ask someone who is really into computers about how computers work in very deep levels, he will most probably start by telling you about electronical switches, transistors and logic gates. Well I'm also going to do the same, but a bit differently.
+If you ask someone who is really into computers about how computers work at very deep levels, he will most probably start by telling you about electronic switches, transistors, and logic gates. Well, I'm also going to do the same, but in a slightly different way! Even though transistors are the basic building blocks of almost all modern computers, the real magic that makes computers do their thing is something I'd like to refer to as "Cause & Effect" chains.
 
-I first want you to list a few examples of "Cause & Effect"s that happen in everyday life. Here is my list (Please think and add yours too):
+I would like you to start by listing a few examples of "Cause & Effect" scenarios that happen in everyday life. Here is my list (please think and add yours too):
 
  - You press a key on your computer -> A character appears on the screen -> **END**
- - You push the first domino -> The next domino falls -> the next domino falls -> ...
+ - You push the first domino -> The next domino falls -> The next domino falls -> ...
  - You ask someone to open the window -> He opens the window -> **END**
  - You tell a rumor to your friend -> He tells the rumor to his friend -> ...
- - You toggle the switch -> the light bulb turns on -> **END**
- - A neuron fires in your brain -> another neuron gets excited as a result and fires -> ...
+ - You toggle the switch -> The light bulb turns on -> **END**
+ - A neuron fires in your brain -> Another neuron gets excited as a result and fires -> ...
 
+Now, let's think about why some of these cause-and-effect chains keep going on and on, while others stop after just a few steps. Why do some things set off a series of events, while others don't?
 
-Now I want to think, why do some of these cause/effects last forever and some of those are terminated in the very first steps?
+There's a crucial pattern here: The long-lasting (i.e., interesting) effects emerge from cause-and-effect chains where ***the effects have the same type as the causes***, which essentially means these chains are interesting when they can form cycles. For instance, when a "mechanical" cause has another "mechanical" effect (like dominos), or when an "electrical" cause leads to another electrical effect (like electronic circuits).
 
-Some of these causes have effects that will themselve cause other effects, why?
+The most complex thing you can create with components that transform a single cause into a single effect is no different than a chain of falling domino pieces (another example is when rumors circulate in a company). It's still impressive and has its interesting aspects, but we don't want to stop there. We want to build things that can transform multiple causes into a single effect (all with the same types), and that's when Cause & Effect chains truly shine! The simplest example of such a component is a switch. A switch manages the flow of an input to an output through a third controlling input. An example of a non-electrical switch is a faucet. A faucet allows you to control the flow of water in a pipe (considered as a single-cause/single-effect component) through a third input.
 
-There is a very important pattern here: The long-lasting (I.e. interesting) effects are emerged from those cause/effect chains, in which **the effects have same type as causes**, which basically means, those chains are interesting that can make cycles. E.g. a "mechanical" cause that have a "mechanical" effect (Dominos). Or an "electrical" cause that an electrical effect (Circuits). This last example is the one I want to talk about right now (You guessed already, I know).
+We won't delve deep into the inner workings of transistors just yet, but let's assume that transistors are components capable of converting electrical causes into electrical effects. This ability allows us to connect them together and create interesting things. In essence, transistors can be accurately described as switches, quite similar to push-buttons but with a key difference. A push-button is a component that accepts an electrical and a mechanical input, producing an electrical output.
 
-Before jumping into studying how a transistor works, I first want you to build something like a transistor. By transistor, I mean I want you to build something that can convert an electrical cause to an electrical effect. I want you to 
+[IMG push-button]
 
-Imagine a light-bulb connected to a toggle switch. In this system, the flow starts with a person toggling the switch, causing something mechanical. Right after that, the mechanical cause will have an electrical effect, and the elecrical cause will have a visionary effect. The whole package converts a mechanical cause into an effect that can be seen by human eyes. (See how we can build new converters by connecting/chaining other primitive converters)
+However, a push-button is definitely not a transistor because not all of its input causes are electrical. You still need a finger to push the button, and the output of a push button cannot be used as the mechanical input of another button. Therefore, you can't build domino-like structures with push-buttons! The push-button becomes more similar to a transistor when its mechanical input is substituted with an electrical input. In this case, all of its inputs and outputs will have the same types, allowing you to connect them together. Let's fix this!
 
-The most complicated thing you can build with lego pieces that can convert a single cause to a single effect are falling domino pieces (Rumors about a colleague circulating in your company). It still is a very magnificent and its interesting phenomena in its own way, but we don't want to stop here and we would like to build stuff that can convert multiple causes into a single effect (All with same types).
+Before starting to think of a electrical switch that can be controlled through an electrical cause, be aware that sometimes a cause/effect conversion is actually the result of many other cause/effect conversions chained together, occurring under the hood. For example, consider a light bulb connected to a push-button. In this system, the process begins with a person pushing the switch, initiating a mechanical action. Right after that, the mechanical cause triggers an electrical effect, and the electrical cause produces a visual effect, which eventually results in neural effects in your brain. The entire process converts a mechanical cause into a neural effect that can be sensed by a human brain. (Notice how new converters can be built by connecting/chaining other primitive converters.)
 
-Transistor is a resistor that its resistance can transform according to an electrical input. A transistor is something that can convert an electrical cause to another electrical effect. Transistors are very interesting lego pieces, because 
+Now, here is a very stupid example of a push-button that has an electrical controller: Imagine there is a human that has a wire in his hand. This person turns the pushes the push-button when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!
 
- 1. They can convert causes to effects of the same type (Electricity)
+Now that you get why something like a transistor might be handy, let's talk about transistors themselves. Formally speaking, a transistor is a resistor that its resistance can transform according to an electrical input. A transistor is something that can convert two electrical causes into single electrical effect. Transistors are very interesting candidates for building computers, because:
+
+ 1. They can convert causes to effects of the same type, directly! (Electricity)
  2. They can be made in very small sizes (Nanometers?).
+ 3. They are very fast!
 
 Because of these properties, we can build complicated and dense cause/effect chains and get interesting behaviors out of it by consuming very small amount of space (E.g your smartphone).
-
-Here is a very stupid example of a transistor: Imagine there is a human that has a wire in his hand. This person turns the mechanical switch to ON state only when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!
 
 ## Taming the electrons
 
