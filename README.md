@@ -1,7 +1,19 @@
 # The Super Programmer
 *A colorful introduction to engineering!*
 
-Visit: [https://keyvan.me/tsp](https://keyvan.me/tsp)
+## How to read
+
+There is an online version here: [https://keyvan.me/tsp](https://keyvan.me/tsp)
+
+If you prefer a PDF version, you can compile it yourself (Make sure you have the `pandoc` package installed on your system):
+
+```
+git clone https://github.com/keyvank/tsp
+cd tsp
+make pdf
+```
+
+The output will be stored on `tsp.pdf`!
 
 ## About
 
@@ -16,3 +28,11 @@ The book consists of 6 chapters:
 - ***Chapter 5*** is about cryptography and blockchains. Again some history, and then I'll explain finite-field mathematics, elliptic-curve cryptography, cryptographic hash functions, etc. I'll then explain how all these can be used for implementing an electronic cash system (Bitcoin!). I'll finish the chapter explaining how you prove correct execution of arbitrary programs through ZK proofs. (All in Python)
 - ***Chapter 6*** is about interactions between the digital and physical world. I start with explaining the missing parts of chapter-1, which is electronics. I explain how an electronic circuit simulator can be built by implementing a solver that can solve a system of differential equations, and then I will use that simulator to implement oscillators and etc. I'll also teach the reader some mechanical physics, and how we can implement physics engines. I'll use the physics engine for simulating a rocket that can take a man on the moon.
 
+## Support!
+
+If you enjoy what I'm writing and would like to support my work, I would appreciate crypto donations! I attempted to distribute my work through computer programming publishers, but the consensus is that these kinds of tutorials won't sell well. Therefore, I have decided to continue TSP as an open-source hobby project!
+
+- Bitcoin: `bc1qjvcsjt57des7j4runchxalksueqlxgadx7fwll`
+- Ethereum: `0x1a34a6763f55887444ffbd8f8d4fae8197478675`
+
+Also, I'm thinking of allowing anyone to contribute in writing and editing of this book, so feel free to submit your shiny PRs!
