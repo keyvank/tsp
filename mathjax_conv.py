@@ -5,4 +5,5 @@ for fname in sys.argv[1:]:
         result = f.read()
     result = result.replace('\\\\\\\\', '\\\\').replace('\\\\(', '$').replace('\\\\)', '$').replace('\\\\[', '$').replace('\\\\]', '$')
     with io.open(fname, 'w') as f:
+        f.write("\n\pagebreak\n")
         f.write(result)
