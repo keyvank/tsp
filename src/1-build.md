@@ -74,7 +74,9 @@ That's basically the way batteries work, they try to make potential differences 
 
 ## Wires
 
-Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. A wire in our emulation can have 4 different states:
+Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our `Wire`s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits. You might also forget to connect your wire to anything at all. In this case, the voltage of the wire represents neither 0 nor 1.
+
+A wire in our emulation can have 4 different states:
 
 * Free (The wire is not connected to anything)
 * Zero (The wire is connected to the ground thus has 0 voltage)
@@ -165,11 +167,120 @@ Here on lines 13 and 18 we are also defining two static methods `zero()` and `on
 
 ## Magical switch
 
-A transistor is an electronic component which typically accepts 2 wires as inputs and has a single output. These wires are called, base, emitter and collector. When the voltage of the base wire is above/below a threshold, the value of the emitter wire is copied into the collector wire. Otherwise, the collector wire will be on the Free state.
+The most primitive element in a digital system is a transistor. A transistor is an electrical domino piece. It converts electrical causes to electrical effects. In very simple terms, a transistor is an electrically controlled switch. There are 3 wires involved which are known as *base*, *emitter*, and *collector*. The base wire is the controller of the switch. An electrical potential between the base and emitter wires will cause the collector wire to get connected with the emitter wire. In other words, the base wire will decide if emitter and collector are connected or not. The emitter will emit electrons and the collector will collect them.
 
-So far we have been working with logic gates that could only accept 0s and 1s as their inputs, but things are not ideal in the real-world, and wires connected to electronic logic gates could have unexpected voltages. Since a wire can have 4 different states in our emulation, our logic gates should also handle all the 4 states.
+https://upload.wikimedia.org/wikipedia/commons/3/37/Transistor.symbol.npn.svg
 
-Let's redefine our primitive And/Or/Not gates given our definition of a wire:
+By observing the behavior of a transistor we will soon know that:
+
+- If the potential-difference between the collector and base is high, the emitter pin will get connected to the collector pin.
+- Otherwise, the emitter pin will be no different than a floating wire.
+
+The second point is very important. It means that, turning the transistor off doesn't put the emitter pin on ZERO state, but it will put it on FREE state! Based on these, we can model a transistor using a truth-table like this:
+
+| B | E | C          |
+|---|---|------------|
+| 0 | 0 | Z          |
+| 0 | 1 | Z          |
+| 1 | 0 | 0 (Strong) |
+| 1 | 1 | 1 (Weak)   |
+
+The transistor we have been discussing so far was a Type-N transistor. The Type-N transistor will turn on when the base wire is driven with a a high potential. There is also another type of transistor, know as Type-P, which will get turned on in case of a low voltage. The truth table for a Type-P transistor is something like this:
+
+| B | E | C          |
+|---|---|------------|
+| 0 | 0 | 0 (Weak)   |
+| 0 | 1 | 1 (Strong) |
+| 1 | 0 | Z          |
+| 1 | 1 | Z          |
+
+Given these models, we can simulate Type-N and Type-P transistors as follows:
+
+```python=
+class NTransistor:
+    def __init__(self, circuit, wire_base, wire_emitter, wire_collector):
+        self.wire_base = wire_base
+        self.wire_emitter = wire_emitter
+        self.wire_collector = wire_collector
+
+    def update(self):
+        b = self.wire_base.get()
+        if b == ONE:
+            self.wire_collector.put(self, self.wire_emitter.get())
+        elif b == ZERO:
+            self.wire_collector.put(self, FREE)
+        else:
+            self.wire_collector.put(self, UNK)
+
+
+class PTransistor:
+    def __init__(self, circuit, wire_base, wire_emitter, wire_collector):
+        self.wire_base = wire_base
+        self.wire_emitter = wire_emitter
+        self.wire_collector = wire_collector
+
+    def update(self):
+        b = self.wire_base.get()
+        if b == ZERO:
+            self.wire_collector.put(self, self.wire_emitter.get())
+        elif b == ONE:
+            self.wire_collector.put(self, FREE)
+        else:
+            self.wire_collector.put(self, UNK)
+```
+
+### Life in a non-ideal world
+
+Digital circuits are effectively just logical expressions that are automatically calculated by the flow of electrons inside what we refer as gates. Logical expressions are defined on zeros and ones, but we just saw that wires in an electronic circuit are not guaranteed to be 0 or 1. So we have no choice but to re-define our gates and decide what their output should be in case of faulty inputs.
+
+Take a NOT gate as an example. The truth table of a NOT gate in an ideal world is this:
+
+| A | NOT A |
+|---|-------|
+| 0 | 1     |
+| 1 | 0     |
+
+However, things are not ideal in the real-world, and wires connected to electronic logic gates could have unexpected voltages. Since a wire can have 4 different states in our emulation, our logic gates should also handle all the 4 states. This is the truth table of a NOT gate which gives you X outputs in case of X or Z inputs:
+
+| A | NOT A |
+|---|-------|
+| 0 | 1     |
+| 1 | 0     |
+| Z | X     |
+| X | X     |
+
+There are two ways we can simulate gates in our simulator software. We either implement them through plain Python code, or we describe them as a circuit of transistors. Here is an example implementation of a NOT gate using the former approach:
+
+```python=
+class Not:
+    def __init__(self, wire_in, wire_out):
+        self.wire_in = wire_in
+        self.wire_out = wire_out
+
+    def update(self):
+        v = self.wire_in.get()
+        if v == FREE:
+            self.wire_out.put(self, UNK)
+        elif v == UNK:
+            self.wire_out.put(self, UNK)
+        elif v == ZERO:
+            self.wire_out.put(self, ONE)
+        elif v == ONE:
+            self.wire_out.put(self, ZERO)
+```
+
+
+
+We can also test out implementation:
+
+```python=
+if __name__ == '__main__':
+    inp = Wire.zero()
+    out = Wire()
+    gate = Not(inp, out)
+    gate.update()
+    print(out.get())
+```
 
 ***NOT gate:*** turns one to zero and zero to one. When the input is Free or Unknown, the output is Unknown:
 
@@ -200,60 +311,6 @@ Let's redefine our primitive And/Or/Not gates given our definition of a wire:
 
 
 We can define gates as classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of a gate based on its inputs. 
-
-```python=
-class Not:
-    def __init__(self, wire_in, wire_out):
-        self.wire_in = wire_in
-        self.wire_out = wire_out
-
-    def update(self):
-        v = self.wire_in.get()
-        if v == FREE:
-            self.wire_out.put(self, UNK)
-        elif v == UNK:
-            self.wire_out.put(self, UNK)
-        elif v == ZERO:
-            self.wire_out.put(self, ONE)
-        elif v == ONE:
-            self.wire_out.put(self, ZERO)
-
-
-if __name__ == '__main__':
-    inp = Wire.zero()
-    out = Wire()
-    gate = Not(inp, out)
-    gate.update()
-    print(out.get())
-```
-
-A transistor is a magical electrical component that allows to control whether two wires are connected or not, through an increase/decrease of potential energy in a controller wire (There are 3 wires involved according to the definition!).
-
-https://upload.wikimedia.org/wikipedia/commons/3/37/Transistor.symbol.npn.svg
-
-The most primitive element in a digital system is a transistor. A transistor is an electrical domino piece. It converts electrical causes to electrical effects. In very simple terms, a transistor is an electrically controlled switch. There are 3 wires involved which are known as *base*, *emitter*, and *collector*. The base wire is the controller of the switch. An electrical potential between the base and emitter wires will cause the collector wire to get connected with the emitter wire. In other word, the base wire will decide if emitter and collector are connected or not. The emitter will emit electrons and the collector will collect them.
-
-There are two types of transistor. The Type-N transistor will turn on when the base wire is driven with a a high potential. And the Type-P transistors will turn on in case of a low voltage. We can sketch truth-table for them:
-
-Type-N Transistors:
-
-| B | E | C          |
-|---|---|------------|
-| 0 | 0 | Z          |
-| 0 | 1 | Z          |
-| 1 | 0 | 0 (Strong) |
-| 1 | 1 | 1 (Weak)   |
-
-Type-P Transistors:
-
-| B | E | C          |
-|---|---|------------|
-| 0 | 0 | 0 (Weak)   |
-| 0 | 1 | 1 (Strong) |
-| 1 | 0 | Z          |
-| 1 | 1 | Z          |
-
-It's very important to know that when the transistor is off, the collector is not driven with anything. It will be like a floating wire, which based on our definitions, will be in the Z state.
 
 Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, on the other hand, Type-N transistors give out very good 1 signals. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
 
