@@ -192,7 +192,9 @@ The transistor we have been discussing so far was a Type-N transistor. The Type-
 | 0 | 0 | 0 (Weak)   |
 | 0 | 1 | 1 (Strong) |
 | 1 | 0 | Z          |
-| 1 | 1 | Z          |
+| 1 | 1 | Z          | 
+
+Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, on the other hand, Type-N transistors give out very good 1 signals. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
 
 Given these models, we can simulate Type-N and Type-P transistors as follows:
 
@@ -228,6 +230,8 @@ class PTransistor:
         else:
             self.wire_collector.put(self, UNK)
 ```
+
+We can define gates as classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of a gate based on its inputs.
 
 ### Life in a non-ideal world
 
@@ -269,8 +273,6 @@ class Not:
             self.wire_out.put(self, ZERO)
 ```
 
-
-
 We can also test out implementation:
 
 ```python=
@@ -281,15 +283,6 @@ if __name__ == '__main__':
     gate.update()
     print(out.get())
 ```
-
-***NOT gate:*** turns one to zero and zero to one. When the input is Free or Unknown, the output is Unknown:
-
-| A | NOT A |
-|---|-------|
-| 0 | 1     |
-| 1 | 0     |
-| Z | X     |
-| X | X     |
 
 ***AND gate:*** is zero when at least one of the inputs is zero, and gets One when all of the inputs are one. Otherwise the output is unknown.
 
@@ -309,31 +302,71 @@ if __name__ == '__main__':
 | 0 | 0 | 0      |
 |   |   | X      |
 
-
-We can define gates as classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of a gate based on its inputs. 
-
-Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, on the other hand, Type-N transistors give out very good 1 signals. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
-
 Here is an example of a NOT gate, built with a type P and a type N transistor:
 
-[TODO]
+```python=
+class Not:
+    def __init__(self, circuit, wire_in, wire_out):
+        self.p = PTransistor(circuit, wire_in, circuit.one(), wire_out)
+        self.n = NTransistor(circuit, wire_in, circuit.zero(), wire_out)
 
-Now that we've got familiar with transistors, it's the time to examine the most primitive logic-gates 
+    def update(self):
+        self.p.update()
+        self.n.update()
+```
+
+Now that we've got familiar with transistors, it's the time to extend our component-set and build some of tthe most primitive logic-gates.
 
 ## Mother of the gates
 
+A NAND gate is a logic-gate that outputs 0 if and only if both of its inputs are 1. It's basically an AND gate which its output is inverted. It can be proven that you can build all of the primitive logic gates (AND, OR, NOT), using different combinations of this single gate:
 
-A NAND gate is a logic-gate that outputs 0 if and only if both of its inputs are 1. It's basically an AND gate which its output is inverted. It can be proven that you can build all of the primitive logic gates (AND, OR, NOT), using different combinations of this single gate. It's the mother gate of all logic circuits. Although, it would be very inefficient to build everything with NANDS in practice, for the sake of simplicity, we'll stick to NAND and will try to build other gates by connecting NAND gates to each other.
+- \\(Not(x) = Nand(x, x)\\)
+- \\(And(x, y) = Not(Nand(x, y)) = Nand(Nand(x, y), Nand(x, y))\\)
+- \\(Or(x, y) = Nand(Not(x), Not(y)) = Nand(Nand(x, x), Nand(y, y))\\)
+
+It's the mother gate of all logic circuits. Although, it would be very inefficient to build everything with NANDS in practice, for the sake of simplicity, we'll stick to NAND and will try to build other gates by connecting NAND gates to each other.
 
 ![NAND gate with transistors](assets/nand.png)
 
 It turns out that we can build NAND gates with strong and accurate output signals using 4 transistors (x2 Type-N and x2 Type-P). Let's prototype a NAND using our simulated N/P transistors!
 
-[TODO]
+```python=
+class Nand:
+    def __init__(self, circuit, wire_a, wire_b, wire_out):
+        inter = circuit.new_wire()
 
-Go ahead and implement other primitive gates using the NAND gate we just defined. After that, we can start making useful stuff out of these gates. The simplest digital circuit which is also useful is something that can add two numbers. Obviously we will be working with bunary numbers. Let's start with a circuit that can add two, one-bit numbers. The result of such an addition is a two bit number.
+        self.p1 = PTransistor(circuit, wire_a, circuit.one(), wire_out)
+        self.p2 = PTransistor(circuit, wire_b, circuit.one(), wire_out)
+        self.n1 = NTransistor(circuit, wire_a, circuit.zero(), inter)
+        self.n2 = NTransistor(circuit, wire_b, inter, wire_out)
 
-In order to design such a circuit, we first need to know what the desired outputs are, for each possible input. Since the output is a 2-bit number, we can decompose such a circuit into two subcircuits, each calculating its corresponding digit.
+    def update(self):
+        self.n1.update()
+        self.n2.update()
+        self.p1.update()
+        self.p2.update()
+```
+
+Now, other primitive gates can be defined as combinations of NAND gates. Take the NOT gate as an example. Here is a 3rd way we can implement a NOT gate (So far, we have had implemented a NOT gate by 1. Describing its behavior through plain python code and 2. By connecting a pair of Type-N and Type-P transistors with each other):
+
+```python=
+class Not:
+    def __init__(self, circuit, wire_in, wire_out):
+        self.nand = Nand(circuit, wire_in, wire_in, wire_out)
+
+    def update(self):
+        self.nand.update()
+```
+
+
+Go ahead and implement other primitive gates using the NAND gate we just defined. After that, we can start making useful stuff out of these gates.
+
+## Let's get useful
+
+The simplest digital circuit which is also useful is something that can add two numbers. Obviously we will be working with bunary numbers. Let's start with a circuit that can add two, one-bit numbers. The result of such an addition is a two bit number.
+
+A nice approach towards building logic such a circuit is to determine what the desired outputs are, for each possible input. Since the output is a 2-bit number, we can decompose such a circuit into two subcircuits, each calculating its corresponding digit.
 
 | A | B | First digit | Second digit |
 |---|---|-------------|--------------|
@@ -344,19 +377,31 @@ In order to design such a circuit, we first need to know what the desired output
 
 The second digit's relation with A and B is very familiar, it's basically an AND gate! Try to find out how the first digit can be calculated by combining primitive gates. (Hint: It outputs 1 only when A is 0 AND B is 1, OR A is 1 AND B is 0)
 
+***Answer:*** It's an Xor gate! (\\(Xor(x, y) = Or(And(x, Not(y)), And(Not(x), y))\\)), and here is the Python code for it:
+
+```python=
+class HalfAdder:
+    def __init__(self, circuit, wire_a, wire_b, wire_out, wire_carry_out):
+        self.gate_sum = Xor(circuit, wire_a, wire_b, wire_out)
+        self.gate_carry = And(circuit, wire_a, wire_b, wire_carry_out)
+
+    def update(self):
+        self.gate_sum.update()
+        self.gate_carry.update()
+```
+
 What we have just built is known as a half-adder. With an half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how primary school's addition algorithm works on binary numbers:
 
 ```
-   11111
+ 1111  1
    
-  1011011
-+  110101
+  1011001
++  111101
 -----------
-       00
-
+ 10010110
 ```
 
-By looking to the algorithm, we can see that for each digit, an addition of 3 bits is being done (Not just two). So, in order to design a multi-bit adder we'll need a circuit that adds 3 one-bit numbers together. Such a circuit is known as a full adder and the third number is often referred as the carry value. Truth table of a three bit adder:
+By looking to the algorithm, we can see that for each digit, an addition of ***3 bits*** is being done (Not just two). So, in order to design a multi-bit adder we'll need a circuit that adds 3 one-bit numbers together. Such a circuit is known as a ***full-adder*** and the third number is often referred as the carry value. Truth table of a three bit adder:
 
 | A | B | C | D0 | D1 |
 |---|---|---|----|----|
@@ -369,9 +414,91 @@ By looking to the algorithm, we can see that for each digit, an addition of 3 bi
 | 0 | 1 | 1 | 0  | 1  |
 | 1 | 1 | 1 | 1  | 1  |
 
+Building a full-adder is still easy. You can use two Half-adders to calculate the first digit, and take the OR of the carry outputs which will give you the second digit.
+
+```python=
+class FullAdder:
+    def __init__(
+        self, circuit, wire_a, wire_b, wire_carry_in, wire_out, wire_carry_out
+    ):
+        wire_ab = circuit.new_wire()
+        wire_c1 = circuit.new_wire()
+        wire_c2 = circuit.new_wire()
+
+        self.ha_1 = HalfAdder(circuit, wire_a, wire_b, wire_ab, wire_c1)
+        self.ha_2 = HalfAdder(circuit, wire_ab, wire_carry_in, wire_out, wire_c2)
+        self.carry = Or(circuit, wire_c1, wire_c2, wire_carry_out)
+
+    def update(self):
+        self.ha_1.update()
+        self.ha_2.update()
+        self.carry.update()
+```
+
 Once we have a triple adder ready, we can proceed and create multi-bit adders. Let's try building a 8-bit adder. We will need to put 8 full-adders in a row, connecting the second digit of the result of each adder as the third input value of the next adder, mimicking the addition algorithm we discussed earlier.
 
-Before designing more complicated gates, make sure you are able to create a working simulation of a 8-bit adder using the primitive elements we simulated in the previous sections.
+```python=
+class Adder8:
+    def __init__(
+        self, circuit, wires_a, wires_b, wire_carry_in, wires_out, wire_carry_out
+    ):
+        carries = (
+            [wire_carry_in] + [circuit.new_wire() for _ in range(7)] + [wire_carry_out]
+        )
+
+        self.adders = [
+            FullAdder(
+                circuit,
+                wires_a[i],
+                wires_b[i],
+                carries[i],
+                wires_out[i],
+                carries[i + 1],
+            )
+            for i in range(8)
+        ]
+
+    def update(self):
+        for adder in self.adders:
+            adder.update()
+```
+
+Before designing more complicated gates, let's make sure our simulated model of a 8-bit adder is working properly. If the 8-bit adder is working, there is a high-chance that the other gates are also working well:
+
+```python=
+def num_to_wires(num):
+    wires = []
+    for i in range(8):
+        bit = (num >> i) & 1
+        wires.append(Wire.one() if bit else Wire.zero())
+    return wires
+
+
+def wires_to_num(wires):
+    out = 0
+    for i, w in enumerate(wires):
+        if w.get() == ONE:
+            out += 2**i
+    return out
+
+
+if __name__ == "__main__":
+    circuit = Circuit()
+    for x in range(256):
+        for y in range(256):
+            wires_x = num_to_wires(x)
+            wires_y = num_to_wires(y)
+            wires_out = [Wire() for _ in range(8)]
+            adder = Adder8(
+                circuit, wires_x, wires_y, Wire.zero(), wires_out, Wire.zero()
+            )
+            adder.update()
+            out = wires_to_num(wires_out)
+            if out != (x + y) % 256:
+                print("Adder is not working!")
+```
+
+Here, we are checking if the outputs are correct given all possible inputs. We have defined two auxillary functions `num_to_wires` and `wires_to_num` in order to convert numbers into a set of wires which can connect to a electronic circuit, and vice versa.
 
 ## When addition is subtraction
 
