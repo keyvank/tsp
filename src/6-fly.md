@@ -362,3 +362,25 @@ Capacitors are DC blockers!
 ## Controlling the world
 
 \\(u(t)=K_pe(t)+K_i\int_0^t{e(\tau)d\tau}+K_d\frac{de(t)}{dt}\\)
+
+## Make it real!
+
+Manufacturing has always been a mystery to me. My most important question always was, how do manufacturers turn any kind of material to the shape they want? How do they automate the process to mass produce stuff? I never got a completely convincing answer, because some of the techniques companies use to shape material and mass produce them is kind of their intellectual property, and you can’t find a lot of resources (At least, on to the point and understandable ones) on the internet! Software engineering is a lazy kind of engineering. There is a magical, general-purpose machine that can do literally anything you want for you. That’s not the case with other kinds of engineering.
+
+Over the years, laziness of software engineers turned to be a good thing for the for the industry too. People started to use software to describe the way they wanted to shape materials (Computer-Aided Design or CAD softwares) and software engineers fetish of abstraction and general purposeness has now inspired building machines that can concert solid blocks into extremely complicated parts for us.
+
+Nowadays, car engines, rocket engines, gearboxes and many other kinds of complicated materials has now got much simpler to produce thanks to the invention of computer sculpturers. Not only easier, but also extremely more accurate!
+
+In this section, we are going to discuss and learn about CNC milling machines and 3D printers, the silicon-valley style of manufacturing stuff!
+
+## To add or to remove? That’s the question
+
+There are two main ways to build a shape out of some material. You either:
+
+1. Take a solid, cubic like piece of material, and start cutting it until you get the shape you want. Just like sculpturing
+
+2. Add very small amount of material, little by little, layer by layer, until you get the shape you want.
+
+Which one is simpler? Which one has fewer waste?
+
+As a human, which one is simpler? Definitely the second one. Almost all complicated hand-made materials throughout the history has been made by subtractive manufacturing.
