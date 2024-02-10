@@ -794,6 +794,10 @@ Sometimes you'll need to move a number from one memory cell to another
 
 Keep in mind that the program above gets ASCII characters as its input and outputs another ASCII character which its code is the sum of the input codes.
 
+## Befriending complexity
+
+As you write more complicated programs in Brainfuck, you will soon notice that the immense amount of complexity is going to become unmaintainable over time. and soon you won't be able to add more logic and features to your Brainfuck programs. That is the time when you start missing functions, classes, and all other fancy tools your favorite high-level programming language provided you for free.
+
 ## What really happens
 
 The Brainfuck CPU we created is similar to real CPUs in many ways, but it lacks many features making it impractical for any serious application. As an example, we didn’t cover how a cpu is able to interact with different hardware (our brainfuck cpu can’t), or how an operating system written for such a simple cpu would look like, or questions like that. In this section, we are going to explore some of those unclear questions you might have about your computer.
