@@ -183,7 +183,7 @@
 <p>Before studying how an human eye works, let's design one for ourself. As you may already know, electrical flows run a biological neural network. So external inputs need to be translated into electrical signals before they can be understood by your brain. We can use a linear mapping for this conversion. We can map the visible specturm into a voltage between 0.0 and 1.0, where 0.0 is red and 1.0 is violet:</p>
 <p>\(e=\frac{f-400tHZ}{390tHZ}\)</p>
 <p>Unfortunately, this mapping doesn't explain how black and white colors are represented in a brain. Well I have to tell you something. Black and white colors do not exist. (Or even light-red and dark-blue colors!) They are imaginary colors our brain has invented for itself in order to perceive darkness (Black) and presence of all waves (White). Well I have some bad news. A light beam doesn't necessarily have a single frequency in it. It can be a combination of multiple frequencies, and our mapping can only handle a single frequency. so we need a different represantation for a color of a pixel. A very naive solution is to have a lot of sensors sensing the strength of different frequencies in the visible spectrum for each pixel. I.e. we can have a set of sensors \(e_{400}\), \(e_{401}\), ..., \(e_{790}\), that can measure the presence of different frequencies (And the neighbour frequencies) as a voltage between 0 and 1. In this model, when all frequencies are 0, the brain will perceive it as black. When all frequencies are 1, the brain will perceive it as white. The problem with this model is that it will need a lot of cells for each pixel. If the human eye is a \(n \times n\) array, then we'll need \(n \times n \times 390\) cells in order to perceive an image.</p>
-<p>We can get smarter than that. Imagine there are only two sensors per pixel, one will tell you how close the frequency is to \(f_a\) and another will tell you how close you are to \(f_b\) (Imagine \(f_a=500tHZ\) and \(f_b=600tHZ\)) </p>
+<p>We can get smarter than that. Imagine there are only two sensors per pixel, one will tell you how close the frequency is to \(f_a\) and another will tell you how close you are to \(f_b\) (Imagine \(f_a=500tHZ\) and \(f_b=600tHZ\))</p>
 <p>If you are ok in math, you probably know that we can build such behavior using the exponetiation of the absolute difference. (Or squared difference, like a Gaussian distribution equation)</p>
 <p>\(e_a = s.e^{-abs(\frac{f - 500}{50})}\)
 \(e_b = s.e^{-abs(\frac{f - 600}{50})}\)</p>
@@ -209,7 +209,7 @@
 <p>He argued that if we take three photographs of the same scene, one with a filter that only passes red light, one that only passes green light and one that only passes blue light, and then somehow combine these three photographs together on a plate, our eyes will be hacked to see a coloured version of that scene. 6 years later, he made the very first colour photography of the history.</p>
 <p>You probably already know that when coloured movies came out, old fashioned movie makers were skeptical of them. Good to know that photographers back then also resisted to take coloured photos, but history has shown us that nobody can fight against advancement of technology.</p>
 <h2 id="digital-era"><a class="header" href="#digital-era">Digital era</a></h2>
-<p>Over a century passed before humans invented digital photography, and a lot of inventions and discoveries happened in between (E.g. people started to take pictures in very high speeds and record &quot;movies&quot;), and I would like skip the history and advancements of the analog photography industry in the next 100 years, because there are too many details that are unrelated to the core idea, and start talking about the digital era, the time when people started to store vision on a computer.</p>
+<p>Over a century passed before humans invented digital photography, and a lot of inventions and discoveries happened in between (E.g. people started to take pictures in very high speeds and record "movies"), and I would like skip the history and advancements of the analog photography industry in the next 100 years, because there are too many details that are unrelated to the core idea, and start talking about the digital era, the time when people started to store vision on a computer.</p>
 <p>It's good to know that digital scanners came before digital cameras. It's also kind of obvious that they have a much simpler structure than digital cameras. The very first digital scanner was invented in 1957 by an american engineer named Russell Kirsch. His scanner could scan photos of size 5cmx5cm in the resoluion of 176x176 pixels (30976 pixels, i.e. ~30 kilopixels!). The bit-depth of his scanner was only 1-bit! The pixels could only be complete black or complete white, so there were no intermediate shades of gray.</p>
 <p>In order to deeply understand how digital photography works, you first have to know there exist some materials that their electrical resistance change when they are exposed to light. They are called photoresistors. Their resistance typically decrease when they are exposed to light. So, if you connect a battery to them, when there is no light, no/small current will flow. But when there is light, current will flow. The more intense light is, the more current it will flow. Now how can we use this to measure light intensity of a physical point? Imagine we emit light to a black surface. A black surface will reflect no light, so a photoresistor nearby won't get excited. A white surface will reflect all the light. so the photoresistor will get excited and current will flow. Now imagine we have an electrical circuit that measures the electrical current in a photoresistor. If current is higher than a threshold \(t\), it will output 1, otherwise it will output 0.</p>
 <p>What Russell Kirsch did in 1957, was something like this: He made a photoresistor that could move on a 2D grid with electrical motors. It would start on the point \((0,0)\) and scanned a complete row, by moving little by little (In case of a 5cmx5cm area, the distance between pixels is 5cm/176, which is around 0.28mm. Then it would move to the next row and scan another line of pixels. It would output 0 or 1 for each pixel. His scanner was so simple so it couldn't scan grayscale information. But he did a trick. Remember there was a threshold \(t\)? He scanned a point several times with different thresholds, (E.g. \(t=0.1\), \(t=0.2\), \(t=0.3\), ...) then he stored number of times he got the 1 output. This way, he could recognize how white a pixel is and store grayscale information too, without much change in the original design! Kirsch's very first digital scanning is one of the most important pictures taken in the history of photography.</p>
@@ -230,7 +230,7 @@
 
 def save_ppm(width, height, rows):
     with io.open('output.ppm', 'wb') as f:
-        f.write(f&quot;P6 {width} {height} 255\n&quot;.encode('ascii'))
+        f.write(f"P6 {width} {height} 255\n".encode('ascii'))
         for row in rows:
             for (r, g, b) in row:
                 f.write(bytes([r, g, b]))
@@ -310,12 +310,12 @@ def color_of(x, y, width, height):
 <h2 id="ray-tracing"><a class="header" href="#ray-tracing">Ray Tracing</a></h2>
 <p>3D computer rendering is probably the most complicated and interesting way a computer
 can stimulate our vision. Our perception is evolved in a way to understand our 3-dimensional
-space and world. Being able to generate arbitrary 3D looking images with a computer brings 
+space and world. Being able to generate arbitrary 3D looking images with a computer brings
 us infinite possibilities. Nowadays people are trying to immerse themselves into virtual worlds
 by putting computer screens really close to their eyes, which renders photorealistic images.
-There are many methods and algorithms by which we can 3D computer images, we are going to 
+There are many methods and algorithms by which we can 3D computer images, we are going to
 implement two of the most important ones in this book. One of those methods will give you very
-photorealistic outputs with high rendering times, while the other method gives you inaccurate 
+photorealistic outputs with high rendering times, while the other method gives you inaccurate
 outputs but is fast enough to generate images in real-time, making it perfect for 3D games.</p>
 <p>Surprisingly (Or obviously for some!), the rendering algorithm that gives you real-looking
 outputs is much simpler to implement, so let's dive in!</p>
@@ -329,12 +329,12 @@ that reach our virtual eye/camera. Given this fact we can get clever and do this
 in a much more efficient way! We just need to go backwards. We will generate rays from our
 virtual eye and see if they will end up on a lit source! This is the core idea behind the
 Ray-Tracing algorithm!</p>
-<p>The Ray-Tracing algorithm for generating 3D computer images is all about tracing 
-the route a photon goes through when reaching our eyes. You can assume that photons 
+<p>The Ray-Tracing algorithm for generating 3D computer images is all about tracing
+the route a photon goes through when reaching our eyes. You can assume that photons
 are like particles that are emitted from light sources, as if a lamp is shooting out
-a lot of ultra tiny balls. These balls change their colors when they hit objects and 
-absorb their colors, and finally some of them reach our eyes, letting us to see the 
-world around us. Since photons move on straight lines, we can study their behavior 
+a lot of ultra tiny balls. These balls change their colors when they hit objects and
+absorb their colors, and finally some of them reach our eyes, letting us to see the
+world around us. Since photons move on straight lines, we can study their behavior
 with mathematical vectors. Since we live in a 3D world, the movements of our photons
 can be analyzed using 3D vectors. A 3D vector is nothing but a tuple of 3 floating-point
 numbers. A 3D vector can be used for storing the position or direction of a photon.</p>
@@ -347,7 +347,7 @@ numbers. A 3D vector can be used for storing the position or direction of a phot
 <p>There are two very special and interesting operations that can be done on 3D vectors:</p>
 <ol>
 <li>
-<p>Dot-product: Calculates how aligned the vectors are. The dot-product of two vectors 
+<p>Dot-product: Calculates how aligned the vectors are. The dot-product of two vectors
 is in its maximum when both vectors are pointing at the same direction. The dot-product
 of two vectors is a scalar value, which can be calculated in two ways:</p>
 <ul>
@@ -388,7 +388,7 @@ def cross(self, other):
 of vector elements and taking its root, the length of a 3D vector can also be calculated using a
 similar approach:</p>
 <p>\(|\vec{A}|=\sqrt{A_x^2 + A_y^2 + A_z^2}\)</p>
-<p>Alternatively, we can calculate the length of a vector by taking the square root of the vector, 
+<p>Alternatively, we can calculate the length of a vector by taking the square root of the vector,
 dotted with itself:</p>
 <p>\(|\vec{A}|=\sqrt{\vec{A}.\vec{A}}\)</p>
 <pre><code class="language-python">def length(self):
@@ -413,18 +413,18 @@ elements of the vector by the length of the vector:</p>
 </code></pre>
 <p>Although your compiler's optimizer will do the job for you, it's generally better to calculate
 the inverse of a number and multiply it with your variables, instead of dividing the variables
-by a number, since multiplication is a much cheaper operation and will take much less clock 
+by a number, since multiplication is a much cheaper operation and will take much less clock
 cycles of your CPU compared to divisions.</p>
 <p><img src="assets/rtc.png" alt="Shooting rays from an imaginary eye" /></p>
 <p>Assuming our imaginary eye is located at \(\vec{E}\), looking at an object that is located on a
-target \(\vec{T}\), we may assume what is being seen by the eye is reflected on a square plane 
-located with a distance of \(1\), which its center is \(\vec{C}\). Obviously, the direction of 
+target \(\vec{T}\), we may assume what is being seen by the eye is reflected on a square plane
+located with a distance of \(1\), which its center is \(\vec{C}\). Obviously, the direction of
 \(\vec{EC}\) should be equal with \(\vec{ET}\). Since the size of \(\vec{EC}\) should be 1, we may
 conclude that \(\vec{EC}\) is the normalized vesion of \(\vec{ET}\).</p>
-<p>Now, assuming we have the position of the left-down corner of this plane (\(\vec{LD}\)), and we 
-want to render a \(W \times H\) resolution image, we may loop through each of the pixels on the 
-image and calculate the corresponding 3D point located on the 3D plane (Let's name it 
-\(\vec{P_{ij}}\)), in order to calculate the ray that starts from \(E\)and goes in the direction 
+<p>Now, assuming we have the position of the left-down corner of this plane (\(\vec{LD}\)), and we
+want to render a \(W \times H\) resolution image, we may loop through each of the pixels on the
+image and calculate the corresponding 3D point located on the 3D plane (Let's name it
+\(\vec{P_{ij}}\)), in order to calculate the ray that starts from \(E\)and goes in the direction
 of \(\vec{EP_{ij}}\).</p>
 <p>\(\vec{P_{ij}}=\vec{LD}+\frac{i}{W}\vec{R}+\frac{j}{H}\vec{U}\)</p>
 <p>Let's hold the position and direction of a ray in a seperate <code>Ray</code> class:</p>

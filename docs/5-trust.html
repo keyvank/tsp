@@ -189,7 +189,7 @@ When they think of something, they are not aware that their mind is isolated fro
 <p>I would like to define signature as a more general term: a signature is something that is special to someone/something. Your face, your voice, the way you speak, your fingerprint, your handwriting are all examples of signatures. They are special to you, and it's hard to find someone other than you that has the exact same handwriting or face or etc. Therefore, they are an important ingredient of trust. If you know your friend's handwriting well, you can catch a faker/pretender easily, because most probably he can't fake your friend's handwriting very well.</p>
 <p>A signature doesn't solve all of the problems. Sometimes you might need to say something to a friend but do not want anybody else to hear it. In a face to face communication, this might be fixed easily (At some level!). You both can go into a private room, and make sure nobody else is nearby. But how can you do this when your message is on a piece of paper, and you don't want to carry the message yourself, but you want a middle man to send it for you. How can you be sure that someone won't read the letter in the middle of the way?</p>
 <p>These questions are all discussed and answered in a vast field of science called Cryptography. Cryptography has a long history. Historians claim that the first use of cryptography started sometime around 1900 BC in ancient Egypt. Though the interesting thing is that, the use of cryptographic symbols back then was for people's own amusement (You know, it's fun to break codes and solve riddles). So it was somewhat a kind of art and literature, and not serious attempts in secret communication.</p>
-<p>Substitution ciphers were probably the most popular way of coding the messages among ancient people. In a substituion cipher, there is a fixed one-to-one mapping that tells you which character to use instead of a character in the original message. As an example, let's say our mapping simply maps a character to its next character in the English alphabet (This is an example of a Caesar cipher). So the coded version of &quot;hello&quot; would be: &quot;ifmmp&quot;. Though this is a very simple mapping and can be easilly hacked (Someone can just try different number of character shifts until something meaningful comes out of the text).</p>
+<p>Substitution ciphers were probably the most popular way of coding the messages among ancient people. In a substituion cipher, there is a fixed one-to-one mapping that tells you which character to use instead of a character in the original message. As an example, let's say our mapping simply maps a character to its next character in the English alphabet (This is an example of a Caesar cipher). So the coded version of "hello" would be: "ifmmp". Though this is a very simple mapping and can be easilly hacked (Someone can just try different number of character shifts until something meaningful comes out of the text).</p>
 <p>A harder to crack version of a substitution cipher uses random character mappings. This method was sophisticated and seemingly-secure enough that people used it for thousands of years, until an Arab mathematician named Al-Kindi surprisingly showed that it's easy to crack (Sometime around AD 800). He invented a method called frequency analysis. In this method, we first count the number of times each letter happens in large amounts of text (From books and etc), and then build a frequency graph out of it, which shows us which letters are most/least used in the target alphabet. We then do the same thing with the cipher text, and then try to find the mapping with the help of frequency data. As an example, doing frequency analysis on the English alphabet shows us that the E (11.16%), A (8.49%) and R (7.58%) letters are the most widely used characters in English texts, while the Q (0.1962%), J (0.1965%) and Z (0.2722%) are the least used ones. By doing the frequency analysis on the target text (If the encrypted text is large enough!), if we figure out that the letter K is the most common encrypted letter, you can know with a high probability that K is the encoded version of E or A. His discovery is known to be the most important cryptanalytic advance until World War II.</p>
 <p>Al-Kindi proposed that we can make frequency analysis methods less effective by using polyalphabetic substititutions. So far we have been describing monoalphabetic substitutions, which means, single characters are encrypted to single character. In a polyalplabetic substitution cipher, multiple letters are substituted with multiple letters. In order to apply frequency analysis attack on a 2-by-2 polyalphabetic substitution cipher, we have to calculate frequencies of aa, ab, ac, .., zx, zy, zz. Analysis gets much harder when the length of mappings is increased.</p>
 <p>Discovering the fact that a polyalphabetic substitution cipher is hard to decode (Even with frequency analysis methods), was a huge progress in cryptography. But there is a problem: in order to encrypt and decrypt using n-character to n-character polyalphabetic substitution ciphers, we have to create a unique n-character to n-character mapping, and both the encryptor and decryptor should have a copy of it (Let's call this mapping the <em><strong>secret key</strong></em>). Assuming our target alphabet has \(\alpha\) letters, and we want to substitute \(n\) characters per block, our mapping should have \(\alpha^n\) entries. In case of English language (Without ponctuation marks), we have 26 character. Let's say we would like to use 5-character to 5-character ciphers for encryptions, then our code-book would need to have \(26^5 = 11881376\) entries, which is already a very giant secret key for a very weak encryption/decryption algorithm.</p>
@@ -274,7 +274,7 @@ def egcd(a, b):
 def modinv(a):
     g, x, y = egcd(a, P)
     if g != 1:
-        raise Exception(&quot;modular inverse does not exist&quot;)
+        raise Exception("modular inverse does not exist")
     else:
         return x % P
 
@@ -314,9 +314,9 @@ class Point:
 
     def __str__(self):
         if self.is_zero():
-            return &quot;Point(Inf)&quot;
+            return "Point(Inf)"
         else:
-            return f&quot;Point({self.x}, {self.y})&quot;
+            return f"Point({self.x}, {self.y})"
 
     def __repr__(self):
         return str(self)
@@ -333,7 +333,7 @@ G = Point(
 print((G + G) + G == G + (G + G))
 </code></pre>
 <h2 id="electronic-cash-revolution"><a class="header" href="#electronic-cash-revolution">Electronic Cash revolution</a></h2>
-<p>You may already know that I am from Iran, a mysterious country under plenty of sanctions, withholding me from doing any financial activity with people outside our isolated world. We don't have international credit-cards in Iran, and our banking system is completely isolated from the rest of the world (At least when I'm writing this book!). As a young, passionate programmer, spending his teenage years working on &quot;open-source&quot; projects, I was dreaming of getting donations for the work I was publishing online, but I couldn't find any way I could accept money from people on the internet. I couldn't even have something like a PayPal account, it was like a dead-end for me, but you know the end of the story, I found about Bitcoin. I don't remember exactly if I myself looked for an &quot;uncontrollable&quot; (Permissionless?) way of receiving money and found Bitcoin as a result, or a Bitcoin company popped onto my eyes while surfing the internet, anyways, Bitcoin was a saviour for me.</p>
+<p>You may already know that I am from Iran, a mysterious country under plenty of sanctions, withholding me from doing any financial activity with people outside our isolated world. We don't have international credit-cards in Iran, and our banking system is completely isolated from the rest of the world (At least when I'm writing this book!). As a young, passionate programmer, spending his teenage years working on "open-source" projects, I was dreaming of getting donations for the work I was publishing online, but I couldn't find any way I could accept money from people on the internet. I couldn't even have something like a PayPal account, it was like a dead-end for me, but you know the end of the story, I found about Bitcoin. I don't remember exactly if I myself looked for an "uncontrollable" (Permissionless?) way of receiving money and found Bitcoin as a result, or a Bitcoin company popped onto my eyes while surfing the internet, anyways, Bitcoin was a saviour for me.</p>
 <p>Cryptography was once all about encryption and authentication. It was until recently when mankind started to wonder if he can use computers to build some kind of currency that is not controlled by anyone. Many people might wonder why someone might need something like Bitcoin? Bitcoin helped me, a innocent boy, to escape the limitations I had in my country and transact money with people on the Internet. Bitcoin has been useful for me, and for me, this single usecase is enough to say that Bitcoin is awesome and is already solving problems. If you are a privileged person and have not ever faced problems like this, here might be some reasons why you might need a decentralized currency:</p>
 <ul>
 <li>Privacy - You don't want your government to track every small financial activity you are doing</li>
@@ -355,7 +355,7 @@ print((G + G) + G == G + (G + G))
 </ul>
 <p>Charlie can buy a product from both Alice and Bob by sending the same 3 coins to them, effectively spending his coins twice. The problem arises due to the fact that the servers in our network can not agree on the state. Some servers may stop in the #1 state and some in #2, and both states are indeed valid. This problem is known as the Double-Spending problem, and the reason it happens is that the servers can't decide which transaction occurred first.</p>
 <p>The classic approach in solving the double-spending problem is to have a central authority deciding the order of transactions. Imagine writing two cheques for Alice and Bob, spending 3 of your coins (While you only have 5). If they go to the bank and try to cash out the cheque at the exact same time, only one of the cheques will pass, since there is a single server somewhere, timestamping the transactions as they happen, disallowing a transaction to happen in case of insufficient balance.</p>
-<p>The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state, without needing a centralized authority. As its inventor describe Bitcoin, Proof-of-Work is a decentralized method for &quot;timestamping&quot; transactions.</p>
+<p>The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state, without needing a centralized authority. As its inventor describe Bitcoin, Proof-of-Work is a decentralized method for "timestamping" transactions.</p>
 <h2 id="the-most-precious-spam-fighter"><a class="header" href="#the-most-precious-spam-fighter">The most precious spam-fighter!</a></h2>
 <p>Back in 1997, Adam Back, a british cryptographer and cypherpunk, invented something called HashCash. HashCash was a method people could use to fight with denial-of-service attacks (Excessive number of requests trying to get a service down). The idea was to require users to solve a moderately hard puzzle before allowing them to use the service. The solution could also be used as a spam filter (Imagine recipients only accept a mail in their inbox when a solved HashCash puzzle is attached to the mail). HashCash was assuming that we can make the life of attackers/spammers much harder, by requiring them to put significant computation resources for every request/email they make.</p>
 <p>The puzzle was to find certain inputs for a hash function such that the output is below a threshold. I can't explain this better than a piece of Python code:</p>
@@ -363,18 +363,18 @@ print((G + G) + G == G + (G + G))
 
 
 def h(inp):
-    return int.from_bytes(hashlib.sha256(inp).digest(), byteorder=&quot;little&quot;)
+    return int.from_bytes(hashlib.sha256(inp).digest(), byteorder="little")
 
 
 MAX_VAL = 2 &lt;&lt; 256 - 1
 THRESHOLD = MAX_VAL // 10000000
 
-MY_EMAIL = b&quot;Hey, I'm not trying to spam you! :)&quot;
+MY_EMAIL = b"Hey, I'm not trying to spam you! :)"
 
 i = 0
 while True:
-    if h(MY_EMAIL + i.to_bytes(8, &quot;little&quot;)) &lt; THRESHOLD:
-        print(&quot;Nonce:&quot;, i)
+    if h(MY_EMAIL + i.to_bytes(8, "little")) &lt; THRESHOLD:
+        print("Nonce:", i)
         break
     i += 1
 
@@ -386,8 +386,8 @@ while True:
 <li>If you want to get a \(\leq 3\), you must approximately roll the dice for \(\frac{6}{3}=2\) timess.</li>
 <li>If you want to get a \(\leq 6\), you must approximately roll the dice for \(\frac{6}{3}=1\) timess.</li>
 </ul>
-<p>The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \(0\) to \(2^{256}-1\). In order to get an output below \(\theta\), you will need to try different inputs (Roll the dice) for \(\frac{2^{256}}{\theta}\) times. You can roll a hash-function by &quot;slightly&quot; changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).</p>
-<p>In our HashCash example, we require the email sender to &quot;work&quot; approximately as much as running SHA-256 for 1 million times!</p>
+<p>The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \(0\) to \(2^{256}-1\). In order to get an output below \(\theta\), you will need to try different inputs (Roll the dice) for \(\frac{2^{256}}{\theta}\) times. You can roll a hash-function by "slightly" changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).</p>
+<p>In our HashCash example, we require the email sender to "work" approximately as much as running SHA-256 for 1 million times!</p>
 <h2 id="chaining-proofs-of-work"><a class="header" href="#chaining-proofs-of-work">Chaining proofs of work!</a></h2>
 <p>Satoshi Nakamoto discovered a interesting fact about proof-of-work puzzles. After solving a proof-of-work puzzle, you can append some more data to the whole thing and try to solve the proof of work puzzle again for the new data.</p>
 <p>Suppose we first find \(nonce_0\) such that: \(H(data_0 | nonce_0) &lt; \theta\). We then append \(data_1\) to the hash of old data and find \(nonce_1\) such that \(H(H(data_0 | nonce_0) | data_1 | nonce_1) &lt; \theta\)</p>
@@ -416,48 +416,48 @@ while True:
 <p>The following Python code will let you to generate commitments for participating in a cryptographic Rock/Paper/Scissors game:</p>
 <pre><code class="language-python">import random, hashlib
 
-choice = input(&quot;Choice? (R/P/S)&quot;)
-assert choice in [&quot;R&quot;, &quot;P&quot;, &quot;S&quot;]
+choice = input("Choice? (R/P/S)")
+assert choice in ["R", "P", "S"]
 
 # Generate a random 16 letter alphanumeric salt
-salt = &quot;&quot;.join(random.choice(&quot;0123456789ABCDEF&quot;) for i in range(16))
+salt = "".join(random.choice("0123456789ABCDEF") for i in range(16))
 
-commit = hashlib.sha256((choice + salt).encode(&quot;ascii&quot;)).hexdigest()
+commit = hashlib.sha256((choice + salt).encode("ascii")).hexdigest()
 
-print(&quot;Salt (Reveal it later!):&quot;, salt)
-print(&quot;Commit:&quot;, commit)
+print("Salt (Reveal it later!):", salt)
+print("Commit:", commit)
 
 # Reveal choice and salt later
 </code></pre>
 <p>After both you and your opponent have got the commitments of each other, you may now reveal your choices and respective salts. The following Python3 program may be used for finding the winner:</p>
 <pre><code class="language-python">import hashlib
 
-alice_choice = input(&quot;Alice choice? &quot;)
-alice_salt = input(&quot;Alice salt? &quot;)
-alice_commit = input(&quot;Alice commitment? &quot;)
+alice_choice = input("Alice choice? ")
+alice_salt = input("Alice salt? ")
+alice_commit = input("Alice commitment? ")
 
-if alice_choice not in [&quot;R&quot;, &quot;P&quot;, &quot;S&quot;]:
-    print(&quot;Alice has made an invalid move!&quot;)
+if alice_choice not in ["R", "P", "S"]:
+    print("Alice has made an invalid move!")
 
 if (
     alice_commit
-    != hashlib.sha256((alice_choice + alice_salt).encode(&quot;ascii&quot;)).hexdigest()
+    != hashlib.sha256((alice_choice + alice_salt).encode("ascii")).hexdigest()
 ):
-    print(&quot;Alice is cheating!&quot;)
+    print("Alice is cheating!")
 
-bob_choice = input(&quot;Bob choice? &quot;)
-bob_salt = input(&quot;Bob salt? &quot;)
-bob_commit = input(&quot;Bob commitment? &quot;)
+bob_choice = input("Bob choice? ")
+bob_salt = input("Bob salt? ")
+bob_commit = input("Bob commitment? ")
 
-if bob_choice not in [&quot;R&quot;, &quot;P&quot;, &quot;S&quot;]:
-    print(&quot;Bob has made an invalid move!&quot;)
+if bob_choice not in ["R", "P", "S"]:
+    print("Bob has made an invalid move!")
 
-if bob_commit != hashlib.sha256((bob_choice + bob_salt).encode(&quot;ascii&quot;)).hexdigest():
-    print(&quot;Bob is cheating!&quot;)
+if bob_commit != hashlib.sha256((bob_choice + bob_salt).encode("ascii")).hexdigest():
+    print("Bob is cheating!")
 
 # Winner may now be determined based on alice_choice and bob_choice!
-print(&quot;Alice:&quot;, alice_choice)
-print(&quot;Bob:&quot;, bob_choice)
+print("Alice:", alice_choice)
+print("Bob:", bob_choice)
 </code></pre>
 <h3 id="commiting-to-a-set-of-values"><a class="header" href="#commiting-to-a-set-of-values">Commiting to a set of values</a></h3>
 <p>Not only you can commit to a single value, but you can commit to multiple values, and later prove and reveal the existence of a certain value in the set. Here is a silly cryptographic game where commiting to a set of values might be useful. Imagine I have chosen a number between 0 to 1000, and I want you to make 20 guesses on what my number is. You may take 20 random guesses and commit to it by taking the hash of a comma seperated string, containing all of your guesses. You can then reveal your guesses and I can check:</p>
@@ -496,7 +496,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <tr><td>Banana</td><td>Banana</td><td>Orange</td></tr>
 </tbody></table>
 </div>
-<p>Let's make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that's ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be \(3^9\) different possible defintions for \(\times\). If we start with a random table, we will lose some of the properties \(\times\) operator has on regular numbers. In case of regular numbers, we know that \(a \times b\) is equal with \(b \times a\). There is also one very unique and important property that we have on regular numbers. \(a \times (b + c)\) is equal with \(a \times b + a \times c\). Try to design \(\times\) operator on fruits so that it obeys these properties too. You will probably reach to a table like this: </p>
+<p>Let's make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that's ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be \(3^9\) different possible defintions for \(\times\). If we start with a random table, we will lose some of the properties \(\times\) operator has on regular numbers. In case of regular numbers, we know that \(a \times b\) is equal with \(b \times a\). There is also one very unique and important property that we have on regular numbers. \(a \times (b + c)\) is equal with \(a \times b + a \times c\). Try to design \(\times\) operator on fruits so that it obeys these properties too. You will probably reach to a table like this:</p>
 <div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A * B</th></tr></thead><tbody>
 <tr><td>Apple</td><td>Apple</td><td>Apple</td></tr>
 <tr><td>Apple</td><td>Orange</td><td>Apple</td></tr>
@@ -546,7 +546,7 @@ print(&quot;Bob:&quot;, bob_choice)
 </ol>
 <p><img src="assets/lock.png" alt="The box can be locked with two locks at the same time, needed both parties to remove their locks in order to open the box" /></p>
 <h3 id="stealth-addresses"><a class="header" href="#stealth-addresses">Stealth addresses!</a></h3>
-<p>The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn't want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private). </p>
+<p>The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn't want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private).</p>
 <ul>
 <li>Bob generates a key \(m\) (Master private key), and computes \(M = g^m\) (Master public key), where \(g\) is a commonly-agreed generator point for the elliptic curve.</li>
 <li>Alice generates an ephemeral key \(r\), and publishes the ephemeral public key \(R = g^r\).</li>
