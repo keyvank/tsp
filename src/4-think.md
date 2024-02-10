@@ -197,6 +197,38 @@ An embedding layer is basically a array which you can access its elements. It's 
 * Propagation: `Y=T[X]`
 * Backpropagation: `dT[X]/dX += delta`
 
+As discussed before, sometimes the key to building a good neural network is choosing the way data is encoded/decoded. Since the beginning of the chapter, one of our most important goals was to build a language model. Many of the modern language models are nothing but word-predictors. (Given a list of words, predict the next word). In case of solving the problem using neural-networks, we have to somehow encode the list of words into some numbers that can be feeded to the network, and then interpret the output of the network (Which is a number itself), as a word.
+
+Suppose that the language we are working with is a very simple one and has only 20 words, which are:
+
+`I`, `you`, `we`, `they`, `go`, `run`, `walk`, `say`, `sing`, `jump`, `think`, `poem`, `and`, `or`, `read`, `today`, `now`, `book`, `fast`, `song`
+
+Here are some simple sentences in this made-up language:
+
+- `I` `run` `fast`
+- `you` `read` `book`
+- `we` `run` `fast` `and` `I` `sing` `song`
+
+Now the questions is, how can these sentences be feeded to a neural-network which can only perform numerical operations? How do we convert them into numbers?
+
+A very naive encoding for this scenario is one-hot encoding.
+
+## One, but hot!
+
+Sometimes, instead of a quantity, you would like to feed a selection among options to a neural-network (E.g a neural network that predicts the longevity of a human given his information. You can clearly see that some of the properties of a human can be quantified, like his/her age, weight and height, but some simply can't). As an example, the gender of a person is not a quantity. In such situations, you can simply assign different numbers to different options and pass those numbers to the network. You can for example assign the number 0.25 for the option `man`, and number `0.5` for the option `woman`. 
+
+But is this the best way we can encode things to be fed to a network? You will soon figure out that your model will have a very hard time understanding what these numbers mean. That's also the case with real humans. Imagine I tell you property X of person A is `0.25` while for person B is `0.5`. You will probably try to interpret those numbers as a quantizable property of a human, but there really isn't a meaningful mapping between a human's gender and his gender. Neural networks are biologically inspired structures, so if it's hard for us to interpret numbers as options, there is a high chance that neural networks can't do it well too.
+
+There is a better way for feeding these kind of information to a neural network, instead of mapping the property to a single number and pass that number through a single neuron to our network, we can have one neuron per option, each specifying the presence of that option in the sample data. In case of our example, assuming we have 2 different genders, we will have two inputs, each input specifying man***ness*** and woma***ness*** of the data sample.
+
+It's one-hot! One of the inputs is hot (1) and the others are cold (0). It turns our that, networks trained this way perform much better than when the option is encoded as a random, unmeaningfull number. There is also another benefit training a network like this: Imagine a data sample where the man-ness and woman-ness properties are both `0.5`. The network will be able to make some sense of it!
+
+Ok, getting back to our example of a language-model, we can use one-hot encodings to encode each word of our sentence as a number. Assuming our model is able to predict the next word of a 10-word sentence, where each word is an option among 20 possible options, our model should accept \\(10 \times 20\\) numbers as input. That's already a big number. The English language alone has approximately 170k words (According to Oxford English Dictionary), probably without considering many of the slangs and internet words! Imagine having to feed 170k numbers for every word you have in a sentence! This is obviously impractical.
+
+Although one-hot encoding works perfectly when the options are limited, it doesn't work in cases where we have millions of options (E.g a word in a language model). So we have to come up with a different solution.
+
+Let's get back to our dummy solution, where we assigned a number to each word. Let's modify this method a bit: instead of mapping a word to a single number, let's map them to multiple numbers, but in a smart way! Each of the numbers assigned to the words will have a certain meaning. The 1st dimension could specify if the word is a verb or a name, the 2nd dimension could specify if it has a positive or a negative feeling, the 3rd can specify if it's about moving or staying still and so on. This is known as a word-embedding. A mapping between words to \\(k\\) dimensional numbers. Feeding a a neural networks this way saves a lot of neurons for us. We'll only have to pass \\(k\\) numbers per each word!
+
 **MatMul**
 
 Let's say we have \\(n\\) neurons in a layer, each accepting the outputs of the \\(m\\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!
