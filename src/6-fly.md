@@ -384,3 +384,24 @@ There are two main ways to build a shape out of some material. You either:
 Which one is simpler? Which one has fewer waste?
 
 As a human, which one is simpler? Definitely the second one. Almost all complicated hand-made materials throughout the history has been made by subtractive manufacturing.
+
+It’s crucial for us to visualize what is happening in our 3D printing simulator in order to see if it is working smoothly, so we perhaps need a 3D rendering library for doing so. We definitely can use our codes in chapter 3 for this reason, but let’s just keep it simple and use a more efficient, production grade library for this purpose. We already know how 3D rendering works so we are not cheating! Here I’ll be using a OpenGL binding for Python named PyOpenGL in order to draw simple boxes. In order to keep the dependency of this book to auxiliary Python libraries as low as possible, I’m going to define an abstracted interface over a 3D rendering library and use that instead of directly calling the OpenGL functions in the codes.
+
+```python=
+class RenderingLibrary:
+    def clear():
+      pass
+    def draw_box()
+      pass
+    def draw_sphere()
+      pass
+
+Our library will have 3 simple functions, one for clearing the screen, one for drawing a cube and one for drawing an sphere. It by default has some lighting to make the output image feel more 3D. We don’t care how the interface is implemented, but we’ll use it in our code. A working implementation will be provided in the git repo of the book!
+
+I unfortunately didn’t find any article explaining how G codes are generated from CAD files, but here are some guesses and intuitions of how it really works. Never be scared of designing challenging stuff all by your own, that’s where true creativity resides!
+
+The language for communicating with both subtractive and additive manufacturing machines is a computer language named G code. Although it’s referred as a programming language, it really isn’t. It doesn’t let you have loops, conditions and etc. it only lets you to move the extruder or the mill to arbitrary locations!
+
+G code is a big language and has a lot of commands, so simulated 3D printer and CNC machine will use a subset of G code, only including the most important commands.
+
+Our goal in this section is to generate G code commands for building a 3D sphere in both additive/subtractive manufacturing machines. We also want to see the outcome of those two using our RenderingLibrary.
