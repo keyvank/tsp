@@ -286,6 +286,106 @@ Abstract Thinking isn't a MUST in our world to survive (That's why most animals 
 </ol>
 <p>And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.</p>
 <p>Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!</p>
+<h3 id="tensor"><a class="header" href="#tensor">Tensor</a></h3>
+<p>If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.</p>
+<p>Tensor libraries are essential for building super-complicated neural networks. So let's implement a tensor library for ourselves!</p>
+<p>A tensor can be simply modeled as a piece of data on your memory which we <em><strong>assume</strong></em> has a particular shape.</p>
+<p>As an example, consider the data: <code>[1, 2, 3, 4, 5, 6]</code>. There are multiple ways to interpret these data as multidimensional array:</p>
+<ul>
+<li>6 <code>[1, 2, 3, 4, 5, 6]</code></li>
+<li>6x1 <code>[[1], [2], [3], [4], [5], [6]]</code></li>
+<li>1x6 <code>[[1, 2, 3, 4, 5, 6]]</code></li>
+<li>3x2 <code>[[1, 2], [3, 4], [5, 6]]</code></li>
+<li>2x3 <code>[[1, 2, 3], [4, 5, 6]]</code></li>
+<li>1x2x3x1 <code>[[[[1], [2], [3]], [[4], [5], [6]]]]</code></li>
+</ul>
+<p>See? The data is always the same. It's just the way we interpret it that makes different shapes possible. Given on that, we can implement a tensor as a Python class, holding a list of values as its <code>data</code>, and a tuple of numbers as its shape:</p>
+<pre><code class="language-python=">def shape_size(shape):
+    res = 1
+    for d in shape:
+        res *= d
+    return res
+
+
+class Tensor:
+    def __init__(self, data, shape):
+        if len(data) != shape_size(shape):
+            raise Exception()
+        self.data = data
+        self.shape = shape
+</code></pre>
+<p>We can also make sure that the data and the shape are compatible by checking if <code>data</code> has same number of values as the size of the shape. (You can calculate the size of a shape by multiplying all of its dimension, as we  did in <code>shape_size</code> function)</p>
+<p>Let's first add some static methods allowing us to generate tensors with constant values:</p>
+<pre><code class="language-python=">class Tensor:
+    # ...
+
+    @staticmethod
+    def const(shape, val):
+        return Tensor([val] * shape_size(shape), shape)
+
+    @staticmethod
+    def zeros(shape):
+        return Tensor.const(shape, 0)
+
+    @staticmethod
+    def ones(shape):
+        return Tensor.const(shape, 1)
+</code></pre>
+<p>It's also very helpful to print a tensor according to its shape. We do this by first converting the tensor into a regular Python nested-list, and then simply converting it to string:</p>
+<pre><code class="language-python=">class Tensor:
+    # ...
+
+    def sub_tensors(self):
+        sub_tensors = []
+        sub_shape = self.shape[1:]
+        sub_size = shape_size(sub_shape)
+        for i in range(self.shape[0]):
+            sub_data = self.data[i * sub_size : (i + 1) * sub_size]
+            sub_tensors.append(Tensor(sub_data, sub_shape))
+        return sub_tensors
+
+    def to_list(self):
+        if self.shape == ():
+            return self.data[0]
+        else:
+            return [sub_tensor.to_list() for sub_tensor in self.sub_tensors()]
+
+    def __str__(self):
+        return str(self.to_list())
+</code></pre>
+<p>The <code>sub_tensors</code> function allows us to decompose a tensor into its inner tensors by removing its first dimension. As an example, it can convert a 4x3x2 tensor into a list containing four 3x2 tensors. Having this, we can implement a recursive function <code>to_list</code> which can convert a tensor into a nested-list by recursively converting its sub-tensors to lists.</p>
+<p>Mathematical operations in tensor libraries are either element-wise operations that work on scalar values (E.g add/sub/mul/div) or operations that accept two-dimensional tensors (E.g matrix multiplication)</p>
+<p>Element-wise operations, as they name suggest, perform the operation on the corresponding elements of two tensors. However, sometimes we can see people adding two tensors with different shapes and sizes with each other. How are those interpreted?</p>
+<p>Examples:</p>
+<ul>
+<li><code>3x4x2 + 4x2 = 3x4x2</code></li>
+<li><code>4x2 + 3x4x2 = 3x4x2</code></li>
+<li><code>5x3x4x2 + 4x2 = 5x3x4x2</code></li>
+<li><code>5x3x4x2 + 3x4x2 = 5x3x4x2</code></li>
+<li><code>5x1x4x2 + 3x4x2 = 5x3x4x2</code></li>
+<li><code>5x1x4x2 + 3x1x2 = 5x3x4x2</code></li>
+</ul>
+<p>Our algorithm:</p>
+<ul>
+<li>Add as many 1s as needed to the tensor with smaller number of dimensions so that the number of dimensions in both of them become equal. E.g. when adding a 5x1x4x2 tensor with a 3x1x2 tensor, we first reshape the second matrix to 1x3x1x2.</li>
+<li>Make sure the corresponding dimensions in both tensors are equal <em><strong>or</strong></em> at least on of them is 1. E.g it's ok to add 5x4x3x2 tensor with a 4x3x2 or a 4x1x2 tensor, but it's NOT ok to add it with a 4x2x2, because \(2 \neq 3\).</li>
+<li>Calculate the final shape by taking the maximum of corresponding dimensions.</li>
+</ul>
+<p>This will be the Python code of the mentioned algorithm:</p>
+<pre><code>def add_shapes(s1, s2):
+    while len(s1) &lt; len(s2):
+        s1 = (1,) + s1
+    while len(s2) &lt; len(s1):
+        s2 = (1,) + s2
+    res = []
+    for i in range(len(s1)):
+        if s1[i] != s2[i] and s1[i] != 1 and s2[i] != 1:
+            raise Exception()
+        else:
+            res.append(max(s1[i], s2[i]))
+    return tuple(res)
+</code></pre>
+<p>Now that we have the shape of result tensor, it's time to fill it according to the operation.</p>
 <h3 id="language"><a class="header" href="#language">Language</a></h3>
 <p>Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important</p>
 <ol>
@@ -301,6 +401,25 @@ Abstract Thinking isn't a MUST in our world to survive (That's why most animals 
 <li>Propagation: <code>Y=T[X]</code></li>
 <li>Backpropagation: <code>dT[X]/dX += delta</code></li>
 </ul>
+<p>As discussed before, sometimes the key to building a good neural network is choosing the way data is encoded/decoded. Since the beginning of the chapter, one of our most important goals was to build a language model. Many of the modern language models are nothing but word-predictors. (Given a list of words, predict the next word). In case of solving the problem using neural-networks, we have to somehow encode the list of words into some numbers that can be feeded to the network, and then interpret the output of the network (Which is a number itself), as a word.</p>
+<p>Suppose that the language we are working with is a very simple one and has only 20 words, which are:</p>
+<p><code>I</code>, <code>you</code>, <code>we</code>, <code>they</code>, <code>go</code>, <code>run</code>, <code>walk</code>, <code>say</code>, <code>sing</code>, <code>jump</code>, <code>think</code>, <code>poem</code>, <code>and</code>, <code>or</code>, <code>read</code>, <code>today</code>, <code>now</code>, <code>book</code>, <code>fast</code>, <code>song</code></p>
+<p>Here are some simple sentences in this made-up language:</p>
+<ul>
+<li><code>I</code> <code>run</code> <code>fast</code></li>
+<li><code>you</code> <code>read</code> <code>book</code></li>
+<li><code>we</code> <code>run</code> <code>fast</code> <code>and</code> <code>I</code> <code>sing</code> <code>song</code></li>
+</ul>
+<p>Now the questions is, how can these sentences be feeded to a neural-network which can only perform numerical operations? How do we convert them into numbers?</p>
+<p>A very naive encoding for this scenario is one-hot encoding.</p>
+<h2 id="one-but-hot"><a class="header" href="#one-but-hot">One, but hot!</a></h2>
+<p>Sometimes, instead of a quantity, you would like to feed a selection among options to a neural-network (E.g a neural network that predicts the longevity of a human given his information. You can clearly see that some of the properties of a human can be quantified, like his/her age, weight and height, but some simply can't). As an example, the gender of a person is not a quantity. In such situations, you can simply assign different numbers to different options and pass those numbers to the network. You can for example assign the number 0.25 for the option <code>man</code>, and number <code>0.5</code> for the option <code>woman</code>.</p>
+<p>But is this the best way we can encode things to be fed to a network? You will soon figure out that your model will have a very hard time understanding what these numbers mean. That's also the case with real humans. Imagine I tell you property X of person A is <code>0.25</code> while for person B is <code>0.5</code>. You will probably try to interpret those numbers as a quantizable property of a human, but there really isn't a meaningful mapping between a human's gender and his gender. Neural networks are biologically inspired structures, so if it's hard for us to interpret numbers as options, there is a high chance that neural networks can't do it well too.</p>
+<p>There is a better way for feeding these kind of information to a neural network, instead of mapping the property to a single number and pass that number through a single neuron to our network, we can have one neuron per option, each specifying the presence of that option in the sample data. In case of our example, assuming we have 2 different genders, we will have two inputs, each input specifying man<em><strong>ness</strong></em> and woma<em><strong>ness</strong></em> of the data sample.</p>
+<p>It's one-hot! One of the inputs is hot (1) and the others are cold (0). It turns our that, networks trained this way perform much better than when the option is encoded as a random, unmeaningfull number. There is also another benefit training a network like this: Imagine a data sample where the man-ness and woman-ness properties are both <code>0.5</code>. The network will be able to make some sense of it!</p>
+<p>Ok, getting back to our example of a language-model, we can use one-hot encodings to encode each word of our sentence as a number. Assuming our model is able to predict the next word of a 10-word sentence, where each word is an option among 20 possible options, our model should accept \(10 \times 20\) numbers as input. That's already a big number. The English language alone has approximately 170k words (According to Oxford English Dictionary), probably without considering many of the slangs and internet words! Imagine having to feed 170k numbers for every word you have in a sentence! This is obviously impractical.</p>
+<p>Although one-hot encoding works perfectly when the options are limited, it doesn't work in cases where we have millions of options (E.g a word in a language model). So we have to come up with a different solution.</p>
+<p>Let's get back to our dummy solution, where we assigned a number to each word. Let's modify this method a bit: instead of mapping a word to a single number, let's map them to multiple numbers, but in a smart way! Each of the numbers assigned to the words will have a certain meaning. The 1st dimension could specify if the word is a verb or a name, the 2nd dimension could specify if it has a positive or a negative feeling, the 3rd can specify if it's about moving or staying still and so on. This is known as a word-embedding. A mapping between words to \(k\) dimensional numbers. Feeding a a neural networks this way saves a lot of neurons for us. We'll only have to pass \(k\) numbers per each word!</p>
 <p><strong>MatMul</strong></p>
 <p>Let's say we have \(n\) neurons in a layer, each accepting the outputs of the \(m\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!</p>
 <p>Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron's input is the weighed sum of all outputs of previous neurons.</p>
