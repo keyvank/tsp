@@ -177,6 +177,127 @@ And just like the way we design an encoding for the inputs, we may also design a
 
 Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!
 
+### Tensor
+
+If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.
+
+Tensor libraries are essential for building super-complicated neural networks. So let's implement a tensor library for ourselves!
+
+A tensor can be simply modeled as a piece of data on your memory which we ***assume*** has a particular shape.
+
+As an example, consider the data: `[1, 2, 3, 4, 5, 6]`. There are multiple ways to interpret these data as multidimensional array:
+
+- 6 `[1, 2, 3, 4, 5, 6]`
+- 6x1 `[[1], [2], [3], [4], [5], [6]]`
+- 1x6 `[[1, 2, 3, 4, 5, 6]]`
+- 3x2 `[[1, 2], [3, 4], [5, 6]]`
+- 2x3 `[[1, 2, 3], [4, 5, 6]]`
+- 1x2x3x1 `[[[[1], [2], [3]], [[4], [5], [6]]]]`
+
+See? The data is always the same. It's just the way we interpret it that makes different shapes possible. Given on that, we can implement a tensor as a Python class, holding a list of values as its `data`, and a tuple of numbers as its shape:
+
+```python=
+def shape_size(shape):
+    res = 1
+    for d in shape:
+        res *= d
+    return res
+
+
+class Tensor:
+    def __init__(self, data, shape):
+        if len(data) != shape_size(shape):
+            raise Exception()
+        self.data = data
+        self.shape = shape
+```
+
+We can also make sure that the data and the shape are compatible by checking if `data` has same number of values as the size of the shape. (You can calculate the size of a shape by multiplying all of its dimension, as we  did in `shape_size` function)
+
+Let's first add some static methods allowing us to generate tensors with constant values:
+
+```python=
+class Tensor:
+    # ...
+
+    @staticmethod
+    def const(shape, val):
+        return Tensor([val] * shape_size(shape), shape)
+
+    @staticmethod
+    def zeros(shape):
+        return Tensor.const(shape, 0)
+
+    @staticmethod
+    def ones(shape):
+        return Tensor.const(shape, 1)
+```
+
+It's also very helpful to print a tensor according to its shape. We do this by first converting the tensor into a regular Python nested-list, and then simply converting it to string:
+
+```python=
+class Tensor:
+    # ...
+
+    def sub_tensors(self):
+        sub_tensors = []
+        sub_shape = self.shape[1:]
+        sub_size = shape_size(sub_shape)
+        for i in range(self.shape[0]):
+            sub_data = self.data[i * sub_size : (i + 1) * sub_size]
+            sub_tensors.append(Tensor(sub_data, sub_shape))
+        return sub_tensors
+
+    def to_list(self):
+        if self.shape == ():
+            return self.data[0]
+        else:
+            return [sub_tensor.to_list() for sub_tensor in self.sub_tensors()]
+
+    def __str__(self):
+        return str(self.to_list())
+```
+
+The `sub_tensors` function allows us to decompose a tensor into its inner tensors by removing its first dimension. As an example, it can convert a 4x3x2 tensor into a list containing four 3x2 tensors. Having this, we can implement a recursive function `to_list` which can convert a tensor into a nested-list by recursively converting its sub-tensors to lists.
+
+Mathematical operations in tensor libraries are either element-wise operations that work on scalar values (E.g add/sub/mul/div) or operations that accept two-dimensional tensors (E.g matrix multiplication)
+
+Element-wise operations, as they name suggest, perform the operation on the corresponding elements of two tensors. However, sometimes we can see people adding two tensors with different shapes and sizes with each other. How are those interpreted?
+
+Examples:
+
+- `3x4x2 + 4x2 = 3x4x2`
+- `4x2 + 3x4x2 = 3x4x2`
+- `5x3x4x2 + 4x2 = 5x3x4x2`
+- `5x3x4x2 + 3x4x2 = 5x3x4x2`
+- `5x1x4x2 + 3x4x2 = 5x3x4x2`
+- `5x1x4x2 + 3x1x2 = 5x3x4x2`
+
+Our algorithm:
+
+- Add as many 1s as needed to the tensor with smaller number of dimensions so that the number of dimensions in both of them become equal. E.g. when adding a 5x1x4x2 tensor with a 3x1x2 tensor, we first reshape the second matrix to 1x3x1x2.
+- Make sure the corresponding dimensions in both tensors are equal ***or*** at least on of them is 1. E.g it's ok to add 5x4x3x2 tensor with a 4x3x2 or a 4x1x2 tensor, but it's NOT ok to add it with a 4x2x2, because \\(2 \neq 3\\).
+- Calculate the final shape by taking the maximum of corresponding dimensions.
+
+This will be the Python code of the mentioned algorithm:
+
+```
+def add_shapes(s1, s2):
+    while len(s1) < len(s2):
+        s1 = (1,) + s1
+    while len(s2) < len(s1):
+        s2 = (1,) + s2
+    res = []
+    for i in range(len(s1)):
+        if s1[i] != s2[i] and s1[i] != 1 and s2[i] != 1:
+            raise Exception()
+        else:
+            res.append(max(s1[i], s2[i]))
+    return tuple(res)
+```
+
+Now that we have the shape of result tensor, it's time to fill it according to the operation.
+
 ### Language
 
 Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important
