@@ -298,12 +298,29 @@ def add_shapes(s1, s2):
 
 Now that we have the shape of result tensor, it's time to fill it according to the operation.
 
+## Gradient Engines
+
+Our implementation of a tensor is ready, our next big step is now to implement a gradient engine. Don’t get scared by its name, a gradient engine is just a tool you can use to keep track of derivatives of you tensors, with respect to the last computation you perform on your tensors (Which typically shows you how far are the outputs of your network compared to the desired outputs)
+
+Whenever you perform an operation on two tensors, you will get a new tensor. The gradients of tensors a and b is equal with the derivative of the output tensor with respect to each input tensor.
+
+I assume you already know the way derivation on scalar values work. Derivatives on tensors is also very similar to scalar, the difference is just that, the derivative will also be a tensor instead of an scalar.
+
+Implementing gradient engines is not an easy task at all. A very tiny mistake in calculation of a gradient will invalidate all of the gradient in previous layers. Your neural network will keep training but will never converge to a satisfactory solution, and it’s almost impossible to tell which part of the calculations you did wrong.
+
+There is a very simple debugging idea you can use for checking the correctness of your gradient calculations, which can come handy when developing deep learning libraries. It’s named the gradient check method, and it simply checks if the result of the gradient function is equal with the gradient calculated by hand!
+
+In case of scalar values, the gradient check is something like this:
+
+[TODO]
+
 ### Language
 
 Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important
 
 1. We didn't know a perfect encoding/decoding strategy for text data
 2. We didn't put enough hardware for training language models
+
 
 ## Gate layers
 
@@ -349,6 +366,14 @@ Ok, getting back to our example of a language-model, we can use one-hot encoding
 Although one-hot encoding works perfectly when the options are limited, it doesn't work in cases where we have millions of options (E.g a word in a language model). So we have to come up with a different solution.
 
 Let's get back to our dummy solution, where we assigned a number to each word. Let's modify this method a bit: instead of mapping a word to a single number, let's map them to multiple numbers, but in a smart way! Each of the numbers assigned to the words will have a certain meaning. The 1st dimension could specify if the word is a verb or a name, the 2nd dimension could specify if it has a positive or a negative feeling, the 3rd can specify if it's about moving or staying still and so on. This is known as a word-embedding. A mapping between words to \\(k\\) dimensional numbers. Feeding a a neural networks this way saves a lot of neurons for us. We'll only have to pass \\(k\\) numbers per each word!
+
+Our language model was getting 10 words as an input and could predict the next word as an output. Imagine we train it and works very well. What will happen if we want to predict the next word of a 3 word sentence? For sure we can’t just put those 3 word on the first three input gates of our network and expect the output to be the fourth word. It is trained to only spit out the 11th word. In fact, the input/ouputs of language models are not like that. A language model of n inputs typically has also n outputs. And each output assumes the input has a certain length:
+
+## All you need is attention!
+
+If you have heard of GPT style language models (The most famous one being ChatGPT) the letters GPT stand for Generatice Pretrained Transformer. Here I’m going to talk about a revolutionary neural-network architecture named Transformer, which was first introduced by X scientists in a paper titled: “All you need is attention”
+
+Attention mechanism which has gave us humans the hope that someday we might have AGI, is nothing but a combination of neural-network layers, which happens to be very effective in learning and generating language data.
 
 **MatMul**
 
