@@ -383,7 +383,7 @@ GPT is a successfull neural network architecture for language models. It uses th
 
 Assuming the models accepts a sentence of maximum N tokens:
 
-1. The model gets N tokens as its input. A integer tensor of shape `[num_tokens]`
+1. The model gets `num_tokens` tokens as its input. An integer tensor of shape `[num_tokens]`
 2. The tokens are mapped to `embedding_degree`-dimensional numbers, given a lookup-table known as the embedding table. The output of this step is a floating-point tensor of shape `[num_tokens, embedding_degree]`.
 3. The output of step to goes through `num_layers` multi-head attention layers, where:
     1. For each multi-head attention layers, there are `num_heads` heads, where `num_heads * head_size = embedding_degree`
