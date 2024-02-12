@@ -375,6 +375,38 @@ If you have heard of GPT style language models (The most famous one being ChatGP
 
 Attention mechanism which has gave us humans the hope that someday we might have AGI, is nothing but a combination of neural-network layers, which happens to be very effective in learning and generating language data.
 
+## GPT
+
+## GPT
+
+GPT is a successfull neural network architecture for language models. It uses the ideas discussed in the Transformer paper. These are the neural network layers used in a GPT:
+
+Assuming the models accepts a sentence of maximum N tokens:
+
+1. The model gets N tokens as its input. A integer tensor of shape `[num_tokens]`
+2. The tokens are mapped to `embedding_degree`-dimensional numbers, given a lookup-table known as the embedding table. The output of this step is a floating-point tensor of shape `[num_tokens, embedding_degree]`.
+3. The output of step to goes through `num_layers` multi-head attention layers, where:
+    1. For each multi-head attention layers, there are `num_heads` heads, where `num_heads * head_size = embedding_degree`
+        1. Each head accepts a `[num_tokens, embedding_degree]` tensor.
+        2. The head is normalized with a LayerNorm function and the result is another `[num_tokens, embedding_degree]` tensor.
+        3. The k, q and v vectors are calculated by multiplying the input tensor with three different `[embedding_degree, head_size]` for that layer. The results are three `[num_tokens, head_size]` tensors.
+        4. k (`[num_tokens, head_size]`) is multiplied with q^-1 (`[head_size, num_tokens]`) giving out a `[num_tokens, num_tokens]` tensor, telling us how related each word is with other words.
+        5. The upper-triangle of the matrix is zeroed out, so that the tokens cannot cheat.
+        6. A softmax layer is applied to convert the importance-matrix into a probability distribution. Now we have a `[num_tokens, num_tokens]` vector where sum of each row is 0.
+        7. The result is then multiplied with the v vector, allowing the most important tokens to send their "message" to the next attention layers. The output is a `[num_tokens, head_size]` tensor.
+    2. Multiple attention-heads with different parameters are applied giving us `num_heads` number of `[num_tokens, head_size]` tensors. By putting them besides each other, we'll get a `[num_tokens, embedding_degree]` tensor.
+    3. The `[num_tokens, embedding_degree]` tensor is projected into another `[num_tokens, embedding_degree]` tensor through a linear layer.
+    4. The output is added with the previous layer, resulting with another `[num_tokens, embedding_degree]` tensor, to kind of give the next layer the opportunity to access the original data and attentioned data at the same time.
+    5. The output is normalized. Let's call the result `add_atten_norm`.
+    6. The output is mapped to a `[num_tokens, 4*embedding_degree]` and again mapped to `[num_tokens, embedding_degree]` through 2 linear layers (This is the somehow the place where "thinking" processes happens).
+    7. The output is added to `add_atten_norm`, normalized again, and then passed to the next layer.
+4. The output is normalized.
+5. The `[num_tokens, embedding_degree]` tensor is mapped to a `[num_tokens, vocab_size]` tensor through a linear layer.
+6. The result is softmaxed, resulting to a `[num_tokens, vocab_size]` probability distribution. Each telling you the probability of each token being the next token for each possible sentence-length. (There are `num_tokens` possible sentence-lengths, so we'll have `num_tokens` probability distributions)
+7. Based on the sentence-length, we will decide which row to select, which will give us a `[vocab_size]` tensor. We will choose a token among most probable tokens and print it.
+8. We will add the new word to the input, giving us a new input. We will go through the process all over again, getting a new token each time. The text will get completed little by little.
+
+
 **MatMul**
 
 Let's say we have \\(n\\) neurons in a layer, each accepting the outputs of the \\(m\\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!
