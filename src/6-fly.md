@@ -268,6 +268,211 @@ class Var:
         self.value = 0
 ```
 
+
+## Components are equations
+
+***Current Source***
+
+A current-source equation makes sure that the amount of current flowing through its pins is equal with some value, through two equations:
+
+- \\(I_a - i = 0\\)
+- \\(i - I_b = 0\\)
+
+```python=
+class CurrentSource(Component):
+    def __init__(self, amps, a: Var, b: Var):
+        super().__init__()
+        self.amps = amps
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: self.amps)
+        solver.add_func(self.b.index, lambda: -self.amps)
+```
+
+***Voltage Source***
+
+A voltage-source equation makes sure the potential difference between two points \\(V_a\\) and \\(V_b\\) is always equal with \\(v\\), by adding 3 equations to your system. (A temporary variable \\(i\\) is also introduced, representing the amount of current being flown through the component):
+
+- \\(I_a - i = 0\\)
+- \\(i - I_b = 0\\)
+- \\(V_a - V_b - v = 0\\)
+
+Note that, since we are using the Kirchhoff's law to solve the circuits, all components need to define the amount of current going in and out the circuit, and how does it relate \\(I_a\\) and \\(I_b\\) with each other. In a voltage-source (Like any other 2-pin component), the amount if input current is equal with the amount of output current. Naming that auxillary variable to \\(i\\), the relation between \\(I_a\\) and \\(I_b\\) is defined using the first and second equation. In fact, the variable \\(i\\) has no direct usage but to relate \\(I_a\\) and \\(I_b\\) with each other!
+
+```python=
+class VoltageSource(Component):
+    def __init__(self, volts, a: Var, b: Var, i: Var):
+        super().__init__()
+        self.volts = volts
+        self.a = a
+        self.b = b
+        self.i = i
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: self.i.value)
+        solver.add_func(self.b.index, lambda: -self.i.value)
+        solver.add_func(
+            self.i.index,
+            lambda: self.b.value
+            - self.a.value
+            - self.volts,
+        )
+
+        solver.add_deriv(self.a.index, self.i.index, lambda: 1)
+        solver.add_deriv(self.b.index, self.i.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.a.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.b.index, lambda: 1)
+```
+
+***Resistor***
+
+The resistor component makes sure that the amount of current being flown through it is linearly dependent on the voltage-difference applied to it. In other words: \\(i = \frac{V_a - V_b}{R}\\). It does so by applying two equations:
+
+- \\(I_a - \frac{V_a - V_b}{R} = 0\\)
+- \\(\frac{V_a - V_b}{R} - I_b = 0\\)
+
+```python=
+class Resistor(Component):
+    def __init__(self, ohms, a: Var, b: Var):
+        super().__init__()
+        self.ohms = ohms
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: (self.a.value - self.b.value) / self.ohms)
+        solver.add_func(self.b.index, lambda: (self.b.value - self.a.value) / self.ohms)
+
+        solver.add_deriv(self.a.index, self.a.index, lambda: 1 / self.ohms)
+        solver.add_deriv(self.a.index, self.b.index, lambda: -1 / self.ohms)
+        solver.add_deriv(self.b.index, self.a.index, lambda: -1 / self.ohms)
+        solver.add_deriv(self.b.index, self.b.index, lambda: 1 / self.ohms)
+```
+
+***Capacitor***
+Unlike the components discussed so-far, a capacitor is a component that has memory (Its current behavior is dependent on voltages previously applied to it). A charged capacitor has a different behavior compared to a discharged one. A charged capacitor will resist against current and a discharged one acts like a wire. We somehow need to bring this memory-behavior on the table. We do this by introducing a `old_value` field for our variables, and use them as equations. Note that the old values of variables act as constant numbers (When taking derivatives). I.e: \\(\frac{d(V-V_{old}}{dt} = \frac{dV}{dt}\\)
+
+A capacitor can be modeled using 2 equations:
+
+- \\(I_a - \frac{(V_a + V_b)-(V_{a_{old}} + V_{b_{old}})}{dt} \times C = 0\\)
+- \\(\frac{(V_a + V_b)-(V_{a_{old}} + V_{b_{old}})}{dt} \times C - I_b = 0\\)
+
+```python=
+class Capacitor(Component):
+    def __init__(self, farads, a: Var, b: Var):
+        super().__init__()
+        self.farads = farads
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(
+            self.a.index,
+            lambda: (
+                (self.a.value - self.b.value) - (self.a.old_value - self.b.old_value)
+            )
+            / solver.dt
+            * self.farads,
+        )
+        solver.add_func(
+            self.b.index,
+            lambda: -(
+                (self.a.value - self.b.value) - (self.a.old_value - self.b.old_value)
+            )
+            / solver.dt
+            * self.farads,
+        )
+
+        solver.add_deriv(self.a.index, self.a.index, lambda: self.farads / solver.dt)
+        solver.add_deriv(self.a.index, self.b.index, lambda: -self.farads / solver.dt)
+        solver.add_deriv(self.b.index, self.a.index, lambda: -self.farads / solver.dt)
+        solver.add_deriv(self.b.index, self.b.index, lambda: self.farads / solver.dt)
+```
+
+***Inductor***
+
+```python=
+class Inductor(Component):
+    def __init__(self, henries, a: Var, b: Var, i: Var):
+        super().__init__()
+        self.henries = henries
+        self.a = a
+        self.b = b
+        self.i = i
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: self.i.value)
+        solver.add_func(self.b.index, lambda: -self.i.value)
+        solver.add_func(
+            self.i.index,
+            lambda: (self.i.value - self.i.old_value) / solver.dt * self.henries
+            - (self.a.value - self.b.value),
+        )
+
+        solver.add_deriv(self.a.index, self.i.index, lambda: 1)
+        solver.add_deriv(self.b.index, self.i.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.i.index, lambda: self.henries / solver.dt)
+        solver.add_deriv(self.i.index, self.a.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.b.index, lambda: 1)
+```
+
+***Diode***
+
+Diode is a one-way current blocker. Apply the voltage on right direction and the current will go up to infinity (I.e zero resistance), and apply it in the reverse direction and the current becomes zero (I.e infinite resistance). Such a behavior can be perfectly modeled with a exponentation function.
+
+```python=
+class Diode(Component):
+    def __init__(self, coeff_in, coeff_out, a: Var, b: Var):
+        super().__init__()
+        self.coeff_in = coeff_in
+        self.coeff_out = coeff_out
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(
+            self.a.index,
+            lambda: (math.exp((self.a.value - self.b.value) * self.coeff_in) - 1)
+            * self.coeff_out,
+        )
+        solver.add_func(
+            self.b.index,
+            lambda: -(math.exp((self.a.value - self.b.value) * self.coeff_in) - 1)
+            * self.coeff_out,
+        )
+
+        solver.add_deriv(
+            self.a.index,
+            self.a.index,
+            lambda: math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.a.index,
+            self.b.index,
+            lambda: -math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.b.index,
+            self.a.index,
+            lambda: -math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.b.index,
+            self.b.index,
+            lambda: math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+```
+
 ### When stables and unstables meet!
 
 Revisiting capacitors, we know they are elements that resist against `stability` of the voltage applied to them. (E.g if you connect a DC voltage-source to them, they will slowly get charged and cancel out the voltage of the DC voltage source, resisting against flow of electrons)
