@@ -5,7 +5,9 @@
 
 There is an online version here: [https://keyvan.me/tsp](https://keyvan.me/tsp)
 
-If you prefer a PDF version, you can compile it yourself (Make sure you have the `pandoc` package installed on your system):
+If you prefer a PDF version, consider supporting me by buying it from [LeanPub](https://leanpub.com/tsp)! (WARN: The book is incomplete!)
+
+Otherwise, you can compile it yourself (Make sure you have the `pandoc` package installed on your system):
 
 ```
 git clone https://github.com/keyvank/tsp
