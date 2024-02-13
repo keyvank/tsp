@@ -141,7 +141,7 @@ Drawing a circle
 
  > Why do we use electrical cause effects? Because they are small and fast, and can easily be routed by metal wires Fastest cause effect type is light
 
-### Having fun with the pixels
+## Having fun with the pixels
 
 When learning computer graphics, before jumping to complicated algorithms like 3D rendering, there are some other stuff you can do to leverage your power of manipulating pixels.
 
@@ -178,7 +178,7 @@ Here is something interesting to draw with simple lines:
 
 [TODO]
 
-#### Circle
+## Circle
 
 A circle can be defined given its center and radius. Just like the `Line` class, we may also have a `Circle` class:
 
@@ -189,15 +189,15 @@ class Circle:
         self.radius = radius
 ```
 
-### Fractals
+## Fractals
 
 One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:
 
-#### Serpinski Triangle
+## Serpinski Triangle
 
-#### Koch Snowflake
+## Koch Snowflake
 
-#### Julia sets
+## Julia sets
 
 ## Ray Tracing
 
@@ -366,7 +366,7 @@ of photons that are going through that ray for us.
 ![Calculation of eye-generated rays](assets/eye.png)
 
 
-### Rasterization
+## Rasterization
 
 Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)
 
@@ -390,7 +390,7 @@ class Triangle2D:
         self.c = c
 ```
 
-### Matrices, programmable math objects!
+## Matrices, programmable math objects!
 
 When doing ray tracing, we exactly knew where are imaginary eye/camera is, but so far in the rasterization algorithm, we were assuming that the eye/camera is placed at the origin point \\((0,0,0)\\). So, how could we move in this 3D scene and see it from different perspectives? The solution is a bit different compared to what we were doing in a ray tracer. Here, instead of moving/rotating the camera around the world, we move/rotate all of the objects in that world, in order to make it feel like the camera is placed in a different location! Since we are working with 3D points, before passing the points to the rendering function, we have to apply a ***transformation*** function to put the point in a different location.
 
@@ -448,7 +448,7 @@ sin(\theta) && cos(\theta) && 0 && 0 \\\\
 0 && 0 && 0 && 1
 \end{bmatrix}\\]
 
-### Camera matrix
+## Camera matrix
 
 Recall that we move/rotate the world around us instead of placing a camera in an arbitrary position rotation, there is a shortcut way for transforming the world as if a camera at \\(\vec{P}\\) is looking at a target \\(\vec{T}\\), and its upper-side is pointing at \\(\vec{U}\\). This matrix can be created as follows:
 
@@ -476,7 +476,7 @@ Then the look-at matrix \\(L\\) can be calculated as follows:
 
 \\(L = O \times T\\)
 
-### The magical matrix
+## The magical matrix
 
 The perspective law says that the distance between 2 points look less when the points get farther of our eyes. There is a magical transformation matrix, called the ***perspective*** transformation matrix, which applies this effect for us:
 
@@ -493,7 +493,7 @@ Assuming the output of this multiplication is \\((x,y,z,w)\\), by dividing the \
 
 \\(P=(W\frac{\frac{x}{w}+1}{2},H\frac{\frac{y}{w}+1}{2})\\)
 
-### 3D Cube
+## 3D Cube
 
 With the tools we created in the previous sections, we are now able to render a simple 3D cube. Each side of a cube is a square, and therefore consists of two triangles. We will be coloring each side of the cube with a unique color, so that sides are distinguishable with each other.
 
@@ -517,7 +517,7 @@ class Mesh:
         )
 ```
 
-### Barycentric coordinates
+## Barycentric coordinates
 
 In the previous section, we saw how to draw a boring 3D cube with each side filled with a single color. Sometimes you'll want to use an image instead of a plain color on the sides of your object.
 

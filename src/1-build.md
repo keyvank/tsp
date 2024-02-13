@@ -233,7 +233,7 @@ class PTransistor:
 
 We can define gates as classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of a gate based on its inputs.
 
-### Life in a non-ideal world
+## Life in a non-ideal world
 
 Digital circuits are effectively just logical expressions that are automatically calculated by the flow of electrons inside what we refer as gates. Logical expressions are defined on zeros and ones, but we just saw that wires in an electronic circuit are not guaranteed to be 0 or 1. So we have no choice but to re-define our gates and decide what their output should be in case of faulty inputs.
 
@@ -802,7 +802,7 @@ As you write more complicated programs in Brainfuck, you will soon notice that t
 
 The Brainfuck CPU we created is similar to real CPUs in many ways, but it lacks many features making it impractical for any serious application. As an example, we didn’t cover how a cpu is able to interact with different hardware (our brainfuck cpu can’t), or how an operating system written for such a simple cpu would look like, or questions like that. In this section, we are going to explore some of those unclear questions you might have about your computer.
 
-### How can your computer interact with other hardware?
+## How can your computer interact with other hardware?
 
 Our brainfuck cpu doesn’t really have means for communicating with a 3rd party hardware, so you might still have confusions on how the cpu in a modern computer is connected to other hardware.
 
@@ -816,19 +816,19 @@ This method has been a popular solution for communicating with a monitor, the mo
 
 Curious how you can manipulate your video memory on a Linux machine? Try this command to put random bytes on your monitor’s pixel buffer and see what happens!
 
-### What is the first program your computer executes?
+## What is the first program your computer executes?
 
 We saw that cpus are simple devices that can fetch instructions from memory, run them and write the side effects back to the memory. So, what are the first instructions that are being run in a computer? When you turn your computer on, your RAM is empty, and there are no instructions, so how does it start to load anything when a RAM is absolutely empty on a startup?
 
 The answer is: although your computer has an empty ram, we can still trick your computer, making it believe that some constant pieces of data do exist in the very first bytes of your RAM, and put some initial programs there.
 
-### How can programs not conflict with each other in memory locations?
+## How can programs not conflict with each other in memory locations?
 
 This is a question that you might not have asked yourself but is an important one: when you compile a program, you will get a raw binary that contains the cpu opcodes that need to be executed. Those opcodes that have something to do with your RAM, may use static locations in your memory. Now, imagine you want your computer to load and maintain multiple programs on your ram at the same time. Since the programs are using static locations, there is a very high probability that they will use the same locations of memory for storing data. How does a cpu prevent that? Sometimes this could be malicious too, a program may try to read/write locations on memory that are not for itself (E.g a malicious program may try to read the password you entered for logging in to your shell program)
 
-### How are the keyboard events are handled by a computer?
+## How are the keyboard events are handled by a computer?
 
-### How can multiple programs run at the same time?
+## How can multiple programs run at the same time?
 
 ## If you are nerd enough to write an OS yourself
 

@@ -43,20 +43,20 @@ So we have been doing years and years of research on things so called Artificial
 Perhaps the reason we have had a giant progress in development of Machine Learning models is all about money. These things are useful in the world we live in, we can build self-driving cars, smart recommender systems and ...
 We can't just build a business out of a human-level intelligent system. (Edit: When I wrote this paragraph, LLMs were not as sophisticated as they are today! Things are very different now)
 
-### Learning is not enough, genetic matters
+## Learning is not enough, genetic matters
 
 You can try teaching Kant Philosophy or General Theory of Relativity to your dog, but I bet it would be disappointing. The mere ability to learn is not enough, the way a brain is wired matters, and that only changes through what we call evolution.
 
-### Biological simulation isn't the right path
+## Biological simulation isn't the right path
 
 Although researching on biological side of things could be helpful, but doing it excessively could 
 
-### We are so close to AGI!
+## We are so close to AGI!
 
 You can hear people saying that our computers can't even simulate the brain of a bee.
 Humans are smart, nature is dumb, the only thing that is making nature superior than us in engineering self-aware creatures is its vast ability to experiment different random things. Nature can create amazing stuff, but nature is not good at optimizing things. Think of it this way: 
 
-### The Environment
+## The Environment
 
 You want your lovely artificial creature to learn and do amazing things by himself? The first step is to give him the opportunity to do so! How can you expect a chatbot to magically understand the concept of self-awareness without giving it the chance to explore the world and distinguish himself with others?
 Humans are impressive and amazing, but the environment that was complex (yet not overly complicated) and creative enough that gave organisms the opportunity to evolve to the level of human mind is just brilliant. It's not about how to build a brain, but more about how to build an appropriate **environment** where a brain can evolve.
@@ -67,11 +67,11 @@ The very first thing we need for creation of a self-aware creature, is a ***goal
 
 *Look, but don't touch. Touch, but don't taste. Taste, but don't swallow...*
 
-### We can't afford infinite randomness
+## We can't afford infinite randomness
 
 The infinite monkey theorem states that a single monkey randomly hitting the keys of a keyboard for an infinite amount of time can write any given text, even complete works of Shakespear. But our computer resources, as opposed to the atoms in our universe, is limited. So we can't build intelligence by bruteforcing simulated atoms in a simulated world!
 
-### Death, gene's weapon for survival
+## Death, gene's weapon for survival
 
 There is no reason for a cell, organism or creature to get old and die, as soon as in some part of its code, it is programmed to restore itself by consuming the materials around him (aka food). But most of the animals die (There are some exceptions, some kind of Marjan in Japan never dies by aging), why that happens?
 Paradoxically, the death phenomenon can be an important reason why human-level intelligence exists!
@@ -80,17 +80,17 @@ The population will boom in an unexpected way and that could lead to the extinct
 
 Charles Darwin was always wondering why depression exists.
 
-### Consciousness is a loop
+## Consciousness is a loop
 
 There are several evidences supporting the idea, that consciousness is the result of a loop in our nervous system, created during the evolution. Simple creatures do not have it, and the loop gets stronger and stronger when we reach to homo-sapiens. A loop in the input/output gateways of our brain make the "thinking of thinking" phenomenon possible.
 
 People with schizophrenia cannot distinguish between feedback inputs and environmental inputs, so they may hear sounds, that do not exist in real world, driving them crazy.  Thinking is like talking without making sounds, and redirecting it back to your brain without hearing it. A healthy brain would expect to hear a sound whenever it talks. Whenever this expectation is somehow broken, the brain cannot recognize if the voice it is hearing is external or it is somebody else inside his brain. It is kind of brain's failure in removing its own voice's echo.
 
-### How to experiment self-awareness?
+## How to experiment self-awareness?
 
 *In an experiment known as the "rouge test," mothers wiped a bit of rouge on the noses of their children and placed them in front of a mirror. Before 15 months, children look at the reflection and see a red spot on the nose in the mirror, but they don't realize that the red spot is on their own nose. When children are between 15 and 24 months, they begin to realize that the reflection they see is their own, and they either point to the red nose or try to wipe away the rouge. In other words, they understand that the reflection in the mirror is more than a familiar face–it is their own face.*
 
-### Last step, abstract thinking
+## Last step, abstract thinking
 
 Your creature is now able to find food, escape from dangers, communicate with others and be self-aware. Congratulations! You just built a dog! So what's next? What makes homo-sapiens different with ordinary mammals? People say its our ability to think about things that do not exist. 
 Abstract Thinking isn't a MUST in our world to survive (That's why most animals can't write poems or do math in order to survive), but having it happened to be extremely helpful. Abstract Thinking helped us to unite under the name of 
@@ -153,7 +153,7 @@ Why modelling a gate as a floating point function is beneficial for us? Because 
 
 Once upon a time, two nobel prize winners were studying brain cells 1873
 
-### Myserious black boxes
+## Myserious black boxes
 
 Neural networks seem to be blackboxes that can learn anything. It has been proven that they can see, understand or even reason about stuff. Neural Network are known to be *universal function approximators*. Given some samples of inputs/outputs of a function, neural networks may learn that function and try to predict correct outputs, given ***new inputs***, inputs they have never seen before.
 
@@ -177,7 +177,7 @@ And just like the way we design an encoding for the inputs, we may also design a
 
 Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!
 
-### Tensor
+## Tensor
 
 If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.
 
@@ -314,7 +314,7 @@ In case of scalar values, the gradient check is something like this:
 
 [TODO]
 
-### Language
+## Language
 
 Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important
 
