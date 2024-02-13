@@ -270,7 +270,7 @@ def color_of(x, y, width, height):
 <blockquote>
 <p>Why do we use electrical cause effects? Because they are small and fast, and can easily be routed by metal wires Fastest cause effect type is light</p>
 </blockquote>
-<h3 id="having-fun-with-the-pixels"><a class="header" href="#having-fun-with-the-pixels">Having fun with the pixels</a></h3>
+<h2 id="having-fun-with-the-pixels"><a class="header" href="#having-fun-with-the-pixels">Having fun with the pixels</a></h2>
 <p>When learning computer graphics, before jumping to complicated algorithms like 3D rendering, there are some other stuff you can do to leverage your power of manipulating pixels.</p>
 <p>There are plenty of things you can draw on a 2D surface. Let's start with drawing a simple 2D line. A 2d line may be defined by its slope and offset:</p>
 <p>\(y = ax + b\)</p>
@@ -295,18 +295,18 @@ def color_of(x, y, width, height):
 </code></pre>
 <p>Here is something interesting to draw with simple lines:</p>
 <p>[TODO]</p>
-<h4 id="circle"><a class="header" href="#circle">Circle</a></h4>
+<h2 id="circle"><a class="header" href="#circle">Circle</a></h2>
 <p>A circle can be defined given its center and radius. Just like the <code>Line</code> class, we may also have a <code>Circle</code> class:</p>
 <pre><code class="language-python=">class Circle:
     def __init__(self, center: Vec2D, radius: float):
         self.center = center
         self.radius = radius
 </code></pre>
-<h3 id="fractals"><a class="header" href="#fractals">Fractals</a></h3>
+<h2 id="fractals"><a class="header" href="#fractals">Fractals</a></h2>
 <p>One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:</p>
-<h4 id="serpinski-triangle"><a class="header" href="#serpinski-triangle">Serpinski Triangle</a></h4>
-<h4 id="koch-snowflake"><a class="header" href="#koch-snowflake">Koch Snowflake</a></h4>
-<h4 id="julia-sets"><a class="header" href="#julia-sets">Julia sets</a></h4>
+<h2 id="serpinski-triangle"><a class="header" href="#serpinski-triangle">Serpinski Triangle</a></h2>
+<h2 id="koch-snowflake"><a class="header" href="#koch-snowflake">Koch Snowflake</a></h2>
+<h2 id="julia-sets"><a class="header" href="#julia-sets">Julia sets</a></h2>
 <h2 id="ray-tracing"><a class="header" href="#ray-tracing">Ray Tracing</a></h2>
 <p>3D computer rendering is probably the most complicated and interesting way a computer
 can stimulate our vision. Our perception is evolved in a way to understand our 3-dimensional
@@ -444,7 +444,7 @@ a ray-traced scene. We just need to reimplement the <code>color_of</code> functi
 <p>The <code>trace_ray</code> function will take a ray as an argument and will calculate the color and intensity
 of photons that are going through that ray for us.</p>
 <p><img src="assets/eye.png" alt="Calculation of eye-generated rays" /></p>
-<h3 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h3>
+<h2 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h2>
 <p>Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)</p>
 <p>In the rasterization algorithm, instead of emitting rays abd finding the object that it intersects with and calculating its color, we will try to map the 3D points of an object into 2D points on your computer screen through mathematical formula. In other words, when rendering each frame, we loop through the objects in our scene, and all of the 3D points that make those objects, and we will apply a function which convert a triplet \((x, y, z)\) to a pair of floats \((x,y)\). We then fill those pixels on the screen!</p>
 <p>Since it is impractical to represent a 3D object by its points (A 3D object it made of infinite number of points), we usually represent them by a bunch of 3D triangles. Looping through the triangles of an object, using the same 3D-to-2D point conversion formula, we can convert a 3D triangle to a 2D one. We just have to apply the function on all three 3D vertices of the triangle in order to get the respective 2D ones.</p>
@@ -461,7 +461,7 @@ class Triangle2D:
         self.b = b
         self.c = c
 </code></pre>
-<h3 id="matrices-programmable-math-objects"><a class="header" href="#matrices-programmable-math-objects">Matrices, programmable math objects!</a></h3>
+<h2 id="matrices-programmable-math-objects"><a class="header" href="#matrices-programmable-math-objects">Matrices, programmable math objects!</a></h2>
 <p>When doing ray tracing, we exactly knew where are imaginary eye/camera is, but so far in the rasterization algorithm, we were assuming that the eye/camera is placed at the origin point \((0,0,0)\). So, how could we move in this 3D scene and see it from different perspectives? The solution is a bit different compared to what we were doing in a ray tracer. Here, instead of moving/rotating the camera around the world, we move/rotate all of the objects in that world, in order to make it feel like the camera is placed in a different location! Since we are working with 3D points, before passing the points to the rendering function, we have to apply a <em><strong>transformation</strong></em> function to put the point in a different location.</p>
 <p>These transformations are done through matrices! There are matrices that apply certain geometric changes when being multiplicated with vectors.</p>
 <p>Assuming our points are represented in 4D vectors where the last element is 1, we can invent a matrix that can move a point by adding a offset vector to it when multiplied with the original vector. This matrix is known as <em><strong>translation</strong></em> matrix. Assuming we want to move our vector \((x, y, z)\) by \((T_x, T_y, T_z)\), the translation matrix works as follows:</p>
@@ -505,7 +505,7 @@ sin(\theta) &amp;&amp; cos(\theta) &amp;&amp; 0 &amp;&amp; 0 \\
 0 &amp;&amp; 0 &amp;&amp; 1 &amp;&amp; 0 \\
 0 &amp;&amp; 0 &amp;&amp; 0 &amp;&amp; 1
 \end{bmatrix}\]</p>
-<h3 id="camera-matrix"><a class="header" href="#camera-matrix">Camera matrix</a></h3>
+<h2 id="camera-matrix"><a class="header" href="#camera-matrix">Camera matrix</a></h2>
 <p>Recall that we move/rotate the world around us instead of placing a camera in an arbitrary position rotation, there is a shortcut way for transforming the world as if a camera at \(\vec{P}\) is looking at a target \(\vec{T}\), and its upper-side is pointing at \(\vec{U}\). This matrix can be created as follows:</p>
 <p>\[T = \begin{bmatrix}
 1 &amp;&amp; 0 &amp;&amp; 0 &amp;&amp; 0 \\
@@ -524,7 +524,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 \end{bmatrix}\]</p>
 <p>Then the look-at matrix \(L\) can be calculated as follows:</p>
 <p>\(L = O \times T\)</p>
-<h3 id="the-magical-matrix"><a class="header" href="#the-magical-matrix">The magical matrix</a></h3>
+<h2 id="the-magical-matrix"><a class="header" href="#the-magical-matrix">The magical matrix</a></h2>
 <p>The perspective law says that the distance between 2 points look less when the points get farther of our eyes. There is a magical transformation matrix, called the <em><strong>perspective</strong></em> transformation matrix, which applies this effect for us:</p>
 <p>\[\begin{bmatrix}
 \frac{1}{tan(\frac{FOV}{2})a} &amp;&amp; 0 &amp;&amp; 0 &amp;&amp; 0 \\
@@ -535,7 +535,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 <p>Where \(FOV\) is field-of-view in radians (Normally \(\frac{\pi}{4}\)), \(a\) is the aspect ratio (Your screen width divided by height), and \(Z_{near}\) and \(Z_{far}\) the closest and farthest objects you can see in the rendered image.</p>
 <p>Assuming the output of this multiplication is \((x,y,z,w)\), by dividing the \(x\) and \(y\) components by \(w\), you will get a pair of numbers between \(-1\) and \(1\), which tell you where on the computer screen should this point be rendered. We can map these numbers to points on screen with resolution \(W \times H\):</p>
 <p>\(P=(W\frac{\frac{x}{w}+1}{2},H\frac{\frac{y}{w}+1}{2})\)</p>
-<h3 id="3d-cube"><a class="header" href="#3d-cube">3D Cube</a></h3>
+<h2 id="3d-cube"><a class="header" href="#3d-cube">3D Cube</a></h2>
 <p>With the tools we created in the previous sections, we are now able to render a simple 3D cube. Each side of a cube is a square, and therefore consists of two triangles. We will be coloring each side of the cube with a unique color, so that sides are distinguishable with each other.</p>
 <p>First, we will need a data structure for storing 3D shapes. Our data structure will be storing the 3D triangles making that object. Let's create a Python class for this purpose and call it <code>Mesh</code>. We will also implement different static-methods generating Mesh objects for different 3D shapes. Let's start with a simple cube-builder:</p>
 <pre><code class="language-python=">class Mesh:
@@ -554,7 +554,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
             ]
         )
 </code></pre>
-<h3 id="barycentric-coordinates"><a class="header" href="#barycentric-coordinates">Barycentric coordinates</a></h3>
+<h2 id="barycentric-coordinates"><a class="header" href="#barycentric-coordinates">Barycentric coordinates</a></h2>
 <p>In the previous section, we saw how to draw a boring 3D cube with each side filled with a single color. Sometimes you'll want to use an image instead of a plain color on the sides of your object.</p>
 <p>Putting image textures on a triangle is a straightforward process: when drawing the 2D triangle, for each of the pixels you are putting on the screen, you must somehow calculate the respective location on an image that the color should be fetched from.</p>
 

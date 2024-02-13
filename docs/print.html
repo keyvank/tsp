@@ -421,7 +421,7 @@ class PTransistor:
             self.wire_collector.put(self, UNK)
 </code></pre>
 <p>We can define gates as classes with an <code>update()</code> function. The <code>update()</code> function is called whenever we want to calculate the output of a gate based on its inputs.</p>
-<h3 id="life-in-a-non-ideal-world"><a class="header" href="#life-in-a-non-ideal-world">Life in a non-ideal world</a></h3>
+<h2 id="life-in-a-non-ideal-world"><a class="header" href="#life-in-a-non-ideal-world">Life in a non-ideal world</a></h2>
 <p>Digital circuits are effectively just logical expressions that are automatically calculated by the flow of electrons inside what we refer as gates. Logical expressions are defined on zeros and ones, but we just saw that wires in an electronic circuit are not guaranteed to be 0 or 1. So we have no choice but to re-define our gates and decide what their output should be in case of faulty inputs.</p>
 <p>Take a NOT gate as an example. The truth table of a NOT gate in an ideal world is this:</p>
 <div class="table-wrapper"><table><thead><tr><th>A</th><th>NOT A</th></tr></thead><tbody>
@@ -853,7 +853,7 @@ Copying from A to B: <code>A[-B+T+A]T[-A+T]A</code></p>
 <p>As you write more complicated programs in Brainfuck, you will soon notice that the immense amount of complexity is going to become unmaintainable over time. and soon you won't be able to add more logic and features to your Brainfuck programs. That is the time when you start missing functions, classes, and all other fancy tools your favorite high-level programming language provided you for free.</p>
 <h2 id="what-really-happens"><a class="header" href="#what-really-happens">What really happens</a></h2>
 <p>The Brainfuck CPU we created is similar to real CPUs in many ways, but it lacks many features making it impractical for any serious application. As an example, we didn’t cover how a cpu is able to interact with different hardware (our brainfuck cpu can’t), or how an operating system written for such a simple cpu would look like, or questions like that. In this section, we are going to explore some of those unclear questions you might have about your computer.</p>
-<h3 id="how-can-your-computer-interact-with-other-hardware"><a class="header" href="#how-can-your-computer-interact-with-other-hardware">How can your computer interact with other hardware?</a></h3>
+<h2 id="how-can-your-computer-interact-with-other-hardware"><a class="header" href="#how-can-your-computer-interact-with-other-hardware">How can your computer interact with other hardware?</a></h2>
 <p>Our brainfuck cpu doesn’t really have means for communicating with a 3rd party hardware, so you might still have confusions on how the cpu in a modern computer is connected to other hardware.</p>
 <p>The answer is simple (You might figure it out and design a solution yourself too, by putting a bit of thought)
 You will just need a few more wires coming out of your cpu, making it able to send/receive data with custom hardware. Besides that, you will need to add a few more instructions for writing/reading data to/from those wires (just like how you interact with your RAM)
@@ -861,13 +861,13 @@ As an example, in a x86-64 computer, the instructions x and x are used for commu
 <p>Having I/O related instructions isnt the only way a CPU can connect to peripherals. There is one other way too, you can give your hardware access to some parts of your RAM, allowing your CPU to communicate with that hardware by putting data on that part of your RAM. This way, you won’t need dedicated wire for communicating data to the device, as your ram itself is being a medium for communication.</p>
 <p>This method has been a popular solution for communicating with a monitor, the monitor could listen to some sections of the RAM (Also known as Video memory) and put the pixel data residing there on your monitor. This way, your cpu could render things on your monitor by simply writing stuff on your RAM. Not a single extra instruction needed!</p>
 <p>Curious how you can manipulate your video memory on a Linux machine? Try this command to put random bytes on your monitor’s pixel buffer and see what happens!</p>
-<h3 id="what-is-the-first-program-your-computer-executes"><a class="header" href="#what-is-the-first-program-your-computer-executes">What is the first program your computer executes?</a></h3>
+<h2 id="what-is-the-first-program-your-computer-executes"><a class="header" href="#what-is-the-first-program-your-computer-executes">What is the first program your computer executes?</a></h2>
 <p>We saw that cpus are simple devices that can fetch instructions from memory, run them and write the side effects back to the memory. So, what are the first instructions that are being run in a computer? When you turn your computer on, your RAM is empty, and there are no instructions, so how does it start to load anything when a RAM is absolutely empty on a startup?</p>
 <p>The answer is: although your computer has an empty ram, we can still trick your computer, making it believe that some constant pieces of data do exist in the very first bytes of your RAM, and put some initial programs there.</p>
-<h3 id="how-can-programs-not-conflict-with-each-other-in-memory-locations"><a class="header" href="#how-can-programs-not-conflict-with-each-other-in-memory-locations">How can programs not conflict with each other in memory locations?</a></h3>
+<h2 id="how-can-programs-not-conflict-with-each-other-in-memory-locations"><a class="header" href="#how-can-programs-not-conflict-with-each-other-in-memory-locations">How can programs not conflict with each other in memory locations?</a></h2>
 <p>This is a question that you might not have asked yourself but is an important one: when you compile a program, you will get a raw binary that contains the cpu opcodes that need to be executed. Those opcodes that have something to do with your RAM, may use static locations in your memory. Now, imagine you want your computer to load and maintain multiple programs on your ram at the same time. Since the programs are using static locations, there is a very high probability that they will use the same locations of memory for storing data. How does a cpu prevent that? Sometimes this could be malicious too, a program may try to read/write locations on memory that are not for itself (E.g a malicious program may try to read the password you entered for logging in to your shell program)</p>
-<h3 id="how-are-the-keyboard-events-are-handled-by-a-computer"><a class="header" href="#how-are-the-keyboard-events-are-handled-by-a-computer">How are the keyboard events are handled by a computer?</a></h3>
-<h3 id="how-can-multiple-programs-run-at-the-same-time"><a class="header" href="#how-can-multiple-programs-run-at-the-same-time">How can multiple programs run at the same time?</a></h3>
+<h2 id="how-are-the-keyboard-events-are-handled-by-a-computer"><a class="header" href="#how-are-the-keyboard-events-are-handled-by-a-computer">How are the keyboard events are handled by a computer?</a></h2>
+<h2 id="how-can-multiple-programs-run-at-the-same-time"><a class="header" href="#how-can-multiple-programs-run-at-the-same-time">How can multiple programs run at the same time?</a></h2>
 <h2 id="if-you-are-nerd-enough-to-write-an-os-yourself"><a class="header" href="#if-you-are-nerd-enough-to-write-an-os-yourself">If you are nerd enough to write an OS yourself</a></h2>
 <p>You can’t really understand the way a modern computer’s cpu work without writing an operating system for it. Unfortunately, writing an operating system for a popular CPU like x86-64 involves a lot of details that are not necessarily helpful for a book like this. I’ll try my best to explain most of the important questions you might have here, but I highly encourage you to write a simple OS yourself! Here is a good roadmap for an OS project:</p>
 <ul>
@@ -1390,7 +1390,7 @@ def color_of(x, y, width, height):
 <blockquote>
 <p>Why do we use electrical cause effects? Because they are small and fast, and can easily be routed by metal wires Fastest cause effect type is light</p>
 </blockquote>
-<h3 id="having-fun-with-the-pixels"><a class="header" href="#having-fun-with-the-pixels">Having fun with the pixels</a></h3>
+<h2 id="having-fun-with-the-pixels"><a class="header" href="#having-fun-with-the-pixels">Having fun with the pixels</a></h2>
 <p>When learning computer graphics, before jumping to complicated algorithms like 3D rendering, there are some other stuff you can do to leverage your power of manipulating pixels.</p>
 <p>There are plenty of things you can draw on a 2D surface. Let's start with drawing a simple 2D line. A 2d line may be defined by its slope and offset:</p>
 <p>\(y = ax + b\)</p>
@@ -1415,18 +1415,18 @@ def color_of(x, y, width, height):
 </code></pre>
 <p>Here is something interesting to draw with simple lines:</p>
 <p>[TODO]</p>
-<h4 id="circle"><a class="header" href="#circle">Circle</a></h4>
+<h2 id="circle"><a class="header" href="#circle">Circle</a></h2>
 <p>A circle can be defined given its center and radius. Just like the <code>Line</code> class, we may also have a <code>Circle</code> class:</p>
 <pre><code class="language-python=">class Circle:
     def __init__(self, center: Vec2D, radius: float):
         self.center = center
         self.radius = radius
 </code></pre>
-<h3 id="fractals"><a class="header" href="#fractals">Fractals</a></h3>
+<h2 id="fractals"><a class="header" href="#fractals">Fractals</a></h2>
 <p>One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:</p>
-<h4 id="serpinski-triangle"><a class="header" href="#serpinski-triangle">Serpinski Triangle</a></h4>
-<h4 id="koch-snowflake"><a class="header" href="#koch-snowflake">Koch Snowflake</a></h4>
-<h4 id="julia-sets"><a class="header" href="#julia-sets">Julia sets</a></h4>
+<h2 id="serpinski-triangle"><a class="header" href="#serpinski-triangle">Serpinski Triangle</a></h2>
+<h2 id="koch-snowflake"><a class="header" href="#koch-snowflake">Koch Snowflake</a></h2>
+<h2 id="julia-sets"><a class="header" href="#julia-sets">Julia sets</a></h2>
 <h2 id="ray-tracing"><a class="header" href="#ray-tracing">Ray Tracing</a></h2>
 <p>3D computer rendering is probably the most complicated and interesting way a computer
 can stimulate our vision. Our perception is evolved in a way to understand our 3-dimensional
@@ -1564,7 +1564,7 @@ a ray-traced scene. We just need to reimplement the <code>color_of</code> functi
 <p>The <code>trace_ray</code> function will take a ray as an argument and will calculate the color and intensity
 of photons that are going through that ray for us.</p>
 <p><img src="assets/eye.png" alt="Calculation of eye-generated rays" /></p>
-<h3 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h3>
+<h2 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h2>
 <p>Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)</p>
 <p>In the rasterization algorithm, instead of emitting rays abd finding the object that it intersects with and calculating its color, we will try to map the 3D points of an object into 2D points on your computer screen through mathematical formula. In other words, when rendering each frame, we loop through the objects in our scene, and all of the 3D points that make those objects, and we will apply a function which convert a triplet \((x, y, z)\) to a pair of floats \((x,y)\). We then fill those pixels on the screen!</p>
 <p>Since it is impractical to represent a 3D object by its points (A 3D object it made of infinite number of points), we usually represent them by a bunch of 3D triangles. Looping through the triangles of an object, using the same 3D-to-2D point conversion formula, we can convert a 3D triangle to a 2D one. We just have to apply the function on all three 3D vertices of the triangle in order to get the respective 2D ones.</p>
@@ -1581,7 +1581,7 @@ class Triangle2D:
         self.b = b
         self.c = c
 </code></pre>
-<h3 id="matrices-programmable-math-objects"><a class="header" href="#matrices-programmable-math-objects">Matrices, programmable math objects!</a></h3>
+<h2 id="matrices-programmable-math-objects"><a class="header" href="#matrices-programmable-math-objects">Matrices, programmable math objects!</a></h2>
 <p>When doing ray tracing, we exactly knew where are imaginary eye/camera is, but so far in the rasterization algorithm, we were assuming that the eye/camera is placed at the origin point \((0,0,0)\). So, how could we move in this 3D scene and see it from different perspectives? The solution is a bit different compared to what we were doing in a ray tracer. Here, instead of moving/rotating the camera around the world, we move/rotate all of the objects in that world, in order to make it feel like the camera is placed in a different location! Since we are working with 3D points, before passing the points to the rendering function, we have to apply a <em><strong>transformation</strong></em> function to put the point in a different location.</p>
 <p>These transformations are done through matrices! There are matrices that apply certain geometric changes when being multiplicated with vectors.</p>
 <p>Assuming our points are represented in 4D vectors where the last element is 1, we can invent a matrix that can move a point by adding a offset vector to it when multiplied with the original vector. This matrix is known as <em><strong>translation</strong></em> matrix. Assuming we want to move our vector \((x, y, z)\) by \((T_x, T_y, T_z)\), the translation matrix works as follows:</p>
@@ -1625,7 +1625,7 @@ sin(\theta) &amp;&amp; cos(\theta) &amp;&amp; 0 &amp;&amp; 0 \\
 0 &amp;&amp; 0 &amp;&amp; 1 &amp;&amp; 0 \\
 0 &amp;&amp; 0 &amp;&amp; 0 &amp;&amp; 1
 \end{bmatrix}\]</p>
-<h3 id="camera-matrix"><a class="header" href="#camera-matrix">Camera matrix</a></h3>
+<h2 id="camera-matrix"><a class="header" href="#camera-matrix">Camera matrix</a></h2>
 <p>Recall that we move/rotate the world around us instead of placing a camera in an arbitrary position rotation, there is a shortcut way for transforming the world as if a camera at \(\vec{P}\) is looking at a target \(\vec{T}\), and its upper-side is pointing at \(\vec{U}\). This matrix can be created as follows:</p>
 <p>\[T = \begin{bmatrix}
 1 &amp;&amp; 0 &amp;&amp; 0 &amp;&amp; 0 \\
@@ -1644,7 +1644,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 \end{bmatrix}\]</p>
 <p>Then the look-at matrix \(L\) can be calculated as follows:</p>
 <p>\(L = O \times T\)</p>
-<h3 id="the-magical-matrix"><a class="header" href="#the-magical-matrix">The magical matrix</a></h3>
+<h2 id="the-magical-matrix"><a class="header" href="#the-magical-matrix">The magical matrix</a></h2>
 <p>The perspective law says that the distance between 2 points look less when the points get farther of our eyes. There is a magical transformation matrix, called the <em><strong>perspective</strong></em> transformation matrix, which applies this effect for us:</p>
 <p>\[\begin{bmatrix}
 \frac{1}{tan(\frac{FOV}{2})a} &amp;&amp; 0 &amp;&amp; 0 &amp;&amp; 0 \\
@@ -1655,7 +1655,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 <p>Where \(FOV\) is field-of-view in radians (Normally \(\frac{\pi}{4}\)), \(a\) is the aspect ratio (Your screen width divided by height), and \(Z_{near}\) and \(Z_{far}\) the closest and farthest objects you can see in the rendered image.</p>
 <p>Assuming the output of this multiplication is \((x,y,z,w)\), by dividing the \(x\) and \(y\) components by \(w\), you will get a pair of numbers between \(-1\) and \(1\), which tell you where on the computer screen should this point be rendered. We can map these numbers to points on screen with resolution \(W \times H\):</p>
 <p>\(P=(W\frac{\frac{x}{w}+1}{2},H\frac{\frac{y}{w}+1}{2})\)</p>
-<h3 id="3d-cube"><a class="header" href="#3d-cube">3D Cube</a></h3>
+<h2 id="3d-cube"><a class="header" href="#3d-cube">3D Cube</a></h2>
 <p>With the tools we created in the previous sections, we are now able to render a simple 3D cube. Each side of a cube is a square, and therefore consists of two triangles. We will be coloring each side of the cube with a unique color, so that sides are distinguishable with each other.</p>
 <p>First, we will need a data structure for storing 3D shapes. Our data structure will be storing the 3D triangles making that object. Let's create a Python class for this purpose and call it <code>Mesh</code>. We will also implement different static-methods generating Mesh objects for different 3D shapes. Let's start with a simple cube-builder:</p>
 <pre><code class="language-python=">class Mesh:
@@ -1674,7 +1674,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
             ]
         )
 </code></pre>
-<h3 id="barycentric-coordinates"><a class="header" href="#barycentric-coordinates">Barycentric coordinates</a></h3>
+<h2 id="barycentric-coordinates"><a class="header" href="#barycentric-coordinates">Barycentric coordinates</a></h2>
 <p>In the previous section, we saw how to draw a boring 3D cube with each side filled with a single color. Sometimes you'll want to use an image instead of a plain color on the sides of your object.</p>
 <p>Putting image textures on a triangle is a straightforward process: when drawing the 2D triangle, for each of the pixels you are putting on the screen, you must somehow calculate the respective location on an image that the color should be fetched from.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="think"><a class="header" href="#think">Think!</a></h1>
@@ -1704,33 +1704,33 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 <p>So we have been doing years and years of research on things so called Artificial Intelligence and Machine Learning, but what I'm talking about here is Artificial General Intelligence, something more than a multilayer regression model used for classifying and prediction.
 Perhaps the reason we have had a giant progress in development of Machine Learning models is all about money. These things are useful in the world we live in, we can build self-driving cars, smart recommender systems and ...
 We can't just build a business out of a human-level intelligent system. (Edit: When I wrote this paragraph, LLMs were not as sophisticated as they are today! Things are very different now)</p>
-<h3 id="learning-is-not-enough-genetic-matters"><a class="header" href="#learning-is-not-enough-genetic-matters">Learning is not enough, genetic matters</a></h3>
+<h2 id="learning-is-not-enough-genetic-matters"><a class="header" href="#learning-is-not-enough-genetic-matters">Learning is not enough, genetic matters</a></h2>
 <p>You can try teaching Kant Philosophy or General Theory of Relativity to your dog, but I bet it would be disappointing. The mere ability to learn is not enough, the way a brain is wired matters, and that only changes through what we call evolution.</p>
-<h3 id="biological-simulation-isnt-the-right-path"><a class="header" href="#biological-simulation-isnt-the-right-path">Biological simulation isn't the right path</a></h3>
+<h2 id="biological-simulation-isnt-the-right-path"><a class="header" href="#biological-simulation-isnt-the-right-path">Biological simulation isn't the right path</a></h2>
 <p>Although researching on biological side of things could be helpful, but doing it excessively could </p>
-<h3 id="we-are-so-close-to-agi"><a class="header" href="#we-are-so-close-to-agi">We are so close to AGI!</a></h3>
+<h2 id="we-are-so-close-to-agi"><a class="header" href="#we-are-so-close-to-agi">We are so close to AGI!</a></h2>
 <p>You can hear people saying that our computers can't even simulate the brain of a bee.
 Humans are smart, nature is dumb, the only thing that is making nature superior than us in engineering self-aware creatures is its vast ability to experiment different random things. Nature can create amazing stuff, but nature is not good at optimizing things. Think of it this way: </p>
-<h3 id="the-environment"><a class="header" href="#the-environment">The Environment</a></h3>
+<h2 id="the-environment"><a class="header" href="#the-environment">The Environment</a></h2>
 <p>You want your lovely artificial creature to learn and do amazing things by himself? The first step is to give him the opportunity to do so! How can you expect a chatbot to magically understand the concept of self-awareness without giving it the chance to explore the world and distinguish himself with others?
 Humans are impressive and amazing, but the environment that was complex (yet not overly complicated) and creative enough that gave organisms the opportunity to evolve to the level of human mind is just brilliant. It's not about how to build a brain, but more about how to build an appropriate <strong>environment</strong> where a brain can evolve.</p>
 <h2 id="lets-act-like-a-god"><a class="header" href="#lets-act-like-a-god">Let's act like a God</a></h2>
 <p>The very first thing we need for creation of a self-aware creature, is a <em><strong>goal</strong></em>. Simplest form of a goal is <em><strong>survival</strong></em>, which simply means, to exist. In order to make existence a goal, we need to put concepts and things which harms the existence of that creature. We can make the creature dependent on some concept and intentionally take it away from him. Let's call that concept:</p>
 <p><em>Look, but don't touch. Touch, but don't taste. Taste, but don't swallow...</em></p>
-<h3 id="we-cant-afford-infinite-randomness"><a class="header" href="#we-cant-afford-infinite-randomness">We can't afford infinite randomness</a></h3>
+<h2 id="we-cant-afford-infinite-randomness"><a class="header" href="#we-cant-afford-infinite-randomness">We can't afford infinite randomness</a></h2>
 <p>The infinite monkey theorem states that a single monkey randomly hitting the keys of a keyboard for an infinite amount of time can write any given text, even complete works of Shakespear. But our computer resources, as opposed to the atoms in our universe, is limited. So we can't build intelligence by bruteforcing simulated atoms in a simulated world!</p>
-<h3 id="death-genes-weapon-for-survival"><a class="header" href="#death-genes-weapon-for-survival">Death, gene's weapon for survival</a></h3>
+<h2 id="death-genes-weapon-for-survival"><a class="header" href="#death-genes-weapon-for-survival">Death, gene's weapon for survival</a></h2>
 <p>There is no reason for a cell, organism or creature to get old and die, as soon as in some part of its code, it is programmed to restore itself by consuming the materials around him (aka food). But most of the animals die (There are some exceptions, some kind of Marjan in Japan never dies by aging), why that happens?
 Paradoxically, the death phenomenon can be an important reason why human-level intelligence exists!
 Only the genes who die after sometime, will survive.
 The population will boom in an unexpected way and that could lead to the extinction of that specy.</p>
 <p>Charles Darwin was always wondering why depression exists.</p>
-<h3 id="consciousness-is-a-loop"><a class="header" href="#consciousness-is-a-loop">Consciousness is a loop</a></h3>
+<h2 id="consciousness-is-a-loop"><a class="header" href="#consciousness-is-a-loop">Consciousness is a loop</a></h2>
 <p>There are several evidences supporting the idea, that consciousness is the result of a loop in our nervous system, created during the evolution. Simple creatures do not have it, and the loop gets stronger and stronger when we reach to homo-sapiens. A loop in the input/output gateways of our brain make the &quot;thinking of thinking&quot; phenomenon possible.</p>
 <p>People with schizophrenia cannot distinguish between feedback inputs and environmental inputs, so they may hear sounds, that do not exist in real world, driving them crazy.  Thinking is like talking without making sounds, and redirecting it back to your brain without hearing it. A healthy brain would expect to hear a sound whenever it talks. Whenever this expectation is somehow broken, the brain cannot recognize if the voice it is hearing is external or it is somebody else inside his brain. It is kind of brain's failure in removing its own voice's echo.</p>
-<h3 id="how-to-experiment-self-awareness"><a class="header" href="#how-to-experiment-self-awareness">How to experiment self-awareness?</a></h3>
+<h2 id="how-to-experiment-self-awareness"><a class="header" href="#how-to-experiment-self-awareness">How to experiment self-awareness?</a></h2>
 <p><em>In an experiment known as the &quot;rouge test,&quot; mothers wiped a bit of rouge on the noses of their children and placed them in front of a mirror. Before 15 months, children look at the reflection and see a red spot on the nose in the mirror, but they don't realize that the red spot is on their own nose. When children are between 15 and 24 months, they begin to realize that the reflection they see is their own, and they either point to the red nose or try to wipe away the rouge. In other words, they understand that the reflection in the mirror is more than a familiar face–it is their own face.</em></p>
-<h3 id="last-step-abstract-thinking"><a class="header" href="#last-step-abstract-thinking">Last step, abstract thinking</a></h3>
+<h2 id="last-step-abstract-thinking"><a class="header" href="#last-step-abstract-thinking">Last step, abstract thinking</a></h2>
 <p>Your creature is now able to find food, escape from dangers, communicate with others and be self-aware. Congratulations! You just built a dog! So what's next? What makes homo-sapiens different with ordinary mammals? People say its our ability to think about things that do not exist. 
 Abstract Thinking isn't a MUST in our world to survive (That's why most animals can't write poems or do math in order to survive), but having it happened to be extremely helpful. Abstract Thinking helped us to unite under the name of </p>
 <h2 id="the-game-of-life"><a class="header" href="#the-game-of-life">The Game of Life</a></h2>
@@ -1769,7 +1769,7 @@ Abstract Thinking isn't a MUST in our world to survive (That's why most animals 
 <p>Why modelling a gate as a floating point function is beneficial for us? Because we can take derivative of a continuous function!</p>
 <p><img src="assets/neuron.png" alt="A more advanced and tunable general purpose gate, a neuron" /></p>
 <p>Once upon a time, two nobel prize winners were studying brain cells 1873</p>
-<h3 id="myserious-black-boxes"><a class="header" href="#myserious-black-boxes">Myserious black boxes</a></h3>
+<h2 id="myserious-black-boxes"><a class="header" href="#myserious-black-boxes">Myserious black boxes</a></h2>
 <p>Neural networks seem to be blackboxes that can learn anything. It has been proven that they can see, understand or even reason about stuff. Neural Network are known to be <em>universal function approximators</em>. Given some samples of inputs/outputs of a function, neural networks may learn that function and try to predict correct outputs, given <em><strong>new inputs</strong></em>, inputs they have never seen before.</p>
 <p>Before feeding a neural network your input data, you have to convert it into numbers. You can encode them anyway you want, and then feed them to a neural network (Which will give you some other numbers), and you may again iterpret the numbers anyway you want, and you can make the network &quot;learn&quot; the way you encode/decode data and try to predict correct outputs given inputs.</p>
 <p>Some example encodings:</p>
@@ -1788,7 +1788,7 @@ Abstract Thinking isn't a MUST in our world to survive (That's why most animals 
 </ol>
 <p>And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.</p>
 <p>Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!</p>
-<h3 id="tensor"><a class="header" href="#tensor">Tensor</a></h3>
+<h2 id="tensor"><a class="header" href="#tensor">Tensor</a></h2>
 <p>If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.</p>
 <p>Tensor libraries are essential for building super-complicated neural networks. So let's implement a tensor library for ourselves!</p>
 <p>A tensor can be simply modeled as a piece of data on your memory which we <em><strong>assume</strong></em> has a particular shape.</p>
@@ -1896,7 +1896,7 @@ class Tensor:
 <p>There is a very simple debugging idea you can use for checking the correctness of your gradient calculations, which can come handy when developing deep learning libraries. It’s named the gradient check method, and it simply checks if the result of the gradient function is equal with the gradient calculated by hand!</p>
 <p>In case of scalar values, the gradient check is something like this:</p>
 <p>[TODO]</p>
-<h3 id="language"><a class="header" href="#language">Language</a></h3>
+<h2 id="language"><a class="header" href="#language">Language</a></h2>
 <p>Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important</p>
 <ol>
 <li>We didn't know a perfect encoding/decoding strategy for text data</li>
@@ -2457,7 +2457,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <p>My point is, old technology isn't always taking the best approach in doing stuff, in fact, old technology is pretty bad, because when engineers were designing the old technology, they didn't have the knowledge and experience they have right now. So it makes sense a lot to get brave and try to redesign things that were working correctly and stabely even for a long time!</p>
 <h2 id="life-in-a-newtonian-world"><a class="header" href="#life-in-a-newtonian-world">Life in a Newtonian world</a></h2>
 <p>Building and experimenting cyber-physical systems is going to cost you a lot, and it makes sense to check if everything is going to work as expected, before building your prototype. Since your brand-new cars/airplanes/rockets/etc are going to live in our world, they are going to obey the laws of Physics of our world. So if you are willing to simulate them before doing serious experiments, you will have to apply the laws of physics on them, in a simulated environment.</p>
-<h3 id="physics-before-apple-hit-the-the-newtons-head"><a class="header" href="#physics-before-apple-hit-the-the-newtons-head">Physics before apple hit the the Newton's head</a></h3>
+<h2 id="physics-before-apple-hit-the-the-newtons-head"><a class="header" href="#physics-before-apple-hit-the-the-newtons-head">Physics before apple hit the the Newton's head</a></h2>
 <p>Students nag that they would have much less to study if that damn apple never hit Newton's head, but the truth is, the science of Physics existed even before Newton formulate it in his precious works. Even if Newton never figured gravity, sooner or later, someone else would do it! So, what were the statements of &quot;Physicists&quot; before Newton, when you asked them to explain the mechanical phenomena we experience everyday?</p>
 <p>Aristotle, the Greek scientist and philosopher who were living in 4th century B.C., was of the first famous scientists trying to explain the laws of motion. Surprisingly, Aristotle's laws of motion was left untouched and continued to rule physics for more than 2000 years. Galileo Galilei, the Italian polymath, was of the first people who was brave enough to make new statements about motion and to break the Aristotle's empire that ruled for so long.</p>
 <p>Aristotle's law of motion states that:</p>
@@ -2531,7 +2531,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <p>\(V=RI\)</p>
 <p>The Kirchhoff's law on the other hand, states that the sum of incoming and outgoing current to/from a point in a circuit is always equal. Assuming that we state an outgoing current as an incoming current that is negative, we can define Kirchhoff's current law: the algebraic sum of currents that meet at a point is zero.</p>
 <p>Now let's see how these laws can help us analyze a circuit.</p>
-<h3 id="analyzing-circuits"><a class="header" href="#analyzing-circuits">Analyzing circuits</a></h3>
+<h2 id="analyzing-circuits"><a class="header" href="#analyzing-circuits">Analyzing circuits</a></h2>
 <p>Analyzing an electronic circuit is all about predicting and calculating the amount of current and voltage of every point in the circuiy. Obviously, the voltage of every two points directly connected through a wire is always equal. Electronic components are connected together through wires, and your circuit consists of junctions where 2 or more components meet. Since the voltage value of all the points in a junction are equal, there is only one voltage to be calculated. Let's refer to this intersection points of components as <em><strong>nodes</strong></em>. In the example circuit in figure X, there are X nodes. Our goal is to calculate the voltage of all the nodes in any given time.</p>
 <p>An electronic component can be defined by the amount of current it allows to pass given the voltages applied on its pins. For example, a resistor's ability to pass electrons is linearly dependent to the amount of voltage difference applied on its pins.</p>
 <p>\(i=\frac{V_a - V_b}{R}\)</p>
@@ -2545,7 +2545,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <p>\(i = I\)</p>
 <p>By summing all of currents flowing into each node, we will get a set of equations. Given Kirchhoff's law, we know that these functions must be equal to zero. This puts a constraint on the voltages of the nodes in out system, helping us to find the correct voltage of each node.</p>
 <p>In other words, the problem of solving the circuit is reduced to finding the solution of a system of equations.</p>
-<h3 id="newton-newton-verywhere"><a class="header" href="#newton-newton-verywhere">Newton, Newton verywhere</a></h3>
+<h2 id="newton-newton-verywhere"><a class="header" href="#newton-newton-verywhere">Newton, Newton verywhere</a></h2>
 <p>Finding the roots of arbitrary functions has always been an interesting problem for ancient mathematicians. It's interesting to know that it took almost X years to find a general method for calculating the roots of a simple quadratic equation, let alone more complicated function!</p>
 <p>Newton, besides doing Physics, has always been a pioneer in mathematics and one of his discoveries, was a numerical method for finding the roots of any arbitrary function (With known derivative). The method, which is known as Newton-Raphson nowadays (Thanks to the simplification Raphson did to the algorithm), is an iterative algorithm which tries to guess the root of the function, and make its guess better and better through iterations, until reaching to a final answer!</p>
 <p>\(x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}\)</p>
@@ -2597,7 +2597,190 @@ print(guess, f(guess))
         self.index = index # Keep track of the index of variable
         self.value = 0
 </code></pre>
-<h3 id="when-stables-and-unstables-meet"><a class="header" href="#when-stables-and-unstables-meet">When stables and unstables meet!</a></h3>
+<h2 id="components-are-equations"><a class="header" href="#components-are-equations">Components are equations</a></h2>
+<p><em><strong>Current Source</strong></em></p>
+<p>A current-source equation makes sure that the amount of current flowing through its pins is equal with some value, through two equations:</p>
+<ul>
+<li>\(I_a - i = 0\)</li>
+<li>\(i - I_b = 0\)</li>
+</ul>
+<pre><code class="language-python=">class CurrentSource(Component):
+    def __init__(self, amps, a: Var, b: Var):
+        super().__init__()
+        self.amps = amps
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: self.amps)
+        solver.add_func(self.b.index, lambda: -self.amps)
+</code></pre>
+<p><em><strong>Voltage Source</strong></em></p>
+<p>A voltage-source equation makes sure the potential difference between two points \(V_a\) and \(V_b\) is always equal with \(v\), by adding 3 equations to your system. (A temporary variable \(i\) is also introduced, representing the amount of current being flown through the component):</p>
+<ul>
+<li>\(I_a - i = 0\)</li>
+<li>\(i - I_b = 0\)</li>
+<li>\(V_a - V_b - v = 0\)</li>
+</ul>
+<p>Note that, since we are using the Kirchhoff's law to solve the circuits, all components need to define the amount of current going in and out the circuit, and how does it relate \(I_a\) and \(I_b\) with each other. In a voltage-source (Like any other 2-pin component), the amount if input current is equal with the amount of output current. Naming that auxillary variable to \(i\), the relation between \(I_a\) and \(I_b\) is defined using the first and second equation. In fact, the variable \(i\) has no direct usage but to relate \(I_a\) and \(I_b\) with each other!</p>
+<pre><code class="language-python=">class VoltageSource(Component):
+    def __init__(self, volts, a: Var, b: Var, i: Var):
+        super().__init__()
+        self.volts = volts
+        self.a = a
+        self.b = b
+        self.i = i
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: self.i.value)
+        solver.add_func(self.b.index, lambda: -self.i.value)
+        solver.add_func(
+            self.i.index,
+            lambda: self.b.value
+            - self.a.value
+            - self.volts,
+        )
+
+        solver.add_deriv(self.a.index, self.i.index, lambda: 1)
+        solver.add_deriv(self.b.index, self.i.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.a.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.b.index, lambda: 1)
+</code></pre>
+<p><em><strong>Resistor</strong></em></p>
+<p>The resistor component makes sure that the amount of current being flown through it is linearly dependent on the voltage-difference applied to it. In other words: \(i = \frac{V_a - V_b}{R}\). It does so by applying two equations:</p>
+<ul>
+<li>\(I_a - \frac{V_a - V_b}{R} = 0\)</li>
+<li>\(\frac{V_a - V_b}{R} - I_b = 0\)</li>
+</ul>
+<pre><code class="language-python=">class Resistor(Component):
+    def __init__(self, ohms, a: Var, b: Var):
+        super().__init__()
+        self.ohms = ohms
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: (self.a.value - self.b.value) / self.ohms)
+        solver.add_func(self.b.index, lambda: (self.b.value - self.a.value) / self.ohms)
+
+        solver.add_deriv(self.a.index, self.a.index, lambda: 1 / self.ohms)
+        solver.add_deriv(self.a.index, self.b.index, lambda: -1 / self.ohms)
+        solver.add_deriv(self.b.index, self.a.index, lambda: -1 / self.ohms)
+        solver.add_deriv(self.b.index, self.b.index, lambda: 1 / self.ohms)
+</code></pre>
+<p><em><strong>Capacitor</strong></em>
+Unlike the components discussed so-far, a capacitor is a component that has memory (Its current behavior is dependent on voltages previously applied to it). A charged capacitor has a different behavior compared to a discharged one. A charged capacitor will resist against current and a discharged one acts like a wire. We somehow need to bring this memory-behavior on the table. We do this by introducing a <code>old_value</code> field for our variables, and use them as equations. Note that the old values of variables act as constant numbers (When taking derivatives). I.e: \(\frac{d(V-V_{old}}{dt} = \frac{dV}{dt}\)</p>
+<p>A capacitor can be modeled using 2 equations:</p>
+<ul>
+<li>\(I_a - \frac{(V_a + V_b)-(V_{a_{old}} + V_{b_{old}})}{dt} \times C = 0\)</li>
+<li>\(\frac{(V_a + V_b)-(V_{a_{old}} + V_{b_{old}})}{dt} \times C - I_b = 0\)</li>
+</ul>
+<pre><code class="language-python=">class Capacitor(Component):
+    def __init__(self, farads, a: Var, b: Var):
+        super().__init__()
+        self.farads = farads
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(
+            self.a.index,
+            lambda: (
+                (self.a.value - self.b.value) - (self.a.old_value - self.b.old_value)
+            )
+            / solver.dt
+            * self.farads,
+        )
+        solver.add_func(
+            self.b.index,
+            lambda: -(
+                (self.a.value - self.b.value) - (self.a.old_value - self.b.old_value)
+            )
+            / solver.dt
+            * self.farads,
+        )
+
+        solver.add_deriv(self.a.index, self.a.index, lambda: self.farads / solver.dt)
+        solver.add_deriv(self.a.index, self.b.index, lambda: -self.farads / solver.dt)
+        solver.add_deriv(self.b.index, self.a.index, lambda: -self.farads / solver.dt)
+        solver.add_deriv(self.b.index, self.b.index, lambda: self.farads / solver.dt)
+</code></pre>
+<p><em><strong>Inductor</strong></em></p>
+<pre><code class="language-python=">class Inductor(Component):
+    def __init__(self, henries, a: Var, b: Var, i: Var):
+        super().__init__()
+        self.henries = henries
+        self.a = a
+        self.b = b
+        self.i = i
+
+    def apply(self, solver: Solver):
+        solver.add_func(self.a.index, lambda: self.i.value)
+        solver.add_func(self.b.index, lambda: -self.i.value)
+        solver.add_func(
+            self.i.index,
+            lambda: (self.i.value - self.i.old_value) / solver.dt * self.henries
+            - (self.a.value - self.b.value),
+        )
+
+        solver.add_deriv(self.a.index, self.i.index, lambda: 1)
+        solver.add_deriv(self.b.index, self.i.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.i.index, lambda: self.henries / solver.dt)
+        solver.add_deriv(self.i.index, self.a.index, lambda: -1)
+        solver.add_deriv(self.i.index, self.b.index, lambda: 1)
+</code></pre>
+<p><em><strong>Diode</strong></em></p>
+<p>Diode is a one-way current blocker. Apply the voltage on right direction and the current will go up to infinity (I.e zero resistance), and apply it in the reverse direction and the current becomes zero (I.e infinite resistance). Such a behavior can be perfectly modeled with a exponentation function.</p>
+<pre><code class="language-python=">class Diode(Component):
+    def __init__(self, coeff_in, coeff_out, a: Var, b: Var):
+        super().__init__()
+        self.coeff_in = coeff_in
+        self.coeff_out = coeff_out
+        self.a = a
+        self.b = b
+
+    def apply(self, solver: Solver):
+        solver.add_func(
+            self.a.index,
+            lambda: (math.exp((self.a.value - self.b.value) * self.coeff_in) - 1)
+            * self.coeff_out,
+        )
+        solver.add_func(
+            self.b.index,
+            lambda: -(math.exp((self.a.value - self.b.value) * self.coeff_in) - 1)
+            * self.coeff_out,
+        )
+
+        solver.add_deriv(
+            self.a.index,
+            self.a.index,
+            lambda: math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.a.index,
+            self.b.index,
+            lambda: -math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.b.index,
+            self.a.index,
+            lambda: -math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.b.index,
+            self.b.index,
+            lambda: math.exp((self.a.value - self.b.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+</code></pre>
+<h2 id="when-stables-and-unstables-meet"><a class="header" href="#when-stables-and-unstables-meet">When stables and unstables meet!</a></h2>
 <p>Revisiting capacitors, we know they are elements that resist against <code>stability</code> of the voltage applied to them. (E.g if you connect a DC voltage-source to them, they will slowly get charged and cancel out the voltage of the DC voltage source, resisting against flow of electrons)</p>
 <p>On the other hand, inductors are components that resist against <code>unstability</code> of the current flowing in them. If you suddenly connect a voltage source to them, you may not see a sharp change in the current flowing in an inductor (As opposed to a capacitor, or even a simple resistor), but the current will go up slowly, and if you disconnect the voltage source, current will not get zero instantly, but it will slowly approach zero (Very similar to law of intertia in mechanics!)</p>
 <p>In fact, both capacitors and inductors somehow store energy, but in different ways. A capacitor stores energy as a potential difference between its plates, but an inductor stores energy as a magnetic field inside a coil.</p>
@@ -2610,7 +2793,7 @@ print(guess, f(guess))
 <p>Remember both capacitors and inductors could be used for storing energy? Not only you use a pair of capacitor and inductor for creating a dynamic resistor with minimized resistance in a certain frequency, but also you can trap energy in them, and that energy will oscillate between the capacitor and inductor with the same frequency! This means, you can build an alternating source of voltage with this magical pair, and that oscillation is something that has effects on the space around it. It makes disturbances that propagates in the space! (Recall the second chapter where we discussed waves)</p>
 <p>The oscillation made by this loop can be routed to a long piece of metal, amplifying the impact it has in the space. A bigger surprise is that, if you have another capacitor-inductor loop (With same frequency) somewhere else, a slight oscillation will also be induced on the second loop. This revolutionary idea was first proposed by the German physicist, Heinrich Hertz.</p>
 <p><img src="assets/rlc.png" alt="RLC circuit current" />{ width=300px }</p>
-<h3 id="lets-teleport"><a class="header" href="#lets-teleport">Let's teleport</a></h3>
+<h2 id="lets-teleport"><a class="header" href="#lets-teleport">Let's teleport</a></h2>
 <p>Now that we've been able to recognize presence of some frequency in the space through an antenna, a good next step might be to turn an LED one when the frequency is present. Unfortunately, as an electromagnetic wave propagates through the space (Assume the energy is on the surface of a sphere that is getting bigger linearly, the energy on the sphere is constant but the area is increasing, so the density of the energy per area will decrease, that's why a light-source will look less bright as you get farther from it), it loses its energy. So, the amplitude of the signal you receive on the other side is much smaller, so we have to somehow amplify it and retrieve the original, high-amplitude signal back, in order to make the signal large enough for turning an LED on.</p>
 <p>What we are receiving in a RLC loop that is connected to an antenna, is a voltage resonance. This means that the loop will have a very small AC voltage when an electromagnetic wave (With the same frequency as the loop's resonant frequency) is present in the air. In order to turn an LED on, we need a DC voltage source. Remember how we were able to convert AC to DC in previous sections? Using the same ideas as before, we can limit the flow of current to a single direction with a diode, and fill the voltage gaps using a capacitor. This way, the presence of a wave is converted to a very small DC voltage source which can be detected, by a transistor! (Note: you might think that the capacitor will store the energy and keep it even when the signal is not present anymore, that is somehow true, but in practice, the output of the circuit is connected to some other element, consuming the energy stored in the capacitor, eventually zeroing the energy of the capacitor when the signal is not present anymore)</p>
 <p>[IMG, rlc loop connected to a diode and capacitor]</p>
@@ -2619,7 +2802,7 @@ print(guess, f(guess))
 <p>Transistors usually need a small, initial voltage on their base pin in order to get sensitive to voltage changes. (E.g the impact of increasing the voltage of the base pin from 1V to 1.1V is much higher than the impact of increasing it from 0V to 0.1V and that's because transistors allow exponentially more current to flow when their base voltage increase). So in order to make our circuit more sensitive to voltage changes, it might make sense to add some extra voltage to the base pin, using a pair of resistors (For voltage splitting).</p>
 <p>[IMG: Biasing the transistor]</p>
 <p>This simple can be used for sending binary data in distances, a morse-code for example!</p>
-<h3 id="telephone-revolution-1"><a class="header" href="#telephone-revolution-1">Telephone revolution</a></h3>
+<h2 id="telephone-revolution-1"><a class="header" href="#telephone-revolution-1">Telephone revolution</a></h2>
 <p>Morse codes can be used for sending bit infomation. What if we want to send something like audio through space? Audio itself is a wave contatining many frequencies, and our circuit was able to recognize the presence of a wave with a certain frequency in the space.</p>
 <p>Let's get back to our previous circuit. We were able to control the flow of electrons by a radio wave, but there is more to that circuit! By playing with our transmitter a bit, we will soon figure out that the more strong (Higher amplitude) the source signal is, the brighter the LED will get, which means, not only we can prevent/allow the flow of electrons, we can also control the amount of current flows per time! This means that the data we are sending through our transmitter doesn't necessarilly have to be single bits (On/offs), but they can also be floating-point values!</p>
 <p>Waves themselves can be represented as streams of values, where each value shows the amplitude of the signal over time. Now, let's suppose the voice we are going to transfer is encoded as the strength of the retrieved signal. This kind of encoding is known as Amplitude Modulation or AM. This is exactly the same thing that happens in a AM radio receiver/transmitter, and our wave-recognizer circuit can actually receive AM signals already. If we connect the collector wire of the transistor to a speaker, you'll be able to hear the Amplitude Modulated sounds transmitted on that specific frequency. If we want to allow the user to listen to arbitrary frequencies, we'll need a RLC loop with variable resonant-frequency. The resonant-frequency can become variable if either the capacitor or the inductor becomes variable. A variable inductor is pretty straightforward: since an inductor is a wire coil, you can select how long of the coil you want to use in the circuit, as shown in the figure X.</p>
@@ -2633,11 +2816,11 @@ print(guess, f(guess))
 <p>[TODO: Antenna code]</p>
 <p>Now, let's see if an RLC loop can detect the signal generated by a Astable Multivibrator:</p>
 <p>[TODO: code]</p>
-<h3 id="hello-world"><a class="header" href="#hello-world">Hello World!</a></h3>
+<h2 id="hello-world"><a class="header" href="#hello-world">Hello World!</a></h2>
 <p><img src="assets/astable.png" alt="Astable Multivibrator's output" />{ width=300px }</p>
-<h3 id="alternating-vs-direct-current"><a class="header" href="#alternating-vs-direct-current">Alternating vs Direct current</a></h3>
+<h2 id="alternating-vs-direct-current"><a class="header" href="#alternating-vs-direct-current">Alternating vs Direct current</a></h2>
 <p>How diodes can convert AC to DC</p>
-<h3 id="when-capacitors-finally-become-useful"><a class="header" href="#when-capacitors-finally-become-useful">When capacitors finally become useful</a></h3>
+<h2 id="when-capacitors-finally-become-useful"><a class="header" href="#when-capacitors-finally-become-useful">When capacitors finally become useful</a></h2>
 <p>If electrical current is analogous to a ball falling from a higher height, then capacitors are like springs on the ground. When the ball hits the spring, in the very first seconds, you won’t see a fast change in the speed of the ball (capacitor acts like a wire, in the very first milliseconds ). As time passes and the ball pushes the string, the string will get potential energy, slowly preventing the ball to squeeze the spring further. There is a moment where the potential energy of the ball  gets equal with potential energy of the spring (capacitor), and that’s when the ball (current!) stops moving. The longer and stronger the spring is, the more it takes to fully squeeze it.</p>
 <p>In this fancy, not fully accurate analogy, we can also assume that air-resistance is pretty similar to a resistor. It will slow down the ball. Together, the air resistance and the spring will make a mechanical RC circuit, higher air resistance will also increase the time needed for the spring to get fully squeezed.</p>
 <p>Now, imagine we suddenly remove the gravity from the equation, the energy stored in the spring will be released and will push the ball to higher heights, just like when we disconnect the batter from the capacitor and let it load a LED!</p>
