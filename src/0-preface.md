@@ -1,5 +1,15 @@
 # The Super Programmer
 
+## Existential Rambling
+
+It’s 2:20 AM, February 16th, 2024. OpenAI has just released their new product, Sora, an AI model capable of generating one minute of mind-blowingly high-quality video content given a text prompt. I’m scrolling through Twitter, watching the sample outputs, feeling extremely jealous of those who have had the opportunity to contribute to building it, and I also feel a bit of emptiness. I’m thinking about how this would affect the video industry and Hollywood. How many people’s work will become meaningless just after this? And for me, there is also a disturbing question:
+
+Does it make any sense for me to write this book at all? If a machine is able to generate convincingly real videos, how hard would it be for it to write a tutorial book like this? Why would I put any effort in if anyone is able to generate their customized masterpiece in seconds?
+
+I know this will happen someday, and I'm not against it. I truly appreciate the fact that I was born in an era when the AI revolution is happening. AI will someday be able to generate better content than we can, and many of our efforts will simply become unnecessary. In my opinion, that future is not far off.
+
+Anyway, my temporary existential crisis in this moment made me immediately pick up my phone and express my heartbreak and sadness in the very first section of this book. Perhaps this is the only way I could convince myself to continue writing a book: by pouring some real human soul into it.
+
 ## Preface
 
 The book you're about to read is the outcome of exploring various areas in computer science for over 15 years. The idea of writing this book began around 8 years ago when I was about 17 years old. At that time, my focus was on learning computer graphics and 3D rendering algorithms. The concept of generating 3D images by calculating the RGB values of pixels intrigued me, prompting a desire to teach it to every programmer I knew. Unfortunately, not everyone I knew was interested in learning low-level stuff like this. Instead of trying to teach what I had learned, I decided to write a book. I was confident I'd have an audience, as many programmers worldwide are eager to learn more than just web-application development (a common career path among software engineers).
