@@ -338,6 +338,16 @@ The proposed hash function is completely made-up, very inefficient and might be 
 
 Bitcoin had an intellectual community back then (It still has!). There were a lot of people talking about ways they can improve Bitcoin in public forums and chat-rooms. One of the revolutionary ideas which was shared as a topic on Bitcointalk was: to expect different hardness of the PoW puzzle from different people, based on their balance. Those with less coins have to work on harder problems, and those with a lot of coins are only required to solve a simple Proof-of-Work puzzle!
 
+If you remember in previous sections, a typical Proof-of-Work puzzle expected you to try, on average, \\(\frac{H_{max}}{\theta}\\) different nonces in order to find the appropriate nonce. Here we are going to make the puzzle easier for people with more coins. So we somehow have to reduce \\(\theta\\) in case of a higher stake and reduce it for lower stakes. One way we can handle this is by multiplying \\(\theta\\) with \\(\frac{S_{user}}{S_{total}}\\). (Where \\(S_{user}\\) is this user's stake and \\(S_{total}\\) is the sum of stakings of all users). This way, the average number of nonce trials needed wiil become \\(\frac{H_{max}}{\theta \times \frac{S_{user}}{S_{total}}}\\). The higher user's stake is, the closer the fraction becomes to 1, maximizing the possible theta. When the stake of user approaches to zero, the fraction becomes 0 too (Resulting to a smaller theta and a harder puzzle).
+
+The idea discussed above was of the earliest ideas of a Proof-of-Stake consensus algorithm. It really brings in some kind of PoS in the first look but, unfortunately, people with hardware advantages can still take advantage and win all of the blocks. The discussed algorithm is a step towards PoS, but it is not a pure PoS, as it inherits the most weaknesses of a PoW algorithm.
+
+People thought more and more on the nature of a PoS algorithm, and they decided that an ideal PoS algorithm should have nothing to do with a PoW puzzle, but it only has to perform an election between the stakers. The higher you stake, the more chance you will have to win the next block. In order to perform an election in a computer, you will need some ***source-of-randomness***. Let's suppose we have a source of randomness, which gives us values between \\(0<r<1\\).
+
+Assuming we have \\(n\\) stakers (Sorted in descending order) \\(S_1, S_2, \dots, S_n\\), where \\(S_T\\) is the sum of all staked amounts, we know that \\(\frac{S_1}{S_T} + \frac{S_2}{S_T} + \dots + \frac{S_n}{S_T} = 1\\). Thus, if we put these stakers on a ribbon, the length of the ribbon will become 1. Now, assuming \\(r\\) is a random number between 0 and 1, if we mark the corresponding location of \\(r\\) on the ribbon, it will go inside one of the stakers. We can consider that staker to be the one who is able to generate the next block!
+
+The million dollar question in this method is, who decides the value of \\(r\\)?
+
 ## It's time to commit
 
 Now you probably have an accurate intitution on how cryptographic hash functions work (If you are convinced that the Proof-of-Work algorithm really works). But it's also good to know the formal definition of a cryptographic hash function. A cryptographic hash function is a function that is:
