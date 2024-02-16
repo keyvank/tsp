@@ -304,6 +304,58 @@ Our implementation of a tensor is ready, our next big step is now to implement a
 
 Whenever you perform an operation on two tensors, you will get a new tensor. The gradients of tensors a and b is equal with the derivative of the output tensor with respect to each input tensor.
 
+In a production scale neural-network libraries, such as Pytorch and Tensorflow, the building of computation graphs is done automatically. You can go ahead and add tensors and multiply them together using ordinary Python operators (`+/-/*`). This requires us to implement the magic functions of operators (E.g `__add__`) in a way such that the resulting tensor keeps track of it parent tensors and is able to change their gradient values when needed. For example, when performing `c = a + b`, the gradient values of `a` and `b` are both influenced by `c`, so we have to keep track of these relations somewhere. This is done automatically in fancy neural-net libraries. Here we aren't going to make our implementation complicated and prefer to keep our code simple, tolerating some unfriendliness in tensor operations syntax. In our implementation, we assume there is a abstract class named `Operator`, which all tensor operations inherit from.
+
+```python=
+from abc import ABC, abstractmethod 
+
+
+class Operator(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def run(self, inps: List[Tensor]) -> Tensor:
+        pass
+
+    @abstractmethod
+    def grad(self, inps: List[Tensor], out: Tensor) -> List[Tensor]:
+        pass
+```
+
+The `run` function performs the operation on inputs, and then gives us an output tensor. The `grad` function otherhand, calculates the gradients of `inps`, given `inps` and the gradient of the output tensor according to the network's error (`out_grad`).
+
+Let's take a look at the implementation of the `Add` operation:
+
+```python=
+class Add(Operator):
+    def __init__(self):
+        pass
+
+    def run(self, inps: List[Tensor]) -> Tensor:
+        return inps[0] + inps[1]
+
+    def grad(self, inps: List[Tensor], out_grad: Tensor) -> List[Tensor]:
+        return [out_grad, out_grad]
+```
+
+The gradient of tensor \\(x\\) is the derivative of our error function with respect to \\(x\\).
+
+\\(\frac{dE}{dx}\\)
+
+It shows us the impact of changing the single tensor \\(x\\) on the total network error.
+
+Assuming we already know the gradient of the error function with respect to the output of the tensor operation \\(\frac{dE}{df(x, y)}\\), we can calculate our desired value using the chain operation:
+
+\\(\frac{dE}{dx} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dx}\\)
+
+In case of addition operation, the gradients can be calculated like this
+
+- \\(\frac{dE}{dx} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dx} = \delta \times \frac{d(x + y)}{dx} = \delta \times 1 = \delta\\)
+- \\(\frac{dE}{dy} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dy} = \delta \times \frac{d(x + y)}{dy} = \delta \times 1 = \delta\\)
+
+Therefore, the `grad` function will just return `[out_grad, out_grad]` as its output!
+
 I assume you already know the way derivation on scalar values work. Derivatives on tensors is also very similar to scalar, the difference is just that, the derivative will also be a tensor instead of an scalar.
 
 Implementing gradient engines is not an easy task at all. A very tiny mistake in calculation of a gradient will invalidate all of the gradient in previous layers. Your neural network will keep training but will never converge to a satisfactory solution, and it’s almost impossible to tell which part of the calculations you did wrong.
