@@ -177,6 +177,11 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="the-super-programmer"><a class="header" href="#the-super-programmer">The Super Programmer</a></h1>
+<h2 id="existential-rambling"><a class="header" href="#existential-rambling">Existential Rambling</a></h2>
+<p>It’s 2:20 AM, February 16th, 2024. OpenAI has just released their new product, Sora, an AI model capable of generating one minute of mind-blowingly high-quality video content given a text prompt. I’m scrolling through Twitter, watching the sample outputs, feeling extremely jealous of those who have had the opportunity to contribute to building it, and I also feel a bit of emptiness. I’m thinking about how this would affect the video industry and Hollywood. How many people’s work will become meaningless just after this? And for me, there is also a disturbing question:</p>
+<p>Does it make any sense for me to write this book at all? If a machine is able to generate convincingly real videos, how hard would it be for it to write a tutorial book like this? Why would I put any effort in if anyone is able to generate their customized masterpiece in seconds?</p>
+<p>I know this will happen someday, and I'm not against it. I truly appreciate the fact that I was born in an era when the AI revolution is happening. AI will someday be able to generate better content than we can, and many of our efforts will simply become unnecessary. In my opinion, that future is not far off.</p>
+<p>Anyway, my temporary existential crisis in this moment made me immediately pick up my phone and express my heartbreak and sadness in the very first section of this book. Perhaps this is the only way I could convince myself to continue writing a book: by pouring some real human soul into it.</p>
 <h2 id="preface"><a class="header" href="#preface">Preface</a></h2>
 <p>The book you're about to read is the outcome of exploring various areas in computer science for over 15 years. The idea of writing this book began around 8 years ago when I was about 17 years old. At that time, my focus was on learning computer graphics and 3D rendering algorithms. The concept of generating 3D images by calculating the RGB values of pixels intrigued me, prompting a desire to teach it to every programmer I knew. Unfortunately, not everyone I knew was interested in learning low-level stuff like this. Instead of trying to teach what I had learned, I decided to write a book. I was confident I'd have an audience, as many programmers worldwide are eager to learn more than just web-application development (a common career path among software engineers).</p>
 <p>So, I started writing the book, named it &quot;Programming the Visuals,&quot; and made a lot of progress! Not sure what happened exactly, but I got a bit discouraged after finding it hard to fill a book with content. I found myself explaining everything in less than 40 pages, and well, 40 pages are not enough for a technical book. I didn't want to clutter my book with all the details of different rendering algorithms. I just wanted to explain the core idea, in very simple words and with easy-to-understand code examples. My goal was to introduce this specific field of computer science to people, hoping they would get encouraged enough to learn anything else they'd need by themselves.</p>
@@ -1891,6 +1896,45 @@ class Tensor:
 <h2 id="gradient-engines"><a class="header" href="#gradient-engines">Gradient Engines</a></h2>
 <p>Our implementation of a tensor is ready, our next big step is now to implement a gradient engine. Don’t get scared by its name, a gradient engine is just a tool you can use to keep track of derivatives of you tensors, with respect to the last computation you perform on your tensors (Which typically shows you how far are the outputs of your network compared to the desired outputs)</p>
 <p>Whenever you perform an operation on two tensors, you will get a new tensor. The gradients of tensors a and b is equal with the derivative of the output tensor with respect to each input tensor.</p>
+<p>In a production scale neural-network libraries, such as Pytorch and Tensorflow, the building of computation graphs is done automatically. You can go ahead and add tensors and multiply them together using ordinary Python operators (<code>+/-/*</code>). This requires us to implement the magic functions of operators (E.g <code>__add__</code>) in a way such that the resulting tensor keeps track of it parent tensors and is able to change their gradient values when needed. For example, when performing <code>c = a + b</code>, the gradient values of <code>a</code> and <code>b</code> are both influenced by <code>c</code>, so we have to keep track of these relations somewhere. This is done automatically in fancy neural-net libraries. Here we aren't going to make our implementation complicated and prefer to keep our code simple, tolerating some unfriendliness in tensor operations syntax. In our implementation, we assume there is a abstract class named <code>Operator</code>, which all tensor operations inherit from.</p>
+<pre><code class="language-python=">from abc import ABC, abstractmethod 
+
+
+class Operator(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def run(self, inps: List[Tensor]) -&gt; Tensor:
+        pass
+
+    @abstractmethod
+    def grad(self, inps: List[Tensor], out: Tensor) -&gt; List[Tensor]:
+        pass
+</code></pre>
+<p>The <code>run</code> function performs the operation on inputs, and then gives us an output tensor. The <code>grad</code> function otherhand, calculates the gradients of <code>inps</code>, given <code>inps</code> and the gradient of the output tensor according to the network's error (<code>out_grad</code>).</p>
+<p>Let's take a look at the implementation of the <code>Add</code> operation:</p>
+<pre><code class="language-python=">class Add(Operator):
+    def __init__(self):
+        pass
+
+    def run(self, inps: List[Tensor]) -&gt; Tensor:
+        return inps[0] + inps[1]
+
+    def grad(self, inps: List[Tensor], out_grad: Tensor) -&gt; List[Tensor]:
+        return [out_grad, out_grad]
+</code></pre>
+<p>The gradient of tensor \(x\) is the derivative of our error function with respect to \(x\).</p>
+<p>\(\frac{dE}{dx}\)</p>
+<p>It shows us the impact of changing the single tensor \(x\) on the total network error.</p>
+<p>Assuming we already know the gradient of the error function with respect to the output of the tensor operation \(\frac{dE}{df(x, y)}\), we can calculate our desired value using the chain operation:</p>
+<p>\(\frac{dE}{dx} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dx}\)</p>
+<p>In case of addition operation, the gradients can be calculated like this</p>
+<ul>
+<li>\(\frac{dE}{dx} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dx} = \delta \times \frac{d(x + y)}{dx} = \delta \times 1 = \delta\)</li>
+<li>\(\frac{dE}{dy} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dy} = \delta \times \frac{d(x + y)}{dy} = \delta \times 1 = \delta\)</li>
+</ul>
+<p>Therefore, the <code>grad</code> function will just return <code>[out_grad, out_grad]</code> as its output!</p>
 <p>I assume you already know the way derivation on scalar values work. Derivatives on tensors is also very similar to scalar, the difference is just that, the derivative will also be a tensor instead of an scalar.</p>
 <p>Implementing gradient engines is not an easy task at all. A very tiny mistake in calculation of a gradient will invalidate all of the gradient in previous layers. Your neural network will keep training but will never converge to a satisfactory solution, and it’s almost impossible to tell which part of the calculations you did wrong.</p>
 <p>There is a very simple debugging idea you can use for checking the correctness of your gradient calculations, which can come handy when developing deep learning libraries. It’s named the gradient check method, and it simply checks if the result of the gradient function is equal with the gradient calculated by hand!</p>
@@ -2050,14 +2094,14 @@ enc_4(10) = 01 \
 enc_4(11) = 00\)</p>
 <p>Compressed version: \(11\)</p>
 <p>Just like how we compressed the 1-char to 1-char mappings into a single bit, we can compress the 4 possible 2-char to 2-char mappings into two bits (Instead of passing all the 4 entries). For each bit of the compressed secret key, we just have to tell if the corresponding bit should be swapped or not.</p>
-<h3 id="definition-of-secure"><a class="header" href="#definition-of-secure">Definition of secure</a></h3>
+<h2 id="definition-of-secure"><a class="header" href="#definition-of-secure">Definition of secure</a></h2>
 <p>The output of an encryption algorithm is known to be secure, when the output binary string looks rubbish, and totally random. Which means, there is no way you can recognize if the output is a string generated by uniformaly picking random letters, or something else.</p>
 <p>Some properties of a random string:</p>
 <ul>
 <li>The number of each letter is equal with other letters (In case of a binary string, the number of 1s is equal with 0s)</li>
 <li>...</li>
 </ul>
-<h3 id="xor-is-the-answer-to-everything"><a class="header" href="#xor-is-the-answer-to-everything">XOR is the answer to everything</a></h3>
+<h2 id="xor-is-the-answer-to-everything"><a class="header" href="#xor-is-the-answer-to-everything">XOR is the answer to everything</a></h2>
 <p>We can now conclude that, we don't need to store a mapping of size \(2^n\) (\(\alpha=2\) since we are working with binary strings) in order to encrypt/decrypt binary texts. We just need to store a key of size \(n\) bits, which shows us, for each bit, whether we should swap the corresponding bit or not.</p>
 <p>Generating the an \(n\) bit key for a n-character to n-character encryption algorithm is as easy as throwing a coin for \(n\) times and fortunately, <strong>we all trust the coin flips already!</strong></p>
 <p>Although this method can be mathematically proven to be secure (In fact, the method has a name: the one-time padding algorithm), it is not practical, and the reason is that, the keys are not reusable.
@@ -2250,7 +2294,7 @@ print(memory_consuming_hash(b&quot;123&quot;))
 <li>Second-perimage-resistant: Given \(H(x_1)=y\), it's hard to find \(x_2\) where \(H(x_2)=y\).</li>
 </ol>
 <p>Besides generating proofs of work, there are other interesting things you can do with hash functions. In general, cryptographic hash functions let you to commit to a secret value, and reveal it later.</p>
-<h3 id="cryptographic-games"><a class="header" href="#cryptographic-games">Cryptographic games</a></h3>
+<h2 id="cryptographic-games"><a class="header" href="#cryptographic-games">Cryptographic games</a></h2>
 <p>A useful example is when you want to play the Rock/Paper/Scissors with your friend over phone. You can agree to shout out your choice simulatanously, but there is always the chance that your friend may hear your choice and make his choice based on that, always winning the game. What if you guys want to play Rock/Paper/Scissors over physical letters? It'll become much harder to prevent cheatings! Cryptographic hash functions come handy here:</p>
 <ol>
 <li>Alice chooses his option \(a\), but instead of revealing \(a \in {R, P, S}\), she reveals \(H(a)\).</li>
@@ -2307,7 +2351,7 @@ if bob_commit != hashlib.sha256((bob_choice + bob_salt).encode(&quot;ascii&quot;
 print(&quot;Alice:&quot;, alice_choice)
 print(&quot;Bob:&quot;, bob_choice)
 </code></pre>
-<h3 id="commiting-to-a-set-of-values"><a class="header" href="#commiting-to-a-set-of-values">Commiting to a set of values</a></h3>
+<h2 id="commiting-to-a-set-of-values"><a class="header" href="#commiting-to-a-set-of-values">Commiting to a set of values</a></h2>
 <p>Not only you can commit to a single value, but you can commit to multiple values, and later prove and reveal the existence of a certain value in the set. Here is a silly cryptographic game where commiting to a set of values might be useful. Imagine I have chosen a number between 0 to 1000, and I want you to make 20 guesses on what my number is. You may take 20 random guesses and commit to it by taking the hash of a comma seperated string, containing all of your guesses. You can then reveal your guesses and I can check:</p>
 <ol>
 <li>If you really have only chosen 20 numbers, and not more (Just split the comma-seperated string by <code>,</code> and check its length)</li>
@@ -2393,7 +2437,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <li>The receiver may now open the box and read the letter.</li>
 </ol>
 <p><img src="assets/lock.png" alt="The box can be locked with two locks at the same time, needed both parties to remove their locks in order to open the box" /></p>
-<h3 id="stealth-addresses"><a class="header" href="#stealth-addresses">Stealth addresses!</a></h3>
+<h2 id="stealth-addresses"><a class="header" href="#stealth-addresses">Stealth addresses!</a></h2>
 <p>The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn't want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private). </p>
 <ul>
 <li>Bob generates a key \(m\) (Master private key), and computes \(M = g^m\) (Master public key), where \(g\) is a commonly-agreed generator point for the elliptic curve.</li>
@@ -2425,7 +2469,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <p>You can see that the table is identical with a logical and gate. We can do OR gates too, the last constraint needs to be:</p>
 <p>\((1-a) \times (1-b)=(1-c)\)</p>
 <p>You might think that you can’t do much by simply just multiplying and adding variables with each other, but the truth is, this particular way of representing programs is actually able to represent any program you can ever imagine. The fact that you can emulate logical gates is enough for concluding that the representation is able to emulate any kind of hardware!</p>
-<h3 id="migrating-to-bit-representations"><a class="header" href="#migrating-to-bit-representations">Migrating to bit representations</a></h3>
+<h2 id="migrating-to-bit-representations"><a class="header" href="#migrating-to-bit-representations">Migrating to bit representations</a></h2>
 <p>Obviously, since we can emulate logical operators through plain math operations, we can do pretty amazing stuff too, but the variables in our circuits are normally holding numerical values, and not bits. Fortunately, there are ways we can migrate a numerical variable into its bit representation, by putting constraints like this:</p>
 <ul>
 <li>\(a_0 \times (1-a_0) = 0\)</li>
@@ -2436,7 +2480,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <li>\(2^0a_0 + 2^1a_1 + 2^2a_2 + \dots + 2^{n-1}a_{n-1} = a\)</li>
 </ul>
 <p>Assuming the original value is in the variable \(a\), given these constraints, the solver has no way but to put the bit representation of \(a\) into the variables \(a_0, a_1, \dots, a_{n-1}\).</p>
-<h3 id="checking-zeroness"><a class="header" href="#checking-zeroness">Checking zeroness</a></h3>
+<h2 id="checking-zeroness"><a class="header" href="#checking-zeroness">Checking zeroness</a></h2>
 <p>Given three two variables \(a\) and \(z\) (And a auxiallary variable \(tmp\)), we would like to check if the value of \(a\) is zero, by enforcing the value of \(z\) to be 1 in case \(a=0\) and make it \(0\) otherwise.</p>
 <ul>
 <li>\(z = -tmp * a + 1\)</li>

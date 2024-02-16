@@ -1,4 +1,6 @@
-build:
+.PHONY=html pdf
+
+html:
 	mdbook build --dest-dir docs
 
 pdf:

@@ -389,6 +389,45 @@ class Tensor:
 <h2 id="gradient-engines"><a class="header" href="#gradient-engines">Gradient Engines</a></h2>
 <p>Our implementation of a tensor is ready, our next big step is now to implement a gradient engine. Don’t get scared by its name, a gradient engine is just a tool you can use to keep track of derivatives of you tensors, with respect to the last computation you perform on your tensors (Which typically shows you how far are the outputs of your network compared to the desired outputs)</p>
 <p>Whenever you perform an operation on two tensors, you will get a new tensor. The gradients of tensors a and b is equal with the derivative of the output tensor with respect to each input tensor.</p>
+<p>In a production scale neural-network libraries, such as Pytorch and Tensorflow, the building of computation graphs is done automatically. You can go ahead and add tensors and multiply them together using ordinary Python operators (<code>+/-/*</code>). This requires us to implement the magic functions of operators (E.g <code>__add__</code>) in a way such that the resulting tensor keeps track of it parent tensors and is able to change their gradient values when needed. For example, when performing <code>c = a + b</code>, the gradient values of <code>a</code> and <code>b</code> are both influenced by <code>c</code>, so we have to keep track of these relations somewhere. This is done automatically in fancy neural-net libraries. Here we aren't going to make our implementation complicated and prefer to keep our code simple, tolerating some unfriendliness in tensor operations syntax. In our implementation, we assume there is a abstract class named <code>Operator</code>, which all tensor operations inherit from.</p>
+<pre><code class="language-python=">from abc import ABC, abstractmethod 
+
+
+class Operator(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def run(self, inps: List[Tensor]) -&gt; Tensor:
+        pass
+
+    @abstractmethod
+    def grad(self, inps: List[Tensor], out: Tensor) -&gt; List[Tensor]:
+        pass
+</code></pre>
+<p>The <code>run</code> function performs the operation on inputs, and then gives us an output tensor. The <code>grad</code> function otherhand, calculates the gradients of <code>inps</code>, given <code>inps</code> and the gradient of the output tensor according to the network's error (<code>out_grad</code>).</p>
+<p>Let's take a look at the implementation of the <code>Add</code> operation:</p>
+<pre><code class="language-python=">class Add(Operator):
+    def __init__(self):
+        pass
+
+    def run(self, inps: List[Tensor]) -&gt; Tensor:
+        return inps[0] + inps[1]
+
+    def grad(self, inps: List[Tensor], out_grad: Tensor) -&gt; List[Tensor]:
+        return [out_grad, out_grad]
+</code></pre>
+<p>The gradient of tensor \(x\) is the derivative of our error function with respect to \(x\).</p>
+<p>\(\frac{dE}{dx}\)</p>
+<p>It shows us the impact of changing the single tensor \(x\) on the total network error.</p>
+<p>Assuming we already know the gradient of the error function with respect to the output of the tensor operation \(\frac{dE}{df(x, y)}\), we can calculate our desired value using the chain operation:</p>
+<p>\(\frac{dE}{dx} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dx}\)</p>
+<p>In case of addition operation, the gradients can be calculated like this</p>
+<ul>
+<li>\(\frac{dE}{dx} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dx} = \delta \times \frac{d(x + y)}{dx} = \delta \times 1 = \delta\)</li>
+<li>\(\frac{dE}{dy} = \frac{dE}{df(x, y)} \times \frac{df(x, y)}{dy} = \delta \times \frac{d(x + y)}{dy} = \delta \times 1 = \delta\)</li>
+</ul>
+<p>Therefore, the <code>grad</code> function will just return <code>[out_grad, out_grad]</code> as its output!</p>
 <p>I assume you already know the way derivation on scalar values work. Derivatives on tensors is also very similar to scalar, the difference is just that, the derivative will also be a tensor instead of an scalar.</p>
 <p>Implementing gradient engines is not an easy task at all. A very tiny mistake in calculation of a gradient will invalidate all of the gradient in previous layers. Your neural network will keep training but will never converge to a satisfactory solution, and it’s almost impossible to tell which part of the calculations you did wrong.</p>
 <p>There is a very simple debugging idea you can use for checking the correctness of your gradient calculations, which can come handy when developing deep learning libraries. It’s named the gradient check method, and it simply checks if the result of the gradient function is equal with the gradient calculated by hand!</p>
