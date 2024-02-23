@@ -346,7 +346,19 @@ People thought more and more on the nature of a PoS algorithm, and they decided 
 
 Assuming we have \\(n\\) stakers (Sorted in descending order) \\(S_1, S_2, \dots, S_n\\), where \\(S_T\\) is the sum of all staked amounts, we know that \\(\frac{S_1}{S_T} + \frac{S_2}{S_T} + \dots + \frac{S_n}{S_T} = 1\\). Thus, if we put these stakers on a ribbon, the length of the ribbon will become 1. Now, assuming \\(r\\) is a random number between 0 and 1, if we mark the corresponding location of \\(r\\) on the ribbon, it will go inside one of the stakers. We can consider that staker to be the one who is able to generate the next block!
 
-The million dollar question in this method is, who decides the value of \\(r\\)?
+The million dollar question in this method is, who decides the value of \\(r\\)? Obviously, we can't rely on single party to decide the random number \\(r\\) for the whole network. The members of the network can not verify if the number provided by the centralized entity is indeed random, or it has purposefully chosen in a way to maximize his own profit.
+
+An interesting method for deciding the random number here is by using a hash function. If you divide the output of a hash function by its maximum value, you will get a floating point number between 0 and 1, which pretty much looks like a uniformly distributed random value. The input given to the hash function can be obtained from the blockchain itself! We can use the hash of last block to get the random value \\(r\\) used to elect the winner of the next block!
+
+Unfortunately, this method can be easily exploited by an attacker: Imagine the attacker is elected to produce the block \\(n\\). Now, since the random value of the next block is dependent on the hash of previous block (I.e \\(r_{n+1}=h(b_n)\\)), the attacker has full control on the value of \\(r_{n+1}\\). He can alter the block \\(b_n\\) in a way so that he is elected again for generating the next block! Altering the block can be done in various ways, for example, the attacker can put a dummy transaction in block \\(b_n\\), sending some funds to himself. The attacker can alter the hash of the block, by simply trying different possible amount values in that transaction. This way, the attacker may win all of the blocks, in case he successfully finds appropriate amount values, making the block have the desired hash value.
+
+Isn't this familiar? That's literally what we were doing in Proof-of-Work! The only difference is that here instead of trying different nonce values, we are trying different amount values in our dummy transaction. The more hardware we have, the higher chance we can win the blocks in the network. We can claim that our proposed PoS algorithm is still a PoW in its heart!
+
+If you look carefully to all these alternative methods, you will see that the source of the problem comes from the fact that the members are able to replay the election process by simply changing some value in previous blocks. If we somehow take this power from the members, and allow the members to generate a random value only once, the problem is solved!
+
+## Trust me, it's random!
+
+[TODO]
 
 ## It's time to commit
 
@@ -594,3 +606,22 @@ Now, if \\(a\\) is not zero, \\(z\\) has no choice but to be zero in order to sa
 
 ## Computer programs inside polynomials
 
+## Anonymous transactions
+
+Satoshi wanted Bitcoin to become a more private form of transferring money. He claimed bitcoin provides some form of **pseudo-anonimity** too, but bitcoin ended up even less private than conventional bank transfers! This happened because bitcoin, and all the transactions happening in it, has no choice but to be public, otherwise it couldn't be decentralized.
+
+In bitcoin, it's the pub-keys that are transferring value with each other, and not human identities. It is indeed very hard to find out who controls a public-key, but the problem is, as soon as a public-key gets related to an actual identity in the real world, the money will get easily traceable afterwards. The creation of this relation is as simple as depositing your cryptocurrency to an exchange, in which you have disclosed your identity by going through KYC procedures. In fact, one of the only ways you can prevent others from finding the mapping between your public-key and your real-world identity, is to trade your crypto directly with others in-person, instead of using a crypto exchange as an intermediary.
+
+Fortunately, although you can't stop others from discovering your ownership of a certain public-key, there are ways you can make it hard for others to understand the interactions between different public-keys within a public blockchain.
+
+## Tor network
+
+## Socks5
+
+Perhaps dictatorial governments are the main reason one of the coolest kind of softwares exist today: the internet anti-censorship software
+
+Those are protocols invented by people who seek freedomof information, trying to escape limitations that governments put on the internet. Cryptography is the main reason why it has got difficult for the governments to prevent people from getting whatever information they want out of the internet.
+
+Encrypted information is impossible to analyze, and there is no way a man-in-the-middle can distinguish between someone actually opening a legit (In the government's opinion!) website and someone who is trying to break the rules.
+
+Both of those people are putting bit streams on the wires which look completely random by an external observer.
