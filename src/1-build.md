@@ -233,6 +233,16 @@ class PTransistor:
 
 We can define gates as classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of a gate based on its inputs.
 
+## The circuit
+
+Now, it'll be nice to have a data structure for keeping track of wires and transistors allocated in a circuit. We will call this class “Circuit”. It will give you methods for creating wires and adding transistors. It will also allow you to calculate the values of all wires in the network.
+
+[TODO]
+
+The `update` method tries to calculate the values of the wires by iterating through the transistors and calling their update method. In case of circuits with feedback loops, things are not going to work as expected with a single iteration of updates, and you may need to go through this loop several times before the circuit reaches a stable state. We introduce an extra method designed for reaching the exact purpose: `stabilize`. It basically performs update several times, until no changes is seen in the values of wires, i.e it gets stable.
+
+Our electronic components can be defined as methods which will add wires and transistors to a circuit. Let’s go through the implementation detail of some of them!
+
 ## Life in a non-ideal world
 
 Digital circuits are effectively just logical expressions that are automatically calculated by the flow of electrons inside what we refer as gates. Logical expressions are defined on zeros and ones, but we just saw that wires in an electronic circuit are not guaranteed to be 0 or 1. So we have no choice but to re-define our gates and decide what their output should be in case of faulty inputs.
