@@ -130,12 +130,16 @@ UNK = "X"
 ZERO = "0"
 ONE = "1"
 
-BATTERY = 'BATTERY'
+BATTERY = None
 
 
 class Wire:
     def __init__(self):
         self.values = {}
+        self._assume = FREE
+
+    def assume(self, val):
+        self._assume = val
 
     def one():
         w = Wire()
@@ -157,13 +161,14 @@ class Wire:
                     curr = b
                 elif b != curr:
                     return UNK
-        return curr
+        return curr if curr != FREE else self._assume
 
     def put(self, gate, value):
         self.values[gate] = value
+        self.value = self.get()
 ```
 
-Here on lines 13 and 18 we are also defining two static methods `zero()` and `one()` that return wires that are connected to the positive or negative poles of a battery.
+We are also defining two static methods `zero()` and `one()` that return wires that are connected to the positive or negative poles of a battery. Also, sometimes (Specifically in circuits containing feedback-loops and recursions, it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it).
 
 ## Magical switch
 
@@ -196,7 +201,11 @@ The transistor we have been discussing so far was a Type-N transistor. The Type-
 
 Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, on the other hand, Type-N transistors give out very good 1 signals. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
 
-Given these models, we can simulate Type-N and Type-P transistors as follows:
+## Primitives
+
+In our digital circuit simulator, we'll have two different types of components: Primitive components and components that are made of primitives. We'll define our components as primitives when we can't describe them as a group of smaller primitives.
+
+As an example, we can simulate Type-N and Type-P transistors as primitive components:
 
 ```python=
 class NTransistor:
@@ -231,13 +240,52 @@ class PTransistor:
             self.wire_collector.put(self, UNK)
 ```
 
-We can define gates as classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of a gate based on its inputs.
+Our primitive components are classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of that primitive based on its inputs.
 
 ## The circuit
 
 Now, it'll be nice to have a data structure for keeping track of wires and transistors allocated in a circuit. We will call this class “Circuit”. It will give you methods for creating wires and adding transistors. It will also allow you to calculate the values of all wires in the network.
 
-[TODO]
+```python
+class Circuit:
+    def __init__(self):
+        self._one = Wire.one()
+        self._zero = Wire.zero()
+        self._wires = []
+        self._transistors = []
+
+    def one(self):
+        return self._one
+
+    def zero(self):
+        return self._zero
+
+    def new_wire(self):
+        w = Wire()
+        self._wires.append(w)
+        return w
+
+    def new_transistor(self, trans):
+        self._transistors.append(trans)
+
+    def snapshot(self):
+        return [w.get() for w in self._wires]
+
+    def update(self):
+        for t in self._transistors:
+            if t.wire_base.get() != FREE:
+                t.update()
+
+    def stabilize(self):
+        self.update()
+        self.update()
+        # curr_snapshot = self.snapshot()
+        # next_snapshot = None
+        # while next_snapshot != curr_snapshot:
+        #    self.update()
+        #    curr_snapshot = next_snapshot
+        #    next_snapshot = self.snapshot()
+```
 
 The `update` method tries to calculate the values of the wires by iterating through the transistors and calling their update method. In case of circuits with feedback loops, things are not going to work as expected with a single iteration of updates, and you may need to go through this loop several times before the circuit reaches a stable state. We introduce an extra method designed for reaching the exact purpose: `stabilize`. It basically performs update several times, until no changes is seen in the values of wires, i.e it gets stable.
 
@@ -263,7 +311,7 @@ However, things are not ideal in the real-world, and wires connected to electron
 | Z | X     |
 | X | X     |
 
-There are two ways we can simulate gates in our simulator software. We either implement them through plain Python code, or we describe them as a circuit of transistors. Here is an example implementation of a NOT gate using the former approach:
+There are two ways we can simulate gates in our simulator software. We either implement them through plain Python code, as primitive components just like transistors, or we describe them as a circuit of transistors. Here is an example implementation of a NOT gate using the former approach:
 
 ```python=
 class Not:
@@ -315,14 +363,9 @@ if __name__ == '__main__':
 Here is an example of a NOT gate, built with a type P and a type N transistor:
 
 ```python=
-class Not:
-    def __init__(self, circuit, wire_in, wire_out):
-        self.p = PTransistor(circuit, wire_in, circuit.one(), wire_out)
-        self.n = NTransistor(circuit, wire_in, circuit.zero(), wire_out)
-
-    def update(self):
-        self.p.update()
-        self.n.update()
+def Not(circuit, wire_in, wire_out):
+    circuit.new_transistor(PTransistor(circuit, wire_in, circuit.one(), wire_out))
+    circuit.new_transistor(NTransistor(circuit, wire_in, circuit.zero(), wire_out))
 ```
 
 Now that we've got familiar with transistors, it's the time to extend our component-set and build some of tthe most primitive logic-gates.
@@ -342,31 +385,19 @@ It's the mother gate of all logic circuits. Although, it would be very inefficie
 It turns out that we can build NAND gates with strong and accurate output signals using 4 transistors (x2 Type-N and x2 Type-P). Let's prototype a NAND using our simulated N/P transistors!
 
 ```python=
-class Nand:
-    def __init__(self, circuit, wire_a, wire_b, wire_out):
-        inter = circuit.new_wire()
-
-        self.p1 = PTransistor(circuit, wire_a, circuit.one(), wire_out)
-        self.p2 = PTransistor(circuit, wire_b, circuit.one(), wire_out)
-        self.n1 = NTransistor(circuit, wire_a, circuit.zero(), inter)
-        self.n2 = NTransistor(circuit, wire_b, inter, wire_out)
-
-    def update(self):
-        self.n1.update()
-        self.n2.update()
-        self.p1.update()
-        self.p2.update()
+def Nand(circuit, wire_a, wire_b, wire_out):
+    inter = circuit.new_wire()
+    circuit.new_transistor(PTransistor(circuit, wire_a, circuit.one(), wire_out))
+    circuit.new_transistor(PTransistor(circuit, wire_b, circuit.one(), wire_out))
+    circuit.new_transistor(NTransistor(circuit, wire_a, circuit.zero(), inter))
+    circuit.new_transistor(NTransistor(circuit, wire_b, inter, wire_out))
 ```
 
 Now, other primitive gates can be defined as combinations of NAND gates. Take the NOT gate as an example. Here is a 3rd way we can implement a NOT gate (So far, we have had implemented a NOT gate by 1. Describing its behavior through plain python code and 2. By connecting a pair of Type-N and Type-P transistors with each other):
 
 ```python=
-class Not:
-    def __init__(self, circuit, wire_in, wire_out):
-        self.nand = Nand(circuit, wire_in, wire_in, wire_out)
-
-    def update(self):
-        self.nand.update()
+def Not(circuit, wire_a, wire_b, wire_out):
+    Nand(circuit, wire_in, wire_in, wire_out)
 ```
 
 
@@ -390,14 +421,9 @@ The second digit's relation with A and B is very familiar, it's basically an AND
 ***Answer:*** It's an Xor gate! (\\(Xor(x, y) = Or(And(x, Not(y)), And(Not(x), y))\\)), and here is the Python code for it:
 
 ```python=
-class HalfAdder:
-    def __init__(self, circuit, wire_a, wire_b, wire_out, wire_carry_out):
-        self.gate_sum = Xor(circuit, wire_a, wire_b, wire_out)
-        self.gate_carry = And(circuit, wire_a, wire_b, wire_carry_out)
-
-    def update(self):
-        self.gate_sum.update()
-        self.gate_carry.update()
+def HalfAdder(circuit, wire_a, wire_b, wire_out, wire_carry_out):
+    Xor(circuit, wire_a, wire_b, wire_out)
+    And(circuit, wire_a, wire_b, wire_carry_out)
 ```
 
 What we have just built is known as a half-adder. With an half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how primary school's addition algorithm works on binary numbers:
@@ -427,50 +453,32 @@ By looking to the algorithm, we can see that for each digit, an addition of ***3
 Building a full-adder is still easy. You can use two Half-adders to calculate the first digit, and take the OR of the carry outputs which will give you the second digit.
 
 ```python=
-class FullAdder:
-    def __init__(
-        self, circuit, wire_a, wire_b, wire_carry_in, wire_out, wire_carry_out
-    ):
-        wire_ab = circuit.new_wire()
-        wire_c1 = circuit.new_wire()
-        wire_c2 = circuit.new_wire()
-
-        self.ha_1 = HalfAdder(circuit, wire_a, wire_b, wire_ab, wire_c1)
-        self.ha_2 = HalfAdder(circuit, wire_ab, wire_carry_in, wire_out, wire_c2)
-        self.carry = Or(circuit, wire_c1, wire_c2, wire_carry_out)
-
-    def update(self):
-        self.ha_1.update()
-        self.ha_2.update()
-        self.carry.update()
+def FullAdder(circuit, wire_a, wire_b, wire_carry_in, wire_out, wire_carry_out):
+    wire_ab = circuit.new_wire()
+    wire_c1 = circuit.new_wire()
+    wire_c2 = circuit.new_wire()
+    HalfAdder(circuit, wire_a, wire_b, wire_ab, wire_c1)
+    HalfAdder(circuit, wire_ab, wire_carry_in, wire_out, wire_c2)
+    Or(circuit, wire_c1, wire_c2, wire_carry_out)
 ```
 
 Once we have a triple adder ready, we can proceed and create multi-bit adders. Let's try building a 8-bit adder. We will need to put 8 full-adders in a row, connecting the second digit of the result of each adder as the third input value of the next adder, mimicking the addition algorithm we discussed earlier.
 
 ```python=
-class Adder8:
-    def __init__(
-        self, circuit, wires_a, wires_b, wire_carry_in, wires_out, wire_carry_out
-    ):
-        carries = (
-            [wire_carry_in] + [circuit.new_wire() for _ in range(7)] + [wire_carry_out]
+def Adder8(circuit, wires_a, wires_b, wire_carry_in, wires_out, wire_carry_out):
+    carries = (
+        [wire_carry_in] + [circuit.new_wire() for _ in range(7)] + [wire_carry_out]
+    )
+
+    for i in range(8):
+        FullAdder(
+            circuit,
+            wires_a[i],
+            wires_b[i],
+            carries[i],
+            wires_out[i],
+            carries[i + 1],
         )
-
-        self.adders = [
-            FullAdder(
-                circuit,
-                wires_a[i],
-                wires_b[i],
-                carries[i],
-                wires_out[i],
-                carries[i + 1],
-            )
-            for i in range(8)
-        ]
-
-    def update(self):
-        for adder in self.adders:
-            adder.update()
 ```
 
 Before designing more complicated gates, let's make sure our simulated model of a 8-bit adder is working properly. If the 8-bit adder is working, there is a high-chance that the other gates are also working well:
@@ -493,16 +501,14 @@ def wires_to_num(wires):
 
 
 if __name__ == "__main__":
-    circuit = Circuit()
     for x in range(256):
         for y in range(256):
+            circuit = Circuit()
             wires_x = num_to_wires(x)
             wires_y = num_to_wires(y)
             wires_out = [Wire() for _ in range(8)]
-            adder = Adder8(
-                circuit, wires_x, wires_y, Wire.zero(), wires_out, Wire.zero()
-            )
-            adder.update()
+            Adder8(circuit, wires_x, wires_y, Wire.zero(), wires_out, Wire.zero())
+            circuit.update()
             out = wires_to_num(wires_out)
             if out != (x + y) % 256:
                 print("Adder is not working!")
@@ -535,10 +541,80 @@ When you were a child, you have most probably tried to put a light-switch in a m
 
 Imagine a piece of paper. It's stable. When you put it on fire, it slowly changes its state until it becomes completely burnt and stabilizes there. It's not easy to keep the paper a middle state. You can use a paper as a single bit memory cell. It's not the best memory cell and the most obvious reason is that you can't turn it back to its unburnt state!
 
-Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Simulating such a circuit in our Python simulator is a bit tricky, since a loop in our connections will create and infinite loop in our simulation. There are two ways we can fix this problem in our simulator:
+Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Such a circuit is also known as a Latch:
 
-1. Break the update loop, when the state of the wires do not change after a few iterations (Meaning that the system has entered a stable state).
-2. Give up, and try to simulate a memory-cell component without doing low-level transistor simulations.
+```python
+def DLatch(circuit, wire_clk, wire_data, wire_out, initial):
+    not_data = circuit.new_wire()
+    Not(circuit, wire_data, not_data)
+    and_d_clk = circuit.new_wire()
+    And(circuit, wire_data, wire_clk, and_d_clk)
+    and_notd_clk = circuit.new_wire()
+    And(circuit, not_data, wire_clk, and_notd_clk)
+    neg_out = circuit.new_wire()
+    Nor(circuit, and_notd_clk, neg_out, wire_out)
+    Nor(circuit, and_d_clk, wire_out, neg_out)
+    neg_out.assume(ZERO if initial == ONE else ONE)
+    wire_out.assume(initial)
+```
+
+In our `DLatch` component, the `wire_out` pin is always equal with the internal state of the memory cell. Whenever `wire_clk` is equal with one, the value of `wire_data` will be copied into the state, and will stay there, even when we 
+
+Simulating such a circuit in our Python simulator is a bit tricky: take a look at the schematic of a DLatch circuit, the input of the Nor cell is dependant on the output of tha latch. If we try to calculate the correct values of wires in a latch component for the first time, the simulation will crash when updating the Nor gate, because not all of its inputs are ready. There are two approaches by which we can fix our simulation:
+
+1. Give up, and try to simulate a memory-cell component without doing low-level transistor simulations.
+2. Break the update loop, when the state of the wires do not change after a few iterations (Meaning that the system has entered a stable state).
+
+Since we want to make our simulation as accurate as possible, we'll go with the second route. We'll just describe our memory-cells as a set of transistors, and will try to converge to a correct solution by using the `assume()` function of our circuit.
+
+
+Soon you'll figure that our simulator is not efficient enough to perform transistor level simulation of RAMs, so it might make sense to cheat a bit and provide a secondary, fast implementation of a RAM, as a primitive component that is described in plain Python code (Just like transistors):
+
+```python
+class FastRAM:
+    def snapshot(self):
+        return self.data
+
+    def __init__(
+        self, circuit, wire_clk, wire_write, wires_addr, wires_data, wires_out, initial
+    ):
+        self.wire_clk = wire_clk
+        self.wire_write = wire_write
+        self.wires_addr = wires_addr
+        self.wires_data = wires_data
+        self.wires_out = wires_out
+        self.data = initial
+        self.clk_is_up = False
+
+        circuit.new_transistor(self)
+
+    def is_ready(self):
+        return True
+
+    def update(self):
+        def wires_to_num(wires):
+            out = 0
+            for i, w in enumerate(wires):
+                if w.get() == ONE:
+                    out += 2**i
+            return out
+
+        clk = self.wire_clk.get()
+        addr = wires_to_num(self.wires_addr)
+        data = wires_to_num(self.wires_data)
+        if clk == ZERO and self.clk_is_up:
+            wr = self.wire_write.get()
+            if wr == ONE:
+                self.data[addr] = data
+            self.clk_is_up = False
+        elif clk == ONE:
+            self.clk_is_up = True
+
+        value = self.data[addr]
+        wires = []
+        for i in range(8):
+            self.wires_out[i].put(self, ONE if (value >> i) & 1 else ZERO)
+```
 
 ---
 
