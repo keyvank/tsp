@@ -127,33 +127,21 @@ Based on our definition of a wire, we can provide a Python implementation:
 ```python=
 FREE = "Z"
 UNK = "X"
-ZERO = "0"
-ONE = "1"
-
-BATTERY = None
+ZERO = 0
+ONE = 1
 
 
 class Wire:
     def __init__(self):
-        self.values = {}
+        self._drivers = {}
         self._assume = FREE
 
     def assume(self, val):
         self._assume = val
 
-    def one():
-        w = Wire()
-        w.put(BATTERY, ONE)
-        return w
-
-    def zero():
-        w = Wire()
-        w.put(BATTERY, ZERO)
-        return w
-
     def get(self):
         curr = FREE
-        for b in self.values.values():
+        for b in self._drivers.values():
             if b == UNK:
                 return UNK
             elif b != FREE:
@@ -163,12 +151,13 @@ class Wire:
                     return UNK
         return curr if curr != FREE else self._assume
 
-    def put(self, gate, value):
-        self.values[gate] = value
-        self.value = self.get()
+    def put(self, driver, value):
+        is_changed = self._drivers.get(driver) != value
+        self._drivers[driver] = value
+        return is_changed
 ```
 
-We are also defining two static methods `zero()` and `one()` that return wires that are connected to the positive or negative poles of a battery. Also, sometimes (Specifically in circuits containing feedback-loops and recursions, it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it).
+Sometimes (Specifically in circuits containing feedback-loops and recursions, it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it).
 
 ## Magical switch
 
@@ -209,35 +198,39 @@ As an example, we can simulate Type-N and Type-P transistors as primitive compon
 
 ```python=
 class NTransistor:
-    def __init__(self, circuit, wire_base, wire_emitter, wire_collector):
-        self.wire_base = wire_base
-        self.wire_emitter = wire_emitter
-        self.wire_collector = wire_collector
+    def __init__(self, in_base, in_collector, out_emitter):
+        self.in_base = in_base
+        self.in_collector = in_collector
+        self.out_emitter = out_emitter
 
     def update(self):
-        b = self.wire_base.get()
+        b = self.in_base.get()
         if b == ONE:
-            self.wire_collector.put(self, self.wire_emitter.get())
+            return self.out_emitter.put(self, self.in_collector.get())
         elif b == ZERO:
-            self.wire_collector.put(self, FREE)
+            return self.out_emitter.put(self, FREE)
+        elif b == UNK:
+            return self.out_emitter.put(self, UNK)
         else:
-            self.wire_collector.put(self, UNK)
+            return True  # Trigger re-update
 
 
 class PTransistor:
-    def __init__(self, circuit, wire_base, wire_emitter, wire_collector):
-        self.wire_base = wire_base
-        self.wire_emitter = wire_emitter
-        self.wire_collector = wire_collector
+    def __init__(self, in_base, in_collector, out_emitter):
+        self.in_base = in_base
+        self.in_collector = in_collector
+        self.out_emitter = out_emitter
 
     def update(self):
-        b = self.wire_base.get()
+        b = self.in_base.get()
         if b == ZERO:
-            self.wire_collector.put(self, self.wire_emitter.get())
+            return self.out_emitter.put(self, self.in_collector.get())
         elif b == ONE:
-            self.wire_collector.put(self, FREE)
+            return self.out_emitter.put(self, FREE)
+        elif b == UNK:
+            return self.out_emitter.put(self, UNK)
         else:
-            self.wire_collector.put(self, UNK)
+            return True  # Trigger re-update
 ```
 
 Our primitive components are classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of that primitive based on its inputs.
@@ -246,13 +239,16 @@ Our primitive components are classes with an `update()` function. The `update()`
 
 Now, it'll be nice to have a data structure for keeping track of wires and transistors allocated in a circuit. We will call this class “Circuit”. It will give you methods for creating wires and adding transistors. It will also allow you to calculate the values of all wires in the network.
 
-```python
+```python=
 class Circuit:
     def __init__(self):
-        self._one = Wire.one()
-        self._zero = Wire.zero()
         self._wires = []
-        self._transistors = []
+        self._comps = []
+
+        self._zero = self.new_wire()
+        self._zero.put(self, ZERO)
+        self._one = self.new_wire()
+        self._one.put(self, ONE)
 
     def one(self):
         return self._one
@@ -265,26 +261,21 @@ class Circuit:
         self._wires.append(w)
         return w
 
-    def new_transistor(self, trans):
-        self._transistors.append(trans)
+    def add_component(self, comp):
+        self._comps.append(comp)
 
-    def snapshot(self):
-        return [w.get() for w in self._wires]
+    def num_components(self):
+        return len(self._comps)
 
     def update(self):
-        for t in self._transistors:
-            if t.wire_base.get() != FREE:
-                t.update()
+        has_changes = False
+        for t in self._comps:
+            has_changes = has_changes | t.update()
+        return has_changes
 
     def stabilize(self):
-        self.update()
-        self.update()
-        # curr_snapshot = self.snapshot()
-        # next_snapshot = None
-        # while next_snapshot != curr_snapshot:
-        #    self.update()
-        #    curr_snapshot = next_snapshot
-        #    next_snapshot = self.snapshot()
+        while self.update():
+            pass
 ```
 
 The `update` method tries to calculate the values of the wires by iterating through the transistors and calling their update method. In case of circuits with feedback loops, things are not going to work as expected with a single iteration of updates, and you may need to go through this loop several times before the circuit reaches a stable state. We introduce an extra method designed for reaching the exact purpose: `stabilize`. It basically performs update several times, until no changes is seen in the values of wires, i.e it gets stable.
@@ -363,9 +354,9 @@ if __name__ == '__main__':
 Here is an example of a NOT gate, built with a type P and a type N transistor:
 
 ```python=
-def Not(circuit, wire_in, wire_out):
-    circuit.new_transistor(PTransistor(circuit, wire_in, circuit.one(), wire_out))
-    circuit.new_transistor(NTransistor(circuit, wire_in, circuit.zero(), wire_out))
+def Not(circuit, inp, out):
+    circuit.add_component(PTransistor(inp, circuit.one(), out))
+    circuit.add_component(NTransistor(inp, circuit.zero(), out))
 ```
 
 Now that we've got familiar with transistors, it's the time to extend our component-set and build some of tthe most primitive logic-gates.
@@ -385,23 +376,73 @@ It's the mother gate of all logic circuits. Although, it would be very inefficie
 It turns out that we can build NAND gates with strong and accurate output signals using 4 transistors (x2 Type-N and x2 Type-P). Let's prototype a NAND using our simulated N/P transistors!
 
 ```python=
-def Nand(circuit, wire_a, wire_b, wire_out):
+def Nand(circuit, in_a, in_b, out):
     inter = circuit.new_wire()
-    circuit.new_transistor(PTransistor(circuit, wire_a, circuit.one(), wire_out))
-    circuit.new_transistor(PTransistor(circuit, wire_b, circuit.one(), wire_out))
-    circuit.new_transistor(NTransistor(circuit, wire_a, circuit.zero(), inter))
-    circuit.new_transistor(NTransistor(circuit, wire_b, inter, wire_out))
+    circuit.add_component(PTransistor(in_a, circuit.one(), out))
+    circuit.add_component(PTransistor(in_b, circuit.one(), out))
+    circuit.add_component(NTransistor(in_a, circuit.zero(), inter))
+    circuit.add_component(NTransistor(in_b, inter, out))
 ```
 
 Now, other primitive gates can be defined as combinations of NAND gates. Take the NOT gate as an example. Here is a 3rd way we can implement a NOT gate (So far, we have had implemented a NOT gate by 1. Describing its behavior through plain python code and 2. By connecting a pair of Type-N and Type-P transistors with each other):
 
 ```python=
-def Not(circuit, wire_a, wire_b, wire_out):
-    Nand(circuit, wire_in, wire_in, wire_out)
+def Not(circuit, inp, out):
+    Nand(circuit, inp, inp, out)
 ```
 
-
 Go ahead and implement other primitive gates using the NAND gate we just defined. After that, we can start making useful stuff out of these gates.
+
+```python=
+def And(circuit, in_a, in_b, out):
+    not_out = circuit.new_wire()
+    Nand(circuit, in_a, in_b, not_out)
+    Not(circuit, not_out, out)
+
+
+def Or(circuit, in_a, in_b, out):
+    not_out = circuit.new_wire()
+    Nor(circuit, in_a, in_b, not_out)
+    Not(circuit, not_out, out)
+
+
+def Nor(circuit, in_a, in_b, out):
+    inter = circuit.new_wire()
+    circuit.add_component(PTransistor(in_a, circuit.one(), inter))
+    circuit.add_component(PTransistor(in_b, inter, out))
+    circuit.add_component(NTransistor(in_a, circuit.zero(), out))
+    circuit.add_component(NTransistor(in_b, circuit.zero(), out))
+
+
+def Xor(circuit, in_a, in_b, out):
+    a_not = circuit.new_wire()
+    b_not = circuit.new_wire()
+    Not(circuit, in_a, a_not)
+    Not(circuit, in_b, b_not)
+
+    inter1 = circuit.new_wire()
+    circuit.add_component(PTransistor(b_not, circuit.one(), inter1))
+    circuit.add_component(PTransistor(in_a, inter1, out))
+    inter2 = circuit.new_wire()
+    circuit.add_component(PTransistor(in_b, circuit.one(), inter2))
+    circuit.add_component(PTransistor(a_not, inter2, out))
+
+    inter3 = circuit.new_wire()
+    circuit.add_component(NTransistor(in_b, circuit.zero(), inter3))
+    circuit.add_component(NTransistor(in_a, inter3, out))
+    inter4 = circuit.new_wire()
+    circuit.add_component(NTransistor(b_not, circuit.zero(), inter4))
+    circuit.add_component(NTransistor(a_not, inter4, out))
+```
+
+Sometimes we just need to connect two different wires with each other, instead of creating a new primitive component for that purpose, we may just use two consecutive Nots, it'll act like a simple jumper! We'll call this gate a `Forward` gate:
+
+```python=
+def Forward(circuit, inp, out):
+    tmp = circuit.new_wire()
+    Not(circuit, inp, tmp)
+    Not(circuit, tmp, out)
+```
 
 ## Let's get useful
 
@@ -421,9 +462,9 @@ The second digit's relation with A and B is very familiar, it's basically an AND
 ***Answer:*** It's an Xor gate! (\\(Xor(x, y) = Or(And(x, Not(y)), And(Not(x), y))\\)), and here is the Python code for it:
 
 ```python=
-def HalfAdder(circuit, wire_a, wire_b, wire_out, wire_carry_out):
-    Xor(circuit, wire_a, wire_b, wire_out)
-    And(circuit, wire_a, wire_b, wire_carry_out)
+def HalfAdder(circuit, in_a, in_b, out_sum, out_carry):
+    Xor(circuit, in_a, in_b, out_sum)
+    And(circuit, in_a, in_b, out_carry)
 ```
 
 What we have just built is known as a half-adder. With an half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how primary school's addition algorithm works on binary numbers:
@@ -453,30 +494,27 @@ By looking to the algorithm, we can see that for each digit, an addition of ***3
 Building a full-adder is still easy. You can use two Half-adders to calculate the first digit, and take the OR of the carry outputs which will give you the second digit.
 
 ```python=
-def FullAdder(circuit, wire_a, wire_b, wire_carry_in, wire_out, wire_carry_out):
-    wire_ab = circuit.new_wire()
-    wire_c1 = circuit.new_wire()
-    wire_c2 = circuit.new_wire()
-    HalfAdder(circuit, wire_a, wire_b, wire_ab, wire_c1)
-    HalfAdder(circuit, wire_ab, wire_carry_in, wire_out, wire_c2)
-    Or(circuit, wire_c1, wire_c2, wire_carry_out)
+def FullAdder(circuit, in_a, in_b, in_carry, out_sum, out_carry):
+    sum_ab = circuit.new_wire()
+    carry1 = circuit.new_wire()
+    carry2 = circuit.new_wire()
+    HalfAdder(circuit, in_a, in_b, sum_ab, carry1)
+    HalfAdder(circuit, sum_ab, in_carry, out_sum, carry2)
+    Or(circuit, carry1, carry2, out_carry)
 ```
 
 Once we have a triple adder ready, we can proceed and create multi-bit adders. Let's try building a 8-bit adder. We will need to put 8 full-adders in a row, connecting the second digit of the result of each adder as the third input value of the next adder, mimicking the addition algorithm we discussed earlier.
 
 ```python=
-def Adder8(circuit, wires_a, wires_b, wire_carry_in, wires_out, wire_carry_out):
-    carries = (
-        [wire_carry_in] + [circuit.new_wire() for _ in range(7)] + [wire_carry_out]
-    )
-
+def Adder8(circuit, in_a, in_b, in_carry, out_sum, out_carry):
+    carries = [in_carry] + [circuit.new_wire() for _ in range(7)] + [out_carry]
     for i in range(8):
         FullAdder(
             circuit,
-            wires_a[i],
-            wires_b[i],
+            in_a[i],
+            in_b[i],
             carries[i],
-            wires_out[i],
+            out_sum[i],
             carries[i + 1],
         )
 ```
@@ -484,11 +522,11 @@ def Adder8(circuit, wires_a, wires_b, wire_carry_in, wires_out, wire_carry_out):
 Before designing more complicated gates, let's make sure our simulated model of a 8-bit adder is working properly. If the 8-bit adder is working, there is a high-chance that the other gates are also working well:
 
 ```python=
-def num_to_wires(num):
+def num_to_wires(circuit, num):
     wires = []
     for i in range(8):
         bit = (num >> i) & 1
-        wires.append(Wire.one() if bit else Wire.zero())
+        wires.append(circuit.one() if bit else circuit.zero())
     return wires
 
 
@@ -504,14 +542,15 @@ if __name__ == "__main__":
     for x in range(256):
         for y in range(256):
             circuit = Circuit()
-            wires_x = num_to_wires(x)
-            wires_y = num_to_wires(y)
+            wires_x = num_to_wires(circuit, x)
+            wires_y = num_to_wires(circuit, y)
             wires_out = [Wire() for _ in range(8)]
-            Adder8(circuit, wires_x, wires_y, Wire.zero(), wires_out, Wire.zero())
+            Adder8(circuit, wires_x, wires_y, circuit.zero(), wires_out, circuit.zero())
             circuit.update()
             out = wires_to_num(wires_out)
             if out != (x + y) % 256:
                 print("Adder is not working!")
+
 ```
 
 Here, we are checking if the outputs are correct given all possible inputs. We have defined two auxillary functions `num_to_wires` and `wires_to_num` in order to convert numbers into a set of wires which can connect to a electronic circuit, and vice versa.
@@ -543,19 +582,20 @@ Imagine a piece of paper. It's stable. When you put it on fire, it slowly change
 
 Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Such a circuit is also known as a Latch:
 
-```python
-def DLatch(circuit, wire_clk, wire_data, wire_out, initial):
+```python=
+def DLatch(circuit, in_clk, in_data, out_data, initial=0):
     not_data = circuit.new_wire()
-    Not(circuit, wire_data, not_data)
+    Not(circuit, in_data, not_data)
     and_d_clk = circuit.new_wire()
-    And(circuit, wire_data, wire_clk, and_d_clk)
+    And(circuit, in_data, in_clk, and_d_clk)
     and_notd_clk = circuit.new_wire()
-    And(circuit, not_data, wire_clk, and_notd_clk)
+    And(circuit, not_data, in_clk, and_notd_clk)
     neg_out = circuit.new_wire()
-    Nor(circuit, and_notd_clk, neg_out, wire_out)
-    Nor(circuit, and_d_clk, wire_out, neg_out)
-    neg_out.assume(ZERO if initial == ONE else ONE)
-    wire_out.assume(initial)
+    Nor(circuit, and_notd_clk, neg_out, out_data)
+    Nor(circuit, and_d_clk, out_data, neg_out)
+
+    neg_out.assume(1 - initial)
+    out_data.assume(initial)
 ```
 
 In our `DLatch` component, the `wire_out` pin is always equal with the internal state of the memory cell. Whenever `wire_clk` is equal with one, the value of `wire_data` will be copied into the state, and will stay there, even when we 
@@ -568,53 +608,37 @@ Simulating such a circuit in our Python simulator is a bit tricky: take a look a
 Since we want to make our simulation as accurate as possible, we'll go with the second route. We'll just describe our memory-cells as a set of transistors, and will try to converge to a correct solution by using the `assume()` function of our circuit.
 
 
-Soon you'll figure that our simulator is not efficient enough to perform transistor level simulation of RAMs, so it might make sense to cheat a bit and provide a secondary, fast implementation of a RAM, as a primitive component that is described in plain Python code (Just like transistors):
 
-```python
-class FastRAM:
-    def snapshot(self):
-        return self.data
-
-    def __init__(
-        self, circuit, wire_clk, wire_write, wires_addr, wires_data, wires_out, initial
-    ):
-        self.wire_clk = wire_clk
-        self.wire_write = wire_write
-        self.wires_addr = wires_addr
-        self.wires_data = wires_data
-        self.wires_out = wires_out
-        self.data = initial
-        self.clk_is_up = False
-
-        circuit.new_transistor(self)
-
-    def is_ready(self):
-        return True
-
-    def update(self):
-        def wires_to_num(wires):
-            out = 0
-            for i, w in enumerate(wires):
-                if w.get() == ONE:
-                    out += 2**i
-            return out
-
-        clk = self.wire_clk.get()
-        addr = wires_to_num(self.wires_addr)
-        data = wires_to_num(self.wires_data)
-        if clk == ZERO and self.clk_is_up:
-            wr = self.wire_write.get()
-            if wr == ONE:
-                self.data[addr] = data
-            self.clk_is_up = False
-        elif clk == ONE:
-            self.clk_is_up = True
-
-        value = self.data[addr]
-        wires = []
-        for i in range(8):
-            self.wires_out[i].put(self, ONE if (value >> i) & 1 else ZERO)
+```python=
+def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
+    neg_clk = circuit.new_wire()
+    Not(circuit, in_clk, neg_clk)
+    inter = circuit.new_wire()
+    DLatch(circuit, in_clk, in_data, inter, initial)
+    DLatch(circuit, neg_clk, inter, out_data, initial)
 ```
+
+Put 8 flip-flops in a row and you will have a 8-bit register!
+
+```python=
+class Reg8:
+    def snapshot(self):
+        return wires_to_num(self.out_data)
+
+    def __init__(self, circuit, in_clk, in_data, out_data, initial=0):
+        self.out_data = out_data
+        for i in range(8):
+            DFlipFlop(
+                circuit,
+                in_clk,
+                in_data[i],
+                out_data[i],
+                ZERO if initial % 2 == 0 else ONE,
+            )
+            initial //= 2
+```
+
+I'm defining `Reg8` as a class, to define auxillary methods like `snapshot()` in order to make it easier to investigate the internal value of a register.
 
 ---
 
@@ -649,19 +673,54 @@ Looking carefully to the behavior of this structure, we will notice that it can 
 
 Let's simulate all these components and try to implement a counter circuit with FlipFlops:
 
-```python
+```python=
 class EdgeDetector:
     pass
 ```
 
-```python
+```python=
 class FlipFlop:
     pass
 ```
 
-```python
+```python=
 class Counter:
-    pass
+    def snapshot(self):
+        print("Value:", self.counter.snapshot())
+
+    def __init__(self, circuit: Circuit, in_clk: Wire):
+        one = [circuit.one()] + [circuit.zero()] * 7
+
+        counter_val = [circuit.new_wire() for _ in range(8)]
+        next_counter_val = [circuit.new_wire() for _ in range(8)]
+
+        Adder8(
+            circuit,
+            counter_val,
+            one,
+            circuit.zero(),
+            next_counter_val,
+            circuit.new_wire(),
+        )
+
+        self.counter = Reg8(circuit, in_clk, next_counter_val, counter_val, 0)
+
+
+if __name__ == "__main__":
+    circ = Circuit()
+    clk = circ.new_wire()
+
+    OSCILLATOR = "OSCILLATOR"
+
+    clk.put(OSCILLATOR, ZERO)
+
+    counter = Counter(circ, clk)
+    print("Num components:", circ.num_components())
+
+    while True:
+        circ.stabilize()
+        counter.snapshot()
+        clk.put(OSCILLATOR, 1 - clk.get())
 ```
 
 ## Chaotic access
@@ -680,10 +739,125 @@ The memory-cells in our RAM will need to know when to allow write operation. For
 
 We will also need to route the output of the chosen cell to the output of a RAM. We can use a multiplexer component here.
 
+Now, put many of these registers in a row, and you will have a RAM!
+
+```python=
+class RAM:
+    def snapshot(self):
+        return [self.regs[i].snapshot() for i in range(256)]
+
+    def __init__(self, circuit, in_clk, in_wr, in_addr, in_data, out_data, initial):
+        self.regs = []
+        reg_outs = [[circuit.new_wire() for _ in range(8)] for _ in range(256)]
+
+        for i in range(256):
+            is_sel = circuit.new_wire()
+            MultiEquals(circuit, in_addr, num_to_wires(circuit, i), is_sel)
+            is_wr = circuit.new_wire()
+            And(circuit, is_sel, in_wr, is_wr)
+            is_wr_and_clk = circuit.new_wire()
+            And(circuit, is_wr, in_clk, is_wr_and_clk)
+            self.regs.append(
+                Reg8(circuit, is_wr_and_clk, in_data, reg_outs[i], initial[i])
+            )
+
+        for i in range(8):
+            Mux8x256(
+                circuit, in_addr, [reg_outs[j][i] for j in range(256)], out_data[i]
+            )
+```
+
+Soon you'll figure that our simulator is not efficient enough to perform transistor level simulation of RAMs, so it might make sense to cheat a bit and provide a secondary, fast implementation of a RAM, as a primitive component that is described in plain Python code (Just like transistors):
+
+```python=
+class FastRAM:
+    def snapshot(self):
+        return self.data
+
+    def __init__(self, circuit, in_clk, in_wr, in_addr, in_data, out_data, initial):
+        self.in_clk = in_clk
+        self.in_wr = in_wr
+        self.in_addr = in_addr
+        self.in_data = in_data
+        self.out_data = out_data
+        self.data = initial
+        self.clk_is_up = False
+        circuit.add_component(self)
+
+    def update(self):
+        clk = self.in_clk.get()
+        addr = wires_to_num(self.in_addr)
+        data = wires_to_num(self.in_data)
+        if clk == ZERO and self.clk_is_up:
+            wr = self.in_wr.get()
+            if wr == ONE:
+                self.data[addr] = data
+            self.clk_is_up = False
+        elif clk == ONE:
+            self.clk_is_up = True
+
+        value = self.data[addr]
+        for i in range(8):
+            self.out_data[i].put(self, ONE if (value >> i) & 1 else ZERO)
+
+        return False
+```
 
 ***Multiplexer***
 
 A gate that gets \\(2^n\\) value bits and \\(n\\) address bits and will output the values existing at the requested position as its output. A multiplexer with static inputs can be considered as a ROM. (Read-Only Memory)
+
+```python=
+def Mux1x2(circuit, in_sel, in_options, out):
+    wire_select_not = circuit.new_wire()
+    and1_out = circuit.new_wire()
+    and2_out = circuit.new_wire()
+    Not(circuit, in_sel[0], wire_select_not)
+    And(circuit, wire_select_not, in_options[0], and1_out)
+    And(circuit, in_sel[0], in_options[1], and2_out)
+    Or(circuit, and1_out, and2_out, out)
+
+
+def Mux(bits, sub_mux):
+    def f(circuit, in_sel, in_options, out):
+        out_mux1 = circuit.new_wire()
+        out_mux2 = circuit.new_wire()
+
+        sub_mux(
+            circuit,
+            in_options[0 : bits - 1],
+            in_options[0 : 2 ** (bits - 1)],
+            out_mux1,
+        )
+        sub_mux(
+            circuit,
+            in_sel[0 : bits - 1],
+            in_options[2 ** (bits - 1) : 2**bits],
+            out_mux2,
+        )
+        Mux1x2(circuit, [in_sel[bits - 1]], [out_mux1, out_mux2], out)
+
+    return f
+
+
+Mux2x4 = Mux(2, Mux1x2)
+Mux3x8 = Mux(3, Mux2x4)
+Mux4x16 = Mux(4, Mux3x8)
+Mux5x32 = Mux(5, Mux4x16)
+Mux6x64 = Mux(6, Mux5x32)
+Mux7x128 = Mux(7, Mux6x64)
+Mux8x256 = Mux(8, Mux7x128)
+
+
+def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
+    for i in range(8):
+        Mux1x2(
+            circuit,
+            [in_sel],
+            [in_a[i], in_b[i]],
+            out[i],
+        )
+```
 
 ## Computer
 
@@ -692,6 +866,296 @@ Now you know how tranistors work and how you can use them to build logical gates
 I would say, the most important parts of a modern computer are its RAM and CPU. I would like to start by explaining a Random-Access-Memory by designing one. It will be the simplest implementation of a RAM and it won't be similar to what it's used in production today, but the idea is still the same.
 
 RAM is the abbreviation of Random-Access-Memory. Why do we call it random access? Because it's very efficient to get/set a value on a random address in a RAM. Remember how optical disks and hard-disks worked? The device had to keep track of the current position, and seek the requested position relative to its current positions. It is efficient only if the pattern of memory access is like going forward/backward 1 byte by 1 byte. But life is not that ideal and many programs will just request very different parts of the memory, which are very far from each other, in other words, it seems so unpredictable that we can call it random.
+
+In order to decode an instruction, we first need a component that can check equality of some bits with others:
+
+```python=
+def Equals(circuit, in_a, in_b, out_eq):
+    xor_out = circuit.new_wire()
+    Xor(circuit, in_a, in_b, xor_out)
+    Not(circuit, xor_out, out_eq)
+
+
+def MultiEquals(circuit, in_a, in_b, out_eq):
+    if len(in_a) != len(in_b):
+        raise Exception("Expected equal num of wires!")
+
+    count = len(in_a)
+    xor_outs = []
+    for i in range(count):
+        xor_out = circuit.new_wire()
+        Xor(circuit, in_a[i], in_b[i], xor_out)
+        xor_outs.append(xor_out)
+
+    inter = circuit.new_wire()
+    Or(circuit, xor_outs[0], xor_outs[1], inter)
+    for i in range(2, count):
+        next_inter = circuit.new_wire()
+        Or(circuit, inter, xor_outs[i], next_inter)
+        inter = next_inter
+    Not(circuit, inter, out_eq)
+```
+
+```python=
+def Decoder(
+    circuit,
+    in_inst,
+    out_is_fwd,
+    out_is_bwd,
+    out_is_inc,
+    out_is_dec,
+    out_is_jnz,
+    out_is_prnt,
+):
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.zero(), circuit.zero(), circuit.zero()],
+        out_is_fwd,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.one(), circuit.zero(), circuit.zero()],
+        out_is_bwd,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.zero(), circuit.one(), circuit.zero()],
+        out_is_inc,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.one(), circuit.one(), circuit.zero()],
+        out_is_dec,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.zero(), circuit.zero(), circuit.one()],
+        out_is_prnt,
+    )
+    Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
+```
+
+```python=
+def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_pointer):
+    zero = [circuit.zero()] * 8
+    one = [circuit.one()] + [circuit.zero()] * 7
+
+    # should_jump = Data[DataPointer] != 0 && in_is_jnz
+    is_data_zero = circuit.new_wire()
+    is_data_not_zero = circuit.new_wire()
+    should_jump = circuit.new_wire()
+    MultiEquals(circuit, in_data, zero, is_data_zero)
+    Not(circuit, is_data_zero, is_data_not_zero)
+    And(circuit, in_is_jnz, is_data_not_zero, should_jump)
+
+    # InstPointer = should_jump ? in_addr : InstPointer + 1
+    inst_pointer_inc = [circuit.new_wire() for _ in range(8)]
+    inst_pointer_next = [circuit.new_wire() for _ in range(8)]
+    Adder8(
+        circuit,
+        out_inst_pointer,
+        one,
+        circuit.zero(),
+        inst_pointer_inc,
+        circuit.new_wire(),
+    )
+    Mux1x2Byte(
+        circuit,
+        should_jump,
+        inst_pointer_inc,
+        in_addr + [circuit.zero()],
+        inst_pointer_next,
+    )
+
+    return Reg8(circuit, in_clk, inst_pointer_next, out_inst_pointer, 0)
+```
+
+```python=
+def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code=""):
+    return FastRAM(
+        circuit,
+        in_clk,
+        circuit.zero(),
+        in_inst_pointer,
+        [circuit.zero()] * 8,
+        out_inst,
+        compile(code),
+    )
+```
+
+```python=
+def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
+    one = [circuit.one()] + [circuit.zero()] * 7
+    minus_one = [circuit.one()] * 8
+
+    # data_pointer_inc = data_pointer + 1
+    data_pointer_inc = [circuit.new_wire() for _ in range(8)]
+    Adder8(
+        circuit, data_pointer, one, circuit.zero(), data_pointer_inc, circuit.new_wire()
+    )
+
+    # data_pointer_inc = data_pointer - 1
+    data_pointer_dec = [circuit.new_wire() for _ in range(8)]
+    Adder8(
+        circuit,
+        data_pointer,
+        minus_one,
+        circuit.zero(),
+        data_pointer_dec,
+        circuit.new_wire(),
+    )
+
+    data_pointer_next = [circuit.new_wire() for _ in range(8)]
+    in_is_fwd_bwd = circuit.new_wire()
+    Or(circuit, in_is_fwd, in_is_bwd, in_is_fwd_bwd)
+    tmp = [circuit.new_wire() for _ in range(8)]
+    Mux1x2Byte(circuit, in_is_bwd, data_pointer_inc, data_pointer_dec, tmp)
+    Mux1x2Byte(circuit, in_is_fwd_bwd, data_pointer, tmp, data_pointer_next)
+
+    return Reg8(circuit, in_clk, data_pointer_next, data_pointer, 0)
+```
+
+```python=
+def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):
+    one = [circuit.one()] + [circuit.zero()] * 7
+    min_one = [circuit.one()] * 8
+
+    is_wr = circuit.new_wire()
+    Or(circuit, in_is_inc, in_is_dec, is_wr)
+
+    data_inc = [circuit.new_wire() for _ in range(8)]
+    data_dec = [circuit.new_wire() for _ in range(8)]
+    Adder8(circuit, out_data, one, circuit.zero(), data_inc, circuit.new_wire())
+    Adder8(circuit, out_data, min_one, circuit.zero(), data_dec, circuit.new_wire())
+    data_next = [circuit.new_wire() for _ in range(8)]
+    Mux1x2Byte(circuit, in_is_dec, data_inc, data_dec, data_next)
+
+    return FastRAM(
+        circuit, in_clk, is_wr, in_addr, data_next, out_data, [0 for _ in range(256)]
+    )
+```
+
+```python=
+class CPU:
+    def snapshot(self):
+        print("Data Pointer:", self.data_pointer.snapshot())
+        print("Instruction Pointer:", self.inst_pointer.snapshot())
+        print("RAM:", self.ram.snapshot())
+
+    def __init__(
+        self,
+        circuit: Circuit,
+        in_clk: Wire,
+        code: str,
+        out_ready: Wire,
+        out_data,
+    ):
+        inst_pointer = [circuit.new_wire() for _ in range(8)]
+        inst = [circuit.new_wire() for _ in range(8)]
+
+        data_pointer = [circuit.new_wire() for _ in range(8)]
+        data = [circuit.new_wire() for _ in range(8)]
+
+        is_fwd = circuit.new_wire()
+        is_bwd = circuit.new_wire()
+        is_inc = circuit.new_wire()
+        is_dec = circuit.new_wire()
+        is_jmp = circuit.new_wire()
+        is_prnt = circuit.new_wire()
+
+        Forward(circuit, is_prnt, out_ready)
+        for i in range(8):
+            Forward(circuit, data[i], out_data[i])
+
+        # inst = Inst[inst_pointer]
+        self.rom = InstructionMemory(circuit, in_clk, inst_pointer, inst, code)
+
+        # is_fwd = inst[0:4] == 0000
+        # is_bwd = inst[0:4] == 0100
+        # is_inc = inst[0:4] == 0010
+        # is_dec = inst[0:4] == 0110
+        # is_prnt = inst[0:4] == 0001
+        # is_jmp = inst[0] == 1
+        Decoder(circuit, inst, is_fwd, is_bwd, is_inc, is_dec, is_jmp, is_prnt)
+
+        # inst_pointer =
+        #   if is_jmp: inst[1:8]
+        #   else: inst_pointer + 1
+        self.inst_pointer = InstructionPointer(
+            circuit, in_clk, is_jmp, data, inst[1:8], inst_pointer
+        )
+
+        # data_pointer =
+        #   if is_fwd: data_pointer + 1
+        #   if is_bwd: data_pointer - 1
+        #   else: P
+        self.data_pointer = DataPointer(circuit, in_clk, is_fwd, is_bwd, data_pointer)
+
+        # data = Data[data_pointer]
+        #   if is_inc: Data[data_pointer] + 1
+        #   if is_dec: Data[data_pointer] - 1
+        #   else: Data[data_pointer]
+        self.ram = DataMemory(circuit, in_clk, data_pointer, is_inc, is_dec, data)
+```
+
+Now, let's write a compiler/assembler that is able to convert Brainfuck codes into opcodes runnable by our Brainfuck Processor!
+
+```python=
+def compile(bf):
+    opcodes = []
+    locs = []
+
+    for c in bf:
+        if c == ">":
+            opcodes.append(0)
+        elif c == "<":
+            opcodes.append(2)
+        elif c == "+":
+            opcodes.append(4)
+        elif c == "-":
+            opcodes.append(6)
+        elif c == ".":
+            opcodes.append(8)
+        elif c == "[":
+            locs.append(len(opcodes))
+        elif c == "]":
+            opcodes.append(1 + (locs.pop() << 1))
+
+    return opcodes + [0 for _ in range(256 - len(opcodes))]
+```
+
+Let's write a program that prints out the fibonnaci sequence and run it:
+
+```python=
+if __name__ == "__main__":
+    circ = Circuit()
+    clk = circ.new_wire()
+
+    out_ready = circ.new_wire()
+    out = [circ.new_wire() for _ in range(8)]
+
+    OSCILLATOR = "OSCILLATOR"
+
+    clk.put(OSCILLATOR, ZERO)
+
+    code = "+>+[.[->+>+<<]>[-<+>]<<[->>+>+<<<]>>[-<<+>>]>[-<+>]<]"
+
+    cpu = CPU(circ, clk, code, out_ready, out)
+    print("Num components:", circ.num_components())
+
+    while True:
+        circ.stabilize()
+
+        if out_ready.get() and clk.get():
+            print(wires_to_num(out))
+
+        clk.put(OSCILLATOR, 1 - clk.get())
+```
 
 ## Exploiting the subatomic world
 
