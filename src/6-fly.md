@@ -264,12 +264,130 @@ Since the nodes are simple variables that need to be calculated by a solver, it 
 ```python=
 class Var:
     def __init__(self, index):
-        self.index = index # Keep track of the index of variable
+        self.index = index  # Keep track of the index of variable
+        self.old_value = 0
         self.value = 0
 ```
 
 
+## Circuits
+
+```python=
+class Circuit:
+    def __init__(self):
+        self.gnd = Var(None)
+        self.vars = []
+        self.components = []
+
+    def new_var(self) -> Var:
+        n = Var(len(self.vars))
+        self.vars.append(n)
+        return n
+
+    def new_component(self, comp: Component):
+        self.components.append(comp)
+
+    def solver(self, dt) -> Solver:
+        solver = Solver(self.vars, dt)
+        for comp in self.components:
+            comp.apply(solver)
+        return solver
+```
+
+## Solver
+
+```python=
+class ConvergenceError(Exception):
+    pass
+
+
+class Solver:
+    def __init__(self, variables, dt) -> None:
+        self.variables = variables
+        self.funcs = [list() for _ in range(len(variables))]
+        self.derivs = [dict() for _ in range(len(variables))]
+        self.dt = dt
+        self.t = 0
+        self.randomness = random.random() - 0.5
+
+    def add_func(self, ind, f):
+        if ind is not None:
+            self.funcs[ind].append(f)
+
+    def add_deriv(self, ind, by_ind, f):
+        if ind is not None:
+            if by_ind not in self.derivs[ind]:
+                self.derivs[ind][by_ind] = []
+            self.derivs[ind][by_ind].append(f)
+
+    def jacobian(self):
+        res = []
+        for f in range(len(self.funcs)):
+            row = []
+            for v in range(len(self.funcs)):
+                row.append(self.eval_deriv(f, v))
+            res.append(row)
+        return res
+
+    def eval(self, ind):
+        res = 0
+        for f in self.funcs[ind]:
+            res += f()
+        return res
+
+    def eval_deriv(self, ind, by_ind):
+        res = 0
+        if by_ind in self.derivs[ind]:
+            for f in self.derivs[ind][by_ind]:
+                res += f()
+        return res
+
+    def is_solved(self):
+        for i in range(len(self.funcs)):
+            if not numpy.allclose(self.eval(i), 0):
+                return False
+        return True
+
+    def step(self, max_iters=1000, max_tries=100, alpha=1):
+        solved = False
+        for _ in range(max_tries):
+            try:
+                iters = 0
+                while not solved:
+                    x = [v.value for v in self.variables]
+                    f_x = [self.eval(v.index) for v in self.variables]
+                    f_prime_x = self.jacobian()
+                    f_prime_x_inv = numpy.linalg.inv(f_prime_x)
+                    x = x - alpha * numpy.dot(f_prime_x_inv, f_x)
+                    for v in self.variables:
+                        v.value = x[v.index]
+                    solved = self.is_solved()
+                    if iters >= max_iters:
+                        raise ConvergenceError
+                    iters += 1
+            except (OverflowError, ConvergenceError, numpy.linalg.LinAlgError):
+                # Start from another random solution
+                for v in self.variables:
+                    v.value = random.random()
+            if solved:
+                for v in self.variables:
+                    v.old_value = v.value
+                self.t += self.dt
+                self.randomness = random.random() - 0.5
+                return
+        raise ConvergenceError
+```
+
 ## Components are equations
+
+```python=
+class Component:
+    def __init__(self):
+        pass
+
+    def apply(self, solver: Solver):
+        raise NotImplemented
+```
 
 ***Current Source***
 
@@ -473,6 +591,168 @@ class Diode(Component):
         )
 ```
 
+***Transistor***
+
+
+```python=
+class Bjt(Component):
+    def __init__(
+        self,
+        coeff_in,
+        coeff_out,
+        beta_r,
+        beta_f,
+        base: Var,
+        collector: Var,
+        emitter: Var,
+    ):
+        super().__init__()
+        self.coeff_in = coeff_in
+        self.coeff_out = coeff_out
+        self.base = base
+        self.emitter = emitter
+        self.collector = collector
+        self.beta_r = beta_r
+        self.beta_f = beta_f
+
+    def apply(self, solver: Solver):
+        solver.add_func(
+            self.collector.index,
+            lambda: (
+                (
+                    math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+                    - math.exp((self.base.value - self.collector.value) * self.coeff_in)
+                )
+                - (1 / self.beta_r)
+                * (
+                    math.exp((self.base.value - self.collector.value) * self.coeff_in)
+                    - 1
+                )
+            )
+            * self.coeff_out,
+        )
+        solver.add_func(
+            self.base.index,
+            lambda: (
+                (1 / self.beta_f)
+                * (math.exp((self.base.value - self.emitter.value) * self.coeff_in) - 1)
+                + (1 / self.beta_r)
+                * (
+                    math.exp((self.base.value - self.collector.value) * self.coeff_in)
+                    - 1
+                )
+            )
+            * self.coeff_out,
+        )
+        solver.add_func(
+            self.emitter.index,
+            lambda: -(
+                (
+                    math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+                    - math.exp((self.base.value - self.collector.value) * self.coeff_in)
+                )
+                + (1 / self.beta_f)
+                * (math.exp((self.base.value - self.emitter.value) * self.coeff_in) - 1)
+            )
+            * self.coeff_out,
+        )
+
+        solver.add_deriv(
+            self.collector.index,
+            self.collector.index,
+            lambda: math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            + math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            * (1 / self.beta_r),
+        )
+        solver.add_deriv(
+            self.collector.index,
+            self.base.index,
+            lambda: math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            - math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            - math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            * (1 / self.beta_r),
+        )
+        solver.add_deriv(
+            self.collector.index,
+            self.emitter.index,
+            lambda: -math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+
+        solver.add_deriv(
+            self.base.index,
+            self.collector.index,
+            lambda: -(1 / self.beta_r)
+            * math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.base.index,
+            self.base.index,
+            lambda: (1 / self.beta_f)
+            * math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            + (1 / self.beta_r)
+            * math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.base.index,
+            self.emitter.index,
+            lambda: -(1 / self.beta_f)
+            * math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+
+        solver.add_deriv(
+            self.emitter.index,
+            self.collector.index,
+            lambda: -math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.emitter.index,
+            self.base.index,
+            lambda: -math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            + math.exp((self.base.value - self.collector.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            - (1 / self.beta_f)
+            * math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+        solver.add_deriv(
+            self.emitter.index,
+            self.emitter.index,
+            lambda: math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in
+            + (1 / self.beta_f)
+            * math.exp((self.base.value - self.emitter.value) * self.coeff_in)
+            * self.coeff_out
+            * self.coeff_in,
+        )
+```
+
 ## When stables and unstables meet!
 
 Revisiting capacitors, we know they are elements that resist against `stability` of the voltage applied to them. (E.g if you connect a DC voltage-source to them, they will slowly get charged and cancel out the voltage of the DC voltage source, resisting against flow of electrons)
@@ -548,6 +828,46 @@ Now, let's see if an RLC loop can detect the signal generated by a Astable Multi
 ## Hello World!
 
 ![Astable Multivibrator's output](assets/astable.png){ width=300px }
+
+
+```python=
+DT = 0.01
+VOLTAGE = 5
+R_COLLECTOR = 470
+R_BASE = 47000
+CAP = 0.000010
+
+c = Circuit()
+top = c.new_var()
+o1 = c.new_var()
+o2 = c.new_var()
+b1 = c.new_var()
+b2 = c.new_var()
+i = c.new_var()
+
+c.new_component(VoltageSource(VOLTAGE, c.gnd, top, i))
+c.new_component(Resistor(R_COLLECTOR, top, o1))
+c.new_component(Resistor(R_COLLECTOR, top, o2))
+c.new_component(Resistor(R_BASE, top, b1))
+c.new_component(Resistor(R_BASE, top, b2))
+c.new_component(Capacitor(CAP, o1, b2))
+c.new_component(Capacitor(CAP, o2, b1))
+c.new_component(Bjt(1 / 0.026, 1e-14, 10, 250, b1, o1, c.gnd))
+c.new_component(Bjt(1 / 0.026, 1e-14, 10, 250, b2, o2, c.gnd))
+
+solver = c.solver(DT)
+
+duration = 3  # Seconds
+
+points = []
+
+while solver.t < duration:
+    solver.step()
+    points.append(o1.value)
+
+plt.plot(points)
+plt.show()
+```
 
 ## Alternating vs Direct current
 
