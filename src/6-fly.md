@@ -59,6 +59,65 @@ Perhaps the most important discovery of Newton is his famous formula \\(F=ma\\) 
 \\(x=\int{\int{a.dt}}=\frac{1}{2}at^2+v_0t+x_0\\)
 
 
+---
+
+I recall once I was watching a science-fiction movie, in which an astronaut lost his rope handle and started to slowly get attracted by a planet nearby. His friends tried to save him but he was already too far from them, practically impossible for them to save him. His nuzzles (They are connected to an astronaut dress, allowing them to move in the space, where friction is not present) were also out of fuel, so he couldn't fight gravitation in any way, and he knew it. He knew his destiny and the fact that he is soon going to fall into the planet with a freaking high speed and die with pain.
+
+He said goodbye to his friends, and commited suicide by removing his helmet.
+
+---
+
+Perhaps the most exciting outcome of Newton's formulation of gravity, is its explanation of why moon doesn't fall on the earth. This question was always a mystery, but Newton's discovery made it look very obvious!
+
+Just like how we learnt everything in this book, a good way to understand the concept could be yet another computer simulation!
+
+Here we are going to build a program, which can simulate a system of planets, purely by applying Newton's gravity forces on each of them. We will see if we can have an "orbiting" behavior by just letting planets to attract each other.
+
+Throughout our series of simulations in this chapter, we'll use the vector classes we defined in the 3rd chapter. Our simulations will be done in a 2D world, since it will be enough for understanding the concept. Adding the 3rd dimension could be an optional feature which you can implement later!
+
+Let's get to the keyboard! Surprisingly, there are only two formula you'll need to use in order to predict the movement of masses in the space:
+
+1. Law of gravity: how strong objects attract each other, given their masses and distance between them?
+2. \\(\vec{F}=m\vec{a}\\): the acceleration an object gets when a force is applied.
+
+We first need a model of an object in space. Let's call it a `Planet` (A moon is not technically not a planet, but let's call all space objects in our simulation as Planets for simplicity).
+
+A planet has a position in our 2D spcae. It also has a mass. Given the law of intertia, we can claim that, the velocity of the planet, is indeed an important property of the planet which doesn't change over time (Unless forces are applied to it) so, our model of a planet can be described as a Python class:
+
+```python=
+class Planet:
+    def __init__(self, position, velocity, mass):
+        self.position = poistion
+        self.velocity = velocity
+        self.mass = mass
+```
+
+Assuming there are no gravitational forces yet, they would continue moving on a straight line according to their velocity. Let's update the position of the planets in a loop in intervals of `dt` seconds:
+
+```python=
+planets = [Planet(...)]
+dt = 0.001
+t = 0
+for p in planets:
+    p.position += p.velocity * dt
+    t += dt
+```
+
+You can also 2D render the planets as filled circles on your screen. They'll be moving on straight lines as expected!
+
+Now let's apply gravity forces and make this more interesting. An important thing you should be aware of is that when you put 2 (Or more) planets near each other, they will both start attracting each other at the same time. You can't calculate the forces applied on \\(p_1\\), update its position, and then go for \\(p_2\\), because when you change \\(p_1\\)'s position, the force applied on \\(p_2\\) will be different, compared to when the position was not updated. In fact, the state-change of \\(p_2\\) is only dependent on the old/original state of \\(p_1\\), not the new calculated one. If you don't consider this, your simulatation will get slightly inaccurate. What you have to do is to first calculate all the forces applied to each planet (Without changing their positions), and then apply the side-effects (Positional changes) instantiously:
+
+[TODO]
+
+Remember I mentioned we are aiming to land a man on the moon? I wasn't kidding. Our solar system simulator could be a nice environment for experimenting a rocket launch that want to reach and land on the moon.
+
+There will be many challenges:
+
+1. Our fuel will be limited.
+2. Escaping the source-planet's gravity is not easy.
+3. We can't expect the target planet to be in its initial position after launching.
+4. The rocket is launched with an initial velocity due to the source planets rotation.
+5. etc
 
 ## Exciting Electronics
 
