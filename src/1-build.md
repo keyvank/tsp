@@ -157,6 +157,8 @@ class Wire:
         return is_changed
 ```
 
+The code above models a wire as a Python class. By definition, a wire that is not connected to anything remains in the `Z` (Free) state. Through the `put` option, a driver (Which can be a batter, or a gate), may drive that wire with some voltage. The final voltage of your wire is then decided by iterating over all of the voltages that are applied to your wire.
+
 Sometimes (Specifically in circuits containing feedback-loops and recursions, it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it).
 
 ## Magical switch
@@ -332,6 +334,10 @@ if __name__ == '__main__':
     gate.update()
     print(out.get())
 ```
+
+The Not gate modeled in this primitive component is accurate and works as expected, however, we all know that a Not gate itself is made of transistors and it might be more interesting to model the same thing through a pair of transistors, instead of cheating and emulating its high-level behavior through a piece of Python code.
+
+[NOT gate with transistors]
 
 ***AND gate:*** is zero when at least one of the inputs is zero, and gets One when all of the inputs are one. Otherwise the output is unknown.
 
