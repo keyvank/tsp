@@ -729,6 +729,10 @@ if __name__ == "__main__":
         clk.put(OSCILLATOR, 1 - clk.get())
 ```
 
+A counter circuit is a great example of how computers can memorize their state and jump to a new state given a past state. The counter circuit is a great starting point for building a computer too. A CPU is basically a circuit which fetches instructions from a memory one-by-one, and runs them in order, effectively transforming the state of the system to a newer state, per instruction.
+
+Let's focus on the part where we want to fetch instructions. The instructions that we are going to fetch reside on a RAM. A RAM allows you to get data in a memory-cell, given the address of that memory cell. Since we are reading the instructions in order, the address given to the RAM can basically be a sequentially increasing number, which is what we can get using a counter circuit!
+
 ## Chaotic access
 
 Now imagine we have a big number of these 8-bit memory cells which are identified by different addresses. We would like to build an electronic component which enabled us to read and write a memory-cell (Out of many memory-cells), given its address. We will call it a RAM, since we can access arbitrary and random addresses without losing speed (It's hard to randomly move on a disk-storage). In case of a RAM with 256 memory-cells (Each 8-bit), we'll need 17 input wires and 8 output wires.
