@@ -187,10 +187,10 @@
 <li>Now you can completely ignore the assembly implementation, and assume that, your C compiler was written in C in the first place!</li>
 </ol>
 <p>See this beautiful loop here? Technology maintains and reproduces itself, which kind of means, <em><strong>technology is a form of life!</strong></em> The simpler computer language (in this example, machine-assembly) helped the C-compiler to emerge, but after the compiler started to live, it could stand on its own feet. We won't need the machine-assembly implementation of it anymore, since there is nothing preventing us from describing a C-compiler in the C programming language!</p>
-<p>Now let's get back to our original question. Which one was first, the chicken or the egg? If you look through the history of evolution, you will see that the creatures millions of years ago were not reproducing by dropping eggs. Basic living cells, for example, never had to reproduce like that; they would only cut themselves into two pieces. As living creatures get more complicated, phenomena like dropping eggs will "slowly" start to emerge. The very first chicken-like animal, which started to lay eggs, didn't necessarily come out of an egg. It could just be a mutation that brought about the egging behavior for a new generation, just like how a C compiler started to live, without depending on an assembly implementation of it!</p>
+<p>Now let's get back to our original question. Which one was first, the chicken or the egg? If you look through the history of evolution, you will see that the creatures millions of years ago were not reproducing by dropping eggs. Basic living cells, for example, never had to reproduce like that; they would only cut themselves into two pieces. As living creatures get more complicated, phenomena like dropping eggs will &quot;slowly&quot; start to emerge. The very first chicken-like animal, which started to lay eggs, didn't necessarily come out of an egg. It could just be a mutation that brought about the egging behavior for a new generation, just like how a C compiler started to live, without depending on an assembly implementation of it!</p>
 <h2 id="when-the-dominos-fall"><a class="header" href="#when-the-dominos-fall">When the dominos fall</a></h2>
-<p>If you ask someone who is really into computers about how computers work at very deep levels, he will most probably start by telling you about electronic switches, transistors, and logic gates. Well, I'm also going to do the same, but in a slightly different way! Even though transistors are the basic building blocks of almost all modern computers, the real magic that makes computers do their thing is something I'd like to refer to as "Cause &amp; Effect" chains.</p>
-<p>I would like you to start by listing a few examples of "Cause &amp; Effect" scenarios that happen in everyday life. Here is my list (please think and add yours too):</p>
+<p>If you ask someone who is really into computers about how computers work at very deep levels, he will most probably start by telling you about electronic switches, transistors, and logic gates. Well, I'm also going to do the same, but in a slightly different way! Even though transistors are the basic building blocks of almost all modern computers, the real magic that makes computers do their thing is something I'd like to refer to as &quot;Cause &amp; Effect&quot; chains.</p>
+<p>I would like you to start by listing a few examples of &quot;Cause &amp; Effect&quot; scenarios that happen in everyday life. Here is my list (please think and add yours too):</p>
 <ul>
 <li>You press a key on your computer -&gt; A character appears on the screen -&gt; <strong>END</strong></li>
 <li>You push the first domino -&gt; The next domino falls -&gt; The next domino falls -&gt; ...</li>
@@ -200,7 +200,7 @@
 <li>A neuron fires in your brain -&gt; Another neuron gets excited as a result and fires -&gt; ...</li>
 </ul>
 <p>Now, let's think about why some of these cause-and-effect chains keep going on and on, while others stop after just a few steps. Why do some things set off a series of events, while others don't?</p>
-<p>There's a crucial pattern here: The long-lasting (i.e., interesting) effects emerge from cause-and-effect chains where <em><strong>the effects have the same type as the causes</strong></em>, which essentially means these chains are interesting when they can form cycles. For instance, when a "mechanical" cause has another "mechanical" effect (like dominos), or when an "electrical" cause leads to another electrical effect (like electronic circuits).</p>
+<p>There's a crucial pattern here: The long-lasting (i.e., interesting) effects emerge from cause-and-effect chains where <em><strong>the effects have the same type as the causes</strong></em>, which essentially means these chains are interesting when they can form cycles. For instance, when a &quot;mechanical&quot; cause has another &quot;mechanical&quot; effect (like dominos), or when an &quot;electrical&quot; cause leads to another electrical effect (like electronic circuits).</p>
 <p>The most complex thing you can create with components that transform a single cause into a single effect is no different than a chain of falling domino pieces (another example is when rumors circulate in a company). It's still impressive and has its interesting aspects, but we don't want to stop there. We want to build things that can transform multiple causes into a single effect (all with the same types), and that's when Cause &amp; Effect chains truly shine! The simplest example of such a component is a switch. A switch manages the flow of an input to an output through a third controlling input. An example of a non-electrical switch is a faucet. A faucet allows you to control the flow of water in a pipe (considered as a single-cause/single-effect component) through a third input.</p>
 <p>We won't delve deep into the inner workings of transistors just yet, but let's assume that transistors are components capable of converting electrical causes into electrical effects. This ability allows us to connect them together and create interesting things. In essence, transistors can be accurately described as switches, quite similar to push-buttons but with a key difference. A push-button is a component that accepts an electrical and a mechanical input, producing an electrical output.</p>
 <p>[IMG push-button]</p>
@@ -221,10 +221,10 @@
 <p>Release what you have in your hand and let it fall. The heavy object will hit the ground, make a bang song, and it might even break the ground (Or itself). The more height the object has from the ground, the more damage it will make. It is also obvious that, energy is needed in order to make noises and damages. Where did that energy come from?</p>
 <p>Now you know the answer! When you lifted the heavy object, you actually gave energy to it, and when you let it fall, the energy you gave got released! Physicist call this energy as potential energy. A lifted object has the potential to do work (Work is done by consuming energy), that's probably why we refer it as potential energy!</p>
 <p>If you remember high-school physics, you know that the potential energy of an object can be calculated with the formula: \(u=mgh\) where \(m\) is the mass of the object, \(h\) is its height from the ground, and \(g\) is earth's gravity constant (Which is around \(9.807\)). Given this formula, when the object lies on the ground, \(h\) is 0 thus the potential energy is also 0. A very important question, does that mean, an object that lies on the ground does not have any potential energy? Well, it has! Take a shovel, dig the ground under the object, and the object will fall into the hole. The point is, the equation is giving you the potential difference, not the actual potential energy of that object! A more correct version of that equation would be: \(\varDelta{u}=mg\varDelta{h}\), which says, the potential energy difference between two points A and B is \(mg\) times the difference of their heights! It's relative!</p>
-<p>The reason it takes energy to lift an object roots back to the fact that giant masses attract each other, a.k.a the universal law of gravitation (\(F=G\frac{m_1m_2}{r^2}\)). Since a very similar law also exists in the microscopic world (Electrons attract protons and defeat electrons, \(F=k_e\frac{q_1q_2}{r^2}\)), we have a similar concept of "potential energy" in the electromagnetic world too. It takes energy to pull two electrical charges of different types (Positive/Negative) from each other, and when you do so, and then release them, they will start moving to each other and release their energy.</p>
-<p>That's basically the way batteries work, they try to make potential differences by moving electrons to higher "heights", and when you let them fall (By connecting a wire from the negative pole of the battery to the positive pole), the electrons will start to fall through the wire. So when we say "Voltage", we mean a difference of height/potential-energy. We don't exactly know what is the absolute height/potential-energy of points A and B, but we certainly know the height/potential difference!</p>
+<p>The reason it takes energy to lift an object roots back to the fact that giant masses attract each other, a.k.a the universal law of gravitation (\(F=G\frac{m_1m_2}{r^2}\)). Since a very similar law also exists in the microscopic world (Electrons attract protons and defeat electrons, \(F=k_e\frac{q_1q_2}{r^2}\)), we have a similar concept of &quot;potential energy&quot; in the electromagnetic world too. It takes energy to pull two electrical charges of different types (Positive/Negative) from each other, and when you do so, and then release them, they will start moving to each other and release their energy.</p>
+<p>That's basically the way batteries work, they try to make potential differences by moving electrons to higher &quot;heights&quot;, and when you let them fall (By connecting a wire from the negative pole of the battery to the positive pole), the electrons will start to fall through the wire. So when we say &quot;Voltage&quot;, we mean a difference of height/potential-energy. We don't exactly know what is the absolute height/potential-energy of points A and B, but we certainly know the height/potential difference!</p>
 <h2 id="wires"><a class="header" href="#wires">Wires</a></h2>
-<p>Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our <code>Wire</code>s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits. You might also forget to connect your wire to anything at all. In this case, the voltage of the wire represents neither 0 nor 1.</p>
+<p>Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain &quot;height&quot; (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our <code>Wire</code>s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits. You might also forget to connect your wire to anything at all. In this case, the voltage of the wire represents neither 0 nor 1.</p>
 <p>A wire in our emulation can have 4 different states:</p>
 <ul>
 <li>Free (The wire is not connected to anything)</li>
@@ -232,7 +232,7 @@
 <li>One (The wire has a voltage of 5.0V)</li>
 <li>Unknown (We can not determine if the wire is 0 or 1)</li>
 </ul>
-<p>By default, a wire that is not connected to anywhere, is in the "Free" state. When you connect it to a gate/wire that has a state of One, the wire's state will also become One. A wire can connect to multiple gates/wires at the same time. The wire will get into the Unknown state when you connect it to two other wires/gates with conflicting values. E.g. if the wire is connected to both Zero and One sources at the same time, it's state will be Unknown.</p>
+<p>By default, a wire that is not connected to anywhere, is in the &quot;Free&quot; state. When you connect it to a gate/wire that has a state of One, the wire's state will also become One. A wire can connect to multiple gates/wires at the same time. The wire will get into the Unknown state when you connect it to two other wires/gates with conflicting values. E.g. if the wire is connected to both Zero and One sources at the same time, it's state will be Unknown.</p>
 <p>We can calculate the truth table of wire logic to better understand the concept:</p>
 <div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A + B</th></tr></thead><tbody>
 <tr><td>Z</td><td>Z</td><td>Z</td></tr>
@@ -267,8 +267,8 @@
 </div>
 <p><img src="assets/wires.png" alt="4 different wire states" /></p>
 <p>Based on our definition of a wire, we can provide a Python implementation:</p>
-<pre><code class="language-python=">FREE = "Z"
-UNK = "X"
+<pre><code class="language-python=">FREE = &quot;Z&quot;
+UNK = &quot;X&quot;
 ZERO = 0
 ONE = 1
 
@@ -298,6 +298,7 @@ class Wire:
         self._drivers[driver] = value
         return is_changed
 </code></pre>
+<p>The code above models a wire as a Python class. By definition, a wire that is not connected to anything remains in the <code>Z</code> (Free) state. Through the <code>put</code> option, a driver (Which can be a batter, or a gate), may drive that wire with some voltage. The final voltage of your wire is then decided by iterating over all of the voltages that are applied to your wire.</p>
 <p>Sometimes (Specifically in circuits containing feedback-loops and recursions, it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an <code>assume()</code> function to set a assumed value for a wire, in case no gates have drived value into it).</p>
 <h2 id="magical-switch"><a class="header" href="#magical-switch">Magical switch</a></h2>
 <p>The most primitive element in a digital system is a transistor. A transistor is an electrical domino piece. It converts electrical causes to electrical effects. In very simple terms, a transistor is an electrically controlled switch. There are 3 wires involved which are known as <em>base</em>, <em>emitter</em>, and <em>collector</em>. The base wire is the controller of the switch. An electrical potential between the base and emitter wires will cause the collector wire to get connected with the emitter wire. In other words, the base wire will decide if emitter and collector are connected or not. The emitter will emit electrons and the collector will collect them.</p>
@@ -445,6 +446,8 @@ class PTransistor:
     gate.update()
     print(out.get())
 </code></pre>
+<p>The Not gate modeled in this primitive component is accurate and works as expected, however, we all know that a Not gate itself is made of transistors and it might be more interesting to model the same thing through a pair of transistors, instead of cheating and emulating its high-level behavior through a piece of Python code.</p>
+<p>[NOT gate with transistors]</p>
 <p><em><strong>AND gate:</strong></em> is zero when at least one of the inputs is zero, and gets One when all of the inputs are one. Otherwise the output is unknown.</p>
 <div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A AND B</th></tr></thead><tbody>
 <tr><td>0</td><td>*</td><td>0</td></tr>
@@ -610,7 +613,7 @@ def wires_to_num(wires):
     return out
 
 
-if __name__ == "__main__":
+if __name__ == &quot;__main__&quot;:
     for x in range(256):
         for y in range(256):
             circuit = Circuit()
@@ -621,7 +624,7 @@ if __name__ == "__main__":
             circuit.update()
             out = wires_to_num(wires_out)
             if out != (x + y) % 256:
-                print("Adder is not working!")
+                print(&quot;Adder is not working!&quot;)
 
 </code></pre>
 <p>Here, we are checking if the outputs are correct given all possible inputs. We have defined two auxillary functions <code>num_to_wires</code> and <code>wires_to_num</code> in order to convert numbers into a set of wires which can connect to a electronic circuit, and vice versa.</p>
@@ -638,7 +641,7 @@ if __name__ == "__main__":
 <p>It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!</p>
 <h2 id="try-to-remember"><a class="header" href="#try-to-remember">Try to remember</a></h2>
 <p>What we care about right now is to design a circuit which is able to run arbitrary algorithms for us! An algorithm is nothing but a list of operations that need to be executed. So far we have been experimenting with state-less circuits, circuits that didn't need to memorize or remember anything in order to do their job. Obviously, you can't get much creative with circuits that do now store anything from the past, thus, we are going to talk about ways we can store data on a digital circuit circuit and keep it through time!</p>
-<p>When you were a child, you have most probably tried to put a light-switch in a middle state. If the switch had been in good condition and quality, you know how frustrating it can get to do it! The concept of <em><strong>memory</strong></em> emerges when a system with multiple possible states can only stabilize in a single state at a time, and once it gets stable, the state can only be changed by an external force. A light-switch can be used as a single-bit memory cell.</p>
+<p>When you were a child, you have most probably tried to put a light-switch in a middle state. If the switch had been in good condition and quality, you know how frustrating it can get to do it! The concept of <em><strong>memory</strong></em> emerges when a system with multiple possible states can only stabilize in a single state at a time, and once it gets stable, the state can only be changed by an external force. A light-switch can be used as a single-bit memory cell. </p>
 <p>Imagine a piece of paper. It's stable. When you put it on fire, it slowly changes its state until it becomes completely burnt and stabilizes there. It's not easy to keep the paper a middle state. You can use a paper as a single bit memory cell. It's not the best memory cell and the most obvious reason is that you can't turn it back to its unburnt state!</p>
 <p>Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Such a circuit is also known as a Latch:</p>
 <pre><code class="language-python=">def DLatch(circuit, in_clk, in_data, out_data, initial=0):
@@ -655,7 +658,7 @@ if __name__ == "__main__":
     neg_out.assume(1 - initial)
     out_data.assume(initial)
 </code></pre>
-<p>In our <code>DLatch</code> component, the <code>wire_out</code> pin is always equal with the internal state of the memory cell. Whenever <code>wire_clk</code> is equal with one, the value of <code>wire_data</code> will be copied into the state, and will stay there, even when we</p>
+<p>In our <code>DLatch</code> component, the <code>wire_out</code> pin is always equal with the internal state of the memory cell. Whenever <code>wire_clk</code> is equal with one, the value of <code>wire_data</code> will be copied into the state, and will stay there, even when we </p>
 <p>Simulating such a circuit in our Python simulator is a bit tricky: take a look at the schematic of a DLatch circuit, the input of the Nor cell is dependant on the output of tha latch. If we try to calculate the correct values of wires in a latch component for the first time, the simulation will crash when updating the Nor gate, because not all of its inputs are ready. There are two approaches by which we can fix our simulation:</p>
 <ol>
 <li>Give up, and try to simulate a memory-cell component without doing low-level transistor simulations.</li>
@@ -688,7 +691,7 @@ if __name__ == "__main__":
 </code></pre>
 <p>I'm defining <code>Reg8</code> as a class, to define auxillary methods like <code>snapshot()</code> in order to make it easier to investigate the internal value of a register.</p>
 <hr />
-<p>So far, we have been able to design a circuit that stays stable in a single state, and we can set its state by triggering it through an auxillary port we call "enable". This circuit is known as a Latch, and since it's hard to simulate it using bare transistors (Since there will be infinite loops which are unhandled by our simulator, as discussed), we are going to hardcode its behavior using plain Python code. It will have a fairly simple logic. It will accept a data and an enable wire as its inputs, and will have a single output. The output pin will output the current state of the Latch, and when 'enable' is 0, it will ignore the 'data' pin and won't change its state. As soon as the enable pin gets 1, the value of data pin will be copied to the internal state of the latch. We can describe the behavior of a Latch like this:</p>
+<p>So far, we have been able to design a circuit that stays stable in a single state, and we can set its state by triggering it through an auxillary port we call &quot;enable&quot;. This circuit is known as a Latch, and since it's hard to simulate it using bare transistors (Since there will be infinite loops which are unhandled by our simulator, as discussed), we are going to hardcode its behavior using plain Python code. It will have a fairly simple logic. It will accept a data and an enable wire as its inputs, and will have a single output. The output pin will output the current state of the Latch, and when 'enable' is 0, it will ignore the 'data' pin and won't change its state. As soon as the enable pin gets 1, the value of data pin will be copied to the internal state of the latch. We can describe the behavior of a Latch like this:</p>
 <div class="table-wrapper"><table><thead><tr><th>Enable</th><th>Data</th><th>Output</th></tr></thead><tbody>
 <tr><td>0</td><td>0</td><td>s</td></tr>
 <tr><td>0</td><td>1</td><td>s</td></tr>
@@ -715,7 +718,7 @@ if __name__ == "__main__":
 </code></pre>
 <pre><code class="language-python=">class Counter:
     def snapshot(self):
-        print("Value:", self.counter.snapshot())
+        print(&quot;Value:&quot;, self.counter.snapshot())
 
     def __init__(self, circuit: Circuit, in_clk: Wire):
         one = [circuit.one()] + [circuit.zero()] * 7
@@ -735,22 +738,24 @@ if __name__ == "__main__":
         self.counter = Reg8(circuit, in_clk, next_counter_val, counter_val, 0)
 
 
-if __name__ == "__main__":
+if __name__ == &quot;__main__&quot;:
     circ = Circuit()
     clk = circ.new_wire()
 
-    OSCILLATOR = "OSCILLATOR"
+    OSCILLATOR = &quot;OSCILLATOR&quot;
 
     clk.put(OSCILLATOR, ZERO)
 
     counter = Counter(circ, clk)
-    print("Num components:", circ.num_components())
+    print(&quot;Num components:&quot;, circ.num_components())
 
     while True:
         circ.stabilize()
         counter.snapshot()
         clk.put(OSCILLATOR, 1 - clk.get())
 </code></pre>
+<p>A counter circuit is a great example of how computers can memorize their state and jump to a new state given a past state. The counter circuit is a great starting point for building a computer too. A CPU is basically a circuit which fetches instructions from a memory one-by-one, and runs them in order, effectively transforming the state of the system to a newer state, per instruction.</p>
+<p>Let's focus on the part where we want to fetch instructions. The instructions that we are going to fetch reside on a RAM. A RAM allows you to get data in a memory-cell, given the address of that memory cell. Since we are reading the instructions in order, the address given to the RAM can basically be a sequentially increasing number, which is what we can get using a counter circuit!</p>
 <h2 id="chaotic-access"><a class="header" href="#chaotic-access">Chaotic access</a></h2>
 <p>Now imagine we have a big number of these 8-bit memory cells which are identified by different addresses. We would like to build an electronic component which enabled us to read and write a memory-cell (Out of many memory-cells), given its address. We will call it a RAM, since we can access arbitrary and random addresses without losing speed (It's hard to randomly move on a disk-storage). In case of a RAM with 256 memory-cells (Each 8-bit), we'll need 17 input wires and 8 output wires.</p>
 <p>The inputs are as follows:</p>
@@ -885,7 +890,7 @@ def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
 
 def MultiEquals(circuit, in_a, in_b, out_eq):
     if len(in_a) != len(in_b):
-        raise Exception("Expected equal num of wires!")
+        raise Exception(&quot;Expected equal num of wires!&quot;)
 
     count = len(in_a)
     xor_outs = []
@@ -977,7 +982,7 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
 
     return Reg8(circuit, in_clk, inst_pointer_next, out_inst_pointer, 0)
 </code></pre>
-<pre><code class="language-python=">def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code=""):
+<pre><code class="language-python=">def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code=&quot;&quot;):
     return FastRAM(
         circuit,
         in_clk,
@@ -1038,9 +1043,9 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
 </code></pre>
 <pre><code class="language-python=">class CPU:
     def snapshot(self):
-        print("Data Pointer:", self.data_pointer.snapshot())
-        print("Instruction Pointer:", self.inst_pointer.snapshot())
-        print("RAM:", self.ram.snapshot())
+        print(&quot;Data Pointer:&quot;, self.data_pointer.snapshot())
+        print(&quot;Instruction Pointer:&quot;, self.inst_pointer.snapshot())
+        print(&quot;RAM:&quot;, self.ram.snapshot())
 
     def __init__(
         self,
@@ -1103,39 +1108,39 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
     locs = []
 
     for c in bf:
-        if c == "&gt;":
+        if c == &quot;&gt;&quot;:
             opcodes.append(0)
-        elif c == "&lt;":
+        elif c == &quot;&lt;&quot;:
             opcodes.append(2)
-        elif c == "+":
+        elif c == &quot;+&quot;:
             opcodes.append(4)
-        elif c == "-":
+        elif c == &quot;-&quot;:
             opcodes.append(6)
-        elif c == ".":
+        elif c == &quot;.&quot;:
             opcodes.append(8)
-        elif c == "[":
+        elif c == &quot;[&quot;:
             locs.append(len(opcodes))
-        elif c == "]":
+        elif c == &quot;]&quot;:
             opcodes.append(1 + (locs.pop() &lt;&lt; 1))
 
     return opcodes + [0 for _ in range(256 - len(opcodes))]
 </code></pre>
 <p>Let's write a program that prints out the fibonnaci sequence and run it:</p>
-<pre><code class="language-python=">if __name__ == "__main__":
+<pre><code class="language-python=">if __name__ == &quot;__main__&quot;:
     circ = Circuit()
     clk = circ.new_wire()
 
     out_ready = circ.new_wire()
     out = [circ.new_wire() for _ in range(8)]
 
-    OSCILLATOR = "OSCILLATOR"
+    OSCILLATOR = &quot;OSCILLATOR&quot;
 
     clk.put(OSCILLATOR, ZERO)
 
-    code = "+&gt;+[.[-&gt;+&gt;+&lt;&lt;]&gt;[-&lt;+&gt;]&lt;&lt;[-&gt;&gt;+&gt;+&lt;&lt;&lt;]&gt;&gt;[-&lt;&lt;+&gt;&gt;]&gt;[-&lt;+&gt;]&lt;]"
+    code = &quot;+&gt;+[.[-&gt;+&gt;+&lt;&lt;]&gt;[-&lt;+&gt;]&lt;&lt;[-&gt;&gt;+&gt;+&lt;&lt;&lt;]&gt;&gt;[-&lt;&lt;+&gt;&gt;]&gt;[-&lt;+&gt;]&lt;]&quot;
 
     cpu = CPU(circ, clk, code, out_ready, out)
-    print("Num components:", circ.num_components())
+    print(&quot;Num components:&quot;, circ.num_components())
 
     while True:
         circ.stabilize()
@@ -1169,8 +1174,8 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
 <tr><td>]</td><td>If the byte at the data pointer is not 0, jump to the corresponding [</td></tr>
 </tbody></table>
 </div>
-<p>Before trying to build anything with Brainfuck, let's write an interpreter for this language first! The original Brainfuck machine specification has 30000 memory-cells, each storing a 8-bit byte (Unsigned integer between 0 to 255).</p>
-<p>The following code is an Brainfuck interpreter written in Python, which executes a "Hello World!" program written in Brainfuck.</p>
+<p>Before trying to build anything with Brainfuck, let's write an interpreter for this language first! The original Brainfuck machine specification has 30000 memory-cells, each storing a 8-bit byte (Unsigned integer between 0 to 255). </p>
+<p>The following code is an Brainfuck interpreter written in Python, which executes a &quot;Hello World!&quot; program written in Brainfuck.</p>
 <pre><code class="language-python3=">code = '''
 ++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;
 ---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
@@ -1182,23 +1187,23 @@ pc = 0
 
 stack = []
 while pc &lt; len(code):
-    if code[pc] == "&gt;":
+    if code[pc] == &quot;&gt;&quot;:
         ptr = (ptr + 1) % 30000
-    elif code[pc] == "&lt;":
+    elif code[pc] == &quot;&lt;&quot;:
         ptr = (ptr - 1) % 30000
-    elif code[pc] == "+":
+    elif code[pc] == &quot;+&quot;:
         memory[ptr] = (memory[ptr] + 1) % 256
-    elif code[pc] == "-":
+    elif code[pc] == &quot;-&quot;:
         memory[ptr] = (memory[ptr] - 1) % 256
-    elif code[pc] == "[":
+    elif code[pc] == &quot;[&quot;:
         stack.append(pc)
-    elif code[pc] == "]":
+    elif code[pc] == &quot;]&quot;:
         top = stack.pop()
         if memory[ptr] != 0:
             pc = top
             continue
-    elif code[pc] == ".":
-        print(chr(memory[ptr]), end="")
+    elif code[pc] == &quot;.&quot;:
+        print(chr(memory[ptr]), end=&quot;&quot;)
 
     pc += 1
 </code></pre>
@@ -1251,8 +1256,8 @@ print('}')
 </ol>
 <p>Let's try to build things with this language now!</p>
 <p><strong>Hello World!</strong></p>
-<p>Printing a string is the first thing people actually do when learning a new programming language. Surprisingly, printing stuff isn't that straightforward in an esoteric programming language like Brainfuck. Since a Brainfuck program's inputs and outputs are bytes, we'll need to work with an 8-bit character encoding (Like ASCII) in order to work with strings.</p>
-<p>The instruction <code>.</code> is responsible for outputting bytes, and it outputs the byte the program is currently pointing at. So we somehow have to put our desired ASCII code in that memory location in order to print it. Naively, this would mean we have to put a lot of <code>+</code> instructions to make the current memory cell equal with our desired ASCII character. For example, we'll need to put 72 <code>+</code> instructions in order to print a <code>H</code> character! There are ways we can optimize the process of printing a string. Since the number 72 is already in the memory, we won't need to put 69 other <code>+</code> signs in another memory location in order to print the next letter <code>E</code>, we'll just need to subtract the old character by 3 (72-3=69), and print it again! This way we can write a Brainfuck program that can print "HELLO WORLD" in around 160 instructions:</p>
+<p>Printing a string is the first thing people actually do when learning a new programming language. Surprisingly, printing stuff isn't that straightforward in an esoteric programming language like Brainfuck. Since a Brainfuck program's inputs and outputs are bytes, we'll need to work with an 8-bit character encoding (Like ASCII) in order to work with strings. </p>
+<p>The instruction <code>.</code> is responsible for outputting bytes, and it outputs the byte the program is currently pointing at. So we somehow have to put our desired ASCII code in that memory location in order to print it. Naively, this would mean we have to put a lot of <code>+</code> instructions to make the current memory cell equal with our desired ASCII character. For example, we'll need to put 72 <code>+</code> instructions in order to print a <code>H</code> character! There are ways we can optimize the process of printing a string. Since the number 72 is already in the memory, we won't need to put 69 other <code>+</code> signs in another memory location in order to print the next letter <code>E</code>, we'll just need to subtract the old character by 3 (72-3=69), and print it again! This way we can write a Brainfuck program that can print &quot;HELLO WORLD&quot; in around 160 instructions:</p>
 <pre><code>+++++++++++++++++++++++++++++++++++
 +++++++++++++++++++++++++++++++++++
 ++.---.+++++++..+++.                ; Print 'HELLO'
@@ -1296,7 +1301,7 @@ Copying from A to B: <code>A[-B+T+A]T[-A+T]A</code></p>
 <p>Our brainfuck cpu doesn’t really have means for communicating with a 3rd party hardware, so you might still have confusions on how the cpu in a modern computer is connected to other hardware.</p>
 <p>The answer is simple (You might figure it out and design a solution yourself too, by putting a bit of thought)
 You will just need a few more wires coming out of your cpu, making it able to send/receive data with custom hardware. Besides that, you will need to add a few more instructions for writing/reading data to/from those wires (just like how you interact with your RAM)
-As an example, in a x86-64 computer, the instructions x and x are used for communicating with other hardware, we can</p>
+As an example, in a x86-64 computer, the instructions x and x are used for communicating with other hardware, we can </p>
 <p>Having I/O related instructions isnt the only way a CPU can connect to peripherals. There is one other way too, you can give your hardware access to some parts of your RAM, allowing your CPU to communicate with that hardware by putting data on that part of your RAM. This way, you won’t need dedicated wire for communicating data to the device, as your ram itself is being a medium for communication.</p>
 <p>This method has been a popular solution for communicating with a monitor, the monitor could listen to some sections of the RAM (Also known as Video memory) and put the pixel data residing there on your monitor. This way, your cpu could render things on your monitor by simply writing stuff on your RAM. Not a single extra instruction needed!</p>
 <p>Curious how you can manipulate your video memory on a Linux machine? Try this command to put random bytes on your monitor’s pixel buffer and see what happens!</p>
@@ -1337,9 +1342,9 @@ M02*
 GPUs are basically a bulk of processors which have simple instruction sets and they are really good in accelerating algorithms that are known to be <strong>embarrassingly parallel</strong>. An algorithm is embarrassingly parallel if you can divide it into chunks that can be processed by independent processors without any memory-sharing and interactions between the processors. These algorithms are so easily parallelizable, that it would be embarrasing for a programmer to be proud of parallelizing them!</p>
 <p>Now there are times where you need something even simpler that a GPU (Well, GPUs are not that simple to be fair). E.g. imagine you need a device that is only able to perform multiplications, and it needs to do billions of them per second. Any CPU or GPU would be an overkill for such an application.</p>
 <p>Unfortunately, it would be very costly to design and manufacture a completely new electronic board whenever you need specialized hardware. Instead of doing that, let's get smart and thing of an electronic circuit that can transform into arbitrary circuit without physical changes in its circuitry. Well, such infrastructures do exist and they are called Field-Programmable-Gate-Arrays!</p>
-<p>Before getting to the details of the FPGAs, I would like you to think about the way something like a FPGA can work for a bit. The title itself is guiding you to the answer. It has something to do with "gates" that are "programmable", maybe, unlike a regular logic gate such as AND/OR/NOT, a programmable gate is a gate that can be configured to become whatever gate you like. Try to build a programmable gate yourself, which accepts two inputs and gives out one output, and can transform to different gates when we tune it.</p>
+<p>Before getting to the details of the FPGAs, I would like you to think about the way something like a FPGA can work for a bit. The title itself is guiding you to the answer. It has something to do with &quot;gates&quot; that are &quot;programmable&quot;, maybe, unlike a regular logic gate such as AND/OR/NOT, a programmable gate is a gate that can be configured to become whatever gate you like. Try to build a programmable gate yourself, which accepts two inputs and gives out one output, and can transform to different gates when we tune it.</p>
 <p>(Hint: You can use memory-cells for storing the chosen functionality of your programmable gate, and put your configuration in it through some extra input pins)</p>
-<p>This way, "programming" a gate, would mean to put the right values inside the gate's memory-cells.</p>
+<p>This way, &quot;programming&quot; a gate, would mean to put the right values inside the gate's memory-cells.</p>
 <p>Here is a popular design of a programmable gate among FPGAs. They are also known as Configurable Logic Gates (Or CLBs).</p>
 <h2 id="chip-8"><a class="header" href="#chip-8">CHIP-8</a></h2>
 <h2 id="operating-systems"><a class="header" href="#operating-systems">Operating Systems</a></h2>
