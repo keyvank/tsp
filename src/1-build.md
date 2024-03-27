@@ -908,6 +908,20 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
     Not(circuit, inter, out_eq)
 ```
 
+The `Equals` module checks the equality of two input bits (Which is essentially `Not(Xor(a,b))`!). The `MultiEquals` module on the other hand, allows us to check equality of two multi-bit inputs. This comes handy especially when we want to decode the instructions that we fetch from memory.
+
+In order to handle the implementation complexity of our CPU, we'll organize our implementation into 5 different modules:
+
+1. `Decoder` module takes an instruction (A 8-bit number) as its input and gives out 6 different boolean flags as its output, specifying the type of instructions.
+2. `InstructionPointer` module is responsible for choosing the next instruction-pointer.
+2. `InstructionMemory` module is a read-only 256-byte memory, giving out the instruction given its 8-bit address.
+2. `DataPointer` module is responsible for choosing the next data-pointer.
+2. `DataMemory` module is a 256-byte memory, allowing you to read/write its cells given 8-bit addresses.
+
+The `Decoder` is composed of 5 `MultiEquals` and a single `Equals` module, outputing the type of instruction as boolean flags with this rules:
+
+![Decoding rules of instruction](assets/decoder.png)
+
 ```python=
 def Decoder(
     circuit,
