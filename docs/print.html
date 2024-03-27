@@ -244,6 +244,7 @@
 </code></pre>
 <p>The <code>--toc</code> flag generated the Table of Contents section for me automatically (Based on Markdown headers: <code>#</code>, <code>##</code>, ...), and I also had another <code>.pdf</code> file containing the cover of my book, which I concatenated with the pandoc's output. I was tracking my process by word-count.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="build"><a class="header" href="#build">Build!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>Computer Love - By Kraftwerk</em></p>
 <h2 id="which-came-first-the-chicken-or-the-egg"><a class="header" href="#which-came-first-the-chicken-or-the-egg">Which came first? The chicken or the egg?</a></h2>
 <p>Imagine, for a second, that a catastrophic event occurs, causing us to lose all the technology we once had. Nothing but ashes will remain, and our situation will be similar to that of humans millions of years ago, with one difference: We still can read, and fortunately, there are plenty of books available explaining how our modern technology worked. Now here is an interesting question: How much time will it take to reach the point of advancement we are in right now?</p>
 <p>My prediction is that we will get back on track only after a few decades, and the only reason this could take longer than expected is that we will need tools for building other tools. Obviously, we can't start building a modern CPU even though we have the specification and the detailed design of that CPU. We will first need to rebuild tools that we need for building complex electronic circuits. If we are completely out of technology (as we assumed), we will need to learn again how we can find and extract the materials we want from the earth and use them to build the simple tools we'll need, which will then be used for building more complicated tools. Here is a very important fact that makes all the technological progress we have had viable: <em><strong>technology can help accelerate its own creation</strong></em>!</p>
@@ -271,7 +272,7 @@
 <p>There's a crucial pattern here: The long-lasting (i.e., interesting) effects emerge from cause-and-effect chains where <em><strong>the effects have the same type as the causes</strong></em>, which essentially means these chains are interesting when they can form cycles. For instance, when a &quot;mechanical&quot; cause has another &quot;mechanical&quot; effect (like dominos), or when an &quot;electrical&quot; cause leads to another electrical effect (like electronic circuits).</p>
 <p>The most complex thing you can create with components that transform a single cause into a single effect is no different than a chain of falling domino pieces (another example is when rumors circulate in a company). It's still impressive and has its interesting aspects, but we don't want to stop there. We want to build things that can transform multiple causes into a single effect (all with the same types), and that's when Cause &amp; Effect chains truly shine! The simplest example of such a component is a switch. A switch manages the flow of an input to an output through a third controlling input. An example of a non-electrical switch is a faucet. A faucet allows you to control the flow of water in a pipe (considered as a single-cause/single-effect component) through a third input.</p>
 <p>We won't delve deep into the inner workings of transistors just yet, but let's assume that transistors are components capable of converting electrical causes into electrical effects. This ability allows us to connect them together and create interesting things. In essence, transistors can be accurately described as switches, quite similar to push-buttons but with a key difference. A push-button is a component that accepts an electrical and a mechanical input, producing an electrical output.</p>
-<p>[IMG push-button]</p>
+<p><img src="assets/pushbutton.png" alt="A push-button converts an electrical and a mechanical cause, to an electrical effect" /></p>
 <p>However, a push-button is definitely not a transistor because not all of its input causes are electrical. You still need a finger to push the button, and the output of a push button cannot be used as the mechanical input of another button. Therefore, you can't build domino-like structures with push-buttons! The push-button becomes more similar to a transistor when its mechanical input is substituted with an electrical input. In this case, all of its inputs and outputs will have the same types, allowing you to connect them together. Let's fix this!</p>
 <p>Before starting to think of a electrical switch that can be controlled through an electrical cause, be aware that sometimes a cause/effect conversion is actually the result of many other cause/effect conversions chained together, occurring under the hood. For example, consider a light bulb connected to a push-button. In this system, the process begins with a person pushing the switch, initiating a mechanical action. Right after that, the mechanical cause triggers an electrical effect, and the electrical cause produces a visual effect, which eventually results in neural effects in your brain. The entire process converts a mechanical cause into a neural effect that can be sensed by a human brain. (Notice how new converters can be built by connecting/chaining other primitive converters.)</p>
 <p>Now, here is a very stupid example of a push-button that has an electrical controller: Imagine there is a human that has a wire in his hand. This person turns the pushes the push-button when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!</p>
@@ -975,6 +976,17 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
         inter = next_inter
     Not(circuit, inter, out_eq)
 </code></pre>
+<p>The <code>Equals</code> module checks the equality of two input bits (Which is essentially <code>Not(Xor(a,b))</code>!). The <code>MultiEquals</code> module on the other hand, allows us to check equality of two multi-bit inputs. This comes handy especially when we want to decode the instructions that we fetch from memory.</p>
+<p>In order to handle the implementation complexity of our CPU, we'll organize our implementation into 5 different modules:</p>
+<ol>
+<li><code>Decoder</code> module takes an instruction (A 8-bit number) as its input and gives out 6 different boolean flags as its output, specifying the type of instructions.</li>
+<li><code>InstructionPointer</code> module is responsible for choosing the next instruction-pointer.</li>
+<li><code>InstructionMemory</code> module is a read-only 256-byte memory, giving out the instruction given its 8-bit address.</li>
+<li><code>DataPointer</code> module is responsible for choosing the next data-pointer.</li>
+<li><code>DataMemory</code> module is a 256-byte memory, allowing you to read/write its cells given 8-bit addresses.</li>
+</ol>
+<p>The <code>Decoder</code> is composed of 5 <code>MultiEquals</code> and a single <code>Equals</code> module, outputing the type of instruction as boolean flags with this rules:</p>
+<p><img src="assets/decoder.png" alt="Decoding rules of instruction" /></p>
 <pre><code class="language-python=">def Decoder(
     circuit,
     in_inst,
@@ -1417,6 +1429,7 @@ GPUs are basically a bulk of processors which have simple instruction sets and t
 <h2 id="chip-8"><a class="header" href="#chip-8">CHIP-8</a></h2>
 <h2 id="operating-systems"><a class="header" href="#operating-systems">Operating Systems</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hear"><a class="header" href="#hear">Hear!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>Giorgio by Moroder - By Daft Punk</em></p>
 <h2 id="human-senses"><a class="header" href="#human-senses">Human senses</a></h2>
 <p>Before starting this chapter, I'm expecting you to understand that human brains are biologically evolved computers. They are massive networks of interconnected cause/effect gates, which can dynamically change their behavior (Unlike a silicon computer gate, which has a fixed behavior over time) to learn stuff. These interconnected gates excite each other through electrical impulses. Electrical impulses are the language with which our neurons talk with each other. So, in order to sense something from the external world, some kind of translation is needed, and that's why we have <strong>Senses</strong>.</p>
 <p>There are 6 different kinds of ways a human brain can make sense of the external world. Here is the list, we used to call it the 5 main senses, but there are actually 6 (Do not confuse it with the paranormal sixth sense in the fictions!):</p>
@@ -1808,6 +1821,7 @@ plt.show()
 <p>Humans love to store and copy. If you can copy or store something, you can transfer it. You can write your thoughts on a letter and then give it to your lover to read</p>
 <p>Humans dream: being able to share their past experience to the present and future. To the people that are not near them. To people in the future even after they physically die, because life has evolved in a way to keep you alive as long as possible, sometimes the conceptual version of you, and not the physical you. That’s probably why people proudly compromise their lives for something they believe in, because it will make them eternal. Life is strange.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="see"><a class="header" href="#see">See!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>Video Killed The Radio Star - By The Buggles</em></p>
 <p>Vision is my (Or probably all people's) favorite way of sensing the world. Imagine out of 6 humans senses, you only could have one of them, which one would you choose?</p>
 <p>Vision allows you to find stuff around you, even when they are far enough that you can't access them by your hands. It guides you to things in a physical environment. It shows you the wild animal a coming to you before it's too late.</p>
 <h2 id="history-of-colors"><a class="header" href="#history-of-colors">History of colors</a></h2>
@@ -2190,6 +2204,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 <p>In the previous section, we saw how to draw a boring 3D cube with each side filled with a single color. Sometimes you'll want to use an image instead of a plain color on the sides of your object.</p>
 <p>Putting image textures on a triangle is a straightforward process: when drawing the 2D triangle, for each of the pixels you are putting on the screen, you must somehow calculate the respective location on an image that the color should be fetched from.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="think"><a class="header" href="#think">Think!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>One is glad to be of service - By April Rain</em></p>
 <h2 id="yins-and-yangs"><a class="header" href="#yins-and-yangs">Yins and Yangs</a></h2>
 <p>Years ago when I was a high-school student, once our Chemistry teacher wanted take an oral quiz from us. He randomly chose a student, brought him to the blackboard and asked him an unusual question. Why does a proton has positive electrical charge, while an electron has negative electrical charge? Why isn't it the other way round?</p>
 <p>The question has a fairly simple answer, negativity and positivity are merely names assigned to these primitive particles, so that we can analyze their behaviors. The question is like asking why humans with male reproductive systems are called men, while humans with female reproductive systems are called women? The student got confused and couldn't answer the question anyway. I still adore that teacher for asking these kind of meta-questions, because sometimes, learning is not all about memorizing things.</p>
@@ -2553,6 +2568,7 @@ class Operator(ABC):
 <h2 id="language-1"><a class="header" href="#language-1">Language</a></h2>
 <h2 id="vision"><a class="header" href="#vision">Vision</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="trust"><a class="header" href="#trust">Trust!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>Do You Want To Know A Secret? - By The Beatles</em></p>
 <p>I want to tell you a fascination fact about baby humans. Until some age, they can’t distinguish between themselves and others. The concept of “me” is not evolved in their brains, and they might believe in singularity.
 When they think of something, they are not aware that their mind is isolated from other minds. They think other humans know what they are thinking of. Months pass, and they start to see themselves, as a physical self, in the mirror or by looking at their organs. Babies don’t lie, because they are not aware of concept of lying and the fact that their mind is isolated and they can have “secrets”.</p>
 <p>Humans have their own reasons to lie. Evolution has led us to learn lying, and hiding what we know from others. Because perhaps lying is sometimes vital for survival, and those humans who couldn’t lie, couldn’t survive as well. Evolution made us liars, and we should thank nature for that.</p>
@@ -2620,7 +2636,7 @@ Suppose we have two messages \(m_1\) and \(m_2\), and a key \(k\) which we’ll 
 <p>If you take the xor of a number with itself, they will cancel-out each other and you will get zero, so the \(k \oplus k\) part is removed from the equation and what you get is basically the sum of messages, which means: \(M_1 \oplus M_2 = m_1 \oplus m_2\), which is definitely a dangerous leak.</p>
 <p>To show the importance of the leak, let’s say we want to encrypt two images using this method.</p>
 <p>By adding the encrypted images together, you will get a new image which is leaking a lot of information on what the encrypted messages contain.</p>
-<p>[IMG]</p>
+<p><img src="assets/cipheraddition.png" alt="Adding two ciphertexts with same keys reveals the secret!" /></p>
 <p>So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages \(M_1\) and \(M_2\) are only obfuscated when the keys used to encrypt them are different:</p>
 <p>\(M_1 = m_1 \oplus k_1\)</p>
 <p>\(M_2 = m_2 \oplus k_2\)</p>
@@ -3026,6 +3042,7 @@ print(&quot;Bob:&quot;, bob_choice)
 <p>Here is a simple implementation of a Socks5 server in Python:</p>
 <pre><code class="language-python="></code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="fly"><a class="header" href="#fly">Fly!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>Space Oddity - By David Bowie</em></p>
 <h2 id="skip-if-you-are-poor"><a class="header" href="#skip-if-you-are-poor">Skip if you are poor</a></h2>
 <p>Throughout my career in software-engineering, I had always avoided topics which involved any interactions with the Physical world (Except a short period of time when I was working on line-following robots as a high-school student). That's partly because I live in an economically poor country, where there aren't a lot of companies building cyber-physical systems (Systems composed of a software, controlling/sensing a physical thing), except when politics is involved, if you know what I mean.</p>
 <p>Unlike pure software engineering, where you can never run out of characters, building software that interacts with the real-world, involves physical objects, things that you can touch and feel, and the unfortunate truth about non-imaginary objects is that, they cost money, and they can break, which means, you can't experiment as much as a software with them (Unless you are a rich engineer, having a giant laboratory inside your house, with plenty of money)</p>

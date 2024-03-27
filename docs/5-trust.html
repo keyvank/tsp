@@ -176,6 +176,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="trust"><a class="header" href="#trust">Trust!</a></h1>
+<p><strong>Music of the chapter:</strong> <em>Do You Want To Know A Secret? - By The Beatles</em></p>
 <p>I want to tell you a fascination fact about baby humans. Until some age, they can’t distinguish between themselves and others. The concept of “me” is not evolved in their brains, and they might believe in singularity.
 When they think of something, they are not aware that their mind is isolated from other minds. They think other humans know what they are thinking of. Months pass, and they start to see themselves, as a physical self, in the mirror or by looking at their organs. Babies don’t lie, because they are not aware of concept of lying and the fact that their mind is isolated and they can have “secrets”.</p>
 <p>Humans have their own reasons to lie. Evolution has led us to learn lying, and hiding what we know from others. Because perhaps lying is sometimes vital for survival, and those humans who couldn’t lie, couldn’t survive as well. Evolution made us liars, and we should thank nature for that.</p>
@@ -243,7 +244,7 @@ Suppose we have two messages \(m_1\) and \(m_2\), and a key \(k\) which we’ll 
 <p>If you take the xor of a number with itself, they will cancel-out each other and you will get zero, so the \(k \oplus k\) part is removed from the equation and what you get is basically the sum of messages, which means: \(M_1 \oplus M_2 = m_1 \oplus m_2\), which is definitely a dangerous leak.</p>
 <p>To show the importance of the leak, let’s say we want to encrypt two images using this method.</p>
 <p>By adding the encrypted images together, you will get a new image which is leaking a lot of information on what the encrypted messages contain.</p>
-<p>[IMG]</p>
+<p><img src="assets/cipheraddition.png" alt="Adding two ciphertexts with same keys reveals the secret!" /></p>
 <p>So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages \(M_1\) and \(M_2\) are only obfuscated when the keys used to encrypt them are different:</p>
 <p>\(M_1 = m_1 \oplus k_1\)</p>
 <p>\(M_2 = m_2 \oplus k_2\)</p>
