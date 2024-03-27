@@ -1,5 +1,7 @@
 # Build!
 
+**Music of the chapter:** *Computer Love - By Kraftwerk*
+
 ## Which came first? The chicken or the egg?
 
 Imagine, for a second, that a catastrophic event occurs, causing us to lose all the technology we once had. Nothing but ashes will remain, and our situation will be similar to that of humans millions of years ago, with one difference: We still can read, and fortunately, there are plenty of books available explaining how our modern technology worked. Now here is an interesting question: How much time will it take to reach the point of advancement we are in right now?

@@ -1,5 +1,7 @@
 # Think!
 
+**Music of the chapter:** *One is glad to be of service - By April Rain*
+
 ## Yins and Yangs
 
 Years ago when I was a high-school student, once our Chemistry teacher wanted take an oral quiz from us. He randomly chose a student, brought him to the blackboard and asked him an unusual question. Why does a proton has positive electrical charge, while an electron has negative electrical charge? Why isn't it the other way round?

@@ -1,5 +1,7 @@
 # See!
 
+**Music of the chapter:** *Video Killed The Radio Star - By The Buggles*
+
 Vision is my (Or probably all people's) favorite way of sensing the world. Imagine out of 6 humans senses, you only could have one of them, which one would you choose?
 
 Vision allows you to find stuff around you, even when they are far enough that you can't access them by your hands. It guides you to things in a physical environment. It shows you the wild animal a coming to you before it's too late.

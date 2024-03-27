@@ -1,5 +1,7 @@
 # Hear!
 
+**Music of the chapter:** *Giorgio by Moroder - By Daft Punk*
+
 ## Human senses
 
 Before starting this chapter, I'm expecting you to understand that human brains are biologically evolved computers. They are massive networks of interconnected cause/effect gates, which can dynamically change their behavior (Unlike a silicon computer gate, which has a fixed behavior over time) to learn stuff. These interconnected gates excite each other through electrical impulses. Electrical impulses are the language with which our neurons talk with each other. So, in order to sense something from the external world, some kind of translation is needed, and that's why we have **Senses**.
