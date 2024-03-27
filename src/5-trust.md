@@ -116,7 +116,7 @@ To show the importance of the leak, let’s say we want to encrypt two images us
 
 By adding the encrypted images together, you will get a new image which is leaking a lot of information on what the encrypted messages contain.
 
-[IMG]
+![Adding two ciphertexts with same keys reveals the secret!](assets/cipheraddition.png)
 
 So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages \\(M_1\\) and \\(M_2\\) are only obfuscated when the keys used to encrypt them are different:
 

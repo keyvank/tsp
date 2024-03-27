@@ -40,7 +40,7 @@ The most complex thing you can create with components that transform a single ca
 
 We won't delve deep into the inner workings of transistors just yet, but let's assume that transistors are components capable of converting electrical causes into electrical effects. This ability allows us to connect them together and create interesting things. In essence, transistors can be accurately described as switches, quite similar to push-buttons but with a key difference. A push-button is a component that accepts an electrical and a mechanical input, producing an electrical output.
 
-[IMG push-button]
+![A push-button converts an electrical and a mechanical cause, to an electrical effect](assets/pushbutton.png)
 
 However, a push-button is definitely not a transistor because not all of its input causes are electrical. You still need a finger to push the button, and the output of a push button cannot be used as the mechanical input of another button. Therefore, you can't build domino-like structures with push-buttons! The push-button becomes more similar to a transistor when its mechanical input is substituted with an electrical input. In this case, all of its inputs and outputs will have the same types, allowing you to connect them together. Let's fix this!
 
