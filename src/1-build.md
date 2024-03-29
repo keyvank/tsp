@@ -602,6 +602,8 @@ Imagine a piece of paper. It's stable. When you put it on fire, it slowly change
 
 Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Such a circuit is also known as a Latch:
 
+![DLatch made of logic gates](assets/dlatch.png)
+
 ```python=
 def DLatch(circuit, in_clk, in_data, out_data, initial=0):
     not_data = circuit.new_wire()
@@ -627,7 +629,10 @@ Simulating such a circuit in our Python simulator is a bit tricky: take a look a
 
 Since we want to make our simulation as accurate as possible, we'll go with the second route. We'll just describe our memory-cells as a set of transistors, and will try to converge to a correct solution by using the `assume()` function of our circuit.
 
+![DFlipFlop made of two DLatches](assets/dflipflop.png)
+![Alt text](image.png)
 
+When the clock signal rises up, the first DLatch gets activated and it "Flip"s, and when the clock signal goes down, the first DLatch will get inactive, and the one will get active, and "Flop"s, that's probably why it's called a FlipFlop!
 
 ```python=
 def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
