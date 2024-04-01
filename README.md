@@ -1,5 +1,5 @@
 # The Super Programmer
-*A colorful introduction to engineering!*
+*Building software that run our world!*
 
 ## How to read
 
