@@ -1388,7 +1388,9 @@ Copying from A to B: <code>A[-B+T+A]T[-A+T]A</code></p>
 <h2 id="befriending-complexity"><a class="header" href="#befriending-complexity">Befriending complexity</a></h2>
 <p>As you write more complicated programs in Brainfuck, you will soon notice that the immense amount of complexity is going to become unmaintainable over time. and soon you won't be able to add more logic and features to your Brainfuck programs. That is the time when you start missing functions, classes, and all other fancy tools your favorite high-level programming language provided you for free.</p>
 <p>Brainfuck is very similar to the assembly language of a very simple CPU. So it might make sense to start explaining our programs in a higher-level language that can be translated to Brainfuck, making it easier for us to build complicated programs that can run on our CPU without losing our minds. I have decided not to guide you through the process of building a compiler, because it's a world on its own. Compilers are programs that convert strings of one language to strings of another language. It's safe to say that compilers are effectively just string manipulation programs, and even if you don't know the inner workings of a modern compiler, you probably have some clues on how a compiler works. That's why we don't discuss building a compiler in this book, because the core idea behind a compiler is simple, and what we care about in this book is merely the ideas, and not production-level implemention and optimizations.</p>
-<p>So, instead of designing a whole new language that can be translated to Brainfuck, a simpler approach would be to write a Python library for generating Brainfuck codes.</p>
+<p>So, instead of designing a whole new language that can be translated to Brainfuck, a simpler approach would be to write a Python library for generating Brainfuck codes. The Python library will help us to split our Brainfuck applications into modules.</p>
+<p>In this framework, we expect the modules of our Brainfuck application to reside in Python functions. These functions will all accept a <code>BrainfuckGenerator</code> class as their first argument, and all other inputs/outputs of the modules will be memory locations (<code>Pointer</code>s). There will be a <code>append</code> function within the generator class, allowing the modules to spit raw Brainfuck code into the generator. Besides that, it would be good to add some memory-management functionality to the generator class, allowing the user to allocate and free memory-cells on demand, so that the user doesn't have to worry about finding memory cells that are in-use by other modules, and focus on the logic of the application instead.</p>
+<p>Here is an example of how it would look like:</p>
 <pre><code class="language-python=">class Pointer:
     def __init__(self, pos: int):
         self.pos = pos
@@ -1422,6 +1424,7 @@ class BrainfuckGenerator:
 </code></pre>
 <p>Our Brainfuck code generator helps us to keep track of memory locations which are being used by different modules of our Brainfuck programs and to prevent conflicts. The code generator will not let you to move to different memory locations by yourself, and you have to use to <code>move</code> function instead. The <code>move</code> function will also keep track of the current location of the data pointer and generates as many <code>&lt;</code>/<code>&gt;</code> characters as needed, when the pointer needs to be moved.</p>
 <p>The <code>alloc</code> function finds the first unused memory location and flags it as allocated. The <code>free</code> function let's the user to free the memory cell again, by removing the flag from the <code>self.allocated</code> set.</p>
+<p>Great! Now let's implement some modules. We'll start with simple ones, a module that zeroes out a memory-cell by moving into it and decrementing it until in gets 0 (<code>zoroize</code>), and a module for putting a fixed number into a memory-cell (<code>fill</code>). The <code>fill</code> module will use the <code>zeroize</code> module.</p>
 <pre><code class="language-python=">def zeroize(bf: BrainfuckGenerator, target: Pointer):
     bf.move(target)
     bf.append('[-]')
@@ -1432,7 +1435,7 @@ def fill(bf: BrainfuckGenerator, target: Pointer, val: int):
     bf.move(target)
     bf.append('+' * val)
 </code></pre>
-<p>This is how a copy operation can be implemented:</p>
+<p>A more complicated example is the copy operation. As you know, we need a third memory cell in order to copy a value from a source to a destination cell. We'll use the <code>alloc</code> function in order to find an unused cell, and after we are done with it, we'll <code>free</code> it, allowing other modules to use it:</p>
 <pre><code class="language-python=">def copy(bf: BrainfuckGenerator, src: Pointer, dst: Pointer):
     tmp = bf.alloc()
 
