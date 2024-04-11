@@ -1387,6 +1387,109 @@ Copying from A to B: <code>A[-B+T+A]T[-A+T]A</code></p>
 <p>Keep in mind that the program above gets ASCII characters as its input and outputs another ASCII character which its code is the sum of the input codes.</p>
 <h2 id="befriending-complexity"><a class="header" href="#befriending-complexity">Befriending complexity</a></h2>
 <p>As you write more complicated programs in Brainfuck, you will soon notice that the immense amount of complexity is going to become unmaintainable over time. and soon you won't be able to add more logic and features to your Brainfuck programs. That is the time when you start missing functions, classes, and all other fancy tools your favorite high-level programming language provided you for free.</p>
+<p>Brainfuck is very similar to the assembly language of a very simple CPU. So it might make sense to start explaining our programs in a higher-level language that can be translated to Brainfuck, making it easier for us to build complicated programs that can run on our CPU without losing our minds. I have decided not to guide you through the process of building a compiler, because it's a world on its own. Compilers are programs that convert strings of one language to strings of another language. It's safe to say that compilers are effectively just string manipulation programs, and even if you don't know the inner workings of a modern compiler, you probably have some clues on how a compiler works. That's why we don't discuss building a compiler in this book, because the core idea behind a compiler is simple, and what we care about in this book is merely the ideas, and not production-level implemention and optimizations.</p>
+<p>So, instead of designing a whole new language that can be translated to Brainfuck, a simpler approach would be to write a Python library for generating Brainfuck codes.</p>
+<pre><code class="language-python=">class Pointer:
+    def __init__(self, pos: int):
+        self.pos = pos
+
+
+class BrainfuckGenerator:
+    def __init__(self):
+        self.code = &quot;&quot;
+        self.pos = 0
+        self.allocated = set()
+
+    def append(self, code):
+        self.code += code
+
+    def alloc(self) -&gt; Pointer:
+        pos = self.pos + 1
+        while pos in self.allocated:
+            pos += 1
+        self.allocated.add(pos)
+        return Pointer(pos)
+
+    def free(self, ptr: Pointer):
+        self.allocated.remove(ptr.pos)
+
+    def move(self, target: Pointer):
+        if target.pos &gt; self.pos:
+            self.code += &quot;&gt;&quot; * (target.pos - self.pos)
+        else:
+            self.code += &quot;&lt;&quot; * (self.pos - target.pos)
+        self.pos = target.pos
+</code></pre>
+<p>Our Brainfuck code generator helps us to keep track of memory locations which are being used by different modules of our Brainfuck programs and to prevent conflicts. The code generator will not let you to move to different memory locations by yourself, and you have to use to <code>move</code> function instead. The <code>move</code> function will also keep track of the current location of the data pointer and generates as many <code>&lt;</code>/<code>&gt;</code> characters as needed, when the pointer needs to be moved.</p>
+<p>The <code>alloc</code> function finds the first unused memory location and flags it as allocated. The <code>free</code> function let's the user to free the memory cell again, by removing the flag from the <code>self.allocated</code> set.</p>
+<pre><code class="language-python=">def zeroize(bf: BrainfuckGenerator, target: Pointer):
+    bf.move(target)
+    bf.append('[-]')
+
+
+def fill(bf: BrainfuckGenerator, target: Pointer, val: int):
+    zeroize(bf, target)
+    bf.move(target)
+    bf.append('+' * val)
+</code></pre>
+<p>This is how a copy operation can be implemented:</p>
+<pre><code class="language-python=">def copy(bf: BrainfuckGenerator, src: Pointer, dst: Pointer):
+    tmp = bf.alloc()
+
+    # Move src to tmp and dst
+    bf.move(src)
+    bf.append(&quot;[-&quot;)
+    bf.move(tmp)
+    bf.append(&quot;+&quot;)
+    bf.move(dst)
+    bf.append(&quot;+&quot;)
+    bf.move(src)
+    bf.append(&quot;]&quot;)
+
+    # Move tmp to src
+    bf.move(tmp)
+    bf.append(&quot;[-&quot;)
+    bf.move(src)
+    bf.append(&quot;+&quot;)
+    bf.move(tmp)
+    bf.append(&quot;]&quot;)
+
+    bf.free(tmp)
+
+
+bf = BrainfuckGenerator()
+copy(bf, Pointer(5), Pointer(8))
+print(bf.code)
+</code></pre>
+<p>We can even exploit the Python <code>with</code> expressions in order to implement for loops:</p>
+<pre><code class="language-python=">class For:
+    def __init__(self, bf: BrainfuckGenerator, i: Pointer, count: Pointer):
+        self.bf = bf
+        self.i = i
+        self.count = count
+    
+    def __enter__(self):
+        copy(self.bf, self.count, self.i)
+        self.bf.move(self.i)
+        self.bf.append('[')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.bf.move(self.i)
+        self.bf.append('-]')
+</code></pre>
+<p>Here is a program that prints out the letter <code>A</code> for 5 times:</p>
+<pre><code class="language-python=">bf = BrainfuckGenerator()
+
+i = bf.alloc()
+cnt = bf.alloc()
+ascii_a = bf.alloc()
+
+fill(bf, ascii_a, 65)
+fill(bf, cnt, 5)
+with For(bf, i, cnt):
+    bf.move(ascii_a)
+    bf.append('.')
+</code></pre>
 <h2 id="what-really-happens"><a class="header" href="#what-really-happens">What really happens</a></h2>
 <p>The Brainfuck CPU we created is similar to real CPUs in many ways, but it lacks many features making it impractical for any serious application. As an example, we didn’t cover how a cpu is able to interact with different hardware (our brainfuck cpu can’t), or how an operating system written for such a simple cpu would look like, or questions like that. In this section, we are going to explore some of those unclear questions you might have about your computer.</p>
 <h2 id="how-can-your-computer-interact-with-other-hardware"><a class="header" href="#how-can-your-computer-interact-with-other-hardware">How can your computer interact with other hardware?</a></h2>
