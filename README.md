@@ -1,5 +1,5 @@
 # The Super Programmer
-*Building software that runs our world!*
+*Building software that run our world!*
 
 ## How to read
 
