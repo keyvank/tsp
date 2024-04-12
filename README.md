@@ -1,11 +1,11 @@
 # The Super Programmer
-*Building software that run our world!*
+*Building software that runs our world!*
 
 ## How to read
 
 There is an online version here: [https://keyvan.me/tsp](https://keyvan.me/tsp)
 
-If you prefer a PDF version, consider supporting me by buying it from [LeanPub](https://leanpub.com/tsp)! (WARN: The book is incomplete!)
+If you prefer the PDF version, consider supporting me by buying it from [LeanPub](https://leanpub.com/tsp)! (WARN: The book is incomplete!)
 
 Otherwise, you can compile it yourself (Make sure you have the `pandoc` package installed on your system):
 
@@ -37,4 +37,4 @@ If you enjoy what I'm writing and would like to support my work, I would appreci
 - Bitcoin: `bc1qjvcsjt57des7j4runchxalksueqlxgadx7fwll`
 - Ethereum: `0x1a34a6763f55887444ffbd8f8d4fae8197478675`
 
-Also, I'm thinking of allowing anyone to contribute in writing and editing of this book, so feel free to submit your shiny PRs!
+Feel free to submit your shiny PRs bacause I think I will allow anyone to contribute!
