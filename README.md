@@ -1,7 +1,7 @@
 # The Super Programmer
 *Building software that run our world!*
 
-(For discussions around the book, join the book's Discord server: [https://discord.gg/a3WExz7Uhc](https://discord.gg/a3WExz7Uhc)
+(For discussions around the book, join the book's Discord server: [https://discord.gg/a3WExz7Uhc](https://discord.gg/a3WExz7Uhc))
 
 ## How to read
 
