@@ -529,6 +529,37 @@ Now imagine we use substitute Apples, Oranges and Bananas with numbers under 3 (
 
 Strangely, we can see that the addition/multiplication tables are basically just modular addition/multiplication! (I.e addition and multiplication modulo 3).
 
+## Making things hard
+
+Now, let's discuss one of the most fundamental assumptions that made modern cryptography possible. I would like to start with a simple equation. Find \\(x\\) such that:
+
+\\(3^x = 243\\)
+
+Finding the correct value of \\(x\\) in such an equation is not going to be difficult. You'll just need to take the logarithm of the right hand side of the equation, and you'll have the correct \\(x\\). You'll basically divide the right hand side by \\(3\\), until it gets \\(1\\). \\(x\\) is the number of times you have done the division.
+
+Let's change the equation a little bit, by switching to a made-up mathematics (E.g mathematics defined on numbers modulo 19) that we discussed earlier! Here is the new equation, try to solve it:
+
+\\(3^x \mod 19 = 4\\)
+
+Unfortunately, this equation is not as simple to solve as the previous one. We discussed how addition and multiplication can be done on our made-up math, but we didn't discuss how we can divide two numbers! So, our best bet is to try to brute-force the problem, by trying all different \\(x\\)s:
+
+ - \\(3^0 \mod 19 = 1\\)
+ - \\(3^1 \mod 19 = 3\\)
+ - \\(3^2 \mod 19 = 9\\)
+ - \\(3^3 \mod 19 = 8\\)
+ - \\(3^4 \mod 19 = 5\\)
+ - \\(3^5 \mod 19 = 15\\)
+ - \\(3^6 \mod 19 = 7\\)
+ - \\(3^7 \mod 19 = 2\\)
+ - \\(3^8 \mod 19 = 6\\)
+ - \\(3^9 \mod 19 = 18\\)
+ - \\(3^{10} \mod 19 = 16\\)
+ - \\(3^{11} \mod 19 = 10\\)
+ - \\(3^{12} \mod 19 = 11\\)
+ - \\(3^{13} \mod 19 = 14\\)
+ - \\(3^{14} \mod 19 = 4\\)
+
+ Voila! The solution is \\(x=14\\)! But, is there a smarter solution?
 
 ## Diffie-Hellman
 
