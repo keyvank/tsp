@@ -570,6 +570,31 @@ print(&quot;Bob:&quot;, bob_choice)
 </tbody></table>
 </div>
 <p>Strangely, we can see that the addition/multiplication tables are basically just modular addition/multiplication! (I.e addition and multiplication modulo 3).</p>
+<h2 id="making-things-hard"><a class="header" href="#making-things-hard">Making things hard</a></h2>
+<p>Now, let's discuss one of the most fundamental assumptions that made modern cryptography possible. I would like to start with a simple equation. Find \(x\) such that:</p>
+<p>\(3^x = 243\)</p>
+<p>Finding the correct value of \(x\) in such an equation is not going to be difficult. You'll just need to take the logarithm of the right hand side of the equation, and you'll have the correct \(x\). You'll basically divide the right hand side by \(3\), until it gets \(1\). \(x\) is the number of times you have done the division.</p>
+<p>Let's change the equation a little bit, by switching to a made-up mathematics (E.g mathematics defined on numbers modulo 19) that we discussed earlier! Here is the new equation, try to solve it:</p>
+<p>\(3^x \mod 19 = 4\)</p>
+<p>Unfortunately, this equation is not as simple to solve as the previous one. We discussed how addition and multiplication can be done on our made-up math, but we didn't discuss how we can divide two numbers! So, our best bet is to try to brute-force the problem, by trying all different \(x\)s:</p>
+<ul>
+<li>\(3^0 \mod 19 = 1\)</li>
+<li>\(3^1 \mod 19 = 3\)</li>
+<li>\(3^2 \mod 19 = 9\)</li>
+<li>\(3^3 \mod 19 = 8\)</li>
+<li>\(3^4 \mod 19 = 5\)</li>
+<li>\(3^5 \mod 19 = 15\)</li>
+<li>\(3^6 \mod 19 = 7\)</li>
+<li>\(3^7 \mod 19 = 2\)</li>
+<li>\(3^8 \mod 19 = 6\)</li>
+<li>\(3^9 \mod 19 = 18\)</li>
+<li>\(3^{10} \mod 19 = 16\)</li>
+<li>\(3^{11} \mod 19 = 10\)</li>
+<li>\(3^{12} \mod 19 = 11\)</li>
+<li>\(3^{13} \mod 19 = 14\)</li>
+<li>\(3^{14} \mod 19 = 4\)</li>
+</ul>
+<p>Voila! The solution is \(x=14\)! But, is there a smarter solution?</p>
 <h2 id="diffie-hellman"><a class="header" href="#diffie-hellman">Diffie-Hellman</a></h2>
 <p>We have two people who want to send a physical letter to each other. They can send their letters through a postman (Who unfortunately is very nosy!). They don't want the postman to read the letter. Sender and receiver both have a lock and its key that can put on the box. They can't send their keys to each other! How can the sender send privately send the letter?</p>
 <ol>
