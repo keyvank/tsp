@@ -559,7 +559,66 @@ Unfortunately, this equation is not as simple to solve as the previous one. We d
  - \\(3^{13} \mod 19 = 14\\)
  - \\(3^{14} \mod 19 = 4\\)
 
- Voila! The solution is \\(x=14\\)! But, is there a smarter solution?
+ Voila! The solution is \\(x=14\\)! Let's not stop here and keep trying higher \\(x\\)s:
+
+ - \\(3^{15} \mod 19 = 12\\)
+ - \\(3^{16} \mod 19 = 17\\)
+ - \\(3^{17} \mod 19 = 13\\)
+ - \\(3^{18} \mod 19 = 1\\)
+ - \\(3^{19} \mod 19 = 3\\)
+ - \\(3^{20} \mod 19 = 9\\)
+ - \\(3^{21} \mod 19 = 8\\)
+ - \\(\dots\\)
+
+After \\(3^{18}\\), we'll see that the results are repeating again. It looks like a cycle! In fact, you can start with any number under 19, after multiplying it by 3 for 18 times, you'll get back to that number again!
+
+\\(a \times 3^{18} \mod 19 = a\\)
+
+Let's try a different modulus this time. For example, let's try 23. This time, you'll see that the cycle happens after 22 iterations. It seems like that:
+
+\\(3^{m-1} \mod m = 1\\)
+
+But that is not the case! Try 25:
+
+ - \\(3^{0} \mod 25 = 1\\)
+ - \\(3^{1} \mod 25 = 3\\)
+ - \\(3^{2} \mod 25 = 9\\)
+ - \\(3^{3} \mod 25 = 2\\)
+ - \\(3^{4} \mod 25 = 6\\)
+ - \\(3^{5} \mod 25 = 18\\)
+ - \\(3^{6} \mod 25 = 4\\)
+ - \\(3^{7} \mod 25 = 12\\)
+ - \\(3^{8} \mod 25 = 11\\)
+ - \\(3^{9} \mod 25 = 8\\)
+ - \\(3^{10} \mod 25 = 24\\)
+ - \\(3^{11} \mod 25 = 22\\)
+ - \\(3^{12} \mod 25 = 16\\)
+ - \\(3^{13} \mod 25 = 23\\)
+ - \\(3^{14} \mod 25 = 19\\)
+ - \\(3^{15} \mod 25 = 7\\)
+ - \\(3^{16} \mod 25 = 21\\)
+ - \\(3^{17} \mod 25 = 13\\)
+ - \\(3^{18} \mod 25 = 14\\)
+ - \\(3^{19} \mod 25 = 17\\)
+ - \\(3^{20} \mod 25 = 1\\)
+
+Our prediction didn't work out, the cycle happened after 20 iterations! In fact, after trying different examples, we'll soon figure that our prediction is true only when the modulus is a prime number! So, how can we predict the cycle length in case of a non-prime modulus?
+
+Swiss mathematician, Leonhard Euler, designed a formula for that purpose in 1763. It's also known as Euler's totient function, and is defined as below: 
+
+\\(\varphi (m)=p_{1}^{k_{1}-1}(p_{1}{-}1)\,p_{2}^{k_{2}-1}(p_{2}{-}1)\cdots p_{r}^{k_{r}-1}(p_{r}{-}1)\\)
+
+(Assuming \\(m=p_1^{k_1}p_2^{k_2}p_3^{k_3} \cdots p_r^{k_r}\\))
+
+He also stated, in the Euler's theorem, that:
+
+\\(a^{\varphi(m)} \equiv 1 {\pmod {m}}\\)
+
+So, in the previous example, we know that \\(25=5^2\\), therefore, \\(\varphi(25)=5^{2-1}(5-1)=20\\), so if we start with some random number \\(a\\) and multiply by itself for 20 times, we'll get back to the original number!
+
+Let's forget about the generalized form of totient function and only focus on composite numbers of form \\(m=pq\\). In this case, the output of the totient function is: \\(\varphi(m)=(p-1)(q-1)\\). This has a nice implication!
+
+\\((a^{p-1})^{q-1} = (a^{q-1})^{p-1}\\)
 
 ## Diffie-Hellman
 
