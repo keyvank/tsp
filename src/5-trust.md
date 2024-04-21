@@ -616,13 +616,23 @@ He also stated, in the Euler's theorem, that:
 
 So, in the previous example, we know that \\(25=5^2\\), therefore, \\(\varphi(25)=5^{2-1}(5-1)=20\\), so if we start with some random number \\(a\\) and multiply by itself for 20 times, we'll get back to the original number!
 
-Let's forget about the generalized form of totient function and only focus on composite numbers of form \\(m=pq\\). In this case, the output of the totient function is: \\(\varphi(m)=(p-1)(q-1)\\). This has a nice implication!
+## A mathematical private mailbox
 
-\\((a^{p-1})^{q-1} = (a^{q-1})^{p-1}\\)
+Now, using the facts mentioned above, we would like to design a public-key cryptography system. In such cryptographic protocol, one can encrypt a message \\(a\\) by calculating \\(A=a^e\\) (Where \\(e\\) is an encryption key, which is public for everyone), and the receiver can decrypt it by calculating \\(a=A^d\\).
 
-Now let's say Bob chooses both \\(p\\) and \\(q\\) and gives the number \\(p-1\\) to Alice and keeps \\(q-1\\) for himself. Let's say Alice has a message \\(m\\) which wants to send to Bob, but doesn't want anyone but Bob to read it. Instead of \\(m\\), she can send \\(M=m^{p-1}\\) to Bob. Upon receiving, Bob can calculate \\(m=M^{q-1}\\), and get the original message back.
+Let's forget about the generalized form of totient function and only focus on composite numbers of form \\(m=pq\\). In this case, the output of the totient function is \\(\varphi(m)=(p-1)(q-1)\\) which means:
 
-So far everything seems good, but we missed an important point here. Bob needs to give Alice the modulus \\(m=pq\\) too, otherwise, how can Alice calculate \\(a^{p-1} \mod m\\)? Unfortunately, making both \\(p-1\\) and \\(m\\) public makes it possible for anyone to calculate \\(q-1\\), and make the algorithm pointless.
+\\(a^{(p-1)(q-1)} = 1\\)
+
+(You might first think that \\(e=p-1\\) and \\(d=q-1\\) are practical candidates for \\(e\\) and \\(d\\), but they are not, since the right hand side of the equation above is \\(1\\) instead of \\(a\\))
+
+Therefore:
+
+\\(a^{(p-1)(q-1) + 1} = a\\)
+
+We need to find \\(e\\) \\(d\\) such that for every \\(a\\): \\((a^e)^d=a\\). In fact, \\(ed\\) should be equal with \\((p-1)(q-1)+1\\). Finding such numbers isn't too difficult, but we are not going to discuss that.
+
+Now let's say Bob calculate \\(e\\) and \\(d\\) gives the number \\(e\\) to Alice and keeps \\(d\\) for himself. Let's say Alice has a message \\(a\\) which wants to send to Bob, but doesn't want anyone but Bob to read it. Instead of \\(a\\), she can send \\(A=a^e\\) to Bob. Upon receiving, Bob can calculate \\(a=A^d\\), and get the original message back.
 
 ## Diffie-Hellman
 
