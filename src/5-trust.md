@@ -620,6 +620,10 @@ Let's forget about the generalized form of totient function and only focus on co
 
 \\((a^{p-1})^{q-1} = (a^{q-1})^{p-1}\\)
 
+Now let's say Bob chooses both \\(p\\) and \\(q\\) and gives the number \\(p-1\\) to Alice and keeps \\(q-1\\) for himself. Let's say Alice has a message \\(m\\) which wants to send to Bob, but doesn't want anyone but Bob to read it. Instead of \\(m\\), she can send \\(M=m^{p-1}\\) to Bob. Upon receiving, Bob can calculate \\(m=M^{q-1}\\), and get the original message back.
+
+So far everything seems good, but we missed an important point here. Bob needs to give Alice the modulus \\(m=pq\\) too, otherwise, how can Alice calculate \\(a^{p-1} \mod m\\)? Unfortunately, making both \\(p-1\\) and \\(m\\) public makes it possible for anyone to calculate \\(q-1\\), and make the algorithm pointless.
+
 ## Diffie-Hellman
 
 We have two people who want to send a physical letter to each other. They can send their letters through a postman (Who unfortunately is very nosy!). They don't want the postman to read the letter. Sender and receiver both have a lock and its key that can put on the box. They can't send their keys to each other! How can the sender send privately send the letter?
