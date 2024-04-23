@@ -79,6 +79,25 @@ So why are we doing this? There are several reasons:
 - The book allows you walk through the entire world-map of technology, and when you do this, nothing will be able scare you. 
 - It's fun!
 
+## First Principle Thinking
+
+The Super Programmer is all about reinventing the wheel. Reinventing the wheel is considered a bad practice by many professionals, and they are somehow right. Reinventing the wheel not only steals your focus from the actual problem you are going to solve, but also there is a very high chance you will end up with a wheel that is much worse than wheels already made by other people. There have been people working on wheels for a very long time, and you just can't beat them with their pile of experience.
+Reinventing the wheel can be beneficial in two scenarios:
+
+1. Learning: If you want to learn how a wheel works, build it yourself, there isn't a shortcut.
+
+2. Full control: If wheels are crucial part of the solution you are proposing for a problem, you may want to build the wheels yourself. Customizing your own design is much easier than customizing someone else’s work.
+
+If you want build a car that is faster than all other cars in the world, don’t try different engines. Build one, otherwise you will at most get something that is only slightly better, and “slightly better” never convinces anyone to buy your car, instead of a well known brand.
+
+Reinventing the wheel is some kind of “First Principle Thinking”. First principle thinking is the practice of questioning all your assumptions and creating solutions from scratch, by putting the most obvious facts (The first principles!) together.
+
+First principle thinking is an important trait that distinguishes successful people from others, because first principle thinking gives you a lot of power over the problem you are going to solve.
+
+An extraordinary chef, doesn’t only know how to make different food. But he knows all the raw ingredients, their taste and how they will match with each other. Again, he knows all the “First principles”. This what allows him to create completely new dishes, something a simple cook can’t do.
+
+I hope I have made my point, and I hope that The Super Programmer will give you all the ingredients you’ll need for making the next brilliant software recipe!
+
 ## How to make the most of this book?
 
 The book is divided into 5 chapters. We will start by explaining the beauty of cause-and-effect chains, and how we can build useful and interesting structures by connecting simple lego pieces together. We will go through the history of transistors, how they work, and how we can simulate them using plain Python code. We will implement different logic gates by connecting transistors together, and will proceed to building more complicated circuits like adders, counters and finally, programmable computers. After building our super simple computer, we'll try to put a soul in it. We will introduce the Brainfuck programming language and how it can be compiled for our computer, and will try to design and implement impressively complicated programs using this simple language.
