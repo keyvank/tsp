@@ -594,7 +594,61 @@ print(&quot;Bob:&quot;, bob_choice)
 <li>\(3^{13} \mod 19 = 14\)</li>
 <li>\(3^{14} \mod 19 = 4\)</li>
 </ul>
-<p>Voila! The solution is \(x=14\)! But, is there a smarter solution?</p>
+<p>Voila! The solution is \(x=14\)! Let's not stop here and keep trying higher \(x\)s:</p>
+<ul>
+<li>\(3^{15} \mod 19 = 12\)</li>
+<li>\(3^{16} \mod 19 = 17\)</li>
+<li>\(3^{17} \mod 19 = 13\)</li>
+<li>\(3^{18} \mod 19 = 1\)</li>
+<li>\(3^{19} \mod 19 = 3\)</li>
+<li>\(3^{20} \mod 19 = 9\)</li>
+<li>\(3^{21} \mod 19 = 8\)</li>
+<li>\(\dots\)</li>
+</ul>
+<p>After \(3^{18}\), we'll see that the results are repeating again. It looks like a cycle! In fact, you can start with any number under 19, after multiplying it by 3 for 18 times, you'll get back to that number again!</p>
+<p>\(a \times 3^{18} \mod 19 = a\)</p>
+<p>Let's try a different modulus this time. For example, let's try 23. This time, you'll see that the cycle happens after 22 iterations. It seems like that:</p>
+<p>\(3^{m-1} \mod m = 1\)</p>
+<p>But that is not the case! Try 25:</p>
+<ul>
+<li>\(3^{0} \mod 25 = 1\)</li>
+<li>\(3^{1} \mod 25 = 3\)</li>
+<li>\(3^{2} \mod 25 = 9\)</li>
+<li>\(3^{3} \mod 25 = 2\)</li>
+<li>\(3^{4} \mod 25 = 6\)</li>
+<li>\(3^{5} \mod 25 = 18\)</li>
+<li>\(3^{6} \mod 25 = 4\)</li>
+<li>\(3^{7} \mod 25 = 12\)</li>
+<li>\(3^{8} \mod 25 = 11\)</li>
+<li>\(3^{9} \mod 25 = 8\)</li>
+<li>\(3^{10} \mod 25 = 24\)</li>
+<li>\(3^{11} \mod 25 = 22\)</li>
+<li>\(3^{12} \mod 25 = 16\)</li>
+<li>\(3^{13} \mod 25 = 23\)</li>
+<li>\(3^{14} \mod 25 = 19\)</li>
+<li>\(3^{15} \mod 25 = 7\)</li>
+<li>\(3^{16} \mod 25 = 21\)</li>
+<li>\(3^{17} \mod 25 = 13\)</li>
+<li>\(3^{18} \mod 25 = 14\)</li>
+<li>\(3^{19} \mod 25 = 17\)</li>
+<li>\(3^{20} \mod 25 = 1\)</li>
+</ul>
+<p>Our prediction didn't work out, the cycle happened after 20 iterations! In fact, after trying different examples, we'll soon figure that our prediction is true only when the modulus is a prime number! So, how can we predict the cycle length in case of a non-prime modulus?</p>
+<p>Swiss mathematician, Leonhard Euler, designed a formula for that purpose in 1763. It's also known as Euler's totient function, and is defined as below: </p>
+<p>\(\varphi (m)=p_{1}^{k_{1}-1}(p_{1}{-}1),p_{2}^{k_{2}-1}(p_{2}{-}1)\cdots p_{r}^{k_{r}-1}(p_{r}{-}1)\)</p>
+<p>(Assuming \(m=p_1^{k_1}p_2^{k_2}p_3^{k_3} \cdots p_r^{k_r}\))</p>
+<p>He also stated, in the Euler's theorem, that:</p>
+<p>\(a^{\varphi(m)} \equiv 1 {\pmod {m}}\)</p>
+<p>So, in the previous example, we know that \(25=5^2\), therefore, \(\varphi(25)=5^{2-1}(5-1)=20\), so if we start with some random number \(a\) and multiply by itself for 20 times, we'll get back to the original number!</p>
+<h2 id="a-mathematical-private-mailbox"><a class="header" href="#a-mathematical-private-mailbox">A mathematical private mailbox</a></h2>
+<p>Now, using the facts mentioned above, we would like to design a public-key cryptography system. In such cryptographic protocol, one can encrypt a message \(a\) by calculating \(A=a^e\) (Where \(e\) is an encryption key, which is public for everyone), and the receiver can decrypt it by calculating \(a=A^d\).</p>
+<p>Let's forget about the generalized form of totient function and only focus on composite numbers of form \(m=pq\). In this case, the output of the totient function is \(\varphi(m)=(p-1)(q-1)\) which means:</p>
+<p>\(a^{(p-1)(q-1)} = 1\)</p>
+<p>(You might first think that \(e=p-1\) and \(d=q-1\) are practical candidates for \(e\) and \(d\), but they are not, since the right hand side of the equation above is \(1\) instead of \(a\))</p>
+<p>Therefore:</p>
+<p>\(a^{(p-1)(q-1) + 1} = a\)</p>
+<p>We need to find \(e\) \(d\) such that for every \(a\): \((a^e)^d=a\). In fact, \(ed\) should be equal with \((p-1)(q-1)+1\). Finding such numbers isn't too difficult, but we are not going to discuss that.</p>
+<p>Now let's say Bob calculate \(e\) and \(d\) gives the number \(e\) to Alice and keeps \(d\) for himself. Let's say Alice has a message \(a\) which wants to send to Bob, but doesn't want anyone but Bob to read it. Instead of \(a\), she can send \(A=a^e\) to Bob. Upon receiving, Bob can calculate \(a=A^d\), and get the original message back.</p>
 <h2 id="diffie-hellman"><a class="header" href="#diffie-hellman">Diffie-Hellman</a></h2>
 <p>We have two people who want to send a physical letter to each other. They can send their letters through a postman (Who unfortunately is very nosy!). They don't want the postman to read the letter. Sender and receiver both have a lock and its key that can put on the box. They can't send their keys to each other! How can the sender send privately send the letter?</p>
 <ol>

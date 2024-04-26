@@ -98,6 +98,28 @@ An extraordinary chef, doesn’t only know how to make different food. But he kn
 
 I hope I have made my point, and I hope that The Super Programmer will give you all the ingredients you’ll need for making the next brilliant software recipe!
 
+## Computer Revolution
+
+Believe it or not, the world has got severely more complicated than how it was 500 years ago. We are living in an era where specializing in really specific and narrow field of science may take a life time. There are 1000x more people in the world and it is almost impossible to think of smth that nobody has ever thought about it before. "Innovation" has become unaccessible to the people in some ways. There are several reasons:
+
+1. We are scared to innovate. People living 500 years ago were not hearing about technology celebrities everyday. They weren't comparing themselves, or their creations, with anyone. So they weren't afraid of building, embracing the most prestigious consequence of being a human. They would just keep the creativity channel of their soul open, and make/write/paint, no matter if someone else is doing a much better jo than them. They didn't try to "mimick", they couldn't. This is why what they made were unique, original and special.
+
+2. We don't know where to start. Back then it was possible for someone to learn almost everything. There were people who could paint, write poems, design calendars, expand the border of mathematics, philosopize, cure people and all that at the same time. These people were known as polymaths. Examples of them are the Iranian poet/philosopher/mathematician Omar Khayyam, and the Italian polymath Leonardo DaVinci. We don't and can't have these people nowadays, and that doesn't mean that the human being has declined in anyway. The amount of knowledge produced by people has got too big that no one can ever become a polymath.
+
+This makes us confused. Contradictory to what you think, if you ask someone living 100 years ago to design a build a car gor you, there is a higher chance he will not give up and succees, because cars made 100 years ago were much simple, this gave people the condfidence to ***guess*** how a car works and go for it. For people in our century, ***guessing*** how something works seems a wrong approach to building that thing.
+
+Computer software revolutionized the "creativity industry". Computer programming was the first type of engineering requiring the least minimum to delve in. You don't need a big luxorious workshop to build a great software. You don't need extensive understanding of math and physics to amaze people with your software. You will never run out of materials, because you just don't need it. In fact the uilding blocks of a software are characters, imaginary bricks that you will never run out of them. All you need is a computer and a text-editor to pour your idea in, and unlike building a physical thing, you exactly know what is the first thing one should build in the world of programming:
+
+```
+> Hello World!
+```
+
+## The Cult of Done
+
+I wasn't quite sure if I have to publish the draft version of the book on the internet or not. Writing a book is hard. It's probably one of the most difficult things one can do in his life, and it needs passion and persistence. I got discouraged multiple times, I wasn't sure if people are going to like my content at all. So I decided to publish the very incomplete draft of the book anyway. Fortunately, there were a few people who skimmed through the draft and liked it.
+
+These little feedback were great source of encouragement for me, convincing me to keep writing.
+
 ## How to make the most of this book?
 
 The book is divided into 5 chapters. We will start by explaining the beauty of cause-and-effect chains, and how we can build useful and interesting structures by connecting simple lego pieces together. We will go through the history of transistors, how they work, and how we can simulate them using plain Python code. We will implement different logic gates by connecting transistors together, and will proceed to building more complicated circuits like adders, counters and finally, programmable computers. After building our super simple computer, we'll try to put a soul in it. We will introduce the Brainfuck programming language and how it can be compiled for our computer, and will try to design and implement impressively complicated programs using this simple language.

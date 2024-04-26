@@ -235,10 +235,78 @@ G = 440 * 1.05946^10 = 783.99
 G# = 440 * 1.05946^11 = 830.61
 ```
 
-Let's get our hands dirty and play some melodies with these sounds!
+-----
 
-`E E E _ E E E _ E`
+Now that we have our pallete of sounds, we may start creating art! A simple melody consists of musical notes that come, stay for some time and then fade away. They won't last forever, and there will be times when no musical not is being played, silence itself is an ingredient of music.
 
+Before generating the music itself, let's define the list of constants the will represent the frequencies of different musical notes:
+
+```python=
+A = 440           # La
+A_SHARP = 466.16
+B = 493.88        # Si
+C = 523.25        # Do
+C_SHARP = 554.37
+D = 587.33        # Re
+D_SHARP = 622.25
+E = 659.25        # Mi
+F = 698.46        # Fa
+F_SHARP = 739.99
+G = 783.99        # Sol
+G_SHARP = 830.61
+```
+
+We can have a chain of `if`s in order to play different notes at different times. Here is an example that goes through the musical notes in a C major scale (We'll have a quick look into the theory of music and scales soon):
+
+```python=
+# Play Do, Re, Mi, Fa, Sol, La, Si!
+def f(t):
+    if t < 200:
+        f = C
+    elif t < 400:
+        f = D
+    elif t < 600:
+        f = E
+    elif t < 800:
+        f = F
+    elif t < 1000:
+        f = G
+    elif t < 1200:
+        f = A
+    elif t < 1400:
+        f = B
+    else:
+        f = None
+    return math.sin(t * 2 * math.pi * f) if f else 0
+```
+
+Notice that we allow putting silence in our sounds by setting `f` to `None`.
+
+A cleaner approach would be something like this:
+
+```python=
+SONG = [C, D, E, F, G, A, B]
+
+def f(t):
+    note_index = int(t / 200) % len(SONG)
+    f = SONG[note_index]
+    return math.sin(t * 2 * math.pi * f) if f else 0
+```
+
+Now that we know how to orderly play musical notes, let's go ahead and play Twinkle Twinkle Little Star:
+
+```python=
+SONG = [C, C, G, G, A, A, G, None, F, F, E, E, D, D, C]
+```
+
+## Storing melodies
+
+There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. Here is a function that accepts a RTTTL script and returns a list of notes:
+
+```python=
+def parse_rtttl():
+    pass
+```
 
 -----
 

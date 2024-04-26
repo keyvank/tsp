@@ -332,8 +332,60 @@ F# = 440 * 1.05946^9 = 739.99
 G = 440 * 1.05946^10 = 783.99
 G# = 440 * 1.05946^11 = 830.61
 </code></pre>
-<p>Let's get our hands dirty and play some melodies with these sounds!</p>
-<p><code>E E E _ E E E _ E</code></p>
+<hr />
+<p>Now that we have our pallete of sounds, we may start creating art! A simple melody consists of musical notes that come, stay for some time and then fade away. They won't last forever, and there will be times when no musical not is being played, silence itself is an ingredient of music.</p>
+<p>Before generating the music itself, let's define the list of constants the will represent the frequencies of different musical notes:</p>
+<pre><code class="language-python=">A = 440           # La
+A_SHARP = 466.16
+B = 493.88        # Si
+C = 523.25        # Do
+C_SHARP = 554.37
+D = 587.33        # Re
+D_SHARP = 622.25
+E = 659.25        # Mi
+F = 698.46        # Fa
+F_SHARP = 739.99
+G = 783.99        # Sol
+G_SHARP = 830.61
+</code></pre>
+<p>We can have a chain of <code>if</code>s in order to play different notes at different times. Here is an example that goes through the musical notes in a C major scale (We'll have a quick look into the theory of music and scales soon):</p>
+<pre><code class="language-python="># Play Do, Re, Mi, Fa, Sol, La, Si!
+def f(t):
+    if t &lt; 200:
+        f = C
+    elif t &lt; 400:
+        f = D
+    elif t &lt; 600:
+        f = E
+    elif t &lt; 800:
+        f = F
+    elif t &lt; 1000:
+        f = G
+    elif t &lt; 1200:
+        f = A
+    elif t &lt; 1400:
+        f = B
+    else:
+        f = None
+    return math.sin(t * 2 * math.pi * f) if f else 0
+</code></pre>
+<p>Notice that we allow putting silence in our sounds by setting <code>f</code> to <code>None</code>.</p>
+<p>A cleaner approach would be something like this:</p>
+<pre><code class="language-python=">SONG = [C, D, E, F, G, A, B]
+
+def f(t):
+    note_index = int(t / 200) % len(SONG)
+    f = SONG[note_index]
+    return math.sin(t * 2 * math.pi * f) if f else 0
+</code></pre>
+<p>Now that we know how to orderly play musical notes, let's go ahead and play Twinkle Twinkle Little Star:</p>
+<pre><code class="language-python=">SONG = [C, C, G, G, A, A, G, None, F, F, E, E, D, D, C]
+</code></pre>
+<h2 id="storing-melodies"><a class="header" href="#storing-melodies">Storing melodies</a></h2>
+<p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. Here is a function that accepts a RTTTL script and returns a list of notes:</p>
+<pre><code class="language-python=">def parse_rtttl():
+    pass
+</code></pre>
 <hr />
 <p>After playing some melodies by generating different frequencies in a sequence, you might nag that the notes are very pure, emotionless, and not at all close to what we hear when we press a key on a piano, and you are right. We are generating pure sine-waves, meaning that what we hear contains only a single frequency. If you analyze the sound coming out of a musical instrument, you will notice that not only it contains frequencies other than the main frequency, but also the strength of those frequencies change over time.</p>
 <p>It's not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.</p>
