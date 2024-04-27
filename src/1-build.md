@@ -1218,7 +1218,12 @@ class Qubit:
         self.oneness = oneness
 
 ```
+
 ***Bell's Inequality***
+
+![The spin of a particle is determined according to its pair](assets/entangled.png)
+
+![If Einstein's claim is true, the all three properties of the particle are determined prior reaching to the detectors](assets/bellsinequality.png)
 
 ## Brainfuck
 
