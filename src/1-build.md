@@ -1262,22 +1262,82 @@ It is obvious that in at least \\(\frac{5}{9} \approx 55%\\) of the experiments,
 
 If you are now convinced that we are living in a computer simulation, we can now exploit the fact that some particles in our world do not have definite states, and try to build new types of computers with it, computers than can compute stuff that a simple classical computer just can't, welcome to the world of quantum computers!
 
-Before teleporting to the quantum world, let's first agree on what ***state*** means on a classical computer. In a classical computer (E.g the Brainfuck processor we built in the previous sections), a n-bit register may only be in one of the \\(2^n\\) possible states. In the quantum world however, particles may have indefinite states. A particle may be 50% spin up and 50% spin down. By interpreting those indefinite properties as bits, we may have bits that are both 1 and 0 at the same time! So a n-bit quantum register maybe in all \\(2^n\\) states as a same time. In other words, an n-bit qunatum register is a probability distribution showing how possible each of the \\(2^n\\) states are. Let's simulate the concept of a classical-state and a quantum-state as two Python classes:
-
-[TODO]
+Before teleporting to the quantum world, let's first agree on what ***state*** means on a classical computer. In a classical computer (E.g the Brainfuck processor we built in the previous sections), a n-bit register may only be in one of the \\(2^n\\) possible states. In the quantum world however, particles may have indefinite states. A particle may be 50% spin up and 50% spin down. By interpreting those indefinite properties as bits, we may have bits that are both 1 and 0 at the same time! So a n-bit quantum register maybe in all \\(2^n\\) states as a same time. In other words, an n-bit qunatum register is a probability distribution showing how possible each of the \\(2^n\\) states are. Let's simulate the a quantum-state as a Python class:
 
 ```python=
-class Qubit:
-    def __init__(self, zeroness, oneness):
-        self.zeroness = zeroness
-        self.oneness = oneness
+import math
+import random
 
+
+class QuantumState:
+    def __init__(self, bits):
+        self.bits = bits
+        self.values = [0 + 0j] * (2**bits)
+        self.values[0] = 1 + 0j
+
+    def is_unitary(self):
+        return math.isclose(abs(sum(map(lambda v: v * v, self.values))), 1)
+
+    def apply(self, gate):
+        res = []
+        for row in gate:
+            res.append(sum([row[i] * self.values[i] for i in range(len(self.values))]))
+        self.values = res
+
+    def observe(self):
+        dice = random.random()
+        accum = 0
+        for i, p in enumerate(self.values):
+            accum += abs(p * p)
+            if dice < accum:
+                s = bin(i)[2:]
+                while len(s) < self.bits:
+                    s = "0" + s
+                return s
+        raise Exception()
+
+    def sample(self, times=1000):
+        states = {}
+        for _ in range(times):
+            v = self.observe()
+            if v not in states:
+                states[v] = 0
+            states[v] += 1
+        return states
 ```
 
-***Bell's Inequality***
+As you can see in the code, a n-bit Quantum register is a list of \\(2^n\\) complex numbers. We can also assume that quantum-state is a unitary vector (A vector that its length is 1). In order to check if a qunatum-state is valid or not, we have implemented a `is_unitary` method which calculates the length of the vector, and checks if it is equal to 1.
+
+Quantum-gates are transformations that can convert a unitary vector to another unitary vector. Such transformations can be represented with square matrices! The `apply` method applies a quantum-gate \\(T\\) (Which is basically a \\(2^n \times 2^n\\) matrix) on the gate, resulting to a new state: \\(S_{next}=S \times T\\)
+
+Lastly, in order to simulate a quantum-state's non-deterministic behavior, we have added a `observe` which throws a dice (Using Python's `random.random()` function) and decides what the observed state of the quantum-state is, given the probability distribution.
+
+We can sample the results of the `observe` function for many times, in order to get more sense of what is happening. We have defined a method `sample` for this purpose.
+
+Initially, we set the probability of the n-bit quantum-state to be \\(000 \dots 000\\) for 100% of the time. Thus, if we start sampling a state with no transformations, we will always be in the first state:
+
+```python=
+s = QuantumState(3)
+print(s.sample(1000))  # {'000': 1000}
+```
+
+Here are some gates that can be applied on single qubits:
+
+```python=
+def not_gate():
+    return [[0, 1], [1, 0]]
+```
+
+And there are some 
+
+```python=
+def cnot_gate():
+    return [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]
 
 
-
+def swap_gate():
+    return [[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]]
+```
 
 
 ## Brainfuck
