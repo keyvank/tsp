@@ -261,19 +261,19 @@ We can have a chain of `if`s in order to play different notes at different times
 ```python=
 # Play Do, Re, Mi, Fa, Sol, La, Si!
 def f(t):
-    if t < 200:
+    if t < 0.2:
         f = C
-    elif t < 400:
+    elif t < 0.4:
         f = D
-    elif t < 600:
+    elif t < 0.6:
         f = E
-    elif t < 800:
+    elif t < 0.8:
         f = F
-    elif t < 1000:
+    elif t < 1.:
         f = G
-    elif t < 1200:
+    elif t < 1.2:
         f = A
-    elif t < 1400:
+    elif t < 1.4:
         f = B
     else:
         f = None
@@ -288,7 +288,7 @@ A cleaner approach would be something like this:
 SONG = [C, D, E, F, G, A, B]
 
 def f(t):
-    note_index = int(t / 200) % len(SONG)
+    note_index = int(t / 0.5) % len(SONG)
     f = SONG[note_index]
     return math.sin(t * 2 * math.pi * f) if f else 0
 ```
@@ -296,8 +296,128 @@ def f(t):
 Now that we know how to orderly play musical notes, let's go ahead and play Twinkle Twinkle Little Star:
 
 ```python=
-SONG = [C, C, G, G, A, A, G, None, F, F, E, E, D, D, C]
+SONG = [C, C, G, G, A * 2, A * 2, G, None, F, F, E, E, D, D, C]
 ```
+
+(Note: the reason we are multiplying `A` by two is that we want the version of `A` with higher pitch (Or the `A` note on the next octave), remember the same feeling sounds? We discussed that if you multiply a note by a power of two, you will get the same sound, but in a higher pitch, so effectively, `A * 2` is still `A`!)
+
+Ok, there is a small problem here, the subsequent notes which have same frequency are connecting together. `[C, C]` doesn't sound like two independent `C`s, but it sounds like a long-lasting `C`. Here is a quick solution:
+
+```python=
+DURATION = 0.5  # Seconds
+WIDTH = 0.8  # 80% of the note is filled with sound, the rest is silence
+
+def f(t):
+    note_index = int(t / DURATION) % len(SONG)
+
+    if t - note_index * DURATION > DURATION * WIDTH:
+        return 0
+
+    f = SONG[note_index]
+    return math.sin(t * 2 * math.pi * f) if f else 0
+```
+
+Here we are silencing the last 20% of the note duration with silence. This makes it possible for us to distinguish between the notes! Try different `WIDTH`s to see the difference.
+
+## Recipes of feelings!
+
+Play these two sequences of notes and think about how you feel about them:
+
+```python=
+A_MAJOR = [A, B, C_SHARP, D, E, F_SHARP, G_SHARP]
+A_MINOR = [A, B, C, D, E, F, G]
+```
+
+It's very probable that you'll find the `A_MAJOR` sequence happy and confident, while the `A_MINOR` one has a bit of confusion and probably sadness. Both of these melodies are nothing but a sequence of notes which are going higher in pitch, so why one of them feels happy and the other feels sad? Now try these two:
+
+```
+A_MINOR_HARMONIC = [A, B, C, D, E, F, G_SHARP]
+A_MINOR_MELODIC = [A, B, C, D, E, F_SHARP, G_SHARP]
+```
+
+The feeling is very similar to the `A_MINOR` sequence, but it has even more confusion, one might even say that these sequences have some kind of "magical" feelings.
+
+You can keep going and expanding the sequences by appending the same notes that are in the next octaves. It's easier to catch the feelings of the sequences this way:
+
+```python=
+def next_octave(m):
+    return [n * 2 for n in m]
+
+
+SONG = A_MINOR_MELODIC
+SONG += next_octave(A_MINOR_MELODIC)
+SONG += next_octave(next_octave(A_MINOR_MELODIC))
+```
+
+Now, think of these note not as sequences, but as ingredients which you can use for making melodies. Choose a sequence and cook a melody by picking notes only from that sequence. You will have a melody which can have a happy, sad, confusing or even a more complicated feeling! These sequences, or note-ingredients are what is called by musicians as ***musical scales***. We just explored A-major and A-minor scales. Now tell me, what is the musical scale of the Twinkle Twinkle Little Star melody we synthesized earlier? Wrong! Although the musical notes that are used in this song are the notes of the A-minor scale, it has a happy feeling, it has a "major" feeling! So what has happened?
+
+To understand what is happening, let's first play the expanded version of A-minor scale again, but this time, we'll cut the first two notes in the resulting sequence:
+
+```python=
+A_MINOR = [A, B, C, D, E, F, G]
+SONG = A_MINOR
+SONG += next_octave(A_MINOR)
+SONG += next_octave(next_octave(A_MINOR))
+SONG = SONG[2:]
+```
+
+Weird, it seems like that the location of the sequence from which we start our sequence has strong effects in the way the melody feels!
+
+The truth is, the resulting sound is not in the A-minor scale anymore. Although it has a major feeling, it's not an A-major (You can compare them). It is a C-major!
+
+```python=
+C_MAJOR = [C, D, E, F, G, A * 2, B * 2]
+```
+
+What is pattern that makes `A_MAJOR` and `C_MAJOR` have same feelings, although using different notes? The truth lies in that ratio the frequecy is increasing!
+
+```python=
+def ratios(song):
+    res = []
+    curr = song[0]
+    for i in range(1, len(song)):
+        res.append(song[i] / curr)
+        curr = song[i]
+    return res
+
+A_MAJOR = [A, B, C_SHARP, D, E, F_SHARP, G_SHARP]
+C_MAJOR = [C, D, E, F, G, A * 2, B * 2]
+
+print(ratios(A_MAJOR))
+print(ratios(C_MAJOR))
+```
+
+The resulting lists are both equal, this means that the notes themselves are not important, but the way the frequencies are increasing is what makes these sequences to have special feelings.
+
+We can have functions that can make minor/major scales for us:
+
+```python=
+HALF_STEP = math.pow(2, 1 / 12)
+WHOLE_STEP = HALF_STEP * HALF_STEP
+
+def apply_scale(starting_note, scale):
+    result = [starting_note]
+    for step in scale:
+        result.append(result[-1] * step)
+    return result
+
+
+def minor(starting_note):
+    return apply_scale(
+        starting_note,
+        [WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP]
+    )
+
+
+def major(starting_note):
+    return apply_scale(
+        starting_note,
+        [WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, WHOLE_STEP]
+    )
+```
+
+Now you can make musical scales on the fly!
+
 
 ## Storing melodies
 
