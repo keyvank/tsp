@@ -252,6 +252,12 @@ Reinventing the wheel can be beneficial in two scenarios:</p>
 <p>Computer software revolutionized the &quot;creativity industry&quot;. Computer programming was the first type of engineering requiring the least minimum to delve in. You don't need a big luxorious workshop to build a great software. You don't need extensive understanding of math and physics to amaze people with your software. You will never run out of materials, because you just don't need it. In fact the uilding blocks of a software are characters, imaginary bricks that you will never run out of them. All you need is a computer and a text-editor to pour your idea in, and unlike building a physical thing, you exactly know what is the first thing one should build in the world of programming:</p>
 <pre><code>&gt; Hello World!
 </code></pre>
+<h2 id="synchronous-vs-asynchronous-engineering"><a class="header" href="#synchronous-vs-asynchronous-engineering">Synchronous vs Asynchronous Engineering</a></h2>
+<p>As someone who has never made anything sophisticated other than software, I find building and engineering “physical” things much harder than developing computer programs.</p>
+<p>I had some claims that software engineering is very different than other, more classical fields of engineering such as mechanical or electrical engineering. Talking with people building non-software stuff, I figured that they also find building software hard and non trivial.</p>
+<p>After some thinking, I decided to categorize engineering into two fields: <em><strong>Synchronous</strong></em> <em>vs</em> <em><strong>Asynchronous</strong></em></p>
+<p>Synchronous engineering is all about designing solutions based on orderly applied subsolutions. The most obvious example of such engineering, is software engineering. When building a computer program, you put some instructions (Sub-solution, you have the assumption that the instruction works as expected all the time) in the right order. Designing the manufacturing line is a kind of synchronous engineering too. Newer Subsolutions does not have impact on the previous subsolutions. You can add new stuff to your list of instructions, and expect that all previous instructions and their behavior would remain intact.</p>
+<p>In Asynchronous engineering on the other hand, order is not involved. The final solution is composed of subsolutions, but there isn’t any order, and all the subsolutions are applied at the same time. Examples are, designing a building, a car engine, an electronics circuit and etc. When designing a car engine, unlike software, you must have a general idea of how the final product would look like, otherwise your solution could be totally wrong. Subsolutions heavily influence each other, and adding a new component can possible break other things.</p>
 <h2 id="the-cult-of-done"><a class="header" href="#the-cult-of-done">The Cult of Done</a></h2>
 <p>I wasn't quite sure if I have to publish the draft version of the book on the internet or not. Writing a book is hard. It's probably one of the most difficult things one can do in his life, and it needs passion and persistence. I got discouraged multiple times, I wasn't sure if people are going to like my content at all. So I decided to publish the very incomplete draft of the book anyway. Fortunately, there were a few people who skimmed through the draft and liked it.</p>
 <p>These little feedback were great source of encouragement for me, convincing me to keep writing.</p>
@@ -1370,6 +1376,11 @@ print(s.sample(1000))  # {'000': 1000}
 def swap_gate():
     return [[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]]
 </code></pre>
+<h2 id="why-matrices"><a class="header" href="#why-matrices">Why matrices?</a></h2>
+<p>The term quantum computer is a bit misleading. In fact, a quantum-computer is a regular classical-computer equipped with a device that can perform operations on a quantum-state (Maybe someday, you’ll be able to connect a quantum-state to your laptop too). For example, the quantum operation could be radiating the “state” with a electromagnetic wave of some frequency. A real quantum computer doesn’t perform matrix multiplications, like what we did in our simulator! Matrices just happened to be good mathematical structures for modeling different quantum operations!</p>
+<p>As previously noted, a quantum-state is somehow a probability distribution over its different possible states.</p>
+<p>The state is a vector of length one. It’s length will always be one.</p>
+<p>In a quantum operation, the final result of one bit is somehow a linear combination of all other bits. That's why quantum operations are defined by matrices, because matrices are just a group of coefficient-rows that are stacked on top of each other.</p>
 <h2 id="brainfuck"><a class="header" href="#brainfuck">Brainfuck</a></h2>
 <p>Most people say it's crucial to learn C, if you want to be a good programmer! I say, knowing how to program in Brainfuck is what makes you a Super Programmer! Brainfuck, built in 1993 by Urban Müller, is an esoteric programming language, which means, it has been designed in a way so that very few people understand or like it! Learning how to program in Brainfuck is a great way to see how it's possible to build wonderful stuff by putting simple components together.</p>
 <p>Brainfuck is extremely minimalistic, it only consists of 8 simple commands. It is also very simple to learn, but hard to build anything meaningful out of it! Brainfuck is Turing-Complete, which means, you can theoritically build web browsers, 3D games, and any kind of complicated software with it! Here is the specification of the language:</p>
@@ -1840,19 +1851,19 @@ G_SHARP = 830.61
 <p>We can have a chain of <code>if</code>s in order to play different notes at different times. Here is an example that goes through the musical notes in a C major scale (We'll have a quick look into the theory of music and scales soon):</p>
 <pre><code class="language-python="># Play Do, Re, Mi, Fa, Sol, La, Si!
 def f(t):
-    if t &lt; 200:
+    if t &lt; 0.2:
         f = C
-    elif t &lt; 400:
+    elif t &lt; 0.4:
         f = D
-    elif t &lt; 600:
+    elif t &lt; 0.6:
         f = E
-    elif t &lt; 800:
+    elif t &lt; 0.8:
         f = F
-    elif t &lt; 1000:
+    elif t &lt; 1.:
         f = G
-    elif t &lt; 1200:
+    elif t &lt; 1.2:
         f = A
-    elif t &lt; 1400:
+    elif t &lt; 1.4:
         f = B
     else:
         f = None
@@ -1863,13 +1874,100 @@ def f(t):
 <pre><code class="language-python=">SONG = [C, D, E, F, G, A, B]
 
 def f(t):
-    note_index = int(t / 200) % len(SONG)
+    note_index = int(t / 0.5) % len(SONG)
     f = SONG[note_index]
     return math.sin(t * 2 * math.pi * f) if f else 0
 </code></pre>
 <p>Now that we know how to orderly play musical notes, let's go ahead and play Twinkle Twinkle Little Star:</p>
-<pre><code class="language-python=">SONG = [C, C, G, G, A, A, G, None, F, F, E, E, D, D, C]
+<pre><code class="language-python=">SONG = [C, C, G, G, A * 2, A * 2, G, None, F, F, E, E, D, D, C]
 </code></pre>
+<p>(Note: the reason we are multiplying <code>A</code> by two is that we want the version of <code>A</code> with higher pitch (Or the <code>A</code> note on the next octave), remember the same feeling sounds? We discussed that if you multiply a note by a power of two, you will get the same sound, but in a higher pitch, so effectively, <code>A * 2</code> is still <code>A</code>!)</p>
+<p>Ok, there is a small problem here, the subsequent notes which have same frequency are connecting together. <code>[C, C]</code> doesn't sound like two independent <code>C</code>s, but it sounds like a long-lasting <code>C</code>. Here is a quick solution:</p>
+<pre><code class="language-python=">DURATION = 0.5  # Seconds
+WIDTH = 0.8  # 80% of the note is filled with sound, the rest is silence
+
+def f(t):
+    note_index = int(t / DURATION) % len(SONG)
+
+    if t - note_index * DURATION &gt; DURATION * WIDTH:
+        return 0
+
+    f = SONG[note_index]
+    return math.sin(t * 2 * math.pi * f) if f else 0
+</code></pre>
+<p>Here we are silencing the last 20% of the note duration with silence. This makes it possible for us to distinguish between the notes! Try different <code>WIDTH</code>s to see the difference.</p>
+<h2 id="recipes-of-feelings"><a class="header" href="#recipes-of-feelings">Recipes of feelings!</a></h2>
+<p>Play these two sequences of notes and think about how you feel about them:</p>
+<pre><code class="language-python=">A_MAJOR = [A, B, C_SHARP, D, E, F_SHARP, G_SHARP]
+A_MINOR = [A, B, C, D, E, F, G]
+</code></pre>
+<p>It's very probable that you'll find the <code>A_MAJOR</code> sequence happy and confident, while the <code>A_MINOR</code> one has a bit of confusion and probably sadness. Both of these melodies are nothing but a sequence of notes which are going higher in pitch, so why one of them feels happy and the other feels sad? Now try these two:</p>
+<pre><code>A_MINOR_HARMONIC = [A, B, C, D, E, F, G_SHARP]
+A_MINOR_MELODIC = [A, B, C, D, E, F_SHARP, G_SHARP]
+</code></pre>
+<p>The feeling is very similar to the <code>A_MINOR</code> sequence, but it has even more confusion, one might even say that these sequences have some kind of &quot;magical&quot; feelings.</p>
+<p>You can keep going and expanding the sequences by appending the same notes that are in the next octaves. It's easier to catch the feelings of the sequences this way:</p>
+<pre><code class="language-python=">def next_octave(m):
+    return [n * 2 for n in m]
+
+
+SONG = A_MINOR_MELODIC
+SONG += next_octave(A_MINOR_MELODIC)
+SONG += next_octave(next_octave(A_MINOR_MELODIC))
+</code></pre>
+<p>Now, think of these note not as sequences, but as ingredients which you can use for making melodies. Choose a sequence and cook a melody by picking notes only from that sequence. You will have a melody which can have a happy, sad, confusing or even a more complicated feeling! These sequences, or note-ingredients are what is called by musicians as <em><strong>musical scales</strong></em>. We just explored A-major and A-minor scales. Now tell me, what is the musical scale of the Twinkle Twinkle Little Star melody we synthesized earlier? Wrong! Although the musical notes that are used in this song are the notes of the A-minor scale, it has a happy feeling, it has a &quot;major&quot; feeling! So what has happened?</p>
+<p>To understand what is happening, let's first play the expanded version of A-minor scale again, but this time, we'll cut the first two notes in the resulting sequence:</p>
+<pre><code class="language-python=">A_MINOR = [A, B, C, D, E, F, G]
+SONG = A_MINOR
+SONG += next_octave(A_MINOR)
+SONG += next_octave(next_octave(A_MINOR))
+SONG = SONG[2:]
+</code></pre>
+<p>Weird, it seems like that the location of the sequence from which we start our sequence has strong effects in the way the melody feels!</p>
+<p>The truth is, the resulting sound is not in the A-minor scale anymore. Although it has a major feeling, it's not an A-major (You can compare them). It is a C-major!</p>
+<pre><code class="language-python=">C_MAJOR = [C, D, E, F, G, A * 2, B * 2]
+</code></pre>
+<p>What is pattern that makes <code>A_MAJOR</code> and <code>C_MAJOR</code> have same feelings, although using different notes? The truth lies in that ratio the frequecy is increasing!</p>
+<pre><code class="language-python=">def ratios(song):
+    res = []
+    curr = song[0]
+    for i in range(1, len(song)):
+        res.append(song[i] / curr)
+        curr = song[i]
+    return res
+
+A_MAJOR = [A, B, C_SHARP, D, E, F_SHARP, G_SHARP]
+C_MAJOR = [C, D, E, F, G, A * 2, B * 2]
+
+print(ratios(A_MAJOR))
+print(ratios(C_MAJOR))
+</code></pre>
+<p>The resulting lists are both equal, this means that the notes themselves are not important, but the way the frequencies are increasing is what makes these sequences to have special feelings.</p>
+<p>We can have functions that can make minor/major scales for us:</p>
+<pre><code class="language-python=">HALF_STEP = math.pow(2, 1 / 12)
+WHOLE_STEP = HALF_STEP * HALF_STEP
+
+def apply_scale(starting_note, scale):
+    result = [starting_note]
+    for step in scale:
+        result.append(result[-1] * step)
+    return result
+
+
+def minor(starting_note):
+    return apply_scale(
+        starting_note,
+        [WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP]
+    )
+
+
+def major(starting_note):
+    return apply_scale(
+        starting_note,
+        [WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, WHOLE_STEP]
+    )
+</code></pre>
+<p>Now you can make musical scales on the fly!</p>
 <h2 id="storing-melodies"><a class="header" href="#storing-melodies">Storing melodies</a></h2>
 <p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. Here is a function that accepts a RTTTL script and returns a list of notes:</p>
 <pre><code class="language-python=">def parse_rtttl():
