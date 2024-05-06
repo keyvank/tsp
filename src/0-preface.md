@@ -114,6 +114,18 @@ Computer software revolutionized the "creativity industry". Computer programming
 > Hello World!
 ```
 
+## Synchronous vs Asynchronous Engineering
+
+As someone who has never made anything sophisticated other than software, I find building and engineering “physical” things much harder than developing computer programs.
+
+I had some claims that software engineering is very different than other, more classical fields of engineering such as mechanical or electrical engineering. Talking with people building non-software stuff, I figured that they also find building software hard and non trivial.
+
+After some thinking, I decided to categorize engineering into two fields: ***Synchronous*** *vs* ***Asynchronous***
+
+Synchronous engineering is all about designing solutions based on orderly applied subsolutions. The most obvious example of such engineering, is software engineering. When building a computer program, you put some instructions (Sub-solution, you have the assumption that the instruction works as expected all the time) in the right order. Designing the manufacturing line is a kind of synchronous engineering too. Newer Subsolutions does not have impact on the previous subsolutions. You can add new stuff to your list of instructions, and expect that all previous instructions and their behavior would remain intact.
+
+In Asynchronous engineering on the other hand, order is not involved. The final solution is composed of subsolutions, but there isn’t any order, and all the subsolutions are applied at the same time. Examples are, designing a building, a car engine, an electronics circuit and etc. When designing a car engine, unlike software, you must have a general idea of how the final product would look like, otherwise your solution could be totally wrong. Subsolutions heavily influence each other, and adding a new component can possible break other things.
+
 ## The Cult of Done
 
 I wasn't quite sure if I have to publish the draft version of the book on the internet or not. Writing a book is hard. It's probably one of the most difficult things one can do in his life, and it needs passion and persistence. I got discouraged multiple times, I wasn't sure if people are going to like my content at all. So I decided to publish the very incomplete draft of the book anyway. Fortunately, there were a few people who skimmed through the draft and liked it.
