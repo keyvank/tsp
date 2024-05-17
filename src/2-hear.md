@@ -418,6 +418,53 @@ def major(starting_note):
 
 Now you can make musical scales on the fly!
 
+## Chords
+
+Our ears are wonderful. They can distinguish between different frequencies and notes, even when they are mixed up with each other. It might be worth noting that this isn't true for our eyes. Our eyes can't distinguish between the yellow color, and the mixture of red and green colors! (Yes, they are different, and this unfortunate fact isn't that bad: it has made it much easier for us to build color display! More on this in the next chapter)
+
+So if the ears are able to make sense of "frequency mixtures", why not trying to bake new sounds by mixing different frequencies with each other? It'll be like mixing different colors with each other and making new colors!
+
+In the world of music, these mixtures are often referred as "chords". Chords are simply just mixtures of different notes that exist in a certain musical scale. Musicians have found ways to make up chords that feel nice and good. Let's explore a few of them. I would like to start with *triads*: these are chords that are made of 3 different notes. Just like how we categorize musical scales as majors and minors, some triad chords are also categorized in this way too.
+
+Given a starting note, here are some of the triads you can make:
+
+```python=
+def major_triad(root):
+    return [root, root * (HALF_STEP ** 4), root * (HALF_STEP ** 7)]
+
+def minor_triad(root):
+    return [root, root * (HALF_STEP ** 3), root * (HALF_STEP ** 7)]
+
+def diminished_triad(root):
+    return [root, root * (HALF_STEP ** 3), root * (HALF_STEP ** 6)]
+
+def augmented_triad(root):
+    return [root, root * (HALF_STEP ** 4), root * (HALF_STEP ** 8)]
+```
+
+As you expect, minor and major triads have sad and happy feelings, but we have two new patterns here too: diminished and augmented triads somehow sound mysterious, disturbing and some people say melancholic!
+
+Now, you may want to use chords in your music to go above building pure melodies. Not all chords are going to "fit" to the musical-scale your are using in your music! Here is how you can make triads that will sound nice and fit your music: start with a root note in the scale, and also pick the third and fifth notes. E.g in scale of A-major, here are the triads you can use:
+
+- **A** B **C#** D **E** F# G#
+- A **B** C# **D** E **F#** G#
+- A B **C#** D **E** F# **G#**
+- A B C# **D** E **F#** G# **A**
+- A B C# D **E** F# **G#** A **B**
+- A B C# D E **F#** G# **A** B **C#**
+- A B C# D E F# **G#** A **B** C# **D**
+
+Let's automate this and write a function that can generate the triad chords of a given scale for us on the fly:
+
+```python=
+def triads(scale):
+    # The scale is repeated twice to avoid overflows!
+    notes = scale + scale
+    res = []
+    for i in range(7):
+        res.append([notes[i], notes[i+2], notes[i+4]])
+    return res
+```
 
 ## Storing melodies
 
