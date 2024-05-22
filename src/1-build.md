@@ -598,6 +598,16 @@ Surprisingly, the number \\(246\\), acts really like a \\(-10\\). Try adding \\(
 
 It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!
 
+## Not gates can be fun too!
+
+If you remember, we discussed that you can't build interesting structures using only a single type of single-input/single-output component (such as NOT gates). In fact, we argued that using them we can only make domino-like structures, in which a single cause traverses through the components until reaching the last piece, but that's not totally true: what if we connect the last component of the chain to the first one? This makes a loop, which is definitely a new thing. Assuming two consecutive NOT gates cancel out each other, we can build two different kinds of NOT loops:
+
+![Two possible kinds of NOT loops](assets/notloops.png)
+
+After analyzing both of the possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It's like a logical paradox, like the statement: *This sentence is not true*. The statement can be neither true nor false! Practically, if you build such a circuit, it may oscillate between the possible states very fast. Or the voltage of the wire may end up something between the logical voltages of 0 and 1.
+
+On the other hand, it's perfectly possible for the loop with two NOT gates to get stable. The resulting circuit can be in two-possible states: Either the first wire is 1 and the second wire is 0, or the first wire is zero and the second wire is one. It won't automatically switch between the states. If you build such a circuit using real components, the initial state would be somewhat random. A slight difference in the conditions of the transistors may cause the circuit to slip to the one of states and stabilize there!
+
 ## Try to remember
 
 What we care about right now is to design a circuit which is able to run arbitrary algorithms for us! An algorithm is nothing but a list of operations that need to be executed. So far we have been experimenting with state-less circuits, circuits that didn't need to memorize or remember anything in order to do their job. Obviously, you can't get much creative with circuits that do now store anything from the past, thus, we are going to talk about ways we can store data on a digital circuit circuit and keep it through time!
@@ -606,7 +616,13 @@ When you were a child, you have most probably tried to put a light-switch in a m
 
 Imagine a piece of paper. It's stable. When you put it on fire, it slowly changes its state until it becomes completely burnt and stabilizes there. It's not easy to keep the paper a middle state. You can use a paper as a single bit memory cell. It's not the best memory cell and the most obvious reason is that you can't turn it back to its unburnt state!
 
-Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Such a circuit is also known as a Latch:
+Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). The problem with a NOT loop is that you can't control it, so you can't change its state. It doesn't accept inputs from the external world. We can change this: replace the NOT gate with a gate that accepts two inputs instead of one (For example, use a NAND gate instead), and give those extra pins to a user. The user can change the internal state of the loop by giving voltages to the extra pins. The described circuit is also known as a SR-Latch:
+
+![Set-Reset latch](assets/srlatch.png)
+
+Now, the user can put on the first and second state, by setting S=1 and R=0, or setting S=0 and R=1, respectively. After doing so, the user can set both S and R pins to 0. The magic is: ***the circuit will stably remain on the latest state***.
+
+
 
 ![DLatch made of logic gates](assets/dlatch.png)
 

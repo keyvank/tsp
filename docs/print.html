@@ -756,11 +756,18 @@ if __name__ == &quot;__main__&quot;:
 <p>In a finite-field, the negative of a number can be calculated by subtracting that number from the field-size (Here the size of our field is \(2^8=256\)). E.g negative of \(10\) is \(256-10=246\), so \(10 \oplus 246 = 0\).</p>
 <p>Surprisingly, the number \(246\), acts really like a \(-10\). Try adding \(246\) to \(15\). You will get \(246 \oplus 15 = 5\) which is equal with \(15 + (-10)\)! This has a important meaning, we can perform subtraction without designing a new circuit! We'll just need to negate the number. Calculating the negative of a number is like taking the XOR of that number (Which is equal with \(255 - a\)), and adding \(1\) to it (Which makes it \(256 - a\) which is our definition of negation). This is known as the two's-complement form of a number.</p>
 <p>It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!</p>
+<h2 id="not-gates-can-be-fun-too"><a class="header" href="#not-gates-can-be-fun-too">Not gates can be fun too!</a></h2>
+<p>If you remember, we discussed that you can't build interesting structures using only a single type of single-input/single-output component (such as NOT gates). In fact, we argued that using them we can only make domino-like structures, in which a single cause traverses through the components until reaching the last piece, but that's not totally true: what if we connect the last component of the chain to the first one? This makes a loop, which is definitely a new thing. Assuming two consecutive NOT gates cancel out each other, we can build two different kinds of NOT loops:</p>
+<p><img src="assets/notloops.png" alt="Two possible kinds of NOT loops" /></p>
+<p>After analyzing both of the possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It's like a logical paradox, like the statement: <em>This sentence is not true</em>. The statement can be neither true nor false! Practically, if you build such a circuit, it may oscillate between the possible states very fast. Or the voltage of the wire may end up something between the logical voltages of 0 and 1.</p>
+<p>On the other hand, it's perfectly possible for the loop with two NOT gates to get stable. The resulting circuit can be in two-possible states: Either the first wire is 1 and the second wire is 0, or the first wire is zero and the second wire is one. It won't automatically switch between the states. If you build such a circuit using real components, the initial state would be somewhat random. A slight difference in the conditions of the transistors may cause the circuit to slip to the one of states and stabilize there!</p>
 <h2 id="try-to-remember"><a class="header" href="#try-to-remember">Try to remember</a></h2>
 <p>What we care about right now is to design a circuit which is able to run arbitrary algorithms for us! An algorithm is nothing but a list of operations that need to be executed. So far we have been experimenting with state-less circuits, circuits that didn't need to memorize or remember anything in order to do their job. Obviously, you can't get much creative with circuits that do now store anything from the past, thus, we are going to talk about ways we can store data on a digital circuit circuit and keep it through time!</p>
 <p>When you were a child, you have most probably tried to put a light-switch in a middle state. If the switch had been in good condition and quality, you know how frustrating it can get to do it! The concept of <em><strong>memory</strong></em> emerges when a system with multiple possible states can only stabilize in a single state at a time, and once it gets stable, the state can only be changed by an external force. A light-switch can be used as a single-bit memory cell. </p>
 <p>Imagine a piece of paper. It's stable. When you put it on fire, it slowly changes its state until it becomes completely burnt and stabilizes there. It's not easy to keep the paper a middle state. You can use a paper as a single bit memory cell. It's not the best memory cell and the most obvious reason is that you can't turn it back to its unburnt state!</p>
-<p>Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). Such a circuit is also known as a Latch:</p>
+<p>Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). The problem with a NOT loop is that you can't control it, so you can't change its state. It doesn't accept inputs from the external world. We can change this: replace the NOT gate with a gate that accepts two inputs instead of one (For example, use a NAND gate instead), and give those extra pins to a user. The user can change the internal state of the loop by giving voltages to the extra pins. The described circuit is also known as a SR-Latch:</p>
+<p><img src="assets/srlatch.png" alt="Set-Reset latch" /></p>
+<p>Now, the user can put on the first and second state, by setting S=1 and R=0, or setting S=0 and R=1, respectively. After doing so, the user can set both S and R pins to 0. The magic is: <em><strong>the circuit will stably remain on the latest state</strong></em>.</p>
 <p><img src="assets/dlatch.png" alt="DLatch made of logic gates" /></p>
 <pre><code class="language-python=">def DLatch(circuit, in_clk, in_data, out_data, initial=0):
     not_data = circuit.new_wire()
@@ -1968,6 +1975,43 @@ def major(starting_note):
     )
 </code></pre>
 <p>Now you can make musical scales on the fly!</p>
+<h2 id="chords"><a class="header" href="#chords">Chords</a></h2>
+<p>Our ears are wonderful. They can distinguish between different frequencies and notes, even when they are mixed up with each other. It might be worth noting that this isn't true for our eyes. Our eyes can't distinguish between the yellow color, and the mixture of red and green colors! (Yes, they are different, and this unfortunate fact isn't that bad: it has made it much easier for us to build color display! More on this in the next chapter)</p>
+<p>So if the ears are able to make sense of &quot;frequency mixtures&quot;, why not trying to bake new sounds by mixing different frequencies with each other? It'll be like mixing different colors with each other and making new colors!</p>
+<p>In the world of music, these mixtures are often referred as &quot;chords&quot;. Chords are simply just mixtures of different notes that exist in a certain musical scale. Musicians have found ways to make up chords that feel nice and good. Let's explore a few of them. I would like to start with <em>triads</em>: these are chords that are made of 3 different notes. Just like how we categorize musical scales as majors and minors, some triad chords are also categorized in this way too.</p>
+<p>Given a starting note, here are some of the triads you can make:</p>
+<pre><code class="language-python=">def major_triad(root):
+    return [root, root * (HALF_STEP ** 4), root * (HALF_STEP ** 7)]
+
+def minor_triad(root):
+    return [root, root * (HALF_STEP ** 3), root * (HALF_STEP ** 7)]
+
+def diminished_triad(root):
+    return [root, root * (HALF_STEP ** 3), root * (HALF_STEP ** 6)]
+
+def augmented_triad(root):
+    return [root, root * (HALF_STEP ** 4), root * (HALF_STEP ** 8)]
+</code></pre>
+<p>As you expect, minor and major triads have sad and happy feelings, but we have two new patterns here too: diminished and augmented triads somehow sound mysterious, disturbing and some people say melancholic!</p>
+<p>Now, you may want to use chords in your music to go above building pure melodies. Not all chords are going to &quot;fit&quot; to the musical-scale your are using in your music! Here is how you can make triads that will sound nice and fit your music: start with a root note in the scale, and also pick the third and fifth notes. E.g in scale of A-major, here are the triads you can use:</p>
+<ul>
+<li><strong>A</strong> B <strong>C#</strong> D <strong>E</strong> F# G#</li>
+<li>A <strong>B</strong> C# <strong>D</strong> E <strong>F#</strong> G#</li>
+<li>A B <strong>C#</strong> D <strong>E</strong> F# <strong>G#</strong></li>
+<li>A B C# <strong>D</strong> E <strong>F#</strong> G# <strong>A</strong></li>
+<li>A B C# D <strong>E</strong> F# <strong>G#</strong> A <strong>B</strong></li>
+<li>A B C# D E <strong>F#</strong> G# <strong>A</strong> B <strong>C#</strong></li>
+<li>A B C# D E F# <strong>G#</strong> A <strong>B</strong> C# <strong>D</strong></li>
+</ul>
+<p>Let's automate this and write a function that can generate the triad chords of a given scale for us on the fly:</p>
+<pre><code class="language-python=">def triads(scale):
+    # The scale is repeated twice to avoid overflows!
+    notes = scale + scale
+    res = []
+    for i in range(7):
+        res.append([notes[i], notes[i+2], notes[i+4]])
+    return res
+</code></pre>
 <h2 id="storing-melodies"><a class="header" href="#storing-melodies">Storing melodies</a></h2>
 <p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. Here is a function that accepts a RTTTL script and returns a list of notes:</p>
 <pre><code class="language-python=">def parse_rtttl():
