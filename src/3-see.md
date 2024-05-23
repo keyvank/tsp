@@ -240,7 +240,7 @@ can be analyzed using 3D vectors. A 3D vector is nothing but a tuple of 3 floati
 numbers. A 3D vector can be used for storing the position or direction of a photon.
 
 
-```python
+```python=
 class Vec:
     def __init__(self, x, y, z):
         self.x = x
@@ -248,7 +248,23 @@ class Vec:
         self.z = z
 ```
 
-There are two very special and interesting operations that can be done on 3D vectors:
+The most basic operations that can be performed on two vectors is addition and subtraction. We can implement them by overriding the `__add__` and `__sub__` magic methods:
+
+```python=
+class Vec:
+    # ...
+
+    def __add__(self, other):
+        return Vec(self.x + other.x, self.y + other.y, self.z + other.z)
+    
+    def __neg__(self):
+        return Vec(-self.x, -self.y, -self.z)
+    
+    def __sub__(self, other):
+        return self + (-other)
+```
+
+Besides addition/subtraction, there are two very special and interesting operations that can be done on 3D vectors:
 
 1. Dot-product: Calculates how aligned the vectors are. The dot-product of two vectors 
    is in its maximum when both vectors are pointing at the same direction. The dot-product
@@ -271,16 +287,19 @@ There are two very special and interesting operations that can be done on 3D vec
 
 Let's go ahead and implement these operations as methods on our `Vec` class:
 
-```python
-def dot(self, other):
-    return self.x * other.x + self.y * other.y + self.z * other.z
+```python=
+class Vec:
+    # ...
 
-def cross(self, other):
-    return Vec(
-        self.y * other.z + self.z * other.y,
-        self.z * other.x + self.x * other.z,
-        self.x * other.y + self.y * other.x,
-    )
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
+    def cross(self, other):
+        return Vec(
+            self.y * other.z + self.z * other.y,
+            self.z * other.x + self.x * other.z,
+            self.x * other.y + self.y * other.x,
+        )
 ```
 
 Reminding you of high-school math, a 2D vector's length could be calculated by summing the square
@@ -294,21 +313,27 @@ dotted with itself:
 
 \\(|\vec{A}|=\sqrt{\vec{A}.\vec{A}}\\)
 
-```python
-def length(self):
-    return math.sqrt(self.dot(self))
+```python=
+class Vec:
+    # ...
+
+    def length(self):
+        return math.sqrt(self.dot(self))
 ```
 
 Another useful operation is multiplication of a vector by an scalar. We are going to override the
 multiplication operator in order to have this operation in our `Vec` class:
 
-```python
-def __mul__(self, other):
-    return Vec(
-        self.x * other,
-        self.y * other,
-        self.z * other,
-    )
+```python=
+class Vec:
+    # ...
+
+    def __mul__(self, other):
+        return Vec(
+            self.x * other,
+            self.y * other,
+            self.z * other,
+        )
 ```
 
 Normal of a vector \\(\vec{A}\\) is defined as a vector with length \\(1\\) that has the same direction
@@ -317,10 +342,13 @@ elements of the vector by the length of the vector:
 
 \\(norm(\vec{A})=\frac{\vec{A}}{|\vec{A}|}\\)
 
-```python
-def norm(self):
-    len_inv = 1 / self.length()
-    return self * len_inv
+```python=
+class Vec:
+    # ...
+
+    def norm(self):
+        len_inv = 1 / self.length()
+        return self * len_inv
 ```
 
 Although your compiler's optimizer will do the job for you, it's generally better to calculate
@@ -346,7 +374,7 @@ of \\(\vec{EP_{ij}}\\).
 
 Let's hold the position and direction of a ray in a seperate `Ray` class:
 
-```python
+```python=
 class Ray:
     def __init__(self, pos, dir):
         self.pos = pos
@@ -356,9 +384,9 @@ class Ray:
 We can use the PPM image generator we developed in the previous sections in order to calculate
 a ray-traced scene. We just need to reimplement the `color_of` function:
 
-```python
+```python=
 def color_of(x, y, width, height):
-    p = ld + (x / width) * r + (y / height) * u
+    p = ld + r * (x / width) + u * (y / height)
     direction = (e - p).norm()
     ray = Ray(e, direction)
     return trace_ray(ray)
@@ -367,7 +395,98 @@ def color_of(x, y, width, height):
 The `trace_ray` function will take a ray as an argument and will calculate the color and intensity
 of photons that are going through that ray for us.
 
+-----
+
+We just saw that we can calculate the initial rays coming out of an imaginary eye if we have the vectors \\(\vec{LD}\\), \\(\vec{U}\\) and \\(\vec{R}\\), but how can we can the vectors themselves?
+
+Assuming our imaginary eye is located at \\(vec{E}\\) and the target object it is looking at is located at \\(vec{T}\\), the direction of the eye would be \\(norm(\vec{T} - \vec{E})\\). Adding this vector to \\(\vec{E}\\), we'll have a new point that is 1 unit far from the eye vector: \\(\vec{C} = \vec{E} + norm(\vec{T} - \vec{E})\\)
+
+The vector \\(vec{C}\\) can be considered as the center of the square plane that we are going to pass our rays through.
+
+Now, remember the definition of cross product: it's a vector that is prependicular to both input vectors. Let's calculate the cross-product of \\(vec{EC}\\) and a vector that if pointing up \\((0,1,0)\\) to see what happens. The result will be a vector that is prependicular to both \\(vec{EC}\\) and the up vector. It'll be pointing to the right of the camera plane (Read about the right-hand rule). The result is \\(\vec{R}\\). Now calculate the cross-product of \\(vec{R}\\) with \\(vec{EC}\\), and you will get another vector that is pointing to the top of the camera plane, it's \\(vec{U\\})!
+
+Both of the \\(vec{R}\\) and \\(vec{U}\\) vectors will be of size 1. In case we want the size of the camera plane's edges to be 1, we can calculate the buttom-left vector as \\(vec{LD} = \vec(C) - \frac{\vec{U}}{2} - \frac{\vec{R}}{2}\\).
+
+Finally, the resulting camera plane will be a unit square that is 1 unit far from \\(\vec{E}\\), pointing to target object \\(\vec{T}\\).
+
+The vectors are visualized in figure X, but it's better to experiment with those vectors yourself and maybe even watch some videos and other ray-tracing tutorials to better get the idea.
+
 ![Calculation of eye-generated rays](assets/eye.png)
+
+Given the calculations described above, here is the final code calculating everything:
+
+```python=
+e = Vec(0, 100, 0) # Eye/Camera
+t = Vec(0, 0, 20) # Target
+
+ec = (t - e).norm()
+
+c = e + ec # Center of cemera plane
+r = ec.cross(Vec(0, 1, 0)) # Pointing to the right of the plane
+u = r.cross(ec) # Pointing to the top of the plane
+ld = c - r/2 - u/2 # Left-bottom of the plane
+```
+
+def color_of(x, y, width, height):
+    p = ld + r * (x / width) + u * (y / height)
+    direction = (e - p).norm()
+    ray = Ray(e, direction)
+    return trace_ray(ray)
+```
+
+We are ready to discuss the implementation of the `trace_ray` function! Let's start with a very simple one: we would like to check if the ray intersects with an sphere. If it does, we would like to return the red color, otherwise black. Since spheres are not the only kind of objects we are going to draw in our ray tracer, it's good to implement things in an object-oriented way already. We'll have an abstract base class `Object` which will have two abstract functions:
+
+1. The `intersects` function, will accept a `Ray` and either return an intersection point (As a `Vec`) or `None` (If the ray doesn't intersect with the object).
+2. `color_of` function will accept a point on the object (As a `Vec`) and returns the color of the given point on the object. This allows us to colorize objects.
+
+```python=
+class Shape:
+    def intersects(self, ray: Ray):
+        pass
+    
+    def color_of(self, pos: Vec):
+        pass
+```
+
+```python=
+class Sphere(Shape):
+    def __init__(self, pos: Vec, radius, color):
+        self.pos = pos
+        self.radius = radius
+        self.color = color
+    
+    def color_of(self):
+        return self.color
+    
+    def intersects(self, ray: Ray):
+        tca=(self.pos-ray.pos).dot(ray.dir)
+		if tca<0:
+			return None
+		d2=(self.pos-ray.pos).dot(self.pos-ray.pos)-tca*tca
+		if d2 > self.radius ** 2:
+			return None
+		thc=math.sqrt(self.radius ** 2 - d2)
+		ret=min(tca-thc,tca+thc)
+		if ret<0:
+			return None
+		else:
+			return ret
+```
+
+Now we can start seeing the sphere!
+
+```python=
+sphere = Sphere(Vec(0,0,0),2, (255,0,0))
+
+def trace_ray(ray):
+    if sphere.intersects(ray):
+        return (255,0,0)
+    else
+        return (0,0,0)
+```
+
+----
+
 
 
 ## Rasterization
