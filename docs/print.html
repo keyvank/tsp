@@ -2416,13 +2416,26 @@ world around us. Since photons move on straight lines, we can study their behavi
 with mathematical vectors. Since we live in a 3D world, the movements of our photons
 can be analyzed using 3D vectors. A 3D vector is nothing but a tuple of 3 floating-point
 numbers. A 3D vector can be used for storing the position or direction of a photon.</p>
-<pre><code class="language-python">class Vec:
+<pre><code class="language-python=">class Vec:
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
 </code></pre>
-<p>There are two very special and interesting operations that can be done on 3D vectors:</p>
+<p>The most basic operations that can be performed on two vectors is addition and subtraction. We can implement them by overriding the <code>__add__</code> and <code>__sub__</code> magic methods:</p>
+<pre><code class="language-python=">class Vec:
+    # ...
+
+    def __add__(self, other):
+        return Vec(self.x + other.x, self.y + other.y, self.z + other.z)
+    
+    def __neg__(self):
+        return Vec(-self.x, -self.y, -self.z)
+    
+    def __sub__(self, other):
+        return self + (-other)
+</code></pre>
+<p>Besides addition/subtraction, there are two very special and interesting operations that can be done on 3D vectors:</p>
 <ol>
 <li>
 <p>Dot-product: Calculates how aligned the vectors are. The dot-product of two vectors 
@@ -2452,15 +2465,18 @@ can can be calculated with the following formula:</p>
 </li>
 </ol>
 <p>Let's go ahead and implement these operations as methods on our <code>Vec</code> class:</p>
-<pre><code class="language-python">def dot(self, other):
-    return self.x * other.x + self.y * other.y + self.z * other.z
+<pre><code class="language-python=">class Vec:
+    # ...
 
-def cross(self, other):
-    return Vec(
-        self.y * other.z + self.z * other.y,
-        self.z * other.x + self.x * other.z,
-        self.x * other.y + self.y * other.x,
-    )
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
+    def cross(self, other):
+        return Vec(
+            self.y * other.z + self.z * other.y,
+            self.z * other.x + self.x * other.z,
+            self.x * other.y + self.y * other.x,
+        )
 </code></pre>
 <p>Reminding you of high-school math, a 2D vector's length could be calculated by summing the square
 of vector elements and taking its root, the length of a 3D vector can also be calculated using a
@@ -2469,25 +2485,34 @@ similar approach:</p>
 <p>Alternatively, we can calculate the length of a vector by taking the square root of the vector, 
 dotted with itself:</p>
 <p>\(|\vec{A}|=\sqrt{\vec{A}.\vec{A}}\)</p>
-<pre><code class="language-python">def length(self):
-    return math.sqrt(self.dot(self))
+<pre><code class="language-python=">class Vec:
+    # ...
+
+    def length(self):
+        return math.sqrt(self.dot(self))
 </code></pre>
 <p>Another useful operation is multiplication of a vector by an scalar. We are going to override the
 multiplication operator in order to have this operation in our <code>Vec</code> class:</p>
-<pre><code class="language-python">def __mul__(self, other):
-    return Vec(
-        self.x * other,
-        self.y * other,
-        self.z * other,
-    )
+<pre><code class="language-python=">class Vec:
+    # ...
+
+    def __mul__(self, other):
+        return Vec(
+            self.x * other,
+            self.y * other,
+            self.z * other,
+        )
 </code></pre>
 <p>Normal of a vector \(\vec{A}\) is defined as a vector with length \(1\) that has the same direction
 as vector \(\vec{A}\). Based on the definition, we can calculate the normal vector by dividing the
 elements of the vector by the length of the vector:</p>
 <p>\(norm(\vec{A})=\frac{\vec{A}}{|\vec{A}|}\)</p>
-<pre><code class="language-python">def norm(self):
-    len_inv = 1 / self.length()
-    return self * len_inv
+<pre><code class="language-python=">class Vec:
+    # ...
+
+    def norm(self):
+        len_inv = 1 / self.length()
+        return self * len_inv
 </code></pre>
 <p>Although your compiler's optimizer will do the job for you, it's generally better to calculate
 the inverse of a number and multiply it with your variables, instead of dividing the variables
@@ -2506,22 +2531,93 @@ image and calculate the corresponding 3D point located on the 3D plane (Let's na
 of \(\vec{EP_{ij}}\).</p>
 <p>\(\vec{P_{ij}}=\vec{LD}+\frac{i}{W}\vec{R}+\frac{j}{H}\vec{U}\)</p>
 <p>Let's hold the position and direction of a ray in a seperate <code>Ray</code> class:</p>
-<pre><code class="language-python">class Ray:
+<pre><code class="language-python=">class Ray:
     def __init__(self, pos, dir):
         self.pos = pos
         self.dir = dir
 </code></pre>
 <p>We can use the PPM image generator we developed in the previous sections in order to calculate
 a ray-traced scene. We just need to reimplement the <code>color_of</code> function:</p>
-<pre><code class="language-python">def color_of(x, y, width, height):
-    p = ld + (x / width) * r + (y / height) * u
+<pre><code class="language-python=">def color_of(x, y, width, height):
+    p = ld + r * (x / width) + u * (y / height)
     direction = (e - p).norm()
     ray = Ray(e, direction)
     return trace_ray(ray)
 </code></pre>
 <p>The <code>trace_ray</code> function will take a ray as an argument and will calculate the color and intensity
 of photons that are going through that ray for us.</p>
+<hr />
+<p>We just saw that we can calculate the initial rays coming out of an imaginary eye if we have the vectors \(\vec{LD}\), \(\vec{U}\) and \(\vec{R}\), but how can we can the vectors themselves?</p>
+<p>Assuming our imaginary eye is located at \(vec{E}\) and the target object it is looking at is located at \(vec{T}\), the direction of the eye would be \(norm(\vec{T} - \vec{E})\). Adding this vector to \(\vec{E}\), we'll have a new point that is 1 unit far from the eye vector: \(\vec{C} = \vec{E} + norm(\vec{T} - \vec{E})\)</p>
+<p>The vector \(vec{C}\) can be considered as the center of the square plane that we are going to pass our rays through.</p>
+<p>Now, remember the definition of cross product: it's a vector that is prependicular to both input vectors. Let's calculate the cross-product of \(vec{EC}\) and a vector that if pointing up \((0,1,0)\) to see what happens. The result will be a vector that is prependicular to both \(vec{EC}\) and the up vector. It'll be pointing to the right of the camera plane (Read about the right-hand rule). The result is \(\vec{R}\). Now calculate the cross-product of \(vec{R}\) with \(vec{EC}\), and you will get another vector that is pointing to the top of the camera plane, it's \(vec{U\})!</p>
+<p>Both of the \(vec{R}\) and \(vec{U}\) vectors will be of size 1. In case we want the size of the camera plane's edges to be 1, we can calculate the buttom-left vector as \(vec{LD} = \vec(C) - \frac{\vec{U}}{2} - \frac{\vec{R}}{2}\).</p>
+<p>Finally, the resulting camera plane will be a unit square that is 1 unit far from \(\vec{E}\), pointing to target object \(\vec{T}\).</p>
+<p>The vectors are visualized in figure X, but it's better to experiment with those vectors yourself and maybe even watch some videos and other ray-tracing tutorials to better get the idea.</p>
 <p><img src="assets/eye.png" alt="Calculation of eye-generated rays" /></p>
+<p>Given the calculations described above, here is the final code calculating everything:</p>
+<pre><code class="language-python=">e = Vec(0, 100, 0) # Eye/Camera
+t = Vec(0, 0, 20) # Target
+
+ec = (t - e).norm()
+
+c = e + ec # Center of cemera plane
+r = ec.cross(Vec(0, 1, 0)) # Pointing to the right of the plane
+u = r.cross(ec) # Pointing to the top of the plane
+ld = c - r/2 - u/2 # Left-bottom of the plane
+</code></pre>
+<p>def color_of(x, y, width, height):
+p = ld + r * (x / width) + u * (y / height)
+direction = (e - p).norm()
+ray = Ray(e, direction)
+return trace_ray(ray)</p>
+<pre><code>
+We are ready to discuss the implementation of the `trace_ray` function! Let's start with a very simple one: we would like to check if the ray intersects with an sphere. If it does, we would like to return the red color, otherwise black. Since spheres are not the only kind of objects we are going to draw in our ray tracer, it's good to implement things in an object-oriented way already. We'll have an abstract base class `Object` which will have two abstract functions:
+
+1. The `intersects` function, will accept a `Ray` and either return an intersection point (As a `Vec`) or `None` (If the ray doesn't intersect with the object).
+2. `color_of` function will accept a point on the object (As a `Vec`) and returns the color of the given point on the object. This allows us to colorize objects.
+
+```python=
+class Shape:
+    def intersects(self, ray: Ray):
+        pass
+    
+    def color_of(self, pos: Vec):
+        pass
+</code></pre>
+<pre><code class="language-python=">class Sphere(Shape):
+    def __init__(self, pos: Vec, radius, color):
+        self.pos = pos
+        self.radius = radius
+        self.color = color
+    
+    def color_of(self):
+        return self.color
+    
+    def intersects(self, ray: Ray):
+        tca=(self.pos-ray.pos).dot(ray.dir)
+		if tca&lt;0:
+			return None
+		d2=(self.pos-ray.pos).dot(self.pos-ray.pos)-tca*tca
+		if d2 &gt; self.radius ** 2:
+			return None
+		thc=math.sqrt(self.radius ** 2 - d2)
+		ret=min(tca-thc,tca+thc)
+		if ret&lt;0:
+			return None
+		else:
+			return ret
+</code></pre>
+<p>Now we can start seeing the sphere!</p>
+<pre><code class="language-python=">sphere = Sphere(Vec(0,0,0),2, (255,0,0))
+
+def trace_ray(ray):
+    if sphere.intersects(ray):
+        return (255,0,0)
+    else
+        return (0,0,0)
+</code></pre>
+<hr />
 <h2 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h2>
 <p>Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)</p>
 <p>In the rasterization algorithm, instead of emitting rays abd finding the object that it intersects with and calculating its color, we will try to map the 3D points of an object into 2D points on your computer screen through mathematical formula. In other words, when rendering each frame, we loop through the objects in our scene, and all of the 3D points that make those objects, and we will apply a function which convert a triplet \((x, y, z)\) to a pair of floats \((x,y)\). We then fill those pixels on the screen!</p>
