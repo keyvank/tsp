@@ -94,7 +94,9 @@ Let's write a function in Python which is able to save a PPM file using the desc
 ```python=
 import io
 
-def save_ppm(width, height, rows):
+def save_ppm(rows):
+    height = len(rows)
+    width = len(rows[0])
     with io.open('output.ppm', 'wb') as f:
         f.write(f"P6 {width} {height} 255\n".encode('ascii'))
         for row in rows:
@@ -118,7 +120,7 @@ for y in range(HEIGHT):
         row.append(color_of(x, y, WIDTH, HEIGHT))
     rows.append(row)
 
-save_ppm(800, 600, rows)
+save_ppm(rows)
 ```
 
 In order to make our future image generations easier, instead of calculating the color of the pixel directly in the loop, I made a function called `color_of` which returns the color of the \\((x,y)\\)th pixel in an image of size \\((width, height)\\). Currently, this function only returns red, so you may not see anything special in the output, but try this function instead:
@@ -296,9 +298,9 @@ class Vec:
 
     def cross(self, other):
         return Vec(
-            self.y * other.z + self.z * other.y,
-            self.z * other.x + self.x * other.z,
-            self.x * other.y + self.y * other.x,
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
         )
 ```
 
@@ -387,7 +389,7 @@ a ray-traced scene. We just need to reimplement the `color_of` function:
 ```python=
 def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
-    direction = (e - p).norm()
+    direction = (p - e).norm()
     ray = Ray(e, direction)
     return trace_ray(ray)
 ```
@@ -416,20 +418,19 @@ The vectors are visualized in figure X, but it's better to experiment with those
 Given the calculations described above, here is the final code calculating everything:
 
 ```python=
-e = Vec(0, 100, 0) # Eye/Camera
-t = Vec(0, 0, 20) # Target
+e = Vec(0, 50, 0) # Eye/Camera
+t = Vec(0, 0, 100) # Target
 
 ec = (t - e).norm()
 
 c = e + ec # Center of cemera plane
 r = ec.cross(Vec(0, 1, 0)) # Pointing to the right of the plane
 u = r.cross(ec) # Pointing to the top of the plane
-ld = c - r/2 - u/2 # Left-bottom of the plane
-```
+ld = c - r * 0.5 - u * 0.5 # Left-bottom of the plane
 
 def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
-    direction = (e - p).norm()
+    direction = (p - e).norm()
     ray = Ray(e, direction)
     return trace_ray(ray)
 ```
@@ -454,36 +455,49 @@ class Sphere(Shape):
         self.pos = pos
         self.radius = radius
         self.color = color
-    
+
     def color_of(self):
         return self.color
-    
+
     def intersects(self, ray: Ray):
-        tca=(self.pos-ray.pos).dot(ray.dir)
-		if tca<0:
-			return None
-		d2=(self.pos-ray.pos).dot(self.pos-ray.pos)-tca*tca
-		if d2 > self.radius ** 2:
-			return None
-		thc=math.sqrt(self.radius ** 2 - d2)
-		ret=min(tca-thc,tca+thc)
-		if ret<0:
-			return None
-		else:
-			return ret
+        tca = (self.pos - ray.pos).dot(ray.dir)
+        if tca < 0:
+            return None
+        d2 = (self.pos - ray.pos).dot(self.pos - ray.pos) - tca * tca
+        if d2 > self.radius**2:
+            return None
+        thc = math.sqrt(self.radius**2 - d2)
+        ret = min(tca - thc, tca + thc)
+        if ret < 0:
+            return None
+        else:
+            return ret
 ```
 
 Now we can start seeing the sphere!
 
 ```python=
-sphere = Sphere(Vec(0,0,0),2, (255,0,0))
+sphere = Sphere(Vec(0, 0, 100), 2, (255, 0, 0))
 
 def trace_ray(ray):
     if sphere.intersects(ray):
-        return (255,0,0)
-    else
-        return (0,0,0)
+        return (255, 0, 0)
+    else:
+        return (0, 0, 0)
 ```
+
+If you render the sphere on a 800x600 image, you'll see that the sphere looks a bit skewed. That's because the imaginary camera-plane we calculated is a unit square, but the aspect ratio of the final image (In this case, 4/3), does not match with the aspect ratio of the camera plane. In order to solve this, you may just apply the ratio difference to the \\(vec{R}\\) vector:
+
+```python=
+ASPECT_RATIO = WIDTH / HEIGHT
+r = ec.cross(Vec(0, 1, 0)).norm() * ASPECT_RATIO
+```
+
+After this, the sphere should appear like a perfect circle on the image.
+
+## The checkerboard plane!
+
+We just rendered an 3D sphere, but the result is not impressive, since it just looks like a 2D circle.
 
 ----
 

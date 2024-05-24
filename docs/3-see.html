@@ -230,7 +230,9 @@
 <p>Let's write a function in Python which is able to save a PPM file using the described format:</p>
 <pre><code class="language-python=">import io
 
-def save_ppm(width, height, rows):
+def save_ppm(rows):
+    height = len(rows)
+    width = len(rows[0])
     with io.open('output.ppm', 'wb') as f:
         f.write(f&quot;P6 {width} {height} 255\n&quot;.encode('ascii'))
         for row in rows:
@@ -251,7 +253,7 @@ for y in range(HEIGHT):
         row.append(color_of(x, y, WIDTH, HEIGHT))
     rows.append(row)
 
-save_ppm(800, 600, rows)
+save_ppm(rows)
 </code></pre>
 <p>In order to make our future image generations easier, instead of calculating the color of the pixel directly in the loop, I made a function called <code>color_of</code> which returns the color of the \((x,y)\)th pixel in an image of size \((width, height)\). Currently, this function only returns red, so you may not see anything special in the output, but try this function instead:</p>
 <pre><code class="language-python=">import math
@@ -397,9 +399,9 @@ can can be calculated with the following formula:</p>
 
     def cross(self, other):
         return Vec(
-            self.y * other.z + self.z * other.y,
-            self.z * other.x + self.x * other.z,
-            self.x * other.y + self.y * other.x,
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
         )
 </code></pre>
 <p>Reminding you of high-school math, a 2D vector's length could be calculated by summing the square
@@ -464,7 +466,7 @@ of \(\vec{EP_{ij}}\).</p>
 a ray-traced scene. We just need to reimplement the <code>color_of</code> function:</p>
 <pre><code class="language-python=">def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
-    direction = (e - p).norm()
+    direction = (p - e).norm()
     ray = Ray(e, direction)
     return trace_ray(ray)
 </code></pre>
@@ -480,29 +482,28 @@ of photons that are going through that ray for us.</p>
 <p>The vectors are visualized in figure X, but it's better to experiment with those vectors yourself and maybe even watch some videos and other ray-tracing tutorials to better get the idea.</p>
 <p><img src="assets/eye.png" alt="Calculation of eye-generated rays" /></p>
 <p>Given the calculations described above, here is the final code calculating everything:</p>
-<pre><code class="language-python=">e = Vec(0, 100, 0) # Eye/Camera
-t = Vec(0, 0, 20) # Target
+<pre><code class="language-python=">e = Vec(0, 50, 0) # Eye/Camera
+t = Vec(0, 0, 100) # Target
 
 ec = (t - e).norm()
 
 c = e + ec # Center of cemera plane
 r = ec.cross(Vec(0, 1, 0)) # Pointing to the right of the plane
 u = r.cross(ec) # Pointing to the top of the plane
-ld = c - r/2 - u/2 # Left-bottom of the plane
+ld = c - r * 0.5 - u * 0.5 # Left-bottom of the plane
+
+def color_of(x, y, width, height):
+    p = ld + r * (x / width) + u * (y / height)
+    direction = (p - e).norm()
+    ray = Ray(e, direction)
+    return trace_ray(ray)
 </code></pre>
-<p>def color_of(x, y, width, height):
-p = ld + r * (x / width) + u * (y / height)
-direction = (e - p).norm()
-ray = Ray(e, direction)
-return trace_ray(ray)</p>
-<pre><code>
-We are ready to discuss the implementation of the `trace_ray` function! Let's start with a very simple one: we would like to check if the ray intersects with an sphere. If it does, we would like to return the red color, otherwise black. Since spheres are not the only kind of objects we are going to draw in our ray tracer, it's good to implement things in an object-oriented way already. We'll have an abstract base class `Object` which will have two abstract functions:
-
-1. The `intersects` function, will accept a `Ray` and either return an intersection point (As a `Vec`) or `None` (If the ray doesn't intersect with the object).
-2. `color_of` function will accept a point on the object (As a `Vec`) and returns the color of the given point on the object. This allows us to colorize objects.
-
-```python=
-class Shape:
+<p>We are ready to discuss the implementation of the <code>trace_ray</code> function! Let's start with a very simple one: we would like to check if the ray intersects with an sphere. If it does, we would like to return the red color, otherwise black. Since spheres are not the only kind of objects we are going to draw in our ray tracer, it's good to implement things in an object-oriented way already. We'll have an abstract base class <code>Object</code> which will have two abstract functions:</p>
+<ol>
+<li>The <code>intersects</code> function, will accept a <code>Ray</code> and either return an intersection point (As a <code>Vec</code>) or <code>None</code> (If the ray doesn't intersect with the object).</li>
+<li><code>color_of</code> function will accept a point on the object (As a <code>Vec</code>) and returns the color of the given point on the object. This allows us to colorize objects.</li>
+</ol>
+<pre><code class="language-python=">class Shape:
     def intersects(self, ray: Ray):
         pass
     
@@ -514,33 +515,40 @@ class Shape:
         self.pos = pos
         self.radius = radius
         self.color = color
-    
+
     def color_of(self):
         return self.color
-    
+
     def intersects(self, ray: Ray):
-        tca=(self.pos-ray.pos).dot(ray.dir)
-		if tca&lt;0:
-			return None
-		d2=(self.pos-ray.pos).dot(self.pos-ray.pos)-tca*tca
-		if d2 &gt; self.radius ** 2:
-			return None
-		thc=math.sqrt(self.radius ** 2 - d2)
-		ret=min(tca-thc,tca+thc)
-		if ret&lt;0:
-			return None
-		else:
-			return ret
+        tca = (self.pos - ray.pos).dot(ray.dir)
+        if tca &lt; 0:
+            return None
+        d2 = (self.pos - ray.pos).dot(self.pos - ray.pos) - tca * tca
+        if d2 &gt; self.radius**2:
+            return None
+        thc = math.sqrt(self.radius**2 - d2)
+        ret = min(tca - thc, tca + thc)
+        if ret &lt; 0:
+            return None
+        else:
+            return ret
 </code></pre>
 <p>Now we can start seeing the sphere!</p>
-<pre><code class="language-python=">sphere = Sphere(Vec(0,0,0),2, (255,0,0))
+<pre><code class="language-python=">sphere = Sphere(Vec(0, 0, 100), 2, (255, 0, 0))
 
 def trace_ray(ray):
     if sphere.intersects(ray):
-        return (255,0,0)
-    else
-        return (0,0,0)
+        return (255, 0, 0)
+    else:
+        return (0, 0, 0)
 </code></pre>
+<p>If you render the sphere on a 800x600 image, you'll see that the sphere looks a bit skewed. That's because the imaginary camera-plane we calculated is a unit square, but the aspect ratio of the final image (In this case, 4/3), does not match with the aspect ratio of the camera plane. In order to solve this, you may just apply the ratio difference to the \(vec{R}\) vector:</p>
+<pre><code class="language-python=">ASPECT_RATIO = WIDTH / HEIGHT
+r = ec.cross(Vec(0, 1, 0)).norm() * ASPECT_RATIO
+</code></pre>
+<p>After this, the sphere should appear like a perfect circle on the image.</p>
+<h2 id="the-checkerboard-plane"><a class="header" href="#the-checkerboard-plane">The checkerboard plane!</a></h2>
+<p>We just rendered an 3D sphere, but the result is not impressive, since it just looks like a 2D circle.</p>
 <hr />
 <h2 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h2>
 <p>Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)</p>
