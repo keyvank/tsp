@@ -499,6 +499,35 @@ After this, the sphere should appear like a perfect circle on the image.
 
 We just rendered an 3D sphere, but the result is not impressive, since it just looks like a 2D circle.
 
+```python=
+class Checkerboard:
+    def __init__(self, normal, intercept, col1, col2, size):
+        self.normal = normal
+        self.intercept = intercept
+        self.col1 = col1
+        self.col2 = col2
+        self.size = size
+
+    def norm_at(self, pos):
+        return self.normal
+
+    def color_of(self, pos):
+        if (math.floor(pos.x / self.size) + math.floor(pos.z / self.size)) % 2:
+            return self.col1
+        else:
+            return self.col2
+
+    def intersects(self, ray: Ray):
+        div = ray.dir.dot(self.normal)
+        if div == 0:  # Plane and ray are parallel!
+            return None
+        t = -(ray.pos.dot(self.normal) + self.intercept) / div
+        if t > 0:
+            return t
+        else:
+            return None
+```
+
 ----
 
 
