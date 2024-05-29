@@ -89,19 +89,38 @@ A PPM file starts with the magic string `P6`, then comes a width (As an ASCII st
 
 `P6` (2 bytes) + whitespace (1 byte) + `800` (3 bytes) + whitespace (1 byte) + `255` (3 bytes) + whitespace (1 byte) + raw image data (1440000 bytes).
 
-Let's write a function in Python which is able to save a PPM file using the described format:
+Before generating the PPM file, let's first create a Python class for storing colors.
+
+```python=
+class Color:
+    def __init__(self, r, g, b):
+        self.r = max(min(r, 1), 0)
+        self.g = max(min(g, 1), 0)
+        self.b = max(min(b, 1), 0)
+
+    def __add__(self, other):
+        return Color(self.r + other.r, self.g + other.g, self.b + other.b)
+
+    def __mul__(self, other):
+        if type(other) is Color:
+            return Color(self.r * other.r, self.g * other.g, self.b * other.b)
+        else:
+            return Color(self.r * other, self.g * other, self.b * other)
+```
+
+Here colors are represented as tuples made of 3 components, each representing the intensity of the red, green and blue components as a floating point number between 0 and 1. In the constructor, we make sure that the component values will never get above 1 or below 0. We have also implemented the addition and multiplication operators for colors. We'll soon see when colors should be multiplied or added to each other in the next sections.
+
+Assuming our generated image is stored as a 2D array of `Color`s, let's write a function in Python which is able to save a PPM file given the array:
 
 ```python=
 import io
 
 def save_ppm(rows):
-    height = len(rows)
-    width = len(rows[0])
-    with io.open('output.ppm', 'wb') as f:
-        f.write(f"P6 {width} {height} 255\n".encode('ascii'))
+    with io.open("output.ppm", "wb") as f:
+        f.write(f"P6 {len(rows[0])} {len(rows)} 255\n".encode("ascii"))
         for row in rows:
-            for (r, g, b) in row:
-                f.write(bytes([r, g, b]))
+            for col in row:
+                f.write(bytes([int(col.r * 255), int(col.g * 255), int(col.b * 255)]))
 ```
 
 In this function, the `rows` argument should be a list of `height` number of rows, in which each row has `width` number of pixels (tuples) of RGB triads. As an example on how to use this function, let's generate a 800x600 image that all pixels are red:
@@ -140,6 +159,16 @@ def color_of(x, y, width, height):
 ```
 
 See what it generates, try different functions and play with it a bit. Guess how shocking it was for computer scientist back then to be able to generate vision using code. That opened doors for insane amount of creativity and the event was big enough to call it a revolution in my opinion!
+
+## Emitters vs Absorbers
+
+We are now convinced that the white color does not actually exist, and what we see and define as white is actually a combination of red, green and blue colors. Try litting a surface with red, green and blue light sources, what you will end up is white. But have you ever tried making the white color by combining red, green and blue ***paint*** colors? If you have experience in painting, you'll know that the white paint color cannot be made of other colors. In fact, by combining red, green and blue paint colors, you will end up with black! So, what is happening here? What make light sources and colored materials different?
+
+A blue light-source looks blue, because it emits electromagnetic waves in the frequency range of the blue color, whereas a blue object looks blue, because it absorbs all visible electromagnetic waves, but the bluish ones!
+
+By combining red, green and blue light-sources, you will end up with a combination that contains all three frequencies at the same time, so it looks white.
+
+By combining red, green and blue paint colors, you will end up in some color that absorbs all visible electromagnetic waves, thus it looks black.
 
 Drawing a line
 

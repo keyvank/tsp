@@ -2303,17 +2303,32 @@ plt.show()
 </code></pre>
 <p>A PPM file starts with the magic string <code>P6</code>, then comes a width (As an ASCII string), then the height and then the maximum value of a color component. The metadata values are separated using whitespaces. After the metadata, there comes a whitespace and then we'll have the raw image data. In the example above, we are describing a 800x600 image in which each color component is between 0 to 255. It is worth noting again that the metadata comes as a human readable ASCII string and not bytes. The size of final file is:</p>
 <p><code>P6</code> (2 bytes) + whitespace (1 byte) + <code>800</code> (3 bytes) + whitespace (1 byte) + <code>255</code> (3 bytes) + whitespace (1 byte) + raw image data (1440000 bytes).</p>
-<p>Let's write a function in Python which is able to save a PPM file using the described format:</p>
+<p>Before generating the PPM file, let's first create a Python class for storing colors.</p>
+<pre><code class="language-python=">class Color:
+    def __init__(self, r, g, b):
+        self.r = max(min(r, 1), 0)
+        self.g = max(min(g, 1), 0)
+        self.b = max(min(b, 1), 0)
+
+    def __add__(self, other):
+        return Color(self.r + other.r, self.g + other.g, self.b + other.b)
+
+    def __mul__(self, other):
+        if type(other) is Color:
+            return Color(self.r * other.r, self.g * other.g, self.b * other.b)
+        else:
+            return Color(self.r * other, self.g * other, self.b * other)
+</code></pre>
+<p>Here colors are represented as tuples made of 3 components, each representing the intensity of the red, green and blue components as a floating point number between 0 and 1. In the constructor, we make sure that the component values will never get above 1 or below 0. We have also implemented the addition and multiplication operators for colors. We'll soon see when colors should be multiplied or added to each other in the next sections.</p>
+<p>Assuming our generated image is stored as a 2D array of <code>Color</code>s, let's write a function in Python which is able to save a PPM file given the array:</p>
 <pre><code class="language-python=">import io
 
 def save_ppm(rows):
-    height = len(rows)
-    width = len(rows[0])
-    with io.open('output.ppm', 'wb') as f:
-        f.write(f&quot;P6 {width} {height} 255\n&quot;.encode('ascii'))
+    with io.open(&quot;output.ppm&quot;, &quot;wb&quot;) as f:
+        f.write(f&quot;P6 {len(rows[0])} {len(rows)} 255\n&quot;.encode(&quot;ascii&quot;))
         for row in rows:
-            for (r, g, b) in row:
-                f.write(bytes([r, g, b]))
+            for col in row:
+                f.write(bytes([int(col.r * 255), int(col.g * 255), int(col.b * 255)]))
 </code></pre>
 <p>In this function, the <code>rows</code> argument should be a list of <code>height</code> number of rows, in which each row has <code>width</code> number of pixels (tuples) of RGB triads. As an example on how to use this function, let's generate a 800x600 image that all pixels are red:</p>
 <pre><code class="language-python=">def color_of(x, y, width, height):
@@ -2345,6 +2360,11 @@ def color_of(x, y, width, height):
     return (int(r), int(g), int(b))
 </code></pre>
 <p>See what it generates, try different functions and play with it a bit. Guess how shocking it was for computer scientist back then to be able to generate vision using code. That opened doors for insane amount of creativity and the event was big enough to call it a revolution in my opinion!</p>
+<h2 id="emitters-vs-absorbers"><a class="header" href="#emitters-vs-absorbers">Emitters vs Absorbers</a></h2>
+<p>We are now convinced that the white color does not actually exist, and what we see and define as white is actually a combination of red, green and blue colors. Try litting a surface with red, green and blue light sources, what you will end up is white. But have you ever tried making the white color by combining red, green and blue <em><strong>paint</strong></em> colors? If you have experience in painting, you'll know that the white paint color cannot be made of other colors. In fact, by combining red, green and blue paint colors, you will end up with black! So, what is happening here? What make light sources and colored materials different?</p>
+<p>A blue light-source looks blue, because it emits electromagnetic waves in the frequency range of the blue color, whereas a blue object looks blue, because it absorbs all visible electromagnetic waves, but the bluish ones!</p>
+<p>By combining red, green and blue light-sources, you will end up with a combination that contains all three frequencies at the same time, so it looks white.</p>
+<p>By combining red, green and blue paint colors, you will end up in some color that absorbs all visible electromagnetic waves, thus it looks black.</p>
 <p>Drawing a line</p>
 <p>Drawing a circle</p>
 <blockquote>
@@ -2625,6 +2645,33 @@ r = ec.cross(Vec(0, 1, 0)).norm() * ASPECT_RATIO
 <p>After this, the sphere should appear like a perfect circle on the image.</p>
 <h2 id="the-checkerboard-plane"><a class="header" href="#the-checkerboard-plane">The checkerboard plane!</a></h2>
 <p>We just rendered an 3D sphere, but the result is not impressive, since it just looks like a 2D circle.</p>
+<pre><code class="language-python=">class Checkerboard:
+    def __init__(self, normal, intercept, col1, col2, size):
+        self.normal = normal
+        self.intercept = intercept
+        self.col1 = col1
+        self.col2 = col2
+        self.size = size
+
+    def norm_at(self, pos):
+        return self.normal
+
+    def color_of(self, pos):
+        if (math.floor(pos.x / self.size) + math.floor(pos.z / self.size)) % 2:
+            return self.col1
+        else:
+            return self.col2
+
+    def intersects(self, ray: Ray):
+        div = ray.dir.dot(self.normal)
+        if div == 0:  # Plane and ray are parallel!
+            return None
+        t = -(ray.pos.dot(self.normal) + self.intercept) / div
+        if t &gt; 0:
+            return t
+        else:
+            return None
+</code></pre>
 <hr />
 <h2 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h2>
 <p>Rasterization is another effective technique in rendering 3D scenes and it is quite faster than ray-tracing (Or any other method involving simulation of Physics). Although the results are less accurate, it is the main technique used in real-time rendering applications (E.g Video games). You don't have much time to render the next frame in a game! (Although, games are slowly switching to ray-tracing in some parts nowadays, as our hardware becomes faster)</p>
