@@ -2438,14 +2438,14 @@ world around us. Since photons move on straight lines, we can study their behavi
 with mathematical vectors. Since we live in a 3D world, the movements of our photons
 can be analyzed using 3D vectors. A 3D vector is nothing but a tuple of 3 floating-point
 numbers. A 3D vector can be used for storing the position or direction of a photon.</p>
-<pre><code class="language-python=">class Vec:
+<pre><code class="language-python=">class Vec3D:
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
 </code></pre>
 <p>The most basic operations that can be performed on two vectors is addition and subtraction. We can implement them by overriding the <code>__add__</code> and <code>__sub__</code> magic methods:</p>
-<pre><code class="language-python=">class Vec:
+<pre><code class="language-python=">class Vec3D:
     # ...
 
     def __add__(self, other):
@@ -2476,9 +2476,9 @@ is equal with the product of length of the vectors multiplied with cosine of the
 Assuming the cross-product of \(\vec{A}\) and \(\vec{B}\) is \(\vec{C}\), the elements of \(\vec{C}\)
 can can be calculated with the following formula:</p>
 <ul>
-<li>\(C_x = A_y.B_z + A_z.B_y\)</li>
-<li>\(C_y = A_z.B_x + A_x.B_z\)</li>
-<li>\(C_z = A_x.B_y + A_y.B_x\)</li>
+<li>\(C_x = A_y.B_z - A_z.B_y\)</li>
+<li>\(C_y = A_z.B_x - A_x.B_z\)</li>
+<li>\(C_z = A_x.B_y - A_y.B_x\)</li>
 </ul>
 <p>Alternatively, you can calculate the length of a cross-product using this formula:</p>
 <ul>
@@ -2487,7 +2487,7 @@ can can be calculated with the following formula:</p>
 </li>
 </ol>
 <p>Let's go ahead and implement these operations as methods on our <code>Vec</code> class:</p>
-<pre><code class="language-python=">class Vec:
+<pre><code class="language-python=">class Vec3D:
     # ...
 
     def dot(self, other):
@@ -2507,7 +2507,7 @@ similar approach:</p>
 <p>Alternatively, we can calculate the length of a vector by taking the square root of the vector, 
 dotted with itself:</p>
 <p>\(|\vec{A}|=\sqrt{\vec{A}.\vec{A}}\)</p>
-<pre><code class="language-python=">class Vec:
+<pre><code class="language-python=">class Vec3D:
     # ...
 
     def length(self):
@@ -2515,7 +2515,7 @@ dotted with itself:</p>
 </code></pre>
 <p>Another useful operation is multiplication of a vector by an scalar. We are going to override the
 multiplication operator in order to have this operation in our <code>Vec</code> class:</p>
-<pre><code class="language-python=">class Vec:
+<pre><code class="language-python=">class Vec3D:
     # ...
 
     def __mul__(self, other):
@@ -2529,7 +2529,7 @@ multiplication operator in order to have this operation in our <code>Vec</code> 
 as vector \(\vec{A}\). Based on the definition, we can calculate the normal vector by dividing the
 elements of the vector by the length of the vector:</p>
 <p>\(norm(\vec{A})=\frac{\vec{A}}{|\vec{A}|}\)</p>
-<pre><code class="language-python=">class Vec:
+<pre><code class="language-python=">class Vec3D:
     # ...
 
     def norm(self):
@@ -2558,16 +2558,24 @@ of \(\vec{EP_{ij}}\).</p>
         self.pos = pos
         self.dir = dir
 </code></pre>
-<p>We can use the PPM image generator we developed in the previous sections in order to calculate
-a ray-traced scene. We just need to reimplement the <code>color_of</code> function:</p>
-<pre><code class="language-python=">def color_of(x, y, width, height):
+<p>The rays we are generating are going to propagate through an <code>Environment</code> and hit objects. Let's assume an <code>Environment</code> is made of objects and light-sources. The <code>Environment</code> class is going to have a <code>trace_ray</code> function, which accepts a ray as input, and will return the corresponding color as its output.</p>
+<pre><code class="language-python=">class Environment:
+    def __init__(self, objs, lights):
+        self.objs = objs
+        self.lights = lights
+    
+    def trace_ray(self, ray: Ray):
+        # ...
+</code></pre>
+<p>We can use the PPM image generator we developed in the previous sections in order to calculate a ray-traced scene. We just need to reimplement the <code>color_of</code> function to calculate each pixel according to the environment:</p>
+<pre><code class="language-python=">env = Environment([], [])
+
+def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
     direction = (p - e).norm()
     ray = Ray(e, direction)
-    return trace_ray(ray)
+    return env.trace_ray(ray)
 </code></pre>
-<p>The <code>trace_ray</code> function will take a ray as an argument and will calculate the color and intensity
-of photons that are going through that ray for us.</p>
 <hr />
 <p>We just saw that we can calculate the initial rays coming out of an imaginary eye if we have the vectors \(\vec{LD}\), \(\vec{U}\) and \(\vec{R}\), but how can we can the vectors themselves?</p>
 <p>Assuming our imaginary eye is located at \(vec{E}\) and the target object it is looking at is located at \(vec{T}\), the direction of the eye would be \(norm(\vec{T} - \vec{E})\). Adding this vector to \(\vec{E}\), we'll have a new point that is 1 unit far from the eye vector: \(\vec{C} = \vec{E} + norm(\vec{T} - \vec{E})\)</p>
@@ -2592,7 +2600,7 @@ def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
     direction = (p - e).norm()
     ray = Ray(e, direction)
-    return trace_ray(ray)
+    return env.trace_ray(ray)
 </code></pre>
 <p>We are ready to discuss the implementation of the <code>trace_ray</code> function! Let's start with a very simple one: we would like to check if the ray intersects with an sphere. If it does, we would like to return the red color, otherwise black. Since spheres are not the only kind of objects we are going to draw in our ray tracer, it's good to implement things in an object-oriented way already. We'll have an abstract base class <code>Object</code> which will have two abstract functions:</p>
 <ol>
@@ -2671,6 +2679,32 @@ r = ec.cross(Vec(0, 1, 0)).norm() * ASPECT_RATIO
             return t
         else:
             return None
+</code></pre>
+<h2 id="lighting"><a class="header" href="#lighting">Lighting</a></h2>
+<p>After adding the checkerboard plane, you can start to see the 3D-ness of the outputs, but the results are far from being natural yet. The most obvious reason that the outputs look ugly is that we don't have lighting yet. Every point of every object looks as lit as all other points. That's why the sphere we rendered doesn't look much different from a simple 2D circle. In this section, we are going to apply a few types of light-sources to are scenes.</p>
+<p>Just like how we abstracted away <code>Shape</code>s, we can also define a base class for every <code>Light</code> we are going to implement like this:</p>
+<pre><code class="language-python=">class Light:
+    def apply(self, point, normal)
+</code></pre>
+<p>The <code>apply</code> function accepts a few different arguments that may come handy when calculating the light intensity of a point. Not all kind of light-sources are going to need all of them. For example, we may have <code>AmbientLight</code>s, which will just add a constant color to every point on the scene:</p>
+<pre><code class="language-python=">class AmbientLight(Light):
+    def __init__(self, col: Color):
+        self.col = col
+    
+    def apply(self, env: Environment, ray: Ray, point: Vec3D, norm: Vec3D):
+        return self.col
+</code></pre>
+<p><em><strong>Point lights</strong></em></p>
+<p>Point-lights are light-sources that emit light to all directions from a fixed point. Before implementing point light, it's important to understand the <em><strong>Lambertian Reflectance</strong></em> model. The model simply states that: the reflectance of light on a surface is at its highest when the light ray is prependicular to the surface. We can formulate this as if the intensity of light on a point is equal with the cosine of the angle between the normal of that point and the vector looking from that point towards the light-source. Since dot-products have the cosine factor in them, we can use them in order to calculate the cosine of the angle between two vectors.</p>
+<pre><code class="language-python=">class PointLight:
+    def __init__(self, pos: Vec3D, col: Color):
+        self.pos = pos
+        self.col = col
+
+    def apply(self, env: Environment, ray: Ray, point: Vec3D, norm: Vec3D):
+        direction = (self.pos - point).norm()
+        intensity = max(norm.dot(direction), 0)
+        return self.col * intensity
 </code></pre>
 <hr />
 <h2 id="rasterization"><a class="header" href="#rasterization">Rasterization</a></h2>

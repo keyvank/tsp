@@ -272,7 +272,7 @@ numbers. A 3D vector can be used for storing the position or direction of a phot
 
 
 ```python=
-class Vec:
+class Vec3D:
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -282,7 +282,7 @@ class Vec:
 The most basic operations that can be performed on two vectors is addition and subtraction. We can implement them by overriding the `__add__` and `__sub__` magic methods:
 
 ```python=
-class Vec:
+class Vec3D:
     # ...
 
     def __add__(self, other):
@@ -309,9 +309,9 @@ Besides addition/subtraction, there are two very special and interesting operati
    Assuming the cross-product of \\(\vec{A}\\) and \\(\vec{B}\\) is \\(\vec{C}\\), the elements of \\(\vec{C}\\)
    can can be calculated with the following formula:
 
-   * \\(C_x = A_y.B_z + A_z.B_y\\)
-   * \\(C_y = A_z.B_x + A_x.B_z\\)
-   * \\(C_z = A_x.B_y + A_y.B_x\\)
+   * \\(C_x = A_y.B_z - A_z.B_y\\)
+   * \\(C_y = A_z.B_x - A_x.B_z\\)
+   * \\(C_z = A_x.B_y - A_y.B_x\\)
 
    Alternatively, you can calculate the length of a cross-product using this formula:
    * \\(|\vec{C}| = |\vec{A}|.|\vec{B}|.cos(\theta)\\)
@@ -319,7 +319,7 @@ Besides addition/subtraction, there are two very special and interesting operati
 Let's go ahead and implement these operations as methods on our `Vec` class:
 
 ```python=
-class Vec:
+class Vec3D:
     # ...
 
     def dot(self, other):
@@ -345,7 +345,7 @@ dotted with itself:
 \\(|\vec{A}|=\sqrt{\vec{A}.\vec{A}}\\)
 
 ```python=
-class Vec:
+class Vec3D:
     # ...
 
     def length(self):
@@ -356,7 +356,7 @@ Another useful operation is multiplication of a vector by an scalar. We are goin
 multiplication operator in order to have this operation in our `Vec` class:
 
 ```python=
-class Vec:
+class Vec3D:
     # ...
 
     def __mul__(self, other):
@@ -374,7 +374,7 @@ elements of the vector by the length of the vector:
 \\(norm(\vec{A})=\frac{\vec{A}}{|\vec{A}|}\\)
 
 ```python=
-class Vec:
+class Vec3D:
     # ...
 
     def norm(self):
@@ -412,19 +412,29 @@ class Ray:
         self.dir = dir
 ```
 
-We can use the PPM image generator we developed in the previous sections in order to calculate
-a ray-traced scene. We just need to reimplement the `color_of` function:
+The rays we are generating are going to propagate through an `Environment` and hit objects. Let's assume an `Environment` is made of objects and light-sources. The `Environment` class is going to have a `trace_ray` function, which accepts a ray as input, and will return the corresponding color as its output.
 
 ```python=
+class Environment:
+    def __init__(self, objs, lights):
+        self.objs = objs
+        self.lights = lights
+    
+    def trace_ray(self, ray: Ray):
+        # ...
+```
+
+We can use the PPM image generator we developed in the previous sections in order to calculate a ray-traced scene. We just need to reimplement the `color_of` function to calculate each pixel according to the environment:
+
+```python=
+env = Environment([], [])
+
 def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
     direction = (p - e).norm()
     ray = Ray(e, direction)
-    return trace_ray(ray)
+    return env.trace_ray(ray)
 ```
-
-The `trace_ray` function will take a ray as an argument and will calculate the color and intensity
-of photons that are going through that ray for us.
 
 -----
 
@@ -461,7 +471,7 @@ def color_of(x, y, width, height):
     p = ld + r * (x / width) + u * (y / height)
     direction = (p - e).norm()
     ray = Ray(e, direction)
-    return trace_ray(ray)
+    return env.trace_ray(ray)
 ```
 
 We are ready to discuss the implementation of the `trace_ray` function! Let's start with a very simple one: we would like to check if the ray intersects with an sphere. If it does, we would like to return the red color, otherwise black. Since spheres are not the only kind of objects we are going to draw in our ray tracer, it's good to implement things in an object-oriented way already. We'll have an abstract base class `Object` which will have two abstract functions:
@@ -555,6 +565,44 @@ class Checkerboard:
             return t
         else:
             return None
+```
+
+## Lighting
+
+After adding the checkerboard plane, you can start to see the 3D-ness of the outputs, but the results are far from being natural yet. The most obvious reason that the outputs look ugly is that we don't have lighting yet. Every point of every object looks as lit as all other points. That's why the sphere we rendered doesn't look much different from a simple 2D circle. In this section, we are going to apply a few types of light-sources to are scenes.
+
+Just like how we abstracted away `Shape`s, we can also define a base class for every `Light` we are going to implement like this:
+
+```python=
+class Light:
+    def apply(self, point, normal)
+```
+
+The `apply` function accepts a few different arguments that may come handy when calculating the light intensity of a point. Not all kind of light-sources are going to need all of them. For example, we may have `AmbientLight`s, which will just add a constant color to every point on the scene:
+
+```python=
+class AmbientLight(Light):
+    def __init__(self, col: Color):
+        self.col = col
+    
+    def apply(self, env: Environment, ray: Ray, point: Vec3D, norm: Vec3D):
+        return self.col
+```
+
+***Point lights***
+
+Point-lights are light-sources that emit light to all directions from a fixed point. Before implementing point light, it's important to understand the ***Lambertian Reflectance*** model. The model simply states that: the reflectance of light on a surface is at its highest when the light ray is prependicular to the surface. We can formulate this as if the intensity of light on a point is equal with the cosine of the angle between the normal of that point and the vector looking from that point towards the light-source. Since dot-products have the cosine factor in them, we can use them in order to calculate the cosine of the angle between two vectors.
+
+```python=
+class PointLight:
+    def __init__(self, pos: Vec3D, col: Color):
+        self.pos = pos
+        self.col = col
+
+    def apply(self, env: Environment, ray: Ray, point: Vec3D, norm: Vec3D):
+        direction = (self.pos - point).norm()
+        intensity = max(norm.dot(direction), 0)
+        return self.col * intensity
 ```
 
 ----
