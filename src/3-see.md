@@ -520,9 +520,9 @@ sphere = Sphere(Vec(0, 0, 100), 2, (255, 0, 0))
 
 def trace_ray(ray):
     if sphere.intersects(ray):
-        return (255, 0, 0)
+        return Color(1, 0, 0)
     else:
-        return (0, 0, 0)
+        return Color(0, 0, 0)
 ```
 
 If you render the sphere on a 800x600 image, you'll see that the sphere looks a bit skewed. That's because the imaginary camera-plane we calculated is a unit square, but the aspect ratio of the final image (In this case, 4/3), does not match with the aspect ratio of the camera plane. In order to solve this, you may just apply the ratio difference to the \\(vec{R}\\) vector:
@@ -575,23 +575,28 @@ Just like how we abstracted away `Shape`s, we can also define a base class for e
 
 ```python=
 class Light:
-    def apply(self, point, normal)
+    def apply(self, ...)
+        # ..
 ```
 
-The `apply` function accepts a few different arguments that may come handy when calculating the light intensity of a point. Not all kind of light-sources are going to need all of them. For example, we may have `AmbientLight`s, which will just add a constant color to every point on the scene:
+The `apply` function accepts a few different arguments that may come handy when calculating the light intensity of a point. Since we don't yet know what kind of data may be needed when calculating the light intensity, I put `...` instead of the actual arguments. Not all kind of light-sources are going to need all of them. For example, we may have `AmbientLight`s, which will just add a constant color to every point on the scene:
 
 ```python=
 class AmbientLight(Light):
     def __init__(self, col: Color):
         self.col = col
     
-    def apply(self, env: Environment, ray: Ray, point: Vec3D, norm: Vec3D):
+    def apply(self, ...):
         return self.col
 ```
 
 ***Point lights***
 
-Point-lights are light-sources that emit light to all directions from a fixed point. Before implementing point light, it's important to understand the ***Lambertian Reflectance*** model. The model simply states that: the reflectance of light on a surface is at its highest when the light ray is prependicular to the surface. We can formulate this as if the intensity of light on a point is equal with the cosine of the angle between the normal of that point and the vector looking from that point towards the light-source. Since dot-products have the cosine factor in them, we can use them in order to calculate the cosine of the angle between two vectors.
+Point-lights are light-sources that emit light to all directions from a fixed point. Before implementing point light, it's important to understand the ***Lambertian Reflectance*** model. The model simply states that: the reflectance of light on a surface is at its highest when the light ray is prependicular to the surface. We can formulate this as if the intensity of light on a point is equal with the cosine of the angle between the normal of that point and the vector looking from that point towards the light-source.
+
+![The more aligned the normal vector and the vector towards the light-source are, the shinier the point gets](assets/lambertian.png)
+
+So how do we find \\(Since dot-products have the cosine factor in them, we can use them in order to calculate the cosine of the angle between two vectors.
 
 ```python=
 class PointLight:
