@@ -251,11 +251,11 @@ By summing all of currents flowing into each node, we will get a set of equation
 
 In other words, the problem of solving the circuit is reduced to finding the solution of a system of equations.
 
-## Newton, Newton verywhere
+## Newton, Newton everywhere!
 
 Finding the roots of arbitrary functions has always been an interesting problem for ancient mathematicians. It's interesting to know that it took almost X years to find a general method for calculating the roots of a simple quadratic equation, let alone more complicated function!
 
-Newton, besides doing Physics, has always been a pioneer in mathematics and one of his discoveries, was a numerical method for finding the roots of any arbitrary function (With known derivative). The method, which is known as Newton-Raphson nowadays (Thanks to the simplification Raphson did to the algorithm), is an iterative algorithm which tries to guess the root of the function, and make its guess better and better through iterations, until reaching to a final answer!
+Newton, besides doing Physics, has always been a pioneer in mathematics and one of his discoveries, was a numerical method for finding the roots of any arbitrary function (With known derivative). The method, which is known as Newton-Raphson nowadays (Thanks to the simplification Raphson did to the algorithm), is an iterative algorithm which tries to guess the root of the function, and make its guess better and better through iterations, until reaching to a final answer! Yes, Newton was doing machine-learning in 1600s, what a legend!
 
 \\(x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}\\)
 
