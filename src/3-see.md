@@ -250,7 +250,33 @@ One of them is to draw fractals! Fractals are patterns that repeat forever. If y
 
 ## Koch Snowflake
 
-## Julia sets
+## Draw Mandelbrot-Set like a pro!
+
+```python=
+def is_stable(c, max_iters):
+    z = 0
+    for i in range(max_iters):
+        z = z ** 2 + c
+        if abs(z) > 2:
+            break
+    return i
+
+center_x = -0.1528
+center_y = 1.0397
+size = 0.000001
+max_iters = 100
+
+def color_of(x, y, width, height):
+    x = x / width
+    y = y / height
+    x = (center_x - size / 2) + size * x
+    y = (center_y - size / 2) + size * y
+    
+    res = is_stable(x + y * 1j, max_iters) / max_iters
+    return Color(1, 1, 1) * res
+```
+
+The code allows you to draw arbitrary locations of the Mandelbrot set.
 
 ## Ray Tracing
 
