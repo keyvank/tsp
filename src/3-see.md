@@ -278,6 +278,24 @@ def color_of(x, y, width, height):
 
 The code allows you to draw arbitrary locations of the Mandelbrot set.
 
+## Gradients
+
+```python=
+def interpolate(a: Color, b: Color, x: float) -> Color:
+    return Color(a.r + (b.r - a.r) * x, a.g + (b.g - a.g) * x, a.b + (b.b - a.b) * x)
+```
+
+## Adding the 4th dimension!
+
+Now that you know how computer images are made, generating videos is not going to be much harder! If you have the `ffmpeg` package installed on your system, you can give it a bunch of PPM files to generate a MP4 video for you:
+
+```sh=
+ffmpeg -framerate 10 -i out%d.ppm -c:v libx264 -crf 25 \
+-vf "scale=500:500,format=yuv420p" -movflags +faststart output.mp4
+```
+
+Based on the command above, FFmpeg will look for PPM files named `out0.ppm`, `out1.ppm` and etc for you, and will then connect them together as a 10 frame-per-second video with the specified encoding/format. You can change the parameters as you wish.
+
 ## Ray Tracing
 
 3D computer rendering is probably the most complicated and interesting way a computer
