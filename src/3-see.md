@@ -242,6 +242,46 @@ class Circle:
         self.radius = radius
 ```
 
+## Beauty of symmetry
+
+Human beings invented numbers merely to count stuff. They weren't aware that the same numbers could someday help us to explain the universe, and build the foundations of the technology we have today. So it may now make sense why ancient people were mostly performing addition, subtraction and multiplications with numbers and nothing more. A strange fact is that, negative numbers (And even the number zero!) made no sense to ancient people.
+
+So when did people realize there is a need for numbers other than \\(1, 2, 3, \dots\\)? A potential answer to that question is that ***human beings love symmetry. Symmetry is an important factor in determining how beautiful something is.*** The fact that there is an answer for \\(5-3\\) but \\(3-5\\) made no sense (To the ancient mathematicians) was kind of annoying. It would make math more solid and beautiful if there was an answer for \\(3-5\\). It would make the subtraction operator symmetrical. So people said, why not? Let's just assume numbers below zero exist, and call them negative numbers!
+
+Negative numbers are not the only made-up constructions that have made math and its operations more symmetrical. The symmetry we are going to talk about in this section is a new kind of numbers called imaginary or complex numbers. Perhaps the most obvious reason why imaginary numbers had to be invented is the Fundamental Theorem of Algebra. The theorem simple claims that any degree \\(n\\) equation has exactly \\(n\\) roots. E.g, for any degree-2 (Quadratic) equation there exactly exists 2 answers/roots.
+
+Take this equation as an example:
+
+\\(x^2 + 3x - 10 =0\\)
+
+This is a degree-2 equation that obeys our assumption: it has two roots: \\(-5\\) and \\(2\\). The polynomial can be decomposed into two degree-1 polynomials: \\((x+5)(x-2)\\). More generally, it looks like that, any degree degree-n polynomial is in fact the result of multiplying \\(n\\) degree-1 polynomials like this: \\((x-\alpha_1)(x-\alpha_2)(x-\alpha_3)\dots(x-\alpha_n)\\). But that's not the case with some polynomials. For example:
+
+\\(x^3 + x^2 - 7 x - 15=0\\)
+
+A valid answer to this equation is \\(3\\), but no matter how hard you try, you can never find the second and third root of the equation with the regular numbers we are used to.
+
+\\(x^3 + x^2 - 7 x - 15=(x-3)(x-\alpha_2)(x-\alpha_3)\\)
+
+Just like how we solved the asymmetry of the subtraction operator by inventing negative numbers, ***let's make something up to ensure our math remains symmetric***! The result is, a new kind of numbers known as complex numbers!
+
+## Just imagine
+
+As you know, you can extract the solutions of a quadratic equation using this magical formula: \\(\frac{-b \pm \sqrt{b^2-4ac}}{2a}\\). A quadratic equation will stop having regular solutions when the term inside \\(\sqrt{b^2-4ac}\\) becomes negative. That's because the square root of a negative number is meaningless. But just imagine that the square-root of negative numbers do actually exist, but we just don't know them yet (Just like we didn't know the existence of negative numbers). Based on our knowledge of the square-root operator, we know that: \\(\sqrt{ab}=\sqrt{a}\times\sqrt{b}\\). Based on that, we can say that the square-root of a negative number is in fact the square-root of a positive number, multiplied by square-root of \\(-1\\):
+
+\\(\sqrt{-a}=\sqrt{-1}\times\sqrt{a}\\)
+
+That's right, we extracted a ***primitive unknown element*** out of a more general problem, which was calculating the square root of negative numbers. We don't need to explain what \\(\sqrt{-5}\\) is. If we successfully make sense of \\(\sqrt{-1}\\), \\(\sqrt{-5}\\) will also start making sense!
+
+So let's just put a name on that unknown element \\(i=\sqrt{-1}\\), and pretend that it always existed!
+
+## Mathematical spinners!
+
+I would say, the most important and strange feature of the imaginary numbers is that they bring ***rotation*** into mathematics. Let me start with an example:
+
+\\(1,i,-1,-i,1,i,-1,-i,1,i,\dots\\)
+
+![Multiplying the imaginary number by itself reminds us of rotation!](assets/imagrotate.png)
+
 ## Fractals
 
 One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:
