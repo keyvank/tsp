@@ -518,63 +518,89 @@ It's not easy to generate a piano sound using pure sine frequencies, but there a
 
 Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!
 
-Here are some other forms you can oscillate a speaker. Try hearing them all!
+## Modularism
 
-**Different oscillators - Sawtooth - Square - Triangle**
+Engineering is all about making new things, by gluing already existing things together. When synthesizing a sound, the "things" that are being glued together are math functions that produce intensity samples given time. Let's call these functions ***samplers***. 
 
-## Sine
+So far, we have been putting all of the sound sampling logic inside a single `f` function. In case `f` was simply generating a sine wave, any change on the frequency of the wave would need direct changes in the definition of the `f` function. A nicer, more engineer-friendly (!) approach would be to define some ***primitive samplers*** and provide toolings for combining them together and making new samplers (Remember chapter 1, where we defined transistors as primitive elements and started building logic gates and more complex circuits on top of them). In case of producing sound samples, periodic functions like sine-wave generators are basic enough to be considered ***primitive***. Since these functions are kind of oscillating your speaker, we call them ***oscillators***!
+
+Unfortunately there isn't a single sine-wave oscillator since sine-wave oscillators with different frequencies are different and thus sound different. Creating a new function for each of the frequencies is neither practical nor smart, so, thanks to Python we are able to define a function that is able to get a frequency as an input and return a sampler function as its output!
+
+As an example, here is a sampler-creator function that accepts a frequency as its input and returns a sine-wave sampler as its output:
 
 ```python
 import math
 
 def Sine(freq):
-    def f(t):
+    def out(t):
         return math.sin(2 * math.pi * freq * t)
-    return f
+    return out
 ```
 
-## Square
+Now, `f` can be defined by the output of an oscillator like `Sine`:
+
+```python=
+f = Sine(440.0)
+```
+
+See how better it looks? Here are some other forms you can oscillate a speaker. Try hearing them all!
+
+***Square***
 
 ```python
 import math
 
 def Square(freq):
-    def f(t):
-        if math.floor(2 * t) % 2 == 0:
+    def out(t):
+        if math.floor(2 * freq * t) % 2 == 0:
             return 1
         else:
             return -1
-    return f
+    return out
 ```
 
-## Sawtooth
+***Sawtooth***
 
 ```python
 def Sawtooth(freq):
-    def f(t):
-        ...
-    return f
+    def out(t):
+        return 2*(t*freq - math.floor(1/2 + t*freq))
+    return out
 ```
 
-## Triangle
+***Triangle***
 
 ```python
 def Triangle(freq):
-    def f(t):
-        ...
-    return f
+    def out(t):
+        return 2*abs(t*freq - math.floor(1/2 + t*freq))
+    return out
 ```
 
-## Delay
+Things will get much more interesting when our sampler-creator functions start to get samplers as their inputs!
 
-```python
-def Delay(sampler, delay):
-    def f(t):
-        return sampler(t - delay)
-    return f
+You can mask the sampler to produce samples only for a certain duration:
+
+```python=
+def Mask(inp, dur):
+    def out(t):
+        if t >= 0 and t <= dur:
+            return inp(t)
+        else:
+            return 0
+    return out
 ```
 
-## Compose
+You can make the start with a delay:
+
+```python=
+def Delay(inp, delay):
+    def out(t):
+        return inp(t - delay)
+    return out
+```
+
+You can bake multiple samplers inside a single sampler:
 
 ```python
 def Compose(samplers):
@@ -584,17 +610,18 @@ def Compose(samplers):
     return f
 ```
 
-## Playing notes
+These three alone are enough for making melodies:
 
 ```python
-music = Compose([
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 0),
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 1.5),
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 3),
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 4.5),
+f = Compose([
+    Delay(Mask(Sine(440), 1), 0),
+    Delay(Mask(Sine(440), 1), 1.5),
+    Delay(Mask(Sine(440), 1), 3),
+    Delay(Mask(Sine(440), 1), 4.5),
 ])
 ```
 
+This way of describing a sound is definitely less-efficient than directly implementing the wave-generator as a plain Python function, but look how manageable and beautiful the code has got. (Perhaps we can achieve the same speed if we write some kind of compiler that is able to translate the modular definition into code).
 
 **ADSR**
 

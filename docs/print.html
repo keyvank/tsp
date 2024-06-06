@@ -2042,60 +2042,77 @@ def augmented_triad(root):
 <p>After playing some melodies by generating different frequencies in a sequence, you might nag that the notes are very pure, emotionless, and not at all close to what we hear when we press a key on a piano, and you are right. We are generating pure sine-waves, meaning that what we hear contains only a single frequency. If you analyze the sound coming out of a musical instrument, you will notice that not only it contains frequencies other than the main frequency, but also the strength of those frequencies change over time.</p>
 <p>It's not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.</p>
 <p>Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!</p>
-<p>Here are some other forms you can oscillate a speaker. Try hearing them all!</p>
-<p><strong>Different oscillators - Sawtooth - Square - Triangle</strong></p>
-<h2 id="sine"><a class="header" href="#sine">Sine</a></h2>
+<h2 id="modularism"><a class="header" href="#modularism">Modularism</a></h2>
+<p>Engineering is all about making new things, by gluing already existing things together. When synthesizing a sound, the &quot;things&quot; that are being glued together are math functions that produce intensity samples given time. Let's call these functions <em><strong>samplers</strong></em>. </p>
+<p>So far, we have been putting all of the sound sampling logic inside a single <code>f</code> function. In case <code>f</code> was simply generating a sine wave, any change on the frequency of the wave would need direct changes in the definition of the <code>f</code> function. A nicer, more engineer-friendly (!) approach would be to define some <em><strong>primitive samplers</strong></em> and provide toolings for combining them together and making new samplers (Remember chapter 1, where we defined transistors as primitive elements and started building logic gates and more complex circuits on top of them). In case of producing sound samples, periodic functions like sine-wave generators are basic enough to be considered <em><strong>primitive</strong></em>. Since these functions are kind of oscillating your speaker, we call them <em><strong>oscillators</strong></em>!</p>
+<p>Unfortunately there isn't a single sine-wave oscillator since sine-wave oscillators with different frequencies are different and thus sound different. Creating a new function for each of the frequencies is neither practical nor smart, so, thanks to Python we are able to define a function that is able to get a frequency as an input and return a sampler function as its output!</p>
+<p>As an example, here is a sampler-creator function that accepts a frequency as its input and returns a sine-wave sampler as its output:</p>
 <pre><code class="language-python">import math
 
 def Sine(freq):
-    def f(t):
+    def out(t):
         return math.sin(2 * math.pi * freq * t)
-    return f
+    return out
 </code></pre>
-<h2 id="square"><a class="header" href="#square">Square</a></h2>
+<p>Now, <code>f</code> can be defined by the output of an oscillator like <code>Sine</code>:</p>
+<pre><code class="language-python=">f = Sine(440.0)
+</code></pre>
+<p>See how better it looks? Here are some other forms you can oscillate a speaker. Try hearing them all!</p>
+<p><em><strong>Square</strong></em></p>
 <pre><code class="language-python">import math
 
 def Square(freq):
-    def f(t):
-        if math.floor(2 * t) % 2 == 0:
+    def out(t):
+        if math.floor(2 * freq * t) % 2 == 0:
             return 1
         else:
             return -1
-    return f
+    return out
 </code></pre>
-<h2 id="sawtooth"><a class="header" href="#sawtooth">Sawtooth</a></h2>
+<p><em><strong>Sawtooth</strong></em></p>
 <pre><code class="language-python">def Sawtooth(freq):
-    def f(t):
-        ...
-    return f
+    def out(t):
+        return 2*(t*freq - math.floor(1/2 + t*freq))
+    return out
 </code></pre>
-<h2 id="triangle"><a class="header" href="#triangle">Triangle</a></h2>
+<p><em><strong>Triangle</strong></em></p>
 <pre><code class="language-python">def Triangle(freq):
-    def f(t):
-        ...
-    return f
+    def out(t):
+        return 2*abs(t*freq - math.floor(1/2 + t*freq))
+    return out
 </code></pre>
-<h2 id="delay"><a class="header" href="#delay">Delay</a></h2>
-<pre><code class="language-python">def Delay(sampler, delay):
-    def f(t):
-        return sampler(t - delay)
-    return f
+<p>Things will get much more interesting when our sampler-creator functions start to get samplers as their inputs!</p>
+<p>You can mask the sampler to produce samples only for a certain duration:</p>
+<pre><code class="language-python=">def Mask(inp, dur):
+    def out(t):
+        if t &gt;= 0 and t &lt;= dur:
+            return inp(t)
+        else:
+            return 0
+    return out
 </code></pre>
-<h2 id="compose"><a class="header" href="#compose">Compose</a></h2>
+<p>You can make the start with a delay:</p>
+<pre><code class="language-python=">def Delay(inp, delay):
+    def out(t):
+        return inp(t - delay)
+    return out
+</code></pre>
+<p>You can bake multiple samplers inside a single sampler:</p>
 <pre><code class="language-python">def Compose(samplers):
     def f(t):
         v = sum([sampler(t) for sampler in samplers])
         return v
     return f
 </code></pre>
-<h2 id="playing-notes"><a class="header" href="#playing-notes">Playing notes</a></h2>
-<pre><code class="language-python">music = Compose([
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 0),
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 1.5),
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 3),
-    Delay(Adsr(Sine(440), 1, 1, 1, 1, 1, 0.7), 4.5),
+<p>These three alone are enough for making melodies:</p>
+<pre><code class="language-python">f = Compose([
+    Delay(Mask(Sine(440), 1), 0),
+    Delay(Mask(Sine(440), 1), 1.5),
+    Delay(Mask(Sine(440), 1), 3),
+    Delay(Mask(Sine(440), 1), 4.5),
 ])
 </code></pre>
+<p>This way of describing a sound is definitely less-efficient than directly implementing the wave-generator as a plain Python function, but look how manageable and beautiful the code has got. (Perhaps we can achieve the same speed if we write some kind of compiler that is able to translate the modular definition into code).</p>
 <p><strong>ADSR</strong></p>
 <p>Hearing all these compositions of different oscillators, you may still notice that the sounds are far from being pleasant to your ears, and one of the main reasons is that the intensity of those sounds is constant in time, while in real-world, a note gets loud with a delay, and will smoothly lose its intensity as time passes. One way we can bring such effect in our simulation is to actually manipulate the volume of our oscillator through time.</p>
 <p>One of those methods, known as ADSR (Attack, Delay, Sustain, Release), assumes that a musical note starts with a volume of 0, quickly reaches its peak volume and then quickly gets down to relatively quieter volume, stays there for a longer time and then starts decreasing its intensity until it reaches zero.</p>
@@ -2437,11 +2454,64 @@ def color_of(x, y, width, height):
         self.center = center
         self.radius = radius
 </code></pre>
+<h2 id="beauty-of-symmetry"><a class="header" href="#beauty-of-symmetry">Beauty of symmetry</a></h2>
+<p>Human beings invented numbers merely to count stuff. They weren't aware that the same numbers could someday help us to explain the universe, and build the foundations of the technology we have today. So it may now make sense why ancient people were mostly performing addition, subtraction and multiplications with numbers and nothing more. A strange fact is that, negative numbers (And even the number zero!) made no sense to ancient people.</p>
+<p>So when did people realize there is a need for numbers other than \(1, 2, 3, \dots\)? A potential answer to that question is that <em><strong>human beings love symmetry. Symmetry is an important factor in determining how beautiful something is.</strong></em> The fact that there is an answer for \(5-3\) but \(3-5\) made no sense (To the ancient mathematicians) was kind of annoying. It would make math more solid and beautiful if there was an answer for \(3-5\). It would make the subtraction operator symmetrical. So people said, why not? Let's just assume numbers below zero exist, and call them negative numbers!</p>
+<p>Negative numbers are not the only made-up constructions that have made math and its operations more symmetrical. The symmetry we are going to talk about in this section is a new kind of numbers called imaginary or complex numbers. Perhaps the most obvious reason why imaginary numbers had to be invented is the Fundamental Theorem of Algebra. The theorem simple claims that any degree \(n\) equation has exactly \(n\) roots. E.g, for any degree-2 (Quadratic) equation there exactly exists 2 answers/roots.</p>
+<p>Take this equation as an example:</p>
+<p>\(x^2 + 3x - 10 =0\)</p>
+<p>This is a degree-2 equation that obeys our assumption: it has two roots: \(-5\) and \(2\). The polynomial can be decomposed into two degree-1 polynomials: \((x+5)(x-2)\). More generally, it looks like that, any degree degree-n polynomial is in fact the result of multiplying \(n\) degree-1 polynomials like this: \((x-\alpha_1)(x-\alpha_2)(x-\alpha_3)\dots(x-\alpha_n)\). But that's not the case with some polynomials. For example:</p>
+<p>\(x^3 + x^2 - 7 x - 15=0\)</p>
+<p>A valid answer to this equation is \(3\), but no matter how hard you try, you can never find the second and third root of the equation with the regular numbers we are used to.</p>
+<p>\(x^3 + x^2 - 7 x - 15=(x-3)(x-\alpha_2)(x-\alpha_3)\)</p>
+<p>Just like how we solved the asymmetry of the subtraction operator by inventing negative numbers, <em><strong>let's make something up to ensure our math remains symmetric</strong></em>! The result is, a new kind of numbers known as complex numbers!</p>
+<h2 id="just-imagine"><a class="header" href="#just-imagine">Just imagine</a></h2>
+<p>As you know, you can extract the solutions of a quadratic equation using this magical formula: \(\frac{-b \pm \sqrt{b^2-4ac}}{2a}\). A quadratic equation will stop having regular solutions when the term inside \(\sqrt{b^2-4ac}\) becomes negative. That's because the square root of a negative number is meaningless. But just imagine that the square-root of negative numbers do actually exist, but we just don't know them yet (Just like we didn't know the existence of negative numbers). Based on our knowledge of the square-root operator, we know that: \(\sqrt{ab}=\sqrt{a}\times\sqrt{b}\). Based on that, we can say that the square-root of a negative number is in fact the square-root of a positive number, multiplied by square-root of \(-1\):</p>
+<p>\(\sqrt{-a}=\sqrt{-1}\times\sqrt{a}\)</p>
+<p>That's right, we extracted a <em><strong>primitive unknown element</strong></em> out of a more general problem, which was calculating the square root of negative numbers. We don't need to explain what \(\sqrt{-5}\) is. If we successfully make sense of \(\sqrt{-1}\), \(\sqrt{-5}\) will also start making sense!</p>
+<p>So let's just put a name on that unknown element \(i=\sqrt{-1}\), and pretend that it always existed!</p>
+<h2 id="mathematical-spinners"><a class="header" href="#mathematical-spinners">Mathematical spinners!</a></h2>
+<p>I would say, the most important and strange feature of the imaginary numbers is that they bring <em><strong>rotation</strong></em> into mathematics. Let me start with an example:</p>
+<p>\(1,i,-1,-i,1,i,-1,-i,1,i,\dots\)</p>
+<p><img src="assets/imagrotate.png" alt="Multiplying the imaginary number by itself reminds us of rotation!" /></p>
 <h2 id="fractals"><a class="header" href="#fractals">Fractals</a></h2>
 <p>One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:</p>
 <h2 id="serpinski-triangle"><a class="header" href="#serpinski-triangle">Serpinski Triangle</a></h2>
 <h2 id="koch-snowflake"><a class="header" href="#koch-snowflake">Koch Snowflake</a></h2>
-<h2 id="julia-sets"><a class="header" href="#julia-sets">Julia sets</a></h2>
+<h2 id="draw-mandelbrot-set-like-a-pro"><a class="header" href="#draw-mandelbrot-set-like-a-pro">Draw Mandelbrot-Set like a pro!</a></h2>
+<pre><code class="language-python=">def is_stable(c, max_iters):
+    z = 0
+    for i in range(max_iters):
+        z = z ** 2 + c
+        if abs(z) &gt; 2:
+            break
+    return i
+
+center_x = -0.1528
+center_y = 1.0397
+size = 0.000001
+max_iters = 100
+
+def color_of(x, y, width, height):
+    x = x / width
+    y = y / height
+    x = (center_x - size / 2) + size * x
+    y = (center_y - size / 2) + size * y
+    
+    res = is_stable(x + y * 1j, max_iters) / max_iters
+    return Color(1, 1, 1) * res
+</code></pre>
+<p>The code allows you to draw arbitrary locations of the Mandelbrot set.</p>
+<h2 id="gradients"><a class="header" href="#gradients">Gradients</a></h2>
+<pre><code class="language-python=">def interpolate(a: Color, b: Color, x: float) -&gt; Color:
+    return Color(a.r + (b.r - a.r) * x, a.g + (b.g - a.g) * x, a.b + (b.b - a.b) * x)
+</code></pre>
+<h2 id="adding-the-4th-dimension"><a class="header" href="#adding-the-4th-dimension">Adding the 4th dimension!</a></h2>
+<p>Now that you know how computer images are made, generating videos is not going to be much harder! If you have the <code>ffmpeg</code> package installed on your system, you can give it a bunch of PPM files to generate a MP4 video for you:</p>
+<pre><code class="language-sh=">ffmpeg -framerate 10 -i out%d.ppm -c:v libx264 -crf 25 \
+-vf &quot;scale=500:500,format=yuv420p&quot; -movflags +faststart output.mp4
+</code></pre>
+<p>Based on the command above, FFmpeg will look for PPM files named <code>out0.ppm</code>, <code>out1.ppm</code> and etc for you, and will then connect them together as a 10 frame-per-second video with the specified encoding/format. You can change the parameters as you wish.</p>
 <h2 id="ray-tracing"><a class="header" href="#ray-tracing">Ray Tracing</a></h2>
 <p>3D computer rendering is probably the most complicated and interesting way a computer
 can stimulate our vision. Our perception is evolved in a way to understand our 3-dimensional

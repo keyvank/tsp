@@ -340,11 +340,64 @@ def color_of(x, y, width, height):
         self.center = center
         self.radius = radius
 </code></pre>
+<h2 id="beauty-of-symmetry"><a class="header" href="#beauty-of-symmetry">Beauty of symmetry</a></h2>
+<p>Human beings invented numbers merely to count stuff. They weren't aware that the same numbers could someday help us to explain the universe, and build the foundations of the technology we have today. So it may now make sense why ancient people were mostly performing addition, subtraction and multiplications with numbers and nothing more. A strange fact is that, negative numbers (And even the number zero!) made no sense to ancient people.</p>
+<p>So when did people realize there is a need for numbers other than \(1, 2, 3, \dots\)? A potential answer to that question is that <em><strong>human beings love symmetry. Symmetry is an important factor in determining how beautiful something is.</strong></em> The fact that there is an answer for \(5-3\) but \(3-5\) made no sense (To the ancient mathematicians) was kind of annoying. It would make math more solid and beautiful if there was an answer for \(3-5\). It would make the subtraction operator symmetrical. So people said, why not? Let's just assume numbers below zero exist, and call them negative numbers!</p>
+<p>Negative numbers are not the only made-up constructions that have made math and its operations more symmetrical. The symmetry we are going to talk about in this section is a new kind of numbers called imaginary or complex numbers. Perhaps the most obvious reason why imaginary numbers had to be invented is the Fundamental Theorem of Algebra. The theorem simple claims that any degree \(n\) equation has exactly \(n\) roots. E.g, for any degree-2 (Quadratic) equation there exactly exists 2 answers/roots.</p>
+<p>Take this equation as an example:</p>
+<p>\(x^2 + 3x - 10 =0\)</p>
+<p>This is a degree-2 equation that obeys our assumption: it has two roots: \(-5\) and \(2\). The polynomial can be decomposed into two degree-1 polynomials: \((x+5)(x-2)\). More generally, it looks like that, any degree degree-n polynomial is in fact the result of multiplying \(n\) degree-1 polynomials like this: \((x-\alpha_1)(x-\alpha_2)(x-\alpha_3)\dots(x-\alpha_n)\). But that's not the case with some polynomials. For example:</p>
+<p>\(x^3 + x^2 - 7 x - 15=0\)</p>
+<p>A valid answer to this equation is \(3\), but no matter how hard you try, you can never find the second and third root of the equation with the regular numbers we are used to.</p>
+<p>\(x^3 + x^2 - 7 x - 15=(x-3)(x-\alpha_2)(x-\alpha_3)\)</p>
+<p>Just like how we solved the asymmetry of the subtraction operator by inventing negative numbers, <em><strong>let's make something up to ensure our math remains symmetric</strong></em>! The result is, a new kind of numbers known as complex numbers!</p>
+<h2 id="just-imagine"><a class="header" href="#just-imagine">Just imagine</a></h2>
+<p>As you know, you can extract the solutions of a quadratic equation using this magical formula: \(\frac{-b \pm \sqrt{b^2-4ac}}{2a}\). A quadratic equation will stop having regular solutions when the term inside \(\sqrt{b^2-4ac}\) becomes negative. That's because the square root of a negative number is meaningless. But just imagine that the square-root of negative numbers do actually exist, but we just don't know them yet (Just like we didn't know the existence of negative numbers). Based on our knowledge of the square-root operator, we know that: \(\sqrt{ab}=\sqrt{a}\times\sqrt{b}\). Based on that, we can say that the square-root of a negative number is in fact the square-root of a positive number, multiplied by square-root of \(-1\):</p>
+<p>\(\sqrt{-a}=\sqrt{-1}\times\sqrt{a}\)</p>
+<p>That's right, we extracted a <em><strong>primitive unknown element</strong></em> out of a more general problem, which was calculating the square root of negative numbers. We don't need to explain what \(\sqrt{-5}\) is. If we successfully make sense of \(\sqrt{-1}\), \(\sqrt{-5}\) will also start making sense!</p>
+<p>So let's just put a name on that unknown element \(i=\sqrt{-1}\), and pretend that it always existed!</p>
+<h2 id="mathematical-spinners"><a class="header" href="#mathematical-spinners">Mathematical spinners!</a></h2>
+<p>I would say, the most important and strange feature of the imaginary numbers is that they bring <em><strong>rotation</strong></em> into mathematics. Let me start with an example:</p>
+<p>\(1,i,-1,-i,1,i,-1,-i,1,i,\dots\)</p>
+<p><img src="assets/imagrotate.png" alt="Multiplying the imaginary number by itself reminds us of rotation!" /></p>
 <h2 id="fractals"><a class="header" href="#fractals">Fractals</a></h2>
 <p>One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:</p>
 <h2 id="serpinski-triangle"><a class="header" href="#serpinski-triangle">Serpinski Triangle</a></h2>
 <h2 id="koch-snowflake"><a class="header" href="#koch-snowflake">Koch Snowflake</a></h2>
-<h2 id="julia-sets"><a class="header" href="#julia-sets">Julia sets</a></h2>
+<h2 id="draw-mandelbrot-set-like-a-pro"><a class="header" href="#draw-mandelbrot-set-like-a-pro">Draw Mandelbrot-Set like a pro!</a></h2>
+<pre><code class="language-python=">def is_stable(c, max_iters):
+    z = 0
+    for i in range(max_iters):
+        z = z ** 2 + c
+        if abs(z) &gt; 2:
+            break
+    return i
+
+center_x = -0.1528
+center_y = 1.0397
+size = 0.000001
+max_iters = 100
+
+def color_of(x, y, width, height):
+    x = x / width
+    y = y / height
+    x = (center_x - size / 2) + size * x
+    y = (center_y - size / 2) + size * y
+    
+    res = is_stable(x + y * 1j, max_iters) / max_iters
+    return Color(1, 1, 1) * res
+</code></pre>
+<p>The code allows you to draw arbitrary locations of the Mandelbrot set.</p>
+<h2 id="gradients"><a class="header" href="#gradients">Gradients</a></h2>
+<pre><code class="language-python=">def interpolate(a: Color, b: Color, x: float) -&gt; Color:
+    return Color(a.r + (b.r - a.r) * x, a.g + (b.g - a.g) * x, a.b + (b.b - a.b) * x)
+</code></pre>
+<h2 id="adding-the-4th-dimension"><a class="header" href="#adding-the-4th-dimension">Adding the 4th dimension!</a></h2>
+<p>Now that you know how computer images are made, generating videos is not going to be much harder! If you have the <code>ffmpeg</code> package installed on your system, you can give it a bunch of PPM files to generate a MP4 video for you:</p>
+<pre><code class="language-sh=">ffmpeg -framerate 10 -i out%d.ppm -c:v libx264 -crf 25 \
+-vf &quot;scale=500:500,format=yuv420p&quot; -movflags +faststart output.mp4
+</code></pre>
+<p>Based on the command above, FFmpeg will look for PPM files named <code>out0.ppm</code>, <code>out1.ppm</code> and etc for you, and will then connect them together as a 10 frame-per-second video with the specified encoding/format. You can change the parameters as you wish.</p>
 <h2 id="ray-tracing"><a class="header" href="#ray-tracing">Ray Tracing</a></h2>
 <p>3D computer rendering is probably the most complicated and interesting way a computer
 can stimulate our vision. Our perception is evolved in a way to understand our 3-dimensional
