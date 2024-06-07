@@ -282,6 +282,8 @@ I would say, the most important and strange feature of the imaginary numbers is 
 
 ![Multiplying the imaginary number by itself reminds us of rotation!](assets/imagrotate.png)
 
+It seems like y multiplying a number with \\(-1\\) you rotate it by 180 degrees, but by multiplying it with \\(i\\) you rotate it by 90 degrees.
+
 ## Fractals
 
 One of them is to draw fractals! Fractals are patterns that repeat forever. If you zoom in what you see is very similar to the whole image. Let's draw a few of them:

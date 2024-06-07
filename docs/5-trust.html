@@ -261,6 +261,21 @@ Suppose we have two messages \(m_1\) and \(m_2\), and a key \(k\) which we’ll 
 <h2 id="signatures"><a class="header" href="#signatures">Signatures</a></h2>
 <p>Finite-field elements that we just build are not the only strange kind of group elements besides regular numbers. Matrices exist too, you can define addition and multiplication operations on grids of numbers, and it will behave just as regular numbers.</p>
 <p>There is also one very weird kind of group that mathematicians have discovered,</p>
+<hr />
+<p>When introducing finite-field, we saw that the algebraic rules that are valid on regular numbers can be valid on other made-up things too! This is not limited to numbers modulo a prime. For example, matrices are also made-up mathematical things that behave very simular to numbers: \((AB)C=A(BC)\) and \(A(B+C)=AB+AC\) and so on.</p>
+<p>Making up other things that behave just like regular numbers is fun. One of the most exciting mathematical inventions that ended-up similar to numbers are <em><strong>points that reside on an elliptic curve</strong></em>.</p>
+<p>An elliptic-curve is a curve that is defined with a polynomial equation like this:</p>
+<p>\(y^2=x^3+\dots\)</p>
+<p>For example:</p>
+<p>\(y^2=x^3+7\)</p>
+<p>By &quot;points&quot;, we mean the sets of \((x,y)\) pairs that make the curve equation hold true. E.g, \((1,2\sqrt{2})\) and \((1,-2\sqrt{2})\) are valid points on the curve.</p>
+<p>A smart man once assumed that these points are &quot;things&quot; that can be added together, just like numbers. So he had to invent an addition rule that preserves typical rules that apply when working with actual numbers. He had to design the addition rule such that: \((P_1+P_2)+P_3=P_1+(P_2+P_3)\)</p>
+<p>Here is what he did: if you pick two points \(P_1\) and \(P_2\), and connect them through a straight line, the line will most probably hit the curve again in an extra point \(P_3\) (Unless the line is completely vertical). Notice that this happens because there is a \(x^3\) component within our equation! If we had a \(x^4\) there, the line could intersect with the curve in two additional points instead of one!</p>
+<p>The smart man made an brilliant assumption: if you add points that reside on a straight line together, the result will be <em><strong>some imaginary point</strong></em> that behaves like a zero. So, in case the line intersects with the curve in three points: \(P_1+P_2+P_3=P_{zero}\)</p>
+<p>What do I mean by &quot;behaves like a zero&quot;? Just like the regular 0, When you add the zero-point to a point, it should leave it untouched, so: \(P + P_{zero} = P\). For some curves (Like the one we are discussing here) the zero-point does not really exist (I.e you can find a \((x,y)\) pair that acts like a zero-point), so we have to make it up, and pretend it always existed! (Very similar to our approach with imaginary numbers!)</p>
+<p>As previously noted, when the line you draw is parallel to the vertical axis, it only intersects with the line in 2 points, which means: \(P_1+P_2=P_zero\). By moving one of the points to the right hand side, we'll get: \(P_2=-P_1\). This means that, you can get the negative of a point by drawing a vertical line passing from that point and finding the intersection.</p>
+<p>Also, in the case which the line intersects with 3 points, we can move the third point to the right hand side and then we'll have: \(P_1+P_2=-P_3\). This, together with the method we discovered for finding the negative of a point, gives us a complete method for adding two points. We'll just need to draw a line between the points we are going to add, find the third intersection, and the negate it by finding the mirrored point, as illustrated below:</p>
+<p>[IMG]</p>
 <pre><code class="language-python">P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 
 
