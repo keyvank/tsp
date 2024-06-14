@@ -1288,6 +1288,18 @@ def MultiEquals(circuit, in_a, in_b, out_eq):
 
         clk.put(OSCILLATOR, 1 - clk.get())
 </code></pre>
+<h2 id="other-ways-to-compute"><a class="header" href="#other-ways-to-compute">Other ways to compute?</a></h2>
+<p>I just got reminded of an interesting article I read 5 years ago on an IEEE Specturm magazine (You can find a lot of interesting stuff there!). The article was discussing some strange form of computing, known as <em><strong>Stochastic Computing</strong></em>. It has also been a popular research topic in 1960s, according to the article. I'm bringing it here to remind you that there isn't a single way to build machines that can compute.</p>
+<p>The idea is emerged from the fact that computation costs a lot of energy. You'll need hundred (Or even thousands) of transistors in order to do single addition/multiplications, and each of these transistors are going to cost energy. Stochastic Computing, as its name suggests, tries to exploit the laws of probability for performing calculations. The concept can be perfectly understood with an example:</p>
+<p>What is the odds of throwing a dice and getting a value less-than-or-equal to 3? Easy! There are a total of 3 outcomes that are less-than-equal 3 (1,2 and 3), thus, dividing \(\frac{3}{6}\) gives us 0.5. In the general case, the odds of getting an outcome less-than-equal \(n\) would be \(\frac{n}{6}\).</p>
+<p>Now imagine we have two dices. If we throw them both, what is the odds of getting a value less-than-equal \(n_1\) for the first dice and a value less-than-equal \(n_2\) for the second dice? Based on the rules of probability, we know that the probability would be \(\frac{n_1}{6}\times\frac{n_2}{6}=\frac{n_1n_2}{36}\). For example, in case \(n_1=3\) and \(n_2=2\), the probability would be \(\frac{3}{6}\frac{2}{6}=\frac{1}{6}\). As you can see, a multiplication is happening here.</p>
+<p>Now, the point is you don't have to do the calculation yourself. You can let the universe do it for you: just throw the pair of dices as many times as you can, and count the cases where the first dice got less-than-equal 3 and the second dice got less-than-equal 2, and then divide it by the total number of experiments. If you perform the experiment many times, the value calculated value will get closer and closer to \(\frac{1}{6}\).</p>
+<p>In order to make use of this concept in an actual hardware, we first need some kind of encoding: a method by which we can translate actual numbers into probabilities (Because our method was only able to multiply probability values with each other and not any actual numbers). A smart-conversion for translating numbers in the range \(0 \le p \le 1\) is to create bit-streams in which you'll get 1s with probabiliy \(p\). E.g, you can translate the number 0.3 to a bit-stream like this: <code>00101000011001100000</code>.</p>
+<p>Now, the goal would be to create a third bit-stream, in which the probability of getting a 1 is \(p_1 \times p_2\). This can be achieved with a regular AND gate! AND gates really behave like multipliers, if the numbers we are working with are binary. So just substitute deterministic 0 and 1 with probabilistic bit-streams, and you'll be able to multiply floating-point numbers between 0 and 1!</p>
+<p>[IMG AND two bit-streams]</p>
+<p>Unlike multiplying, adding is not as straightforward. The reason is, by adding two probabilities, which are numbers between 0 and 1, you'll get a value that can get above 1 (Maximum 2). This is not a valid probability, thus you can't represent it with a bit-stream. But there is a hack! Assume our goal is not to calculate \(p_1+p_2\) but to calculate \(\frac{p_1+p_2}{2}\), which is indeed a number below 1. If that's what we want to calculate, we can do it using a Multiplexer gate which its control pin is connected to a third bit-stream which gives out 1s 50% of the times. This way, we are effectively calculating the average of the inputs of the multiplexer, which is equal to \(\frac{p_1+p_2}{2}\). Smart, right?</p>
+<p>In case you found the topic interesting, try designing a more challeging circuit yourself. E.g. try designing a circuit that can add two probabilities like this: \(min(p_1 + p_2,1)\) instead of \(\frac{p_1+p_2}{2}\). I'm not sure if such thing is possible at all, it's just something that popped in my mind, but it might be work thinking, and may also show you the limitations of this kind of computing.</p>
+<p>That's it, yet another way to compute! The point is to admire how little pieces that do simple stuff can get together and do amazing stuff!</p>
 <h2 id="exploiting-the-subatomic-world"><a class="header" href="#exploiting-the-subatomic-world">Exploiting the subatomic world</a></h2>
 <p>So far, we have been working on cause-and-effect chains that were totally deterministic and predictable. We saw how we can exploit the flow of electricity and route it in a way so that it can do logical operations like AND, OR, NOT and etc.</p>
 <p>There are some particles in our universe that do not have determinsitic behaviors but are probabilistic. You might first think that randomness is a poison for computers, but we humans are greedy, we want to take advantage of everything, and luckily, we have found ways to exploit non-determinism and solve problems with it that a normal computer just can't (Without spending more time than the age of the universe).</p>
@@ -2292,7 +2304,29 @@ plt.show()
 <p>Hdd 1956 IBM</p>
 <p>Digital data transfer samuel morse early 19th</p>
 <p>1950 computers connected dedicated communication lines</p>
-<p>Aliasing claude shannon</p>
+<h2 id="information"><a class="header" href="#information">Information</a></h2>
+<p>Our world is continuos (At least it seems to be) but our computer can only work with discrete data.</p>
+<ul>
+<li>The number of pixels our cameras can capture in a fixed area is limited</li>
+<li>The frames we capture per second in a video-camera is limited</li>
+<li>The audio samples we capture in a microphone is limited</li>
+<li>...</li>
+</ul>
+<p>These limitations cause interesting phenomena: have you ever seen video recording of helicopter rotor blades? Or anything that spins very fast? In some of those recording you may see the blades spinning very slowly, or not spinning at all, or even spinning in reverse! This happens due to the fact that we are limited in the number of frames we're capturing per second. Suppose it takes 10 milliseconds for our camera to take a new frame, and it also takes exactly 10 milliseconds for the spinning object to do a full spin. When the camera takes the new frame, the spinner has already made a full rotation and is back in its original position, so it looks as if it has not spinned at all. Now, slightly increase the rotation speed of the spinner, the spinner will start moving, but very slowly. Decrease the rotation speed and now it looks as if it's spinning in reverse!</p>
+<p>It's interesting to know that human eyes do not have &quot;frame-rates&quot;. They don't work like video-cameras. Whatever you perceive with your eye stays in your brain for a very short period of time, even if you move your eyes and look at something else, the previous thing you were looking at is still there, but it is just fader. It turns out that pictures take around 1/16 seconds to completely fade away from your eyes, even if you stop looking at them, which somehow means, what you see is the <em><strong>average picture</strong></em> of what you were looking at in the previous 1/16 seconds. Thus if you look at a spinning blade directly through your eyes, you will see something blurry, instead of perceiving it as if it's not rotating.</p>
+<p>Another kind of aliasing effect happens when you try to take a picture of something with a lot of alternations, like a net!</p>
+<hr />
+<p>If your video-camera is able to capture 60 frames per second:</p>
+<ul>
+<li>0 rps, 60 rps, 120 rps, 180 rps, ...</li>
+<li>15 rps, 75 rps, 135 rps, 195 rps, ...</li>
+</ul>
+<hr />
+<p><em><strong>Zeno's paradox</strong></em></p>
+<p>Zeno's paradoxes are a series of arguments made by greek philosopher Zeno, which tries to illustrate the problematic concept of <em><strong>Infinite divisibilty</strong></em> in space and time. All of these paradoxes are actually trying to tell us the same thing (If we are not being strict)</p>
+<p>Here is one of those paradoxes which you may have heard of before:</p>
+<p>Suppose Atalanta wishes to walk a path. Before she can reach to the destination, she must get half-way there, and before reaching to that point she must go \(\frac{1}{4}\) of the way, and before that \(\frac{1}{8}\) of the way, and so on. Seems like, she has to perform an infinite number of tasks in order to move, which Zeno believes is impossible</p>
+<hr />
 <p>Humans love to store and copy. If you can copy or store something, you can transfer it. You can write your thoughts on a letter and then give it to your lover to read</p>
 <p>Humans dream: being able to share their past experience to the present and future. To the people that are not near them. To people in the future even after they physically die, because life has evolved in a way to keep you alive as long as possible, sometimes the conceptual version of you, and not the physical you. That’s probably why people proudly compromise their lives for something they believe in, because it will make them eternal. Life is strange.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="see"><a class="header" href="#see">See!</a></h1>
