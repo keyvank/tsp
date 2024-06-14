@@ -903,7 +903,40 @@ Digital data transfer samuel morse early 19th
 
 1950 computers connected dedicated communication lines
 
-Aliasing claude shannon
+## Information
+
+Our world is continuos (At least it seems to be) but our computer can only work with discrete data.
+
+- The number of pixels our cameras can capture in a fixed area is limited
+- The frames we capture per second in a video-camera is limited
+- The audio samples we capture in a microphone is limited
+- ...
+
+These limitations cause interesting phenomena: have you ever seen video recording of helicopter rotor blades? Or anything that spins very fast? In some of those recording you may see the blades spinning very slowly, or not spinning at all, or even spinning in reverse! This happens due to the fact that we are limited in the number of frames we're capturing per second. Suppose it takes 10 milliseconds for our camera to take a new frame, and it also takes exactly 10 milliseconds for the spinning object to do a full spin. When the camera takes the new frame, the spinner has already made a full rotation and is back in its original position, so it looks as if it has not spinned at all. Now, slightly increase the rotation speed of the spinner, the spinner will start moving, but very slowly. Decrease the rotation speed and now it looks as if it's spinning in reverse!
+
+It's interesting to know that human eyes do not have "frame-rates". They don't work like video-cameras. Whatever you perceive with your eye stays in your brain for a very short period of time, even if you move your eyes and look at something else, the previous thing you were looking at is still there, but it is just fader. It turns out that pictures take around 1/16 seconds to completely fade away from your eyes, even if you stop looking at them, which somehow means, what you see is the ***average picture*** of what you were looking at in the previous 1/16 seconds. Thus if you look at a spinning blade directly through your eyes, you will see something blurry, instead of perceiving it as if it's not rotating.
+
+Another kind of aliasing effect happens when you try to take a picture of something with a lot of alternations, like a net!
+
+-----
+
+If your video-camera is able to capture 60 frames per second:
+
+- 0 rps, 60 rps, 120 rps, 180 rps, ...
+- 15 rps, 75 rps, 135 rps, 195 rps, ...
+
+-----
+
+
+***Zeno's paradox***
+
+Zeno's paradoxes are a series of arguments made by greek philosopher Zeno, which tries to illustrate the problematic concept of ***Infinite divisibilty*** in space and time. All of these paradoxes are actually trying to tell us the same thing (If we are not being strict)
+
+Here is one of those paradoxes which you may have heard of before:
+
+Suppose Atalanta wishes to walk a path. Before she can reach to the destination, she must get half-way there, and before reaching to that point she must go \\(\frac{1}{4}\\) of the way, and before that \\(\frac{1}{8}\\) of the way, and so on. Seems like, she has to perform an infinite number of tasks in order to move, which Zeno believes is impossible
+
+-----
 
 Humans love to store and copy. If you can copy or store something, you can transfer it. You can write your thoughts on a letter and then give it to your lover to read
 
