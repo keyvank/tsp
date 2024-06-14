@@ -1221,6 +1221,30 @@ if __name__ == "__main__":
         clk.put(OSCILLATOR, 1 - clk.get())
 ```
 
+## Other ways to compute?
+
+I just got reminded of an interesting article I read 5 years ago on an IEEE Specturm magazine (You can find a lot of interesting stuff there!). The article was discussing some strange form of computing, known as ***Stochastic Computing***. It has also been a popular research topic in 1960s, according to the article. I'm bringing it here to remind you that there isn't a single way to build machines that can compute.
+
+The idea is emerged from the fact that computation costs a lot of energy. You'll need hundred (Or even thousands) of transistors in order to do single addition/multiplications, and each of these transistors are going to cost energy. Stochastic Computing, as its name suggests, tries to exploit the laws of probability for performing calculations. The concept can be perfectly understood with an example:
+
+What is the odds of throwing a dice and getting a value less-than-or-equal to 3? Easy! There are a total of 3 outcomes that are less-than-equal 3 (1,2 and 3), thus, dividing \\(\frac{3}{6}\\) gives us 0.5. In the general case, the odds of getting an outcome less-than-equal \\(n\\) would be \\(\frac{n}{6}\\).
+
+Now imagine we have two dices. If we throw them both, what is the odds of getting a value less-than-equal \\(n_1\\) for the first dice and a value less-than-equal \\(n_2\\) for the second dice? Based on the rules of probability, we know that the probability would be \\(\frac{n_1}{6}\times\frac{n_2}{6}=\frac{n_1n_2}{36}\\). For example, in case \\(n_1=3\\) and \\(n_2=2\\), the probability would be \\(\frac{3}{6}\frac{2}{6}=\frac{1}{6}\\). As you can see, a multiplication is happening here.
+
+Now, the point is you don't have to do the calculation yourself. You can let the universe do it for you: just throw the pair of dices as many times as you can, and count the cases where the first dice got less-than-equal 3 and the second dice got less-than-equal 2, and then divide it by the total number of experiments. If you perform the experiment many times, the value calculated value will get closer and closer to \\(\frac{1}{6}\\).
+
+In order to make use of this concept in an actual hardware, we first need some kind of encoding: a method by which we can translate actual numbers into probabilities (Because our method was only able to multiply probability values with each other and not any actual numbers). A smart-conversion for translating numbers in the range \\(0 \le p \le 1\\) is to create bit-streams in which you'll get 1s with probabiliy \\(p\\). E.g, you can translate the number 0.3 to a bit-stream like this: `00101000011001100000`.
+
+Now, the goal would be to create a third bit-stream, in which the probability of getting a 1 is \\(p_1 \times p_2\\). This can be achieved with a regular AND gate! AND gates really behave like multipliers, if the numbers we are working with are binary. So just substitute deterministic 0 and 1 with probabilistic bit-streams, and you'll be able to multiply floating-point numbers between 0 and 1!
+
+[IMG AND two bit-streams]
+
+Unlike multiplying, adding is not as straightforward. The reason is, by adding two probabilities, which are numbers between 0 and 1, you'll get a value that can get above 1 (Maximum 2). This is not a valid probability, thus you can't represent it with a bit-stream. But there is a hack! Assume our goal is not to calculate \\(p_1+p_2\\) but to calculate \\(\frac{p_1+p_2}{2}\\), which is indeed a number below 1. If that's what we want to calculate, we can do it using a Multiplexer gate which its control pin is connected to a third bit-stream which gives out 1s 50% of the times. This way, we are effectively calculating the average of the inputs of the multiplexer, which is equal to \\(\frac{p_1+p_2}{2}\\). Smart, right?
+
+In case you found the topic interesting, try designing a more challeging circuit yourself. E.g. try designing a circuit that can add two probabilities like this: \\(min(p_1 + p_2,1)\\) instead of \\(\frac{p_1+p_2}{2}\\). I'm not sure if such thing is possible at all, it's just something that popped in my mind, but it might be work thinking, and may also show you the limitations of this kind of computing.
+
+That's it, yet another way to compute! The point is to admire how little pieces that do simple stuff can get together and do amazing stuff!
+
 ## Exploiting the subatomic world
 
 So far, we have been working on cause-and-effect chains that were totally deterministic and predictable. We saw how we can exploit the flow of electricity and route it in a way so that it can do logical operations like AND, OR, NOT and etc.
