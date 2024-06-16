@@ -857,6 +857,14 @@ Assuming our sample-rate is \\(2^n\\), the \\(get_freqs\\) function will get an 
 
 Humans are able to hear sounds with frequencies as high as around 20000Hz, that's why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).
 
+You can get back from frequency domain to signal domain:
+
+```python=
+def ifft(x):
+    fft_conj = fft([n.conjugate() for n in x])
+    return [n.conjugate() / len(x) for n in fft_conj]
+```
+
 ## Dummiest Modulation Algorithm Ever (DMAE)
 
 Assuming that we can generate waves of a single frequency in one machine, and recognize the existence of that exact frequency in another machine, let's try to design an algorithm to transfer data through audio, by encoding the bits into sound waves on one sides, and decoding them, converting back the audio waves into bits on other side (The encoding/decoding parts are usually referred as Modulation and Demodulation).
@@ -868,6 +876,7 @@ As an extra feature, we would like to let the other machine know whenever we hav
 ![Transferring bits through three signals](assets/modulation.png)
 
 In this case, the receiver will only accept bits when the \\(f_e\\) frequency is also present in the received signal (Besides presence or absence of data frequency).
+
 
 ## Noises, noises everywhere...
 

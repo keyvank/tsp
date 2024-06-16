@@ -320,6 +320,31 @@ def color_of(x, y, width, height):
 
 The code allows you to draw arbitrary locations of the Mandelbrot set.
 
+## Images as signals
+
+```python=
+def fft2(x, inv=False):
+    res = list(x)
+    
+    func = ifft if inv else fft
+    
+    # FFT on rows
+    for i in range(len(x)):
+        res[i] = func(res[i])
+    
+    # FFT on columns
+    for i in range(len(x)):
+        col = [res[j][i] for j in range(len(x))]
+        fft_col = func(col)
+        for j in range(len(x)):
+            res[j][i] = fft_col[j]
+
+    return res
+
+def ifft2(x):
+    return fft2(x, True)
+```
+
 ## Gradients
 
 ```python=
