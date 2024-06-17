@@ -389,6 +389,28 @@ def color_of(x, y, width, height):
     return Color(1, 1, 1) * res
 </code></pre>
 <p>The code allows you to draw arbitrary locations of the Mandelbrot set.</p>
+<h2 id="images-as-signals"><a class="header" href="#images-as-signals">Images as signals</a></h2>
+<pre><code class="language-python=">def fft2(x, inv=False):
+    res = list(x)
+    
+    func = ifft if inv else fft
+    
+    # FFT on rows
+    for i in range(len(x)):
+        res[i] = func(res[i])
+    
+    # FFT on columns
+    for i in range(len(x)):
+        col = [res[j][i] for j in range(len(x))]
+        fft_col = func(col)
+        for j in range(len(x)):
+            res[j][i] = fft_col[j]
+
+    return res
+
+def ifft2(x):
+    return fft2(x, True)
+</code></pre>
 <h2 id="gradients"><a class="header" href="#gradients">Gradients</a></h2>
 <pre><code class="language-python=">def interpolate(a: Color, b: Color, x: float) -&gt; Color:
     return Color(a.r + (b.r - a.r) * x, a.g + (b.g - a.g) * x, a.b + (b.b - a.b) * x)

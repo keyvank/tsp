@@ -2278,7 +2278,24 @@ plt.plot(freqs)
 plt.show()
 </code></pre>
 <p><img src="assets/fft.png" alt="The FFT result of a signal composed of 5 different sine frequencies" /></p>
-<p>Assuming our sample-rate is \(2^n\), the \(get_freqs\) function will get an array of size \(2^n\) (The signal samples), and will return an array of size \(2^{n-1}\). The \(i\)th element of this array tells your the presence of a sine wave with \(i\)Hz frequency in your input signal. The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency \(f\), you need to at least have \(2f\) samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).</p>
+<p>Assuming our sample-rate is \(2^n\), the \(get_freqs\) function will get an array of size \(2^n\) (The signal samples), and will return an array of size \(2^{n-1}\). The \(i\)th element of this array tells your the presence of a sine wave with \(i\)Hz frequency in your input signal. Don't believe it? We can do an experiment, we can actually loop over the frequencies, generate the sinusoids according to their phase and magnitude, and then reconstruct the original frequency:</p>
+<pre><code class="language-python=">N = 32768
+samples = [sampler(t / N) for t in range(N)]
+fft_result = fft(samples)
+
+res = [0 for _ in range(N)]
+for freq, val in enumerate(fft_result):
+    phase = cmath.phase(val)
+    magn = abs(val)
+    for i in range(N):
+        res[i] += magn * math.cos(2 * math.pi * freq * i / N + phase) / N * 2
+</code></pre>
+<p>Although the code above verifies the fact that the FFT algorithm really works, it's very inefficient (The computation complexity is \(O(n^2)\) because of the nested loops). In fact, you can use the FFT algorithm itself (Which is of order \(O(n.log(n))\)) in order to get back from the frequency-domain into the original signal:</p>
+<pre><code class="language-python=">def ifft(x):
+    fft_conj = fft([n.conjugate() for n in x])
+    return [n.conjugate() / len(x) for n in fft_conj]
+</code></pre>
+<p>The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency \(f\), you need to at least have \(2f\) samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).</p>
 <p><img src="assets/nyquist.png" alt="An example of undersampling, the sampled signal seems to be a sine wave wit lower frequency" /></p>
 <p>Humans are able to hear sounds with frequencies as high as around 20000Hz, that's why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).</p>
 <h2 id="dummiest-modulation-algorithm-ever-dmae"><a class="header" href="#dummiest-modulation-algorithm-ever-dmae">Dummiest Modulation Algorithm Ever (DMAE)</a></h2>
@@ -2313,14 +2330,24 @@ plt.show()
 <li>...</li>
 </ul>
 <p>These limitations cause interesting phenomena: have you ever seen video recording of helicopter rotor blades? Or anything that spins very fast? In some of those recording you may see the blades spinning very slowly, or not spinning at all, or even spinning in reverse! This happens due to the fact that we are limited in the number of frames we're capturing per second. Suppose it takes 10 milliseconds for our camera to take a new frame, and it also takes exactly 10 milliseconds for the spinning object to do a full spin. When the camera takes the new frame, the spinner has already made a full rotation and is back in its original position, so it looks as if it has not spinned at all. Now, slightly increase the rotation speed of the spinner, the spinner will start moving, but very slowly. Decrease the rotation speed and now it looks as if it's spinning in reverse!</p>
-<p>It's interesting to know that human eyes do not have &quot;frame-rates&quot;. They don't work like video-cameras. Whatever you perceive with your eye stays in your brain for a very short period of time, even if you move your eyes and look at something else, the previous thing you were looking at is still there, but it is just fader. It turns out that pictures take around 1/16 seconds to completely fade away from your eyes, even if you stop looking at them, which somehow means, what you see is the <em><strong>average picture</strong></em> of what you were looking at in the previous 1/16 seconds. Thus if you look at a spinning blade directly through your eyes, you will see something blurry, instead of perceiving it as if it's not rotating.</p>
+<p>It's interesting to know that human eyes do not have &quot;frame-rates&quot;. They don't work like video-cameras. Whatever you perceive with your eye stays in your brain for a very short period of time, even if you move your eyes and look at something else, the previous thing you were looking at is still there, but it is just fader. It turns out that pictures take around 1/16 seconds to completely fade away from your eyes, even if you stop looking at them, which somehow means, what you see is the <em><strong>average picture</strong></em> of what you were looking at in the previous 1/16 seconds. Thus if you look at a spinning blade directly through your eyes, you will see something blurry, instead of perceiving it as if it's not rotating, like a video camera.</p>
 <p>Another kind of aliasing effect happens when you try to take a picture of something with a lot of alternations, like a net!</p>
 <hr />
-<p>If your video-camera is able to capture 60 frames per second:</p>
+<p>If your video-camera is able to capture 60 frames per second, you can't tell if the blade is spinning at:</p>
 <ul>
-<li>0 rps, 60 rps, 120 rps, 180 rps, ...</li>
-<li>15 rps, 75 rps, 135 rps, 195 rps, ...</li>
+<li>0 RPS, or 60 RPS in reverse</li>
+<li>10 RPS, or 50 RPS in reverse</li>
+<li>15 RPS, or 45 RPS in reverse</li>
+<li>29 RPS, or 31 RPS in reverse</li>
+<li>Generally: \(n\) RPS, or \(60-n\) RPS in reverse</li>
 </ul>
+<p>If you don't believe this, here is a proof:</p>
+<ul>
+<li>We know that the camera captures a new frame every \(\frac{1}{60}\) seconds.</li>
+<li>Let's assume the blade spins at speed 15 RPS. Thus the blade does a complete rotation every \(\frac{1}{15}=\frac{4}{60}\) seconds. This means that, when a frame is taken, the blade has gone \(\frac{1}{4}\) rotation.</li>
+<li>Let's assume the blade spins at speed 45 RPS. Thus the blade does a complete rotation every \(\frac{1}{45}=\frac{\frac{4}{3}}{60}\) seconds. This means that, when a frame is taken, the blade has gone \(\frac{3}{4}\) rotation. This also looks like as if the blade has rotated in reverse for \(\frac{1}{4}\) rotation!</li>
+</ul>
+<p>This is definitely some kind of data-loss! Unless you are completely sure that the blade does not rotate in reverse, or you are sure that it does not spin faster than 30 RPS. Extracting a general rule out of this: <em><strong>If you are sure that the blade you are capturing a video of spins no faster than \(n\) RPS, then, in order to accurately tell the speed and direction of the spin speed through video, your video camera has to capture at least as fast as \(2n\) frames per second.</strong></em>. Formally speaking, the sampling rate (Here, the samples are frames) should be at least twice of the maximum frequency. This is known as the <em><strong>Nyquist rate</strong></em> and is one of the most fundamental facts of a beautiful category of science known as Information Theory.</p>
 <hr />
 <p><em><strong>Zeno's paradox</strong></em></p>
 <p>Zeno's paradoxes are a series of arguments made by greek philosopher Zeno, which tries to illustrate the problematic concept of <em><strong>Infinite divisibilty</strong></em> in space and time. All of these paradoxes are actually trying to tell us the same thing (If we are not being strict)</p>
@@ -2543,6 +2570,28 @@ def color_of(x, y, width, height):
     return Color(1, 1, 1) * res
 </code></pre>
 <p>The code allows you to draw arbitrary locations of the Mandelbrot set.</p>
+<h2 id="images-as-signals"><a class="header" href="#images-as-signals">Images as signals</a></h2>
+<pre><code class="language-python=">def fft2(x, inv=False):
+    res = list(x)
+    
+    func = ifft if inv else fft
+    
+    # FFT on rows
+    for i in range(len(x)):
+        res[i] = func(res[i])
+    
+    # FFT on columns
+    for i in range(len(x)):
+        col = [res[j][i] for j in range(len(x))]
+        fft_col = func(col)
+        for j in range(len(x)):
+            res[j][i] = fft_col[j]
+
+    return res
+
+def ifft2(x):
+    return fft2(x, True)
+</code></pre>
 <h2 id="gradients"><a class="header" href="#gradients">Gradients</a></h2>
 <pre><code class="language-python=">def interpolate(a: Color, b: Color, x: float) -&gt; Color:
     return Color(a.r + (b.r - a.r) * x, a.g + (b.g - a.g) * x, a.b + (b.b - a.b) * x)
