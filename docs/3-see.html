@@ -390,8 +390,14 @@ def color_of(x, y, width, height):
 </code></pre>
 <p>The code allows you to draw arbitrary locations of the Mandelbrot set.</p>
 <h2 id="images-as-signals"><a class="header" href="#images-as-signals">Images as signals</a></h2>
-<pre><code class="language-python=">def fft2(x, inv=False):
-    res = list(x)
+<p>Remember the fourier transform in the previous chapter? There we were trying to inspect which sinusoids exist in a signal. The thing is, we have discovered that the transform can also be applied on images. You can think of a computer image as an array of 1D signals. Applying FFT on rows would tell you exactly how the rows can be decomposed into sinusoids. Here is the magic: you don’t need to stop here, after applying FFT on each row, do it again on each column. The result will help you analyze, how does a signal with a certain frequency varies among rows. An incredible fact is, it doesn't matter if you first apply FFT on rows and the columns are the opposite, the result will be the same. That's probably a good reason why &quot;two-dimensional&quot; FFT is really a solid concept, and not just the result of applying FFT on rows and the columns!</p>
+<p>Since FFTs are revertible, you can get the image back from its transformed version by applying inverse-FFT first on columns and then on the rows (Or the opposite, doesn't matter).</p>
+<p>We learnt how do <code>fft</code> and <code>ifft</code> work in the previous chapter. We can build two-dimensional <code>fft2</code> and <code>ifft2</code> using them like this:</p>
+<pre><code class="language-python=">from copy import deepcopy
+
+
+def fft2(x, inv=False):
+    res = deepcopy(x) # Better take a deepcopy to avoid overwrites
     
     func = ifft if inv else fft
     
@@ -411,6 +417,22 @@ def color_of(x, y, width, height):
 def ifft2(x):
     return fft2(x, True)
 </code></pre>
+<p>You can transform a picture to a 2D frequency specturm using the <code>fft2</code> function, and reconstruct it back using the <code>ifft2</code> function. Why does this matter? Well, it gives us another perspective on how we can manipulate images. Instead of directly manipulating the pixels of an image, you can first transform it to another &quot;representaiton&quot;, change that instead, and then reconstruct it back using the manipulated representation!</p>
+<p>Just like audio, generally, the low-frequency components of a signal have greater impact on the signal and by removing high-frequency components, the signal (Be it audio or image) won't change that much. Given this fact, we can try to remove the high-frequency parts (The central sections) of the FFT of an image and see what happens:</p>
+<pre><code class="language-python=">SIZE = 1024
+image = ... # A 1024x1024 image
+fft_image = fft2(image)
+
+for i in range(200):
+    for j in range(SIZE):
+        fft_image[SIZE // 2 + i][j] = 0
+        fft_image[SIZE // 2 - i][j] = 0
+        fft_image[j][SIZE // 2 + i] = 0
+        fft_image[j][SIZE // 2 - i] = 0
+
+reconstructed_image = ifft2(fft_image)
+</code></pre>
+<p>If you plot the resulting image, you'll see that the change isn't substantial, although we have literally removed a large chunks of the specturm. The only change is that the quality of the image has degraded a bit. We just discovered a compression algorithm for images!</p>
 <h2 id="gradients"><a class="header" href="#gradients">Gradients</a></h2>
 <pre><code class="language-python=">def interpolate(a: Color, b: Color, x: float) -&gt; Color:
     return Color(a.r + (b.r - a.r) * x, a.g + (b.g - a.g) * x, a.b + (b.b - a.b) * x)
