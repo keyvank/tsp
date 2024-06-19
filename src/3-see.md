@@ -322,15 +322,18 @@ The code allows you to draw arbitrary locations of the Mandelbrot set.
 
 ## Images as signals
 
-Remember the fourier transform in the previous chapter? There we were trying to inspect which sinusoids exist in a signal. The thing is, we have discovered that the transform can also be applied on images. You can think of a computer image as an array of 1D signals. Applying FFT on rows would tell you exactly how the rows can be decomposed into sinusoids. Here is the magic: you don’t need to stop here, after applying FFT on each row, do it again on each column. The result will help you analyze, how does a signal with a certain frequency varies among rows.
+Remember the fourier transform in the previous chapter? There we were trying to inspect which sinusoids exist in a signal. The thing is, we have discovered that the transform can also be applied on images. You can think of a computer image as an array of 1D signals. Applying FFT on rows would tell you exactly how the rows can be decomposed into sinusoids. Here is the magic: you don’t need to stop here, after applying FFT on each row, do it again on each column. The result will help you analyze, how does a signal with a certain frequency varies among rows. An incredible fact is, it doesn't matter if you first apply FFT on rows and the columns are the opposite, the result will be the same. That's probably a good reason why "two-dimensional" FFT is really a solid concept, and not just the result of applying FFT on rows and the columns!
 
-Since FFTs are revertible, you can get the image back from its transformed version by applying inverse-FFT first on columns and then on the rows.
+Since FFTs are revertible, you can get the image back from its transformed version by applying inverse-FFT first on columns and then on the rows (Or the opposite, doesn't matter).
 
 We learnt how do `fft` and `ifft` work in the previous chapter. We can build two-dimensional `fft2` and `ifft2` using them like this:
 
 ```python=
+from copy import deepcopy
+
+
 def fft2(x, inv=False):
-    res = list(x)
+    res = deepcopy(x) # Better take a deepcopy to avoid overwrites
     
     func = ifft if inv else fft
     
@@ -353,7 +356,7 @@ def ifft2(x):
 
 You can transform a picture to a 2D frequency specturm using the `fft2` function, and reconstruct it back using the `ifft2` function. Why does this matter? Well, it gives us another perspective on how we can manipulate images. Instead of directly manipulating the pixels of an image, you can first transform it to another "representaiton", change that instead, and then reconstruct it back using the manipulated representation!
 
-Just like audio, generally, the low-frequency components of a signal have greater impact on the signal and by removing high-frequency components, the signal (Be it audio or image) won't change that much. Given this fact, we can try to remove the high-frequency parts (The components on the right and bottom side) of the FFT of an image and see what happens:
+Just like audio, generally, the low-frequency components of a signal have greater impact on the signal and by removing high-frequency components, the signal (Be it audio or image) won't change that much. Given this fact, we can try to remove the high-frequency parts (The central sections) of the FFT of an image and see what happens:
 
 ```python=
 SIZE = 1024
