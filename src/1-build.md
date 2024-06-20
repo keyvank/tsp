@@ -34,7 +34,7 @@ I would like you to start by listing a few examples of "Cause & Effect" scenario
 
 Now, let's think about why some of these cause-and-effect chains keep going on and on, while others stop after just a few steps. Why do some things set off a series of events, while others don't?
 
-There's a crucial pattern here: The long-lasting (i.e., interesting) effects emerge from cause-and-effect chains where ***the effects have the same type as the causes***, which essentially means these chains are interesting when they can form cycles. For instance, when a "mechanical" cause has another "mechanical" effect (like dominos), or when an "electrical" cause leads to another electrical effect (like electronic circuits).
+There's a crucial pattern here: The long-lasting (i.e., interesting) effects emerge from cause-and-effect chains where ***the effects have the same type as the causes***, which essentially means these chains are interesting when they can form cycles. For instance, when a "mechanical" cause has another "mechanical" effect (like dominos), or when an "electrical" cause leads to another electrical effect (like electronic circuits, or neurons in your brain).
 
 The most complex thing you can create with components that transform a ***single*** cause into a ***single*** effect is no different than a chain of falling domino pieces (another example is when rumors circulate in a company). It's still impressive and has its interesting aspects, but we don't want to stop there. The real magic starts happening when you transform multiple causes into a single effect (all with the same types). That's when Cause & Effect chains truly shine!
 
@@ -56,9 +56,9 @@ We won't delve deep into the inner workings of transistors just yet, but let's a
 
 Before starting to think of a electrical switch that can be controlled through an electrical cause, be aware that sometimes a cause/effect conversion is actually the result of many other cause/effect conversions chained together, occurring under the hood. For example, consider a light bulb connected to a push-button. In this system, the process begins with a person pushing the switch, initiating a mechanical action. Right after that, the mechanical cause triggers an electrical effect, and the electrical cause produces a visual effect, which eventually results in neural effects in your brain. The entire process converts a mechanical cause into a neural effect that can be sensed by a human brain. (Notice how new converters can be built by connecting/chaining other primitive converters.)
 
-Now, here is a very stupid example of a push-button that has an electrical controller: Imagine there is a human that has a wire in his hand. This person pushes the push-button when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!
+Now, here is a very stupid example of a push-button that has an electrical controller: Imagine there is a human that has a wire in his hand. This person pushes the push-button when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). The person and the push-button together will form something like a transistor, because now the types of all of the inputs/outputs of the system is the same. It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!
 
-Now that you get why something like a transistor might be handy, let's talk about transistors themselves. Formally speaking, a transistor is a resistor that its resistance can transform according to an electrical input. A transistor is something that can convert two electrical causes into single electrical effect. Transistors are very interesting candidates for building computers, because:
+Now that you understand why something like a transistor might be handy, let's talk about transistors themselves. Formally speaking, a transistor is a resistor (An electronic component that resists against flow of electrons) that its resistance can transform according to a third electrical input. A transistor is something that can convert two electrical causes into single electrical effect. Transistors are very interesting candidates for building computers, because:
 
  1. They can convert causes to effects of the same type, directly! (Electricity)
  2. They can be made in very small sizes (Nanometers?).
@@ -70,7 +70,7 @@ Because of these properties, we can build complicated and dense cause/effect cha
 
 Now that you know the philosophy behind building something like a transistor, it's the time to see what can be done with a transistor. Our approach is to try simulating imaginary transistors in a computer and make them do fancy computations for us by putting them in the right order.
 
-Practically, if your goal is to design and implement a production-level transistor circuit, you would describe your circuit in a HDL (hardware-description-language) and synthesize it on real silicone. Two most famous HDLs as of today are VLSI/Verilog. Since this book is about ideas and not real implementations, we will skip the effort needed to learn an HDL, and instead, we will try to emulate the same concepts in Python programming language. This will also help us to have a much deeper understanding of how HDL languages translate high-level description of a circuit into a bunch of transistors!
+Our goal is not to design and implement a production-level transistor circuit. If that was the case we would need to describe our circuits in a HDL (hardware-description-language) and synthesize it on real silicone. Since this book is about ideas and not real implementations, we will skip the effort needed to learn an HDL, and instead, we will try to emulate the same concepts in Python programming language. This will not only give us a much better understanding of the transistor-level implementation of something as complicated as a computer, but also help us to learn how exactly HDL languages translate high-level description of a circuit into a bunch of transistors!
 
 So let's begin and build our own circuit simulator! The most important and basic elements in our circuit emulations will be wires. Wires, as their name suggest, are basically conductors, usually made of metal that allow our components to connect to each other, and talk to each other through the flow of electricity. The most important property of a wire is its voltage.
 
@@ -90,7 +90,7 @@ That's basically the way batteries work, they try to make potential differences 
 
 ## Wires
 
-Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our `Wire`s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits. You might also forget to connect your wire to anything at all. In this case, the voltage of the wire represents neither 0 nor 1.
+Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our `Wire`s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits, in this case, the voltage of the wire might become something unpredictable. Or you might also forget to connect your wire to anything at all. In these cases, the voltage of the wire represents neither 0 nor 1.
 
 A wire in our emulation can have 4 different states:
 
@@ -173,13 +173,15 @@ class Wire:
         return is_changed
 ```
 
-The code above models a wire as a Python class. By definition, a wire that is not connected to anything remains in the `Z` (Free) state. Through the `put` option, a driver (Which can be a battery, or a gate), may drive that wire with some voltage. The final voltage of your wire is then decided by iterating over all of the voltages that are applied to your wire.
+The code above models a wire as a Python class. By definition, a wire that is not connected to anything remains in the `Z` (Free) state. Through the `put` option, a driver (Which can be a battery, or a gate), may drive that wire with some voltage. The final voltage of your wire is then decided by iterating over all of the voltages that are applied to your wire. The reason we are storing the voltage values applied to the wire in a dictionary is that, we don't want a single driver to be able to drive the wire two different values.
 
-Sometimes (Specifically in circuits containing feedback-loops and recursions, it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it). If you don't understand what `assume()` function does yet, don't worry. We'll see its usage in the next sections.
+The `put` function will also check if there has been a change in the values applied on the wire. This will later help our simulator to check if the circuit being simulated has reached to a stable state, in which the values of all the wires remain fixed.
 
-## Magical switch
+Sometimes (Specifically in circuits containing feedback-loops and recursions), it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it). If you don't understand what `assume()` function does yet, don't worry. We'll see its usage in the next sections.
 
-The most primitive element in a digital system is a transistor. A transistor is an electrical domino piece. It converts electrical causes to electrical effects. In very simple terms, a transistor is an electrically controlled switch. There are 3 wires involved which are known as *base*, *emitter*, and *collector*. The base wire is the controller of the switch. An electrical potential between the base and collector wires will cause the emitter wire to get connected with the collector wire. In other words, the base wire will decide if emitter and collector are connected with each other or not. The collector will collect electrons and the emitter will emit them.
+## Magical switches
+
+The most primitive element in a digital system (And our simulation) is a transistor. A transistor is an electrical domino piece. It converts electrical causes to electrical effects. In very simple terms, a transistor is an electrically controlled switch. There are 3 wires involved which are known as *base*, *emitter*, and *collector*. The base wire is the controller of the switch. An electrical potential between the base and collector wires will cause the emitter wire to get connected with the collector wire. In other words, the base wire will decide if emitter and collector are connected with each other or not. The collector will collect electrons and the emitter will emit them.
 
 https://upload.wikimedia.org/wikipedia/commons/3/37/Transistor.symbol.npn.svg
 
@@ -206,7 +208,7 @@ The transistor we have been discussing so far was a Type-N transistor. The Type-
 | 1 | 0 | Z          |
 | 1 | 1 | Z          | 
 
-Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, on the other hand, Type-N transistors give out very good 1 signals. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
+Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0, whereas 4.7V could be considered as a strong 1 and 0.3V could be considered as a strong 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, but their 1s are weak, on the other hand, Type-N transistors give out very good 1 signals, but their 0s are weak. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
 
 ## Primitives
 
@@ -255,7 +257,7 @@ Our primitive components are classes with an `update()` function. The `update()`
 
 The update function of our primitive components are also going to return a boolean value, which indicates if the element needs a re-update or not. Sometimes, the inputs of a component might not be ready when the update function is called. In the transistor examples, when the base wire is in FREE state, we assume that there is another transistor that need to be `update()`ed before the current transistor can calculate its output. By returning this boolean value, we'll let our circuit emulator know that the transistor is not "finalized" yet, and `update()` needs to be called again before deciding that all of the outputs of all components have been correctly calculated and the circuits is stabilized.
 
-Also notice that the `put()` function of the Wire class also returns a boolean value. This value indicates if the driver of that wire has put a new value on the wire. A new value on a wire means that there has been a change in the circuit and the whole circuit needs to be updated again.
+Also remember that the `put()` function of the Wire class also returns a boolean value. This value indicates if the driver of that wire has put a new value on the wire. A new value on a wire means that there has been a change in the circuit and the whole circuit needs to be updated again.
 
 ## The circuit
 
@@ -301,6 +303,8 @@ class Circuit:
 ```
 
 The `update()` method of the `Circuit` class tries to calculate the values of the wires by iterating through the transistors and calling their update method. In case of circuits with feedback loops, things are not going to work as expected with a single iteration of updates, and you may need to go through this loop several times before the circuit reaches a stable state. We introduce an extra method designed for reaching the exact purpose: `stabilize`. It basically performs update several times, until no changes is seen in the values of wires, i.e it gets stable.
+
+Our `Circuit` class will also provide global `zero()` and `one()` wires to be used by components which need fixed 0/1 signals.
 
 Our electronic components can be defined as methods which will add wires and transistors to a circuit. Let’s go through the implementation detail of some of them!
 
@@ -355,9 +359,19 @@ if __name__ == '__main__':
     print(out.get())
 ```
 
-The Not gate modeled in this primitive component is accurate and works as expected, however, we all know that a Not gate itself is made of transistors and it might be more interesting to model the same thing through a pair of transistors, instead of cheating and emulating its high-level behavior through a piece of Python code.
+The Not gate modeled in this primitive component is accurate and works as expected, however, we all know that a Not gate itself is made of transistors and it might be more interesting to model the same thing through a pair of transistors, instead of ***cheating*** and emulating its high-level behavior through a piece of Python code.
+
+Here is an example of a NOT gate, built with a type P and a type N transistor:
+
+```python=
+def Not(circuit, inp, out):
+    circuit.add_component(PTransistor(inp, circuit.one(), out))
+    circuit.add_component(NTransistor(inp, circuit.zero(), out))
+```
 
 [NOT gate with transistors]
+
+Not gates are the simplest kind of components we can have in a circuit, and now that we've got familiar with transistors, it's the time to extend our component-set and build some of the most primitive logic-gates. Besides NOT gates, you might have heard of AND gates and OR gates which are slightly more complicated, mainly because they accept more than one input. Here is their definition:
 
 ***AND gate:*** is zero when at least one of the inputs is zero, and gets One when all of the inputs are one. Otherwise the output is unknown.
 
@@ -377,15 +391,6 @@ The Not gate modeled in this primitive component is accurate and works as expect
 | 0 | 0 | 0      |
 |   |   | X      |
 
-Here is an example of a NOT gate, built with a type P and a type N transistor:
-
-```python=
-def Not(circuit, inp, out):
-    circuit.add_component(PTransistor(inp, circuit.one(), out))
-    circuit.add_component(NTransistor(inp, circuit.zero(), out))
-```
-
-Now that we've got familiar with transistors, it's the time to extend our component-set and build some of tthe most primitive logic-gates.
 
 ## Mother of the gates
 
@@ -461,6 +466,8 @@ def Xor(circuit, in_a, in_b, out):
     circuit.add_component(NTransistor(a_not, inter4, out))
 ```
 
+An `Xor` gate is another incredibly useful gate which comes handy when building circuits that can perform numerical additions. The Xor gate outputs 1 only when the inputs inequal, and outputs 0 when they are equal. Xor gates can be built out of AND/OR/NOT gates: \\(Xor(x,y) = Or(And(x, Not(y)), And(Not(x), y))\\), but since Xors are going to be pretty common in our future circuits, it makes more sense to provide a transistor-level implementation of them, this way, they will take less transistors!
+
 Sometimes we just need to connect two different wires with each other, instead of creating a new primitive component for that purpose, we may just use two consecutive Nots, it'll act like a simple jumper! We'll call this gate a `Forward` gate:
 
 ```python=
@@ -470,7 +477,7 @@ def Forward(circuit, inp, out):
     Not(circuit, tmp, out)
 ```
 
-## Let's get useful
+## Hello World circuit!
 
 The simplest digital circuit which is also useful is something that can add two numbers. Obviously we will be working with bunary numbers. Let's start with a circuit that can add two, one-bit numbers. The result of such an addition is a two bit number.
 
