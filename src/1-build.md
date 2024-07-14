@@ -1011,6 +1011,19 @@ def Decoder(
     Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
 ```
 
+`InstructionPointer` is a module that decides the next memory location from which the next instruction should be fetched. You might think that the next instruction pointer is just the result of increasing the current instruction pointer by one, and we won't need to consider a independent module for calculating something as simple as that, but that's not always the case. Even in our super simple computer, there is a command that may cause our instruction pointer to jump to a completely random location of the memory: `JNZ`
+
+The `InstructionPointer` module could first check if a jump is needed (Based on the current instruction) and set the instruction pointer to the new value, or just increase it:
+
+```
+ShouldJump = IsJNZ && (Data[DataPointer] == 0)
+InstPtr = ShouldJump ? JNZ_Addr : InstPtr + 1
+```
+
+Unfortunately, since our instruction are 8-bits wide and the first bit is already being used by the decoder to detect if the instruction is a JNZ, our jumps will be limited to memory locations in the range 0-127 (Instead of 0-255), since we have 7 bits left. While we are cool with a limitation like that, there are different ways we can overcome this, like, we can make our instructions wider (E.g 16 bits), or, allow some instruction to get extra arguments by performing extra memory-reads (E.g when the current instruction is JNZ, wait for another clock cycle, and perform an extra memory-read to get the memory location to jump to).
+
+Here is the implementation of our simplified `InstructionPointer` module:
+
 ```python=
 def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_pointer):
     zero = [circuit.zero()] * 8
@@ -1045,6 +1058,16 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
 
     return Reg8(circuit, in_clk, inst_pointer_next, out_inst_pointer, 0)
 ```
+
+A very important difference of the computer we have designed and the computer you are using to read this book is that, we have considered two independent memory modules for storing the program/data. In a regular computer both the program and the data it manipulates are stored in a single memory component (This is also known as Von-Neumann architecture!).
+
+The reason we didn't go in that direction is merely avoiding complexity. This has secretly made our life much easier mainly because we can now read a instruction, decode it and execute it all in a single clock cycle. If the program and the data were both stored in a single memory component, the CPU would need to at least perform 2 memory reads in order to execute an instruction, one for reading the instruction itself, and one in case the fetched instructions has something to do with the memory. (Our current RAM doesn't allow you to read two different memory locations at the same time). Not only that, your CPU would also need extra circuitry in order to know which "stage" it is during a cycle. Is it supposed to "read" an instruction, or execute an instruction that it has already read and stored in a temporary buffer? We avoided all this just by separating the memories.
+
+Although having program/data in a single memory component makes your CPU much more complicated, it gives you interesting features: Imagine a program write on itself, changing its own behavior, or imagine a program generating another program, and jumping into it! It provides us whole new set of opportunities.
+
+The reason you can download a compressed executable file from the internet, uncompress it, and run it right away is that the data and program are in the same place!
+
+Anyway, since a multi-stage CPU is something that you can figure out and build on your own, we'll keep our implementation simple and just consider an independent RAM for storing the instructions:
 
 ```python=
 def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code=""):
