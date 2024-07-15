@@ -14,7 +14,55 @@ You can experiment it. Build a neural network as deep as you want. It will strug
 
 The solution? Well, you can again try to get inspiration of how your own brain really works. When you try to recall the name of someone, your brain will start looking for very specific parts of your memory, your brain will stop caring about every other piece of your memory and will try to replicate the only parts of your knowledge that matter. In terms of a neural network that predicts the next word of a sentence, sometimes all you need is a look-up in the sentence and in that case, the neural network should be able to **dynamically** figure out the words that matter the most when predicting the next word. Without such mechanism, your neural network will give equal opportunity to all of the tokens in your sentence to participate in the prediction of the next token, and our neural networks are limited in size.
 
-As a result of a research done in 2017, the researchers discovered a beautiful method for allowing neural networks to pick the most relevant pieces of data as the input goes through the model. They named it "Self-Attention" or "The Attention Mechanism". The title of their paper is also "Attention is all you need", and it really turned out that attention was all we needed! The idea is very brilliant:
+As a result of a research done in 2017, the researchers discovered a beautiful method for allowing neural networks to pick the most relevant pieces of data as the input goes through the model. They named it "Self-Attention" or "The Attention Mechanism", or "The Transformer Architecture". The title of their paper is also "Attention is all you need", and it really turned out that attention was all we needed! The idea is very brilliant:
 
 Imagine you are in a room, full of people talking, and you want to ask some question from a friend...
 
+## The non-trivial gate, XOR
+
+## A non-trivial way to search
+
+The Transformer model tries to emulate some kind of database within a neural network, but before trying to play with neurons, let's discuss the non-neural-network version of it:
+
+```python=
+import math
+
+database = [
+    ([0.52, 0.78, 0.69], [0.29, 0.51, 0.17]),
+    ([0.45, 0.54, 0.12], [0.63, 0.49, 0.91]),
+    ([0.14, 0.59, 0.53], [0.52, 0.46, 0.25]),
+    ([0.79, 0.96, 0.91], [0.32, 0.32, 0.17]),
+    ([0.01, 0.73, 0.69], [0.68, 0.73, 0.75]),
+]
+
+keys = [k for k, _ in database]
+values = [v for _, v in database]
+
+
+def closeness(a, b):
+    eps = 1e-5
+    ret = 0
+    for x, y in zip(a, b):
+        ret += (x - y) ** 2
+    return 1 / (math.sqrt(ret) + 1e-5)
+
+
+def softmax(inp):
+    max_x = max(inp)
+    e_x = [math.exp(x - max_x) for x in inp]
+    sum_e_x = sum(e_x)
+    return [x / sum_e_x for x in e_x]
+
+
+to_find = [0.79, 0.96, 0.91]
+dists = softmax([closeness(k, to_find) for k in keys])
+
+res = [0, 0, 0]
+for k, v in zip(dists, values):
+    for i in range(3):
+        res[i] += k * v[i]
+
+print(res)
+```
+
+The difference between this creative way of searching, and a regular search is very similar to the difference between a neuron, and a logic gate. One of them is differentiable, and the other is not!
