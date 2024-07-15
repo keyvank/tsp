@@ -750,6 +750,12 @@ In bitcoin, it's the pub-keys that are transferring value with each other, and n
 
 Fortunately, although you can't stop others from discovering your ownership of a certain public-key, there are ways you can make it hard for others to understand the interactions between different public-keys within a public blockchain.
 
+## Making the non-private, private
+
+I would like to consider a section for one of the exciting discoveries I and some of my colleagues have had in a Blockchain research lab I worked in. Here is the story: when I joined the lab in 2023, one of the first things we started to research and work on was privacy solutions on blockchains. We were brave enough to try thinking about a completely new way of achieving privacy in blockchains, but we faced a fundamental issue: the concept of privacy in cryptocurrencies depends heavily on the number of users who use the protocol. In fact, it doesn't matter how sophisticated a privacy protocol is, if there a are only a few people using it, it is useless. So, creating a totally new privacy-oriented cryptocurrency with 0 users seemed worse than just trying to make a cryptocurrency-mixing smart-contract on a popular blockchain with a VM (Like Ethereum). But, promoting the users to use that smart-contract was also hard. And there were also cases where the developers of these kind of smart-contracts got into jail (Sad story, we still live in a world where you can be arrested merely for writing open-source software! Read the story behind TornadoCash). It is also easy for the governments to just ban the usage of privacy-related smart-contracts.
+
+At first it seemed like a dead-end, but we tried to look at the problem differently: is there a way we can transform a non-private cryptocurrency into a private one, without introducing new transaction-types?
+
 ## Tor network
 
 Tor is a famous piece of software, but its usage is interpreted differently around the world. As someone living in a free country, Tor is mostly a tool for achieving privacy on the internet: to be able to surf around the internet without anyone knowing who you are. On the other hand, in a country with restricted internet, Tor is known as a tool for circumventing censorships!
