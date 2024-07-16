@@ -82,6 +82,85 @@ And just like the way we design an encoding for the inputs, we may also design a
 
 Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!
 
+## A learning algorithm made by humans
+
+Before getting into the details of backpropagation algorithm, let's discuss the mathematical foundations of it first. If you have made it this far in this book without skipping any chapters, you are already familiar with "derivatives", the code idea Newton used to invent his own perception of Physics and motion. Derivative of a function is basically a new function that gives you out the rate of change of the original function on any given point.
+
+The formal definition of derivative is something like this:
+
+\\(\lim_{\epsilon \to 0}\frac{f(x+\epsilon)-f(x)}{\epsilon}\\)
+
+The "limit" part of the definition means that \\(\epsilon\\) must be a very small value. Based on this definition, we can numerically estimate the derivative of any function using this piece of Python:
+
+```python=
+def f(x):
+    return x * x
+
+def deriv(f):
+    eps = 1e-5
+    def f_prime(x):
+        return (f(x + eps) - f(x)) / eps
+    return f_prime
+
+f_prime = deriv(f)
+
+print(f_prime(5))
+```
+
+Here, the `deriv` function accepts a single-parameter function and returns a new function that is its derivative (Based on the definition of derivative). The smaller the `eps` constant becomes, the more accurate our calculated derivatives will get. It's interesting that making `eps` hugely smaller doesn't make significant difference in the result of the derived function, and will only make it converge to a fixed value. In the given example, the result of `f_prime(5)` will get closer and closer to `10` as we make `eps` smaller.
+
+Now, that's not the only way to take the derivative of a function! If you try different `x`s on `f_prime`, you'll soon figure out that `f_prime` is almost exactly equal with `x * 2`. If we are sure that this is true for all `x`s, we can define a ***shortcut version*** of `f_prime` function, and avoid dealing with epsilons and fat calculations. That's a great optimization!
+
+You can actually find out this ***shortcut function*** by substituting \\(f(x)\\) in the formal definition of derivative with the actual function. In case of \\(f(x) = x^2\\):
+
+\\(\lim_{\epsilon \to 0}\frac{(x+\epsilon)^2-x^2}{\epsilon}=\frac{x^2+2x\epsilon+\epsilon^2-x^2}{\epsilon}=\frac{2x\epsilon + \epsilon^2}{\epsilon} = 2x + \epsilon = 2x\\)
+
+Now, let's imagine we have a set of different primitive functions (Functions that we know their derivatives)
+
+\\(\frac{df(g(x))}{dx} = \frac{df(g(x))}{dg(x)} \times \frac{dg(x)}{dx}\\)
+
+\\(fog(x) = f'(g(x)) * g'(x)\\)
+
+```python=
+def f(x):
+    return x * x
+
+def g(x):
+    return 1 / x
+
+def fog(x):
+    return f(g(x))
+
+fog_prime = deriv(fog)
+print(fog_prime(5))
+
+f_prime = deriv(f)
+g_prime = deriv(g)
+print(g_prime(5) * f_prime(g(5)))
+```
+
+## Derivative of the tunable gate
+
+Remember our design of a tunable gate? We can formulate it using a math function:
+
+```python=
+def f(x, y, b):
+    if x + y > b:
+        return 1
+    else:
+        return 0
+```
+
+```python=
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+```
+
+```python=
+def f(x, y, b):
+    return sigmoid(x + y - b)
+```
+
 ## Tensor
 
 If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.
