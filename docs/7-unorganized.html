@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - The Super Programmer</title>
-        <base href="/">
+        <title>Unorganized - The Super Programmer</title>
 
 
         <!-- Custom HTML head -->
@@ -91,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-build.html"><strong aria-hidden="true">1.</strong> Build!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li><li class="chapter-item expanded "><a href="7-unorganized.html"><strong aria-hidden="true">7.</strong> Unorganized</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-build.html"><strong aria-hidden="true">1.</strong> Build!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li><li class="chapter-item expanded "><a href="7-unorganized.html" class="active"><strong aria-hidden="true">7.</strong> Unorganized</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -176,13 +175,70 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <p>In order to make things simpler, let's just assume that our model accepts 5 tokens as input and gives out the next predicted token as output. Just like how we built a model that was able to learn MNIST and XOR, we can take the most naive approach and build a multi-layer-perceptron. But there is something really very wrong with this approach when trying to build something like a chatbot. Let me explain it to you with an example. Imagine the sentence you are going to process and predict its next word is something like this:</p>
+<p><em><strong>&quot;I'm called Keyvan, so my name is&quot;</strong></em></p>
+<p>The word &quot;Keyvan&quot; is a great example of a word that we most probably have not reserved an independent token for. If you take a large piece of english text and sort the words appearing in it by number of occurance, &quot;Keyvan&quot; is definitely not in the first 1000, but since a token-embedding should be able to decompose any word into a list of tokens, it's probable that the word Keyvan will be decomposed to &quot;Key&quot;, &quot;v&quot; and &quot;an&quot;.</p>
+<p>Now, based on this, it's obvious that the next token that should appear after <em><strong>&quot;I'm called Keyvan, so my name is&quot;</strong></em>, should be &quot;Key&quot;. But, think about it, is a multi-layer-perceptron really able to efficiently learn to predict something like that? This is what the neural network have to do:</p>
+<ol>
+<li>Ignore the fact the word &quot;Key&quot; has a meaning on its own.</li>
+<li>Find the token/tokens that are related to the name of the person.</li>
+<li>Copy those tokens one by one, and keep track of tokens it has already copied.</li>
+</ol>
+<p>You can experiment it. Build a neural network as deep as you want. It will struggle to learn something as simple as that, very badly. </p>
+<p>The solution? Well, you can again try to get inspiration of how your own brain really works. When you try to recall the name of someone, your brain will start looking for very specific parts of your memory, your brain will stop caring about every other piece of your memory and will try to replicate the only parts of your knowledge that matter. In terms of a neural network that predicts the next word of a sentence, sometimes all you need is a look-up in the sentence and in that case, the neural network should be able to <strong>dynamically</strong> figure out the words that matter the most when predicting the next word. Without such mechanism, your neural network will give equal opportunity to all of the tokens in your sentence to participate in the prediction of the next token, and our neural networks are limited in size.</p>
+<p>As a result of a research done in 2017, the researchers discovered a beautiful method for allowing neural networks to pick the most relevant pieces of data as the input goes through the model. They named it &quot;Self-Attention&quot; or &quot;The Attention Mechanism&quot;, or &quot;The Transformer Architecture&quot;. The title of their paper is also &quot;Attention is all you need&quot;, and it really turned out that attention was all we needed! The idea is very brilliant:</p>
+<p>Imagine you are in a room, full of people talking, and you want to ask some question from a friend...</p>
+<h2 id="the-non-trivial-gate-xor"><a class="header" href="#the-non-trivial-gate-xor">The non-trivial gate, XOR</a></h2>
+<h2 id="a-non-trivial-way-to-search"><a class="header" href="#a-non-trivial-way-to-search">A non-trivial way to search</a></h2>
+<p>The Transformer model tries to emulate some kind of database within a neural network, but before trying to play with neurons, let's discuss the non-neural-network version of it:</p>
+<pre><code class="language-python=">import math
+
+database = [
+    ([0.52, 0.78, 0.69], [0.29, 0.51, 0.17]),
+    ([0.45, 0.54, 0.12], [0.63, 0.49, 0.91]),
+    ([0.14, 0.59, 0.53], [0.52, 0.46, 0.25]),
+    ([0.79, 0.96, 0.91], [0.32, 0.32, 0.17]),
+    ([0.01, 0.73, 0.69], [0.68, 0.73, 0.75]),
+]
+
+keys = [k for k, _ in database]
+values = [v for _, v in database]
+
+
+def closeness(a, b):
+    eps = 1e-5
+    ret = 0
+    for x, y in zip(a, b):
+        ret += (x - y) ** 2
+    return 1 / (math.sqrt(ret) + 1e-5)
+
+
+def softmax(inp):
+    max_x = max(inp)
+    e_x = [math.exp(x - max_x) for x in inp]
+    sum_e_x = sum(e_x)
+    return [x / sum_e_x for x in e_x]
+
+
+to_find = [0.79, 0.96, 0.91]
+dists = softmax([closeness(k, to_find) for k in keys])
+
+res = [0, 0, 0]
+for k, v in zip(dists, values):
+    for i in range(3):
+        res[i] += k * v[i]
+
+print(res)
+</code></pre>
+<p>The difference between this creative way of searching, and a regular search is very similar to the difference between a neuron, and a logic gate. One of them is differentiable, and the other is not!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="6-fly.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
 
                         <div style="clear: both"></div>
@@ -191,6 +247,9 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="6-fly.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
             </nav>
 

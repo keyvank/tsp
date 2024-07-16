@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-build.html"><strong aria-hidden="true">1.</strong> Build!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html" class="active"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-build.html"><strong aria-hidden="true">1.</strong> Build!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html" class="active"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li><li class="chapter-item expanded "><a href="7-unorganized.html"><strong aria-hidden="true">7.</strong> Unorganized</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -231,6 +231,61 @@
 </ol>
 <p>And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.</p>
 <p>Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!</p>
+<h2 id="a-learning-algorithm-made-by-humans"><a class="header" href="#a-learning-algorithm-made-by-humans">A learning algorithm made by humans</a></h2>
+<p>Before getting into the details of backpropagation algorithm, let's discuss the mathematical foundations of it first. If you have made it this far in this book without skipping any chapters, you are already familiar with &quot;derivatives&quot;, the code idea Newton used to invent his own perception of Physics and motion. Derivative of a function is basically a new function that gives you out the rate of change of the original function on any given point.</p>
+<p>The formal definition of derivative is something like this:</p>
+<p>\(\lim_{\epsilon \to 0}\frac{f(x+\epsilon)-f(x)}{\epsilon}\)</p>
+<p>The &quot;limit&quot; part of the definition means that \(\epsilon\) must be a very small value. Based on this definition, we can numerically estimate the derivative of any function using this piece of Python:</p>
+<pre><code class="language-python=">def f(x):
+    return x * x
+
+def deriv(f):
+    eps = 1e-5
+    def f_prime(x):
+        return (f(x + eps) - f(x)) / eps
+    return f_prime
+
+f_prime = deriv(f)
+
+print(f_prime(5))
+</code></pre>
+<p>Here, the <code>deriv</code> function accepts a single-parameter function and returns a new function that is its derivative (Based on the definition of derivative). The smaller the <code>eps</code> constant becomes, the more accurate our calculated derivatives will get. It's interesting that making <code>eps</code> hugely smaller doesn't make significant difference in the result of the derived function, and will only make it converge to a fixed value. In the given example, the result of <code>f_prime(5)</code> will get closer and closer to <code>10</code> as we make <code>eps</code> smaller.</p>
+<p>Now, that's not the only way to take the derivative of a function! If you try different <code>x</code>s on <code>f_prime</code>, you'll soon figure out that <code>f_prime</code> is almost exactly equal with <code>x * 2</code>. If we are sure that this is true for all <code>x</code>s, we can define a <em><strong>shortcut version</strong></em> of <code>f_prime</code> function, and avoid dealing with epsilons and fat calculations. That's a great optimization!</p>
+<p>You can actually find out this <em><strong>shortcut function</strong></em> by substituting \(f(x)\) in the formal definition of derivative with the actual function. In case of \(f(x) = x^2\):</p>
+<p>\(\lim_{\epsilon \to 0}\frac{(x+\epsilon)^2-x^2}{\epsilon}=\frac{x^2+2x\epsilon+\epsilon^2-x^2}{\epsilon}=\frac{2x\epsilon + \epsilon^2}{\epsilon} = 2x + \epsilon = 2x\)</p>
+<p>Now, let's imagine we have a set of different primitive functions (Functions that we know their derivatives)</p>
+<p>\(\frac{df(g(x))}{dx} = \frac{df(g(x))}{dg(x)} \times \frac{dg(x)}{dx}\)</p>
+<p>\(fog(x) = f'(g(x)) * g'(x)\)</p>
+<pre><code class="language-python=">def f(x):
+    return x * x
+
+def g(x):
+    return 1 / x
+
+def fog(x):
+    return f(g(x))
+
+fog_prime = deriv(fog)
+print(fog_prime(5))
+
+f_prime = deriv(f)
+g_prime = deriv(g)
+print(g_prime(5) * f_prime(g(5)))
+</code></pre>
+<h2 id="derivative-of-the-tunable-gate"><a class="header" href="#derivative-of-the-tunable-gate">Derivative of the tunable gate</a></h2>
+<p>Remember our design of a tunable gate? We can formulate it using a math function:</p>
+<pre><code class="language-python=">def f(x, y, b):
+    if x + y &gt; b:
+        return 1
+    else:
+        return 0
+</code></pre>
+<pre><code class="language-python=">def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+</code></pre>
+<pre><code class="language-python=">def f(x, y, b):
+    return sigmoid(x + y - b)
+</code></pre>
 <h2 id="tensor"><a class="header" href="#tensor">Tensor</a></h2>
 <p>If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.</p>
 <p>Tensor libraries are essential for building super-complicated neural networks. So let's implement a tensor library for ourselves!</p>
