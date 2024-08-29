@@ -90,7 +90,7 @@ The formal definition of a wave with frequency \\(f\\), is something like this:
 
 \\(t\\) is the variable of time in seconds, and \\(f\\) is the frequency. Plot this function and you'll see that the function oscillates between -1 and 1, for exactly \\(f\\) times during 1 second.
 
-[IMAGE: Plot of sine wave]
+![sin(2.pi.5t) does 5 full cycles in 1 second](assets/sine.png){ width=250px }
 
 Since \\(t\\) is a real number, there are infinite possible values for it (Even in a limited range like \\([0,1]\\)). We can't apply infinite different voltages to our magnetic plate in a finite time. A solution is to increase \\(t\\) with an fixed number, and take a **sample** out of the function. How fast we take samples from our function determines our ***sampling rate***. A sampling rate of 100 means that we are taking 100 samples per second. In order to reach sampling rate of 100, we have to increase \\(t\\) by 0.001 everytime we take a new sample. The sampling rate should be high enough so that we are able to generate a wide range of frequencies, otherwise it'll become useless. A sampling-rate of around ~40000 is enough to be able to generate sounds that are hearable by a human.
 
@@ -131,34 +131,35 @@ Redirect your script's output to the `pacat` program and hear the voice of your 
 pacat <(python3 music.py)
 ```
 
-[POINTER]
+## Frequency combos!
 
-Now let's combine two frequencies and hear how it sounds!
+Remember that each arbitrary signal can be assumed as nothing but composition of sine waves? A fascinating fact is, our ears are actually able to recognize the existence of two different frequencies in a single signal, and we can actually experiment that! Instead of defining our `f(t)` function as a single sine, we can embed two sine components in a single signal by adding them together:
 
 
 ```python
 def f(t):
-    a = math.sin(t * 2 * math.pi * 440)
-    b = math.sin(t * 2 * math.pi * 660)
-    return (a + b) / 2
+    a = math.sin(t * 2 * math.pi * 440) * 0.5
+    b = math.sin(t * 2 * math.pi * 660) * 0.5
+    return a + b
 ```
 
-We are taking an average from `a` and `b` so that the output value remains between -1 and 1.
+We are multiplying `a` and `b` by `0.5` so that the output value remains between -1 and 1, otherwise the value of `a + b` may go below -1 or above 1, which doesn't make sense to our audio device. When you apply a coefficient to a signal, the sound will remain the same, only the energy/intensity of it (Its volume), will decrease/increase! Here we are halving the volume of our original sine function so that some space remains for the other sine component.
 
-If you hear this function, you will actually notice that it consists of two sounds. Your brain can successfully decomposite the output wave into two sounds, and this is amazing! The reason that you can recognize the 440Hz and 660Hz sound in the output of this script is the same reason you can hear your friend in a loud room full of noise, your brain is able to decouple sounds with different frequencies.
+If you hear this function, you will actually notice that it consists of two sounds. Your brain can successfully decompose the output wave into two sounds, and this is amazing! The reason that you can recognize the 440Hz and 660Hz sound in the output of this script is the same reason you can hear your friend in a loud room full of noise, your brain is able to decouple sounds with different frequencies.
+
+## Invent your sound pallete!
 
 Now that we are able to generate sounds of different frequencies, I want you to do an experiment. Try generating frequencies that are of the form \\(2^nf\\). E.g. try hearing these frequencies: \\(440, 880, 1760, 3520, \dots\\)
 
 ```python=
 def f(t):
-    sec = t * sample_rate
-    if sec < 1:
+    if t < 1:
         return math.sin(t * 2 * math.pi * 440)
-    elif sec < 2:
+    elif t < 2:
         return math.sin(t * 2 * math.pi * 440 * 2) # 880Hz
-    elif sec < 3:
+    elif t < 3:
         return math.sin(t * 2 * math.pi * 440 * 2 * 2) # 1760Hz
-    elif sec < 4:
+    elif t < 4:
         return math.sin(t * 2 * math.pi * 440 * 2 * 2 * 2) # 3520Hz
 ```
 
@@ -168,14 +169,14 @@ Hear them carefully, and then compare how they sound when their frequency is dou
 
 We can discover something very strange and important here. Sounds that are generated when the frequency is doubled each time, are very similar to each other (At least, to our brain). While in the second experiment, sounds seem to be different with each other. If the sounds that are generated in the first experiment are similar, then what makes them different?
 
-Let's try another experiment (This time without coding!). Play one of your favorite musics and try to sing on it. Try to sing on it with lower and higher pitches. Even though you have changed your voice, your singing still "fits" the song. By singing on a song with higher pitch, you won't shift your frequency by some number, but you will actually multiplying it by a power of two. A man and woman with totally different frequency ranges can both sing on the same song, but both of the singings will "fit" on the song, as long as the frequencies are multiplies of powers of 2. I think it's now safe two say, frequencies that are twiced every time, have same feelings.
+Let's try another experiment (This time without coding!). Play one of your favorite musics and try to sing on it. Try to sing on it with lower and higher pitches. Even though you have changed your voice, your singing still "fits" the song. By singing on a song with higher pitch, you are not actually shifting your frequency by some number, but you will actually multiplying it by a power of two. A man and woman with totally different frequency ranges can both sing on the same song, but both of the singings will "fit" on the song, as long as the frequencies are multiplies of powers of 2. I think it's now safe two say, frequencies that are doubled (Or halved) every time, have same feelings.
 
 Let's start with 300Hz. We calculate powers of two multiplied by the base frequency. Here is what we get:
 
 
 `..., 37.5Hz, 75Hz, 150Hz, 300Hz, 600Hz, 1200Hz, 2400Hz, ...`
 
-Let's agree that they are all basically the same "sound", and let's put a name on them. Let's call them S1.
+Although there areLet's agree that they are all basically the same "sound", and let's put a name on them. Let's call them **sound number 1** or S1.
 
 Whatever frequency we take from the range 300Hz-600Hz, there will also exist the corresponding "same-feeling" sound in ranges 75-150, 150-300, 600-1200, 1200-2400 and etc.
 
@@ -262,9 +263,14 @@ F = 440 * 1.05946^8 = 698.46
 F# = 440 * 1.05946^9 = 739.99
 G = 440 * 1.05946^10 = 783.99
 G# = 440 * 1.05946^11 = 830.61
+A = 440 * 1.05946^12 = 440 * 2 = 880
 ```
 
------
+Just like painters, we now have a sound pallete!
+
+![Musical notes are the colors of music!](assets/pallete.png) { width=250px }
+
+[POINTER]
 
 Now that we have our pallete of sounds, we may start creating art! A simple melody consists of musical notes that come, stay for some time and then fade away. They won't last forever, and there will be times when no musical not is being played, silence itself is an ingredient of music.
 
