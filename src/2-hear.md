@@ -248,6 +248,8 @@ Good to mention that another bug also happens when we try to define middle frequ
 
 Fortunately, we have been able to find a way to halve frequency ranges and create new same-feeling sounds out of them! But are 2 sounds enough for making a song? Well, we don't have to stop here. We can still find the middle of a S1 and a S2 and define a new S3 sound. The middle of the gap between an S2 and the next S1 can also define a new S4 sound. We can build infinitely many sounds just by halving the frequency gaps!
 
+![Musical notes are the colors of music!](assets/pallete.png){width=250px}
+
 Enough explanation. Given that you now know how same-feeling sounds are derived, let's talk about the standard frequencies that are used in the music we hear everyday. Just like how we defined a base frequency S1 for deriving new sounds, music composers also defined a base frequency (That is 440Hz) and derived the other sounds out of it. They called their base frequency **A**, splitted the gap between two consecutive **A**s into 12 different sounds (Probably because 12 was big enough to make big variations of music and small enough so that the sounds remain distinguishable for human ears) and named the 11 other derived sounds as `A# B C C# D D# E F F# G G#`. How can you take 12 sounds out of a base frequency? New sounds can be derived by multiplying the previous sound by \\(\sqrt[12]2 \simeq 1.05946\\). Starting from \\(A\\) sound, if you do this 12 times, you get back to the next same-feeling A sound again, because \\(\sqrt[12]2^{12}=2\\).
 
 ```
@@ -268,15 +270,14 @@ A = 440 * 1.05946^12 = 440 * 2 = 880
 
 Just like painters, we now have a sound pallete!
 
-![Musical notes are the colors of music!](assets/pallete.png) { width=250px }
+## Let your computer sing!
 
-[POINTER]
+Now that we have our pallete of sounds ready, we may start playing simple pieces of melodies! A simple melody consists of musical notes that come, stay for some time and then fade away. There can also be times when no musical not is being played, silence itself is an ingredient of music.
 
-Now that we have our pallete of sounds, we may start creating art! A simple melody consists of musical notes that come, stay for some time and then fade away. They won't last forever, and there will be times when no musical not is being played, silence itself is an ingredient of music.
-
-Before generating the music itself, let's define the list of constants the will represent the frequencies of different musical notes:
+Defining the frequencies of musical notes as a list of constants may come handy in the next sections:
 
 ```python=
+SILENCE = 0
 A = 440           # La
 A_SHARP = 466.16
 B = 493.88        # Si
@@ -311,13 +312,13 @@ def f(t):
     elif t < 1.4:
         f = B
     else:
-        f = None
-    return math.sin(t * 2 * math.pi * f) if f else 0
+        f = SILENCE
+    return math.sin(t * 2 * math.pi * f)
 ```
 
-Notice that we allow putting silence in our sounds by setting `f` to `None`.
+Notice that we define `SILENCE` as a wave with frequency 0.
 
-A cleaner approach would be something like this:
+Instead of defining a melody as a long list of `if`s, we may have a list of notes and calculate the index of the note that should be played in any given time by doing a division:
 
 ```python=
 SONG = [C, D, E, F, G, A, B]
@@ -328,13 +329,13 @@ def f(t):
     return math.sin(t * 2 * math.pi * f) if f else 0
 ```
 
-Now that we know how to orderly play musical notes, let's go ahead and play Twinkle Twinkle Little Star:
+We are now ready to synthesize our first melody: let's go ahead and play Twinkle Twinkle Little Star:
 
 ```python=
-SONG = [C, C, G, G, A * 2, A * 2, G, None, F, F, E, E, D, D, C]
+SONG = [C, C, G, G, A * 2, A * 2, G, SILENCE, F, F, E, E, D, D, C]
 ```
 
-(Note: the reason we are multiplying `A` by two is that we want the version of `A` with higher pitch (Or the `A` note on the next octave), remember the same feeling sounds? We discussed that if you multiply a note by a power of two, you will get the same sound, but in a higher pitch, so effectively, `A * 2` is still `A`!)
+(Note: the reason we are multiplying `A` by two is that we want the version of `A` with higher pitch (Or the `A` note on the next ***octave***), remember the same feeling sounds? We discussed that if you multiply a note by a power of two, you will get the same sound, but in a higher pitch, so effectively, `A * 2` is still `A`!)
 
 Ok, there is a small problem here, the subsequent notes which have same frequency are connecting together. `[C, C]` doesn't sound like two independent `C`s, but it sounds like a long-lasting `C`. Here is a quick solution:
 
@@ -346,10 +347,10 @@ def f(t):
     note_index = int(t / DURATION) % len(SONG)
 
     if t - note_index * DURATION > DURATION * WIDTH:
-        return 0
+        return SILENCE
 
     f = SONG[note_index]
-    return math.sin(t * 2 * math.pi * f) if f else 0
+    return math.sin(t * 2 * math.pi * f)
 ```
 
 Here we are silencing the last 20% of the note duration with silence. This makes it possible for us to distinguish between the notes! Try different `WIDTH`s to see the difference.
@@ -358,54 +359,65 @@ Here we are silencing the last 20% of the note duration with silence. This makes
 
 Years ago when I was a high-school student, once our Chemistry teacher wanted take an oral quiz from us. He randomly chose a student, brought him to the blackboard and asked him an unusual question. Why does a proton has positive electrical charge, while an electron has negative electrical charge? Why isn't it the other way round?
 
-The question has a fairly simple answer, negativity and positivity are merely names assigned to these primitive particles, so that we can analyze their behaviors. The question is like asking why humans with male reproductive systems are called men, while humans with female reproductive systems are called women? The student got confused and couldn't answer the question anyway. I still adore that teacher for asking these kind of meta-questions, because sometimes, learning is not all about memorizing things.
+The question has a fairly simple answer, negativity and positivity are merely names assigned to these primitive particles, so that we can analyze their behaviors. The question is like asking why humans with male reproductive systems are called men, while humans with female reproductive systems are called women?
 
 Genders and electrical charges are not the only dualities in our universe. In fact, we have infinite concepts in our unverse that has duals. Good and bad, happiness and sadness, light and dark, love and hate, forward and backward, angel and devil, heaven and hell, or even zeros and ones in our computers, they are all examples of dualities.
 
 In many of these duals, one thing refers to the presence of something while the other things refers to the absence of that thing. In context of zeros and  ones, we can say one refers to existence of some quantity while zero defines absence of it.
 
-There is a famous saying, that love and hate are two sides of the same coin. In fact, all duals are actually the sides of a single coin. A coin would not exist if it didn't have two sides. That's also true for all other duals. Happiness wouldn't exist if there wasn't any sadness. Positive numbers wouldn't exist if there weren't any negative numbers (If we didn't have negative numbers, our algebra would become bugos).
+Duals are interestingly two sides of a single coin. A single side cannot exist alone: it can only have a meaning when the other side also exists. That holds true for all other duals. Happiness wouldn't exist if there wasn't any sadness. Positive numbers wouldn't exist if there weren't any negative numbers (If we didn't have negative numbers, our algebra would become bugos).
 
-Here are some other coin samples and their analogical sides!
+You can see that many of these interesting phenomena emerge when we try to pull "numbness" from two sides and break it into into two ***meaninful pieces***.
 
- - Data is the coin, zeros and ones are its sides.
- - Feeling is the coin, happiness and sadness are its sides.
- - Ethics is the coin, good and bad are its sides.
- - Emotion is the coin, love and hate are its sides.
-
-You can see that many of these interesting phenomena emerge when we try to pull "numbness" from two sides and break it into into two pieces that when come together again, they become numb again. (E.g You feel numb when you are neither happy or sad or you get zero when you add the negative (dual) of a number to itself).
-
-Some of these halvenings are conceptual, meaning that they are not something emerged in our universe like protons and electrons, or women and men. And example is negative and positive numbers, or real and imaginary numbers. We can somehow argue that negative and positive numbers are things that exist even if our universe does not exist (Or can't we? Nobody knows that at least).
+Some of these halvenings are conceptual, meaning that they are not something emerged in our universe like protons and electrons, or women and men. And example is negative and positive numbers, or real and imaginary numbers. We can somehow argue that negative and positive numbers are things that exist even if our universe does not exist.
 
 And some of them are reflections of these conceptual Yin and Yangs. The fact that some living creatures have genders only emerged after millions of years of evolution. In fact many living creatures did not have genders and they split into two only after evolution decided to mimick duality, maybe because duality is good.
 
-A hard, solid piece of rock is a creature that perhaps doesn't experience any of the human feelings. A rock doesn't fall in love, or become happy or sad. A rock will experience no pain, doesn't need to breath and eat to survive, you might think that a rock has a wonderful life (And in some ways, it has).
-
-A rock's luckiness perhaps partly comes back to the fact that it has a fairly simple structure. If you study the molecular structure of a rock, you will see that a rock is built of a limited set of atoms, orderly placed along each other, which makes it a very hard break. A human being on the other hand has a much more complicated structure, and we can't see the perfect atomical ordering of a rock in a human body too. While a rock has a wonderful life, its life is very boring (From the viewpoint of an observer), a human life on the other hand, despite having sadness, pain and suffer, is much more interesting and worth living. Nature's goal has never been to build a long-lasting life, without any happiness and pain like a rock, but to build a life that maximizes ***interestigness***.
-
-You might now already know that I'm going to talk about one of the most interesting laws of physics, the second law of thermodynamics. This law was first discovered by Sadi Carnot, the french Physicist, who discovered that you can't build a motor engine that is able to convert 100% of the heat energy into mechanical work, and some of the energy will always be wasted. In other words, there is a efficiency limit in a system that converts heat into mechanical work. The same law can be expressed in other ways too, for example, you can't build a refrigerator (Or an air conditioner) that is able to decrease the temperature of a closed area, without disposing a higher heat (Higher than the amount reduced in the closed area) outside that area.
-
-Heat is some kind of chaos and disorder in atoms. When atoms take energy, they start to move in directions in a chaotic way. The more they move, the hotter they become. We can measure how chaotic the elements of a system (E.g. the atoms inside a closed area) are, and call it the Entropy of that system.
-
-Given the definition of Entropy, we can redefine the second law of thermodynamics in another words: ***The entropy of the universe always increases.*** I.e the sum of disordered-ness of all elements in our universe always gets higher, which again means, I can't decrease the heat in my room in a sunny day without generating even more heat into the universe. You might now think that we are making the earth warmer by building air conditioners, but the truth is the heat is radiated into the universe!
+You might wonder why I'm saying all this. Well, I thought thinking about duals could be a good starting point for understanding why melodies have feelings in themselves. Why do some of them bring joy, while the other bring sadness?
 
 ## Recipes of feelings!
 
-Play these two sequences of notes and think about how you feel about them:
+Play these two frequency combos with your synthesizer, and think about how you feel about them. If you were supposed two attribute the happy/sad feelings to these sounds, how would you do it?
+
+The first one is a sound composed of three frequencies `A`, `C_SHARP`, and `E`, known as a A-major triad:
+
+```python=
+def f(t):
+    a = math.sin(t * 2 * math.pi * A) * 0.33
+    c_sharp = math.sin(t * 2 * math.pi * C_SHARP) * 0.33
+    e = math.sin(t * 2 * math.pi * E) * 0.33
+    return a + c_sharp + e
+```
+
+The second one is a sound composed of three frequencies `A`, `C`, and `E`, known as a A-minor triad:
+
+```python=
+def f(t):
+    a = math.sin(t * 2 * math.pi * A) * 0.33
+    c = math.sin(t * 2 * math.pi * C) * 0.33
+    e = math.sin(t * 2 * math.pi * E) * 0.33
+    return (a + c + e) * 0.33
+```
+
+Most probably, you will percieve joy when listening to the A-major sound, while feeling confusion and sadness when listening to the A-minor sound. The reason we attribute feelings to musical patterns like these are merely cultural! Music has somehow become an international language among humans, since there are very few nations/tribes in the world who will percieve minor patterns as happy and major patterns as sad. This simple duality (That is somehow made-up by humans!) is one of the most important foundations of what we today know as music!
+
+Sequences may have minor/major feelings too. Play these two sequences of notes and think about how you feel about them:
 
 ```python=
 A_MAJOR = [A, B, C_SHARP, D, E, F_SHARP, G_SHARP]
 A_MINOR = [A, B, C, D, E, F, G]
 ```
 
-It's very probable that you'll find the `A_MAJOR` sequence happy and confident, while the `A_MINOR` one has a bit of confusion and probably sadness. Both of these melodies are nothing but a sequence of notes which are going higher in pitch, so why one of them feels happy and the other feels sad? Now try these two:
+Just like the frequency combos, it's very probable that you'll find the `A_MAJOR` sequence happy and confident, while the `A_MINOR` one has a bit of confusion and probably sadness.
+
+If you are already excited about the way a simple note sequence might feel, you might want to try these two:
 
 ```
 A_MINOR_HARMONIC = [A, B, C, D, E, F, G_SHARP]
 A_MINOR_MELODIC = [A, B, C, D, E, F_SHARP, G_SHARP]
 ```
 
-The feeling is very similar to the `A_MINOR` sequence, but it has even more confusion, one might even say that these sequences have some kind of "magical" feelings.
+The feelings of both of them are very similar to the `A_MINOR` sequence, but they have even more confusion, one might even say that these sequences have some kind of "magical" feelings.
 
 You can keep going and expanding the sequences by appending the same notes that are in the next octaves. It's easier to catch the feelings of the sequences this way:
 
@@ -419,7 +431,9 @@ SONG += next_octave(A_MINOR_MELODIC)
 SONG += next_octave(next_octave(A_MINOR_MELODIC))
 ```
 
-Now, think of these note not as sequences, but as ingredients which you can use for making melodies. Choose a sequence and cook a melody by picking notes only from that sequence. You will have a melody which can have a happy, sad, confusing or even a more complicated feeling! These sequences, or note-ingredients are what is called by musicians as ***musical scales***. We just explored A-major and A-minor scales. Now tell me, what is the musical scale of the Twinkle Twinkle Little Star melody we synthesized earlier? Wrong! Although the musical notes that are used in this song are the notes of the A-minor scale, it has a happy feeling, it has a "major" feeling! So what has happened?
+Now, think of these note not as sequences, but as ingredients which you can use for making melodies. Choose a sequence and cook a melody by picking notes only from that sequence. You will have a melody which can have a happy, sad, confusing or even a more complicated feeling! These sequences, or note-ingredients are what is called by musicians as ***musical scales***. We just explored A-major and A-minor scales.
+
+Now tell me, what is the musical scale of the Twinkle Twinkle Little Star melody we synthesized earlier? Wrong! Although the musical notes that are used in this song are the notes of the A-minor scale, it has a happy feeling, it has a "major" feeling! So what has happened?
 
 To understand what is happening, let's first play the expanded version of A-minor scale again, but this time, we'll cut the first two notes in the resulting sequence:
 
@@ -494,7 +508,7 @@ Our ears are wonderful. They can distinguish between different frequencies and n
 
 So if the ears are able to make sense of "frequency mixtures", why not trying to bake new sounds by mixing different frequencies with each other? It'll be like mixing different colors with each other and making new colors!
 
-In the world of music, these mixtures are often referred as "chords". Chords are simply just mixtures of different notes that exist in a certain musical scale. Musicians have found ways to make up chords that feel nice and good. Let's explore a few of them. I would like to start with *triads*: these are chords that are made of 3 different notes. Just like how we categorize musical scales as majors and minors, some triad chords are also categorized in this way too.
+In the world of music, these mixtures are often referred as "chords". Chords are simply just mixtures of different notes that exist in a certain musical scale. Musicians have found ways to make up chords that feel nice and good. Let's explore a few of them. I would like to start with *triads* (We already explored the A-major and A-minor triads if you remember): these are chords that are made of 3 different notes. Just like how we categorize musical scales as majors and minors, some triad chords are also categorized in this way too.
 
 Given a starting note, here are some of the triads you can make:
 
@@ -535,6 +549,8 @@ def triads(scale):
         res.append([notes[i], notes[i+2], notes[i+4]])
     return res
 ```
+
+[POINTER]
 
 ## Storing melodies
 
