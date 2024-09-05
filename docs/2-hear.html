@@ -545,13 +545,33 @@ def augmented_triad(root):
 <p>Let's automate this and write a function that can generate the triad chords of a given scale for us on the fly:</p>
 <pre><code class="language-python=">def triads(scale):
     # The scale is repeated twice to avoid overflows!
-    notes = scale + scale
+    notes = scale + next_octave(scale)
     res = []
     for i in range(7):
         res.append([notes[i], notes[i+2], notes[i+4]])
     return res
 </code></pre>
 <p>[POINTER]</p>
+<p>Sometimes we already have a note in a given scale, and we just want to extract the corresponding triad of it:</p>
+<pre><code class="language-python=">def triad_of(note, scale):
+    scale = scale + next_octave(scale)
+    i = scale.index(note)
+    return [scale[i], scale[i+2], scale[i+4]]
+</code></pre>
+<p>Now let's substitute the notes in the Twinkle Twinkle Little Star with their corresponding triads, and play the triad notes simultanously on every note. We'll define a new function <code>combo</code> to make it easier for us to play a note-combination given a list of frequencies:</p>
+<pre><code class="language-python=">def combo(t, freqs):
+    return sum([
+        math.sin(t * 2 * math.pi * f) for f in freqs
+    ]) / len(freqs)
+
+def f(t):
+    note_index = int(t / DURATION) % len(SONG)
+    triad = triad_of(SONG[note_index], C_MAJOR)
+    return combo(t, triad)
+</code></pre>
+<p>See how richer our output has got!</p>
+<p>Our toolset is almost enough for generating random pieces that feel somewhat good to our ears. Given we now have some knowledge on musical scales and feelings, we may even inject our desired feelings to these pieces.</p>
+<p>Our brief journey in theory of music has now ended. In the next sections, we are mostly going to study more on the waves themselves.</p>
 <h2 id="storing-melodies"><a class="header" href="#storing-melodies">Storing melodies</a></h2>
 <p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. Here is a function that accepts a RTTTL script and returns a list of notes:</p>
 <pre><code class="language-python=">def parse_rtttl():

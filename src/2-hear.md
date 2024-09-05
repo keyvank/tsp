@@ -543,7 +543,7 @@ Let's automate this and write a function that can generate the triad chords of a
 ```python=
 def triads(scale):
     # The scale is repeated twice to avoid overflows!
-    notes = scale + scale
+    notes = scale + next_octave(scale)
     res = []
     for i in range(7):
         res.append([notes[i], notes[i+2], notes[i+4]])
@@ -551,6 +551,36 @@ def triads(scale):
 ```
 
 [POINTER]
+
+Sometimes we already have a note in a given scale, and we just want to extract the corresponding triad of it:
+
+```python=
+def triad_of(note, scale):
+    scale = scale + next_octave(scale)
+    i = scale.index(note)
+    return [scale[i], scale[i+2], scale[i+4]]
+```
+
+Now let's substitute the notes in the Twinkle Twinkle Little Star with their corresponding triads, and play the triad notes simultanously on every note. We'll define a new function `combo` to make it easier for us to play a note-combination given a list of frequencies:
+
+```python=
+def combo(t, freqs):
+    return sum([
+        math.sin(t * 2 * math.pi * f) for f in freqs
+    ]) / len(freqs)
+
+def f(t):
+    note_index = int(t / DURATION) % len(SONG)
+    triad = triad_of(SONG[note_index], C_MAJOR)
+    return combo(t, triad)
+```
+
+See how richer our output has got!
+
+Our toolset is almost enough for generating random pieces that feel somewhat good to our ears. Given we now have some knowledge on musical scales and feelings, we may even inject our desired feelings to these pieces.
+
+Our brief journey in theory of music has now ended. In the next sections, we are mostly going to study more on the waves themselves.
+
 
 ## Storing melodies
 
