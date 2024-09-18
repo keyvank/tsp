@@ -769,9 +769,21 @@ class PointLight:
         return self.col * intensity
 ```
 
-----
+[POINTER]
 
+## The power of recursion
 
+- Shadows
+- Tracing in multiple levels
+
+## Monte-Carlo method
+
+- Getting even more realistic
+
+## Beyond spheres
+
+- Triangle meshes
+- BVH
 
 ## Rasterization
 
@@ -929,3 +941,4 @@ class Mesh:
 In the previous section, we saw how to draw a boring 3D cube with each side filled with a single color. Sometimes you'll want to use an image instead of a plain color on the sides of your object.
 
 Putting image textures on a triangle is a straightforward process: when drawing the 2D triangle, for each of the pixels you are putting on the screen, you must somehow calculate the respective location on an image that the color should be fetched from.
+

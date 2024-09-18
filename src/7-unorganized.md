@@ -78,3 +78,8 @@ You might now already know that I'm going to talk about one of the most interest
 Heat is some kind of chaos and disorder in atoms. When atoms take energy, they start to move in directions in a chaotic way. The more they move, the hotter they become. We can measure how chaotic the elements of a system (E.g. the atoms inside a closed area) are, and call it the Entropy of that system.
 
 Given the definition of Entropy, we can redefine the second law of thermodynamics in another words: ***The entropy of the universe always increases.*** I.e the sum of disordered-ness of all elements in our universe always gets higher, which again means, I can't decrease the heat in my room in a sunny day without generating even more heat into the universe. You might now think that we are making the earth warmer by building air conditioners, but the truth is the heat is radiated into the universe!
+
+## Maybe?
+
+- See - Pattern recognition in images
+- Build - C compiler
