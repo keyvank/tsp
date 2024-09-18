@@ -608,8 +608,37 @@ A RTTTL file is composed of 3 sections, separated by `:`. Here is the descriptio
 Here is a function that accepts a RTTTL script and returns a list of notes:
 
 ```python=
-def parse_rtttl():
-    pass
+def parse_rtttl(rtttl: str):
+    NOTES = {
+        "p": 0,
+        "a": A,
+        "a#": A_SHARP,
+        "b": B,
+        "c": C,
+        "c#": C_SHARP,
+        "d": D,
+        "d#": D_SHARP,
+        "e": E,
+        "f": F,
+        "f#": F_SHARP,
+        "g": G,
+        "g#": G_SHARP,
+    }
+    name, params, body = tuple(rtttl.split(":"))
+    params = {p.split("=")[0]: int(p.split("=")[1]) for p in params.split(",")}
+    notes = body.split(",")
+    res = []
+    for note in notes:
+        dur, name, dotted, oct = re.match(
+            r"(\d*)([a-gA-GpP#]{1,2})(\.?)(\d*)", note
+        ).groups()
+        freq = NOTES[name]
+        dur = int(dur) if dur else params["d"]
+        oct = int(oct) if oct else params["o"]
+        if dotted:
+            dur += dur // 2
+        res.append((freq, dur))
+    return res
 ```
 
 Here are some other RTTTL melodies you might want to try!

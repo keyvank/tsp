@@ -573,15 +573,71 @@ def f(t):
 <p>Our toolset is almost enough for generating random pieces that feel somewhat good to our ears. Given we now have some knowledge on musical scales and feelings, we may even inject our desired feelings to these pieces.</p>
 <p>Our brief journey in theory of music has now ended. In the next sections, we are mostly going to study more on the waves themselves.</p>
 <h2 id="storing-melodies"><a class="header" href="#storing-melodies">Storing melodies</a></h2>
-<p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. Here is a function that accepts a RTTTL script and returns a list of notes:</p>
-<pre><code class="language-python=">def parse_rtttl():
-    pass
+<p>It's a shame to limit your synthesizer to the Twinkle Twinkle Little Star melody. You perhaps are more interesed in synthesizing the sound of your favorite music, so perhaps you want your synth to be able to play and synthesize some sort of a standardized format for storing melodies. This way, you'll be able to compose a lot of other melodies which people have made and published over the internet for you! There actually is a very commonly used format for exactly that purpose named MIDI. MIDI (Or Musical Instrument Digital Interface), as defined in Wikipedia: <em><strong>is a file format that provides a standardized way for music sequences to be saved, transported, and opened in other systems</strong></em>. You might challenge yourself to write a MIDI parser and interpreter for your synth, but MIDI is a pretty complicated format, and one might need to read a enormous document before he can implemenet it, so I decided to start with something simpler:</p>
+<p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. The RTTTL version of the StarWars theme is something like this:</p>
+<pre><code>StarWars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6
 </code></pre>
-<hr />
+<p>A RTTTL file is composed of 3 sections, separated by <code>:</code>. Here is the description of each section:</p>
+<ol>
+<li>First comes the name of the song, e.g: <code>StarWars</code></li>
+<li>Then comes a comma (<code>,</code>) separated list of parameters: <code>d=4,o=5,b=45</code>
+<ul>
+<li><code>d</code> is the default duration of each note (As number of <em>beats</em>)</li>
+<li><code>o</code> is the octave which we are in</li>
+<li><code>b</code> is the beats per minute.</li>
+</ul>
+</li>
+<li>And at last we have another comma separated list of notes: e.g: <code>32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6</code>
+<ul>
+<li>For each note, we first have its duration (As number of beats). If there isn't any, then the default one is used.</li>
+<li>Then comes the note</li>
+<li>If there is a <code>.</code> after the note, it means you should multiply the duration with <code>1.5</code></li>
+<li>And then comes the octave (Otherwide, the default octave is used)</li>
+</ul>
+</li>
+</ol>
+<p>Here is a function that accepts a RTTTL script and returns a list of notes:</p>
+<pre><code class="language-python=">def parse_rtttl(rtttl: str):
+    NOTES = {
+        &quot;p&quot;: 0,
+        &quot;a&quot;: A,
+        &quot;a#&quot;: A_SHARP,
+        &quot;b&quot;: B,
+        &quot;c&quot;: C,
+        &quot;c#&quot;: C_SHARP,
+        &quot;d&quot;: D,
+        &quot;d#&quot;: D_SHARP,
+        &quot;e&quot;: E,
+        &quot;f&quot;: F,
+        &quot;f#&quot;: F_SHARP,
+        &quot;g&quot;: G,
+        &quot;g#&quot;: G_SHARP,
+    }
+    name, params, body = tuple(rtttl.split(&quot;:&quot;))
+    params = {p.split(&quot;=&quot;)[0]: int(p.split(&quot;=&quot;)[1]) for p in params.split(&quot;,&quot;)}
+    notes = body.split(&quot;,&quot;)
+    res = []
+    for note in notes:
+        dur, name, dotted, oct = re.match(
+            r&quot;(\d*)([a-gA-GpP#]{1,2})(\.?)(\d*)&quot;, note
+        ).groups()
+        freq = NOTES[name]
+        dur = int(dur) if dur else params[&quot;d&quot;]
+        oct = int(oct) if oct else params[&quot;o&quot;]
+        if dotted:
+            dur += dur // 2
+        res.append((freq, dur))
+    return res
+</code></pre>
+<p>Here are some other RTTTL melodies you might want to try!</p>
+<pre><code>GoodBad:d=4,o=5,b=56:32p,32a#,32d#6,32a#,32d#6,8a#.,16f#.,16g#.,d#,32a#,32d#6,32a#,32d#6,8a#.,16f#.,16g#.,c#6,32a#,32d#6,32a#,32d#6,8a#.,16f#.,32f.,32d#.,c#,32a#,32d#6,32a#,32d#6,8a#.,16g#.,d#
+Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#6,4d6,32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,8d#
+</code></pre>
+<h2 id="more-than-sines"><a class="header" href="#more-than-sines">More than Sines!</a></h2>
 <p>After playing some melodies by generating different frequencies in a sequence, you might nag that the notes are very pure, emotionless, and not at all close to what we hear when we press a key on a piano, and you are right. We are generating pure sine-waves, meaning that what we hear contains only a single frequency. If you analyze the sound coming out of a musical instrument, you will notice that not only it contains frequencies other than the main frequency, but also the strength of those frequencies change over time.</p>
 <p>It's not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.</p>
 <p>Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!</p>
-<h2 id="modularism"><a class="header" href="#modularism">Modularism</a></h2>
+<h2 id="sounds-as-gates"><a class="header" href="#sounds-as-gates">Sounds as gates</a></h2>
 <p>Engineering is all about making new things, by gluing already existing things together. When synthesizing a sound, the &quot;things&quot; that are being glued together are math functions that produce intensity samples given time. Let's call these functions <em><strong>samplers</strong></em>. </p>
 <p>So far, we have been putting all of the sound sampling logic inside a single <code>f</code> function. In case <code>f</code> was simply generating a sine wave, any change on the frequency of the wave would need direct changes in the definition of the <code>f</code> function. A nicer, more engineer-friendly (!) approach would be to define some <em><strong>primitive samplers</strong></em> and provide toolings for combining them together and making new samplers (Remember chapter 1, where we defined transistors as primitive elements and started building logic gates and more complex circuits on top of them). In case of producing sound samples, periodic functions like sine-wave generators are basic enough to be considered <em><strong>primitive</strong></em>. Since these functions are kind of oscillating your speaker, we call them <em><strong>oscillators</strong></em>!</p>
 <p>Unfortunately there isn't a single sine-wave oscillator since sine-wave oscillators with different frequencies are different and thus sound different. Creating a new function for each of the frequencies is neither practical nor smart, so, thanks to Python we are able to define a function that is able to get a frequency as an input and return a sampler function as its output!</p>
