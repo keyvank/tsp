@@ -132,12 +132,6 @@ Synchronous engineering is all about designing solutions based on orderly applie
 
 In Asynchronous engineering on the other hand, order is not involved. The final solution is composed of subsolutions, but there isn’t any order, and all the subsolutions are applied at the same time. Examples are, designing a building, a car engine, an electronics circuit and etc. When designing a car engine, unlike software, you must have a general idea of how the final product would look like, otherwise your solution could be totally wrong. Subsolutions heavily influence each other, and adding a new component can possible break other things.
 
-## The Cult of Done
-
-I wasn't quite sure if I have to publish the draft version of the book on the internet or not. Writing a book is hard. It's probably one of the most difficult things one can do in his life, and it needs passion and persistence. I got discouraged multiple times, I wasn't sure if people are going to like my content at all. So I decided to publish the very incomplete draft of the book anyway. Fortunately, there were a few people who skimmed through the draft and liked it.
-
-These little feedback were great source of encouragement for me, convincing me to keep writing.
-
 ## How to make the most of this book?
 
 The book is divided into 5 chapters. We will start by explaining the beauty of cause-and-effect chains, and how we can build useful and interesting structures by connecting simple lego pieces together. We will go through the history of transistors, how they work, and how we can simulate them using plain Python code. We will implement different logic gates by connecting transistors together, and will proceed to building more complicated circuits like adders, counters and finally, programmable computers. After building our super simple computer, we'll try to put a soul in it. We will introduce the Brainfuck programming language and how it can be compiled for our computer, and will try to design and implement impressively complicated programs using this simple language.
