@@ -769,16 +769,107 @@ class PointLight:
         return self.col * intensity
 ```
 
-[POINTER]
 
 ## The power of recursion
 
-- Shadows
-- Tracing in multiple levels
+What if the photon coming from a point-light is blocked by a secondary object? Then we should have a shadow. Detecting whether there should be a shadow:
+
+```
+class PointLight:
+    # ...
+
+    def apply(self, env: Environment, ray: Ray, point: Vec3D, norm: Vec3D):
+        intensity = 0
+        direction = (self.pos - point).norm()
+        ray_to_light = Ray(point + direction * EPSILON, direction)
+
+        # Apply the light only when there isn't any blocking object
+        if env.nearest_hit(ray_to_light)[0] is None:
+            intensity += max(norm.dot((self.pos - point).norm()), 0)
+
+        return self.col * intensity
+```
+
+
+```python=
+class Environment:
+    def __init__(self, objs, lights):
+        self.objs = objs
+        self.lights = lights
+
+    def nearest_hit(self, ray):
+        nearest = None
+        nearest_dist = float("inf")
+        for obj in self.objs:
+            dist = obj.intersects(ray)
+            if dist:
+                if not nearest or (dist < nearest_dist):
+                    nearest = obj
+                    nearest_dist = dist
+        return (nearest, nearest_dist)
+
+    def trace_ray(self, ray, depth=0):
+        nearest, nearest_dist = self.nearest_hit(ray)
+
+        if nearest:
+            isect_point = ray.pos + ray.dir * nearest_dist
+            norm = nearest.norm_at(isect_point)
+            l = Color(0, 0, 0)
+
+            for light in self.lights:
+                l += light.apply(self, ray, isect_point, norm)
+
+            refl_dir = nearest.norm_at(isect_point).reflect(-ray.dir).norm()
+
+            col = nearest.color_of(isect_point) * l
+
+            if depth < 3:
+                refl_col = self.trace_ray(
+                    Ray(isect_point + refl_dir * 0.0001, refl_dir), depth=depth + 1
+                )
+            else:
+                refl_col = Color(0, 0, 0)
+
+            return col + refl_col * 0.2
+        else:
+            return Color(0, 0, 0)
+```
 
 ## Monte-Carlo method
 
-- Getting even more realistic
+Although the outputs you are getting from your ray-tracer are already amazing, we can't still claim that they look photo-realistic, and an important reason is that in reality, a photon coming from a light source going to nowhere, may still have some effect
+
+Since we can't take infinite number of photons into account, a solution might simply be to sample a lot of random ones and take an average of them. This is also known as Monte-Carlo method.
+
+Let's explore the Monte-Carlo approximation in a simpler example: approximating the number \\(\pi\\) by shooting a lot of random points inside a unit square, and counting how many of them are inside the circle. If the random points we are generating are truly uniform, about \\(\frac{\pi}{4}\\) of them are going to be inside the circle (E.g let's assume we have a square with width \\(2\\), and a circle with radius 1 inside it. The area of the circle would be \\(1^2\pi=\pi\\) and the area of the square would be \\(2 \times 2=4\\), so the circle would be taking \\(\frac{\pi}{4}\\) of the area of the square)
+
+```python=
+import random
+import math
+
+
+def is_in_circle(x, y):
+    return math.sqrt(x**2 + y**2) <= 1
+
+
+# Random number between (-1, 1)
+def rand():
+    return random.random() * 2 - 1
+
+
+cnt = 0
+total = 10000000
+for _ in range(total):
+    x, y = (rand(), rand())
+    if is_in_circle(x, y):
+        cnt += 1
+
+print(cnt / total * 4)
+```
+
+This will output a number very close to \\(\pi\\).
+
+What would the Monte-Carlo approximation mean in the context of ray tracing? Imagine we are calculating the light intensity of a point on a plain. In our current ray-tracer, what we are doing is casting a ray directly from that point to the light source, but in the Monte-Carlo version, we will be casting a lot of rays in different directions and counting all direct/indirect contributions of a light source to that point.
 
 ## Beyond spheres
 
