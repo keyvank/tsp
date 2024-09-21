@@ -838,14 +838,27 @@ def Adsr(sampler, a_dur, d_dur, s_dur, r_dur, a_level, s_level):
 
 ## Macro Music Language
 
-Macro Music Language (MML) is a very old and deprecated music description language for storing melodies on computers. MML was originally designed to be used in video games back in 70s, so you probably can't find a lot of software that can play MML files, though I chose to introduce and implement this format since it's fairly simple to implement and there are plenty of music available in this format which you can test your synthesizer with. Here is a brief spec of this language:
+Macro Music Language (MML) is a very old and deprecated music description language for storing melodies on computers. MML was originally designed to be used in video games back in 70s, so you probably can't find a lot of software that can play MML files, though I chose to introduce and implement this format since it's fairly simple to implement and there are plenty of music available in this format which you can test your synthesizer with, and unlike RTTTL, it may contain multiple lines of melodies which are played in parallel. Here is a brief spec of this language:
 
-[TODO: MML Spec]
+A MML music consists of commands.
 
-[TODO: MML Composer]
+- `cdefgab` the notes. You may get the sharp/flat versions of them by appending `#`/`-` respectively. You may also specify the duration as a fraction of the whole note. E.g `a2` is a half-note and `b#8` is an eighth note. If a duration is not specified, a default duration is used. If a `.` appears after the note duration, the duration should be multiplied by 1.5.
+- `r`/`p` rest/pause! Just like the regular notes it may have a duration as a fraction. E.g `p4` pauses as long as a quarter note.
+- `o` followed by a number, selects the octave.
+- `>`, `<` used for going to the next/previous octave.
+- `l` sets the default duration for note, as a fraction of the whole note. E.g `l8` sets the default duration to 1/8 of a whole note.
+- `v` follewed by a number, sets the volume of the instrument. 
+- `t` followed by a number, sets the tempo in beats per minute.
+
+A MML music may be composed of several lines of melodies which should be played all at the same time. These lines of melodies are separated using `&`.
+
+Now we would like to write our MML synthesizer as a sampler, just like all samplers we defined in the previous sections. The `ComposeMML` sampler accepts a MML text, and a instrument as its input, and produces a sampler as its output. The instrument is simply a function that returns a sampler given a pitch.
 
 ```python
-def ComposeMML(mml):
+def simple_instrument(pitch):
+    return ADSR(Sine(pitch), 0.1, 0.3, 0.5, 0.1, 1.0, 0.5)
+
+def ComposeMML(mml, instrument):
     return Compose([
         # ...
     ])
