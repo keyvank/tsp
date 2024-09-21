@@ -813,7 +813,7 @@ One of those methods, known as ADSR (Attack, Delay, Sustain, Release), assumes t
 
 These timings might be different for different instruments, and they do not neccessarrily change linearly. For the sake of simplicity, we will assume the changes all happen in a linear fashion. Here is a graph:
 
-[ADSR chart]
+![Example of an ADSR where Attack=0.1s Decay=0.3s Sustain=0.5s Release=0.1s](assets/adsr.png){ width=250px }
 
 Fortunately, applying an ADSR effect is as simple as multiplying the ADSR function with the oscillator function!
 
@@ -825,7 +825,7 @@ def Adsr(sampler, a_dur, d_dur, s_dur, r_dur, a_level, s_level):
         elif t < a_dur:
             coeff = (t / a_dur) * a_level
         elif t < a_dur + d_dur:
-            coeff = a_level - ((t - a_dur) / s_dur) * (a_level - s_level)
+            coeff = a_level - ((t - a_dur) / d_dur) * (a_level - s_level)
         elif t < a_dur + d_dur + s_dur:
             coeff = s_level
         elif t < a_dur + d_dur + s_dur + r_dur:
