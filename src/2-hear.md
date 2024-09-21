@@ -654,13 +654,13 @@ After playing some melodies by generating different frequencies in a sequence, y
 
 It's not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.
 
-Imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!
+As an example, imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!
 
 ## Sounds as gates
 
 Engineering is all about making new things, by gluing already existing things together. When synthesizing a sound, the "things" that are being glued together are math functions that produce intensity samples given time. Let's call these functions ***samplers***. 
 
-So far, we have been putting all of the sound sampling logic inside a single `f` function. In case `f` was simply generating a sine wave, any change on the frequency of the wave would need direct changes in the definition of the `f` function. A nicer, more engineer-friendly (!) approach would be to define some ***primitive samplers*** and provide toolings for combining them together and making new samplers (Remember chapter 1, where we defined transistors as primitive elements and started building logic gates and more complex circuits on top of them). In case of producing sound samples, periodic functions like sine-wave generators are basic enough to be considered ***primitive***. Since these functions are kind of oscillating your speaker, we call them ***oscillators***!
+So far, we have been putting all of the sound sampling logic inside a single `f` function. In case `f` was simply generating a sine wave, any change on the frequency of the wave would need direct changes in the definition of the `f` function. A nicer, more engineer-friendly (!) approach would be to define some ***primitive samplers*** and provide toolings for combining them together and making new samplers (Like chapter 1, where we defined transistors as primitive elements and started building logic gates and more complex circuits on top of them). In case of producing sound samples, periodic functions like sine-wave generators are basic enough to be considered ***primitive***. Since these functions are kind of oscillating your speaker, we call them ***oscillators***!
 
 Unfortunately there isn't a single sine-wave oscillator since sine-wave oscillators with different frequencies are different and thus sound different. Creating a new function for each of the frequencies is neither practical nor smart, so, thanks to Python we are able to define a function that is able to get a frequency as an input and return a sampler function as its output!
 
@@ -674,6 +674,8 @@ def Sine(freq):
         return math.sin(2 * math.pi * freq * t)
     return out
 ```
+
+![Sine wave with frequency 3.0](assets/sinewave.png){ width=250px }
 
 Now, `f` can be defined by the output of an oscillator like `Sine`:
 
@@ -697,6 +699,8 @@ def Square(freq):
     return out
 ```
 
+![Square wave with frequency 3.0](assets/squarewave.png){ width=250px }
+
 ***Sawtooth***
 
 ```python
@@ -705,6 +709,8 @@ def Sawtooth(freq):
         return 2*(t*freq - math.floor(1/2 + t*freq))
     return out
 ```
+
+![Sawtooth wave with frequency 3.0](assets/sawtoothwave.png){ width=250px }
 
 ***Triangle***
 
@@ -715,9 +721,41 @@ def Triangle(freq):
     return out
 ```
 
-Things will get much more interesting when our sampler-creator functions start to get samplers as their inputs!
+![Triangular wave with frequency 3.0](assets/triangularwave.png){ width=250px }
 
-You can mask the sampler to produce samples only for a certain duration:
+### The gates
+
+In our model of a synthesizer, we assumed that there are some set of ***primitive*** samplers, which we can pick as a starting point for building more complicated samplers, thus now we kind of need sampler generators which will accept other samplers as their input. Let's start with a simple example: imagine we want to synthesize a sine wave which has a lower volume compared to the original `Sine` sampler. We can either create a completely new sampler like `LowVolumeSine`, or create a general-purpose volume-decaying sampler named `Gain`, which will accept a sampler as input and returns a new one in which the samples are scaled by some constant:
+
+```python=
+def Gain(inp, s):
+    def out(t):
+        return inp(t) * s
+    return out
+```
+
+Now, if we want to hear `Sine(440.0)` with 50% of volume, we would only need to pass it to the `Gain` sampler like this:
+
+```python=
+f = Gain(Sine(440.0), 0.5)
+```
+
+Another interesting example would be to get a sampler and apply a coefficient to its input:
+
+```python=
+def Speed(inp, s):
+    def out(t):
+        return inp(t * s)
+    return out
+```
+
+The following sampler will sound like a 880Hz sound wave, becase we are sampling x2 faster!
+
+```python=
+f = Speed(Sine(440.0), 2)
+```
+
+When composing a melody, we had to make the notes to stay only for a limited time. Such behavior can be described with a sampler! The mask sampler will get a input sampler, and only allows the first `dur` seconds to pass!
 
 ```python=
 def Mask(inp, dur):
@@ -729,7 +767,7 @@ def Mask(inp, dur):
     return out
 ```
 
-You can make the start with a delay:
+You can also shift a sampler in time:
 
 ```python=
 def Delay(inp, delay):
@@ -738,7 +776,13 @@ def Delay(inp, delay):
     return out
 ```
 
-You can bake multiple samplers inside a single sampler:
+The `Delay` and `Mask` samplers together can allow you to play a specific sampler, for a limited time, starting at a specific time. The given sampler will start playing a 440Hz sine wave at 5.0s and end in 6.0s.
+
+```python=
+f = Delay(Mask(Sine(440.0), 1), 5)
+```
+
+Just like the multi-input logical gates we explored in the first chapter, you may also compose a new sampler by combining more than a single sampler. This is where the magic slowly starts to show itself!
 
 ```python
 def Compose(samplers):
@@ -748,7 +792,7 @@ def Compose(samplers):
     return f
 ```
 
-These three alone are enough for making melodies:
+These three alone are enough for composing melodies:
 
 ```python
 f = Compose([
@@ -759,7 +803,7 @@ f = Compose([
 ])
 ```
 
-This way of describing a sound is definitely less-efficient than directly implementing the wave-generator as a plain Python function, but look how manageable and beautiful the code has got. (Perhaps we can achieve the same speed if we write some kind of compiler that is able to translate the modular definition into code).
+This way of describing a sound is definitely less-efficient (Performance wise) than directly implementing the wave-generator as a plain Python function, but look how manageable and beautiful the code has got. (Perhaps we can achieve the same speed if we write some kind of compiler that is able to translate the modular definition into plain code).
 
 **ADSR**
 
