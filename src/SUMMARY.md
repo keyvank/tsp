@@ -9,3 +9,4 @@
 - [Trust!](5-trust.md)
 - [Fly!](6-fly.md)
 - [Unorganized](7-unorganized.md)
+- [Appendix A](8-appendix-a.md)
