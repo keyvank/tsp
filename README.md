@@ -17,6 +17,16 @@ cd tsp
 make pdf
 ```
 
+#### Ubuntu
+```
+ sudo apt install pandoc
+ sudo apt install texlive-latex-base
+ sudo apt install texlive-latex-recommended
+ cd tsp
+ make pdf
+ xdg-open tsp.pdf
+```
+
 The output will be stored on `tsp.pdf`!
 
 ## About
