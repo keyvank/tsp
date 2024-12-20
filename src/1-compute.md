@@ -73,27 +73,50 @@ Thanks to these properties, we can create complex and dense cause-and-effect cha
 
 In the previous section, we explored what a transistor is. Now it’s time to see what we can do with it! To quickly experiment with transistors, we’ll simulate imaginary transistors on a computer and arrange them in the right order to perform fancy computations for us.
 
+Our ultimate goal is to construct a fully functional computer using a collection of three-way switches. If you have prior experience designing hardware, you're likely familiar with software tools that allow you to describe hardware using a Hardware Description Language (HDL). These tools can generate transistor-level circuits from your designs and even simulate them for you. However, since this book focuses on the underlying concepts rather than real-world, production-ready implementations, we will skip the complexity of learning an HDL. Instead, we'll use the Python programming language to emulate these concepts as we progress. This approach will not only deepen our understanding of the transistor-level implementation of something as intricate as a computer but also shed light on how HDL languages transform high-level circuit descriptions into collections of transistors.
+
+So let's begin and start building our own circuit simulator!
+
+## Everything is relative
+
+The very first term you encounter when exploring electricity is "voltage," so it’s essential to grasp its meaning before studying how transistors behave under different voltages. Formally, voltage is the potential energy difference between two points in a circuit. To understand this concept, let’s set aside electricity for a moment and think about heights.
+
+Imagine lifting a heavy object from the ground. The higher you lift it, the more energy you expend (and the more tired you feel, right? That energy needs to be replenished, like by eating food!). According to the law of conservation of energy, energy cannot be created or destroyed, only transformed or transferred. So where does the energy you used to lift the object go?
+
+Now, release the object and let it fall. It hits the ground with a bang, possibly breaking the ground—or itself. The higher the object was lifted, the greater the damage it causes. Clearly, energy is needed to create those noises and damages. But where did that energy come from?
+
+You’ve guessed it! When you lifted the object, you transferred energy to it. When you let it fall, that stored energy was released. Physicists call this stored energy "potential energy." A raised object has the potential to do work (work is the result of energy being consumed), which is why it’s called potential energy!
+
+If you remember high school physics, you’ll know that the potential energy of an object can be calculated using the formula: \\(U=mgh\\), where \\(m\\) is the mass of the object, \\(h\\) is its height above the ground, and \\(g\\) is the Earth's gravitational constant (approximately \\(9.807 m/s^2\\)).
+
+According to this formula, when the object is on the ground (\\(h=0\\)), the potential energy is also \\(U=0\\). But here’s an important question: does that mean an object lying on the ground has no potential energy?
+
+Actually, it does have potential energy! Imagine taking a shovel and digging a hole under the object. The object would fall into the hole, demonstrating that it still had the capacity to do work due to gravity.
+
+The key point is this: the equation \\(U=mgh\\) represents the potential energy difference relative to a chosen reference point (in this case, the ground), not the absolute potential energy of the object. A more precise way to express this idea would be:
+\\(\varDelta{u}=mg\varDelta{h}\\).
+
+This equation shows that the potential energy difference between two points \\(A\\) and \\(B\\) depends on \\(mg\\), the gravitational force, and \\(\varDelta{h}\\), the difference in height between the two points.
+
+In essence, ***potential energy is relative!***
+
+![We *assume* that the height on the ground is 0, although you can reach lower heights by digging the ground! Height and potential energy are relative concepts.](assets/potential.png){ width=350px }
+
+The reason it takes energy to lift an object is rooted in the fact that massive bodies attract each other, as described by the universal law of gravitation: \\(F=G\frac{m_1m_2}{r^2}\\).
+
+Similarly, a comparable law exists in the microscopic world, where electrons attract protons, and like charges repel each other. This interaction is governed by Coulomb's law: \\(F=k_e\frac{q_1q_2}{r^2}\\)
+
+As a result, we also have the concept of "potential energy" in the electromagnetic world. It takes energy to separate two electric charges of opposite types (positive and negative), as you're working against the attractive electric force. When you pull them apart and then release them, they will move back toward each other, releasing the stored potential energy.
+
+That's essentially how batteries work. They create potential differences by moving electrons to higher "heights" of potential energy. When you connect a wire from the negative pole of the battery to the positive pole, the electrons "fall" through the wire, releasing energy in the process.
+
+When we talk about "voltage," we are referring to the difference in height or potential energy between two points. While we might not know the absolute potential energy of points A and B, we can definitely measure and understand the difference in potential (voltage) between them!
+
+## Pipes of electrons
+
 [MARKER]
 
-Our goal is not to design and implement a production-level transistor circuit. If that was the case we would need to describe our circuits in a HDL (hardware-description-language) and synthesize it on real silicone. Since this book is about ideas and not real implementations, we will skip the effort needed to learn an HDL, and instead, we will try to emulate the same concepts in Python programming language. This will not only give us a much better understanding of the transistor-level implementation of something as complicated as a computer, but also help us to learn how exactly HDL languages translate high-level description of a circuit into a bunch of transistors!
-
-So let's begin and build our own circuit simulator! The most important and basic elements in our circuit emulations will be wires. Wires, as their name suggest, are basically conductors, usually made of metal that allow our components to connect to each other, and talk to each other through the flow of electricity. The most important property of a wire is its voltage.
-
-Before going further, it is crucial to understand the meaning of voltage. Formally, voltage is defined as the potential energy difference between two points of a circuit. Let's forget about electricity for a while and try to understand the concept by talking about heights. You know that it takes energy to pick up something heavy from the ground. The more you lift a heavy object, the more energy it is consumed (Because you get tired right? You need to get the energy back by eating food!). The law of conservation of energy says that, energy can neither be created nor destroyed; rather, it can only be transformed or transferred from one form to another. So, where does the consumed energy go when you lift something up?
-
-Release what you have in your hand and let it fall. The heavy object will hit the ground, make a bang song, and it might even break the ground (Or itself). The more height the object has from the ground, the more damage it will make. It is also obvious that, energy is needed in order to make noises and damages. Where did that energy come from?
-
-Now you know the answer! When you lifted the heavy object, you actually gave energy to it, and when you let it fall, the energy you gave got released! Physicist call this energy as potential energy. A lifted object has the potential to do work (Work is done by consuming energy), that's probably why we refer it as potential energy!
-
-If you remember high-school physics, you know that the potential energy of an object can be calculated with the formula: \\(u=mgh\\) where \\(m\\) is the mass of the object, \\(h\\) is its height from the ground, and \\(g\\) is earth's gravity constant (Which is around \\(9.807\\)). Given this formula, when the object lies on the ground, \\(h\\) is 0 thus the potential energy is also 0. A very important question, does that mean, an object that lies on the ground does not have any potential energy? Well, it has! Take a shovel, dig the ground under the object, and the object will fall into the hole. The point is, the equation is giving you the potential difference, not the actual potential energy of that object! A more correct version of that equation would be: \\(\varDelta{u}=mg\varDelta{h}\\), which says, the potential energy difference between two points A and B is \\(mg\\) times the difference of their heights! It's relative!
-
-![We *assume* that the height on the ground is 0, although you can reach lower heights by digging the ground! Height and potential energy are relative concepts.](assets/potential.png)
-
-The reason it takes energy to lift an object roots back to the fact that giant masses attract each other, a.k.a the universal law of gravitation (\\(F=G\frac{m_1m_2}{r^2}\\)). Since a very similar law also exists in the microscopic world (Electrons attract protons and defeat electrons, \\(F=k_e\frac{q_1q_2}{r^2}\\)), we have a similar concept of "potential energy" in the electromagnetic world too. It takes energy to pull two electrical charges of different types (Positive/Negative) from each other, and when you do so, and then release them, they will start moving to each other and release their energy.
-
-That's basically the way batteries work, they try to make potential differences by moving electrons to higher "heights", and when you let them fall (By connecting a wire from the negative pole of the battery to the positive pole), the electrons will start to fall through the wire. So when we say "Voltage", we mean a difference of height/potential-energy. We don't exactly know what is the absolute height/potential-energy of points A and B, but we certainly know the height/potential difference!
-
-## Wires
+The most important and basic elements in our circuit emulations will be wires. Wires, as their name suggest, are basically conductors (The pipes the electron flow through), usually made of metal that allow our components to connect to each other, and talk to each other through the flow of electricity. The most important property of a wire is its voltage.
 
 Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our `Wire`s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits, in this case, the voltage of the wire might become something unpredictable. Or you might also forget to connect your wire to anything at all. In these cases, the voltage of the wire represents neither 0 nor 1.
 
