@@ -1,4 +1,4 @@
-# Build!
+# Compute!
 
 **Music of the chapter:** *Computer Love - By Kraftwerk*
 
@@ -44,7 +44,7 @@ A simple example of a multi-input/single-output component is a switch. A switch 
 
 A push-button becomes more interesting when its controlling input is electrical rather than mechanical. In this case, all of its inputs and outputs are of the same type, allowing you to connect the output of one push-button to the controlling input of another.
 
-Similarly, in the faucet example, you could design a special kind of faucet that opens with the force of water, rather than requiring a person to open it manually with their hands.
+Similarly, in the faucet example, you could design a special kind of faucet that opens with the force of water, rather than requiring a person to open it manually with their hands. In the picture below, when no water is present in the controlling pipe (the pipe in the middle), the spring will push the block down, preventing water from flowing from the left pipe to the right pipe. However, when water enters the controlling pipe, its pressure will push the block up, creating space for the water to flow from the left pipe to the right pipe.
 
 ![The flow of water coming from the controller input, opens up the gate and allows the water to flow from left to right](assets/faucet.png)
 
@@ -52,31 +52,28 @@ The controlling input doesn't have to sharply switch the flow between no-flow an
 
 There’s also a well-known name for these unique switches: transistors. Now you can understand what "transistor" literally means—it’s something that can "transfer" or adjust "resistance" on demand, much like how we can control the resistance of the water flow in a larger pipe using a third input.
 
-The most obvious use case for a transistor is signal amplification. Let’s explore this with an example: imagine a small pipe through which water flows in a sinusoidal pattern. Initially, there is no water, then the flow gradually increases to a certain level, and finally, it slowly decreases back to zero. Now, we connect this pipe to the controlling input of the water transistor we designed earlier. Can you guess what comes out from the output of this transistor? Yes, the output is also a sinusoidal flow of water. The difference is that it’s much more powerful than the small pipe. We’ve just transferred the sinusoidal pattern from a small water flow to a much more powerful one! Can you imagine how important this is? This is the core idea behind how things like electric guitars and sound amplifiers work!
+The most obvious use case for a transistor is signal amplification. Let’s explore this with an example: imagine a small pipe through which water flows in a sinusoidal pattern. Initially, there is no water, then the flow gradually increases to a certain level, and finally, it slowly decreases back to zero (a pattern similar to what you might see in a water show!). Now, we connect this pipe to the controlling input of the water transistor we designed earlier. Can you guess what comes out from the output of this transistor? Yes, the output is also a sinusoidal flow of water. The difference is that it’s much more powerful than the small pipe. We’ve just transferred the sinusoidal pattern from a small water flow to a much more powerful one! Can you imagine how important this is? This concept forms the core of how devices like electric guitars and sound amplifiers work!
 
-That’s not the only use case for transistors. Because the cause-and-effect types of the inputs and outputs are the same, we can chain them together—and that’s all we need to start building machines that can compute things (we’ll explore the details soon!). These inputs don’t necessarily have to be electrical; they can be mechanical as well. Yes, we can build computers that operate using the force of water!
+That’s not the only use case for transistors, though. Because the cause-and-effect types of the inputs and outputs are the same, we can chain them together—and that’s all we need to start building machines that can compute things (we’ll explore the details soon!). These inputs don’t necessarily have to be electrical; they can be mechanical as well. Yes, we can build computers that operate using the force of water!
 
-[MARKER]
+A typical transistor in the real world is conceptually the same as our imaginary faucet described above. Substitute water with electrons, and you have an accurate analogy for a transistor. Transistors, the building blocks of modern computers, allow you to control the flow of electrons in a wire using a third source of electrons!
 
-Now, a transistor in the real-world is no different than our imaginary faucet described above. Substitute the water with electrons, and you'll have a very accurate definition and analogy of a transistor. Transistors, which are the building block of modern computers, allow you to control the flow of electrons in a wire, using a third source of electrons!
+Understanding how modern electron-based transistors work involves a fair bit of physics and chemistry. But if you insist, here’s a very simple (and admittedly silly) example of a push-button with an electrical controller: Imagine a person holding a wire in their hand. This person presses the push-button whenever they feel electricity in their hand (as long as the electricity isn’t strong enough to harm them). Together, the person and the push-button form something akin to a transistor, because now the types of all inputs and outputs in the system are the same.
 
-We won't delve deep into the inner workings of transistors just yet, but let's assume that transistors are components capable of converting electrical causes into electrical effects. This ability allows us to connect them together and create interesting things. In essence, transistors can be accurately described as switches, quite similar to push-buttons but with a key difference. A push-button is a component that accepts an electrical and a mechanical input, producing an electrical output, while in a transistor, the types of all inputs and the output, is electrical.
+It might sound like the strangest idea in the world, but if you had enough of these "transistors" connected together, you could theoretically build a computer capable of connecting to the internet and rendering webpages!
 
-Before starting to think of a electrical switch that can be controlled through an electrical cause, be aware that sometimes a cause/effect conversion is actually the result of many other cause/effect conversions chained together, occurring under the hood. For example, consider a light bulb connected to a push-button. In this system, the process begins with a person pushing the switch, initiating a mechanical action. Right after that, the mechanical cause triggers an electrical effect, and the electrical cause produces a visual effect, which eventually results in neural effects in your brain. The entire process converts a mechanical cause into a neural effect that can be sensed by a human brain. (Notice how new converters can be built by connecting/chaining other primitive converters.)
+Why did people choose electrons to flow in the veins of our computers instead of something like water? There are several reasons:
 
-Now, here is a very stupid example of a push-button that has an electrical controller: Imagine there is a human that has a wire in his hand. This person pushes the push-button when he feels electricty in his hand (Of course if the electricity is not strong enough to kill him). The person and the push-button together will form something like a transistor, because now the types of all of the inputs/outputs of the system is the same. It might be the strangest thing in the world, but if you have enough of these transistors connected with each other, you can theoritically build computers out of it that can connect to the internet and render webpages!
+- Electrons are extremely small.
+- Electrical effects propagate extremely fast!
 
-Now that you understand why something like a transistor might be handy, let's talk about transistors themselves. Formally speaking, a transistor is a resistor (An electronic component that resists against flow of electrons) that its resistance can transform according to a third electrical input. A transistor is something that can convert two electrical causes into single electrical effect. Transistors are very interesting candidates for building computers, because:
-
- 1. They can convert causes to effects of the same type, directly! (Electricity)
- 2. They can be made in very small sizes (Nanometers?).
- 3. They are very fast!
-
-Because of these properties, we can build complicated and dense cause/effect chains and get interesting behaviors out of it by consuming very small amount of space (E.g your smartphone).
+Thanks to these properties, we can create complex and dense cause-and-effect chains that produce amazing behaviors while using very little space, like in your smartphone!
 
 ## Taming the electrons
 
-Now that you know the philosophy behind building something like a transistor, it's the time to see what can be done with a transistor. Our approach is to try simulating imaginary transistors in a computer and make them do fancy computations for us by putting them in the right order.
+In the previous section, we explored what a transistor is. Now it’s time to see what we can do with it! To quickly experiment with transistors, we’ll simulate imaginary transistors on a computer and arrange them in the right order to perform fancy computations for us.
+
+[MARKER]
 
 Our goal is not to design and implement a production-level transistor circuit. If that was the case we would need to describe our circuits in a HDL (hardware-description-language) and synthesize it on real silicone. Since this book is about ideas and not real implementations, we will skip the effort needed to learn an HDL, and instead, we will try to emulate the same concepts in Python programming language. This will not only give us a much better understanding of the transistor-level implementation of something as complicated as a computer, but also help us to learn how exactly HDL languages translate high-level description of a circuit into a bunch of transistors!
 

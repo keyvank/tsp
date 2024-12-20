@@ -2,7 +2,7 @@
 
 [Intro](0-preface.md)
 
-- [Build!](1-build.md)
+- [Compute!](1-compute.md)
 - [Hear!](2-hear.md)
 - [See!](3-see.md)
 - [Think!](4-think.md)
