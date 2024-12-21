@@ -114,9 +114,17 @@ When we talk about "voltage," we are referring to the difference in height or po
 
 ## Pipes of electrons
 
-[MARKER]
+We discussed that transistors are essentially three-way switches that control the flow between two input/output paths using a third input. When building a transistor circuit simulator—whether simulating the flow of water or electrons—it makes sense to begin by simulating the "pipes," the elements through which electrons will flow. In electrical circuits, these "pipes" are commonly referred to as ***wires***.
 
-The most important and basic elements in our circuit emulations will be wires. Wires, as their name suggest, are basically conductors (The pipes the electron flow through), usually made of metal that allow our components to connect to each other, and talk to each other through the flow of electricity. The most important property of a wire is its voltage.
+Wires are likely to be the most fundamental and essential components of our circuit simulation software. As their name suggests, wires are conductors of electricity, typically made of metal, that allow different components to connect and communicate via the flow of electricity. We can think of wires as containers that hold electrons at specific voltage levels. If two wires with different voltage levels are connected, electrons will flow from the wire with higher voltage to the one with lower voltage.
+
+In digital circuits, transistors and other electronic components operate using two specific voltage levels: "zero" (commonly referred to as ***ground***) and "one." It’s important to emphasize that the terms "zero" and "one" do not correspond to fixed or absolute values. Instead, "zero" acts as a reference point, while "one" represents a voltage level that is higher relative to "zero."
+
+At first glance, it might seem that we could model a wire using a single boolean value: `false` to represent zero and `true` to represent one. However, this approach fails to account for all the possible scenarios that can arise in a circuit simulator.
+
+For example, consider a wire in your simulator that isn’t connected to either the positive or negative pole of a battery. Would it even have a voltage level? Clearly, it would be neither 0 nor 1. Now imagine a wire that connects a high-voltage (1) wire to a low-voltage (0) wire. What would the voltage of this intermediary wire be? Electrons would start flowing from the higher-voltage wire to the lower-voltage wire, and as a result, the voltage of the intermediary wire would settle somewhere between 0 and 1.
+
+[MARKER]
 
 Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our `Wire`s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits, in this case, the voltage of the wire might become something unpredictable. Or you might also forget to connect your wire to anything at all. In these cases, the voltage of the wire represents neither 0 nor 1.
 
