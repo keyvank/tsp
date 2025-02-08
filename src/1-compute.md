@@ -124,20 +124,20 @@ At first glance, it might seem that we could model a wire using a single boolean
 
 For example, consider a wire in your simulator that isn’t connected to either the positive or negative pole of a battery. Would it even have a voltage level? Clearly, it would be neither 0 nor 1. Now imagine a wire that connects a high-voltage (1) wire to a low-voltage (0) wire. What would the voltage of this intermediary wire be? Electrons would start flowing from the higher-voltage wire to the lower-voltage wire, and as a result, the voltage of the intermediary wire would settle somewhere between 0 and 1.
 
-[MARKER]
+In a digital circuit, connecting a 0 wire to a 1 wire is not always a good idea and could indicate a mistake in your circuit design, potentially causing a short circuit. Therefore, it is useful to consider a value for a wire that is either mistakenly or intentionally left unconnected (Free state) or connected to both 0 and 1 voltage sources simultaneously (Short-circuit/Unknown state).
 
-Enough explanation, lets jump into the code. Now that we know the concept of voltage, we can emulate an electrical wire. Our model of a wire is a piece of conductor which has a certain "height" (Voltage!). We'll use instances of wires to feed the inputs of our gates and retrieve their outputs. Normally, in electronic circuits, there are only two possible voltages, representing logical zeros and ones, so it might make sense to allow our `Wire`s to only accept two different states. In the real world however, you might make mistakes while designing your circuits. You might connect the ends of your wire to endpoints with different voltages, causing short-circuits, in this case, the voltage of the wire might become something unpredictable. Or you might also forget to connect your wire to anything at all. In these cases, the voltage of the wire represents neither 0 nor 1.
+Based on this explanation, a wire can be in four different states:
 
-A wire in our emulation can have 4 different states:
+* `Z` state - The wire is free and not connected to anything.
+* `0` state - The wire is connected to a ground voltage source and has 0 voltage.
+* `1` state - The wire is connected to a 5.0V voltage source.
+* `X` state - The wire's voltage cannot be determined because it is connected to both a 5.0V and 0.0V voltage source simultaneously.
 
-* Free (The wire is not connected to anything)
-* Zero (The wire is connected to the ground thus has 0 voltage)
-* One (The wire has a voltage of 5.0V)
-* Unknown (We can not determine if the wire is 0 or 1)
+![4 different wire states](assets/wires.png)
 
-By default, a wire that is not connected to anywhere, is in the "Free" state. When you connect it to a gate/wire that has a state of One, the wire's state will also become One. A wire can connect to multiple gates/wires at the same time. The wire will get into the Unknown state when you connect it to two other wires/gates with conflicting values. E.g. if the wire is connected to both Zero and One sources at the same time, it's state will be Unknown.
+Initially, a wire that is not connected to anything is in the `Z` state. When you connect it to a gate or wire that has a state of `1`, the wire's state will also become `1`. A wire can connect to multiple gates or wires at the same time. For example, if a wire already in the `1` state is connected to another source of `1`, it will remain 1. However, the wire will enter the `X` state if it is connected to a wire or gate with a conflicting value. For instance, if the wire is connected to both `0` and `1` voltage sources simultaneously, its state will be `X`. Similarly, connecting any wire to an `X` voltage source will also result in the wire taking on the `X` state.
 
-We can calculate the truth table of wire logic to better understand the concept:
+We can summarize all the possible scenarios in a custom table that defines the arithmetic of wire states:
 
 | A | B | A + B |
 |---|---|-------|
@@ -172,9 +172,7 @@ A wildcard version of this table would look like this:
 |   1   |   0   |   X   |
 
 
-![4 different wire states](assets/wires.png)
-
-Based on our definition of a wire, we can provide a Python implementation:
+Based on the explanation, we can model a wire as a Python class:
 
 ```python=
 FREE = "Z"
@@ -209,24 +207,23 @@ class Wire:
         return is_changed
 ```
 
-The code above models a wire as a Python class. By definition, a wire that is not connected to anything remains in the `Z` (Free) state. Through the `put` option, a driver (Which can be a battery, or a gate), may drive that wire with some voltage. The final voltage of your wire is then decided by iterating over all of the voltages that are applied to your wire. The reason we are storing the voltage values applied to the wire in a dictionary is that, we don't want a single driver to be able to drive the wire two different values.
+The code above models a wire as a Python class. By definition, a wire that is not connected to anything remains in the `Z` state. Using the `put` function, a driver (such as a battery or a gate) can apply a voltage to the wire. The final voltage of the wire is determined by iterating over all the voltages applied to it.
 
-The `put` function will also check if there has been a change in the values applied on the wire. This will later help our simulator to check if the circuit being simulated has reached to a stable state, in which the values of all the wires remain fixed.
+We store the voltage values applied to the wire in a dictionary to ensure that a single driver cannot apply two different values to the same wire.
 
-Sometimes (Specifically in circuits containing feedback-loops and recursions), it's necessary to assume a wire already has some value to converge to a solution, thus we have designed an `assume()` function to set a assumed value for a wire, in case no gates have drived value into it). If you don't understand what `assume()` function does yet, don't worry. We'll see its usage in the next sections.
+The `put` function also checks whether there has been a change in the values applied to the wire. This will later help our simulator determine if the circuit has reached a stable state, where the values of all wires remain fixed.
+
+In some cases—particularly in circuits containing feedback loops and recursion—it is necessary to assume that a wire already has a value in order to converge on a solution. For this purpose, we have designed the `assume()` function, which allows us to assign an assumed value to a wire if no gates have driven a value into it. If you don’t yet fully understand what the `assume()` function does, don’t worry—we’ll explore its usage in the next sections.
 
 ## Magical switches
 
-The most primitive element in a digital system (And our simulation) is a transistor. A transistor is an electrical domino piece. It converts electrical causes to electrical effects. In very simple terms, a transistor is an electrically controlled switch. There are 3 wires involved which are known as *base*, *emitter*, and *collector*. The base wire is the controller of the switch. An electrical potential between the base and collector wires will cause the emitter wire to get connected with the collector wire. In other words, the base wire will decide if emitter and collector are connected with each other or not. The collector will collect electrons and the emitter will emit them.
+Now that we've successfully modeled wires, it's time to implement the second most important component of our simulator: the transistor.
 
-https://upload.wikimedia.org/wikipedia/commons/3/37/Transistor.symbol.npn.svg
+Transistors are electrically controlled switches with three pins: ***base***, ***emitter***, and ***collector***. These pins connect to other circuit elements through wires. The ***base*** pin acts as the switch’s controller—when there is a high potential difference between the ***base*** and ***collector*** pins, the ***emitter*** connects to the ***collector***. Otherwise, the ***emitter*** remains unconnected, behaving like a floating wire in the `Z` state.
 
-By observing the behavior of a transistor we will soon know that:
+This key behavior means that turning off the transistor does not set the ***emitter*** to `0` but instead leaves it in the `Z` state.
 
-- If the potential-difference between the collector and base is high, the emitter pin will get connected to the collector pin.
-- Otherwise, the emitter pin will be no different than a floating wire.
-
-The second point is very important. It means that, turning the transistor off doesn't put the emitter pin on ZERO state, but it will put it on FREE state! Based on these, we can model a transistor using a truth-table like this:
+We can also describe the wire arithmetic of a transistor using the following table:
 
 | B | E | C          |
 |---|---|------------|
@@ -235,7 +232,7 @@ The second point is very important. It means that, turning the transistor off do
 | 1 | 0 | 0 (Strong) |
 | 1 | 1 | 1 (Weak)   |
 
-The transistor we have been discussing so far was a Type-N transistor. The Type-N transistor will turn on when the base wire is driven with a a high potential. There is also another type of transistor, know as Type-P, which will get turned on in case of a low voltage. The truth table for a Type-P transistor is something like this:
+The transistor we have been discussing so far is a Type-N transistor. The Type-N transistor turns on when the base wire is driven with a `1`. There is also another type of transistor, known as Type-P, which turns on when the base wire is driven with a `0`. The truth table for a Type-P transistor looks like this:
 
 | B | E | C          |
 |---|---|------------|
@@ -244,13 +241,13 @@ The transistor we have been discussing so far was a Type-N transistor. The Type-
 | 1 | 0 | Z          |
 | 1 | 1 | Z          | 
 
-Assuming we define a voltage of 5.0V as 1 and a voltage of 0.0V as 0, a wire is driven with a strong 0, when its voltage is very close to 0 (E.g 0.2V), and it's a strong 1 when its voltage is close to 5 (E.g 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always give us strong signals. A signal is said weak when it's far from 0.0V or 5.0V, as an example, a voltage of 4.0V could be considered as a weak 1 and a voltage of 1.0V is considered as a weak 0, whereas 4.7V could be considered as a strong 1 and 0.3V could be considered as a strong 0. Type-P transistors that are built in the real world are very good in giving out strong 0 signals, but their 1s are weak, on the other hand, Type-N transistors give out very good 1 signals, but their 0s are weak. Using the help of those two types of transistors at the same time, we can build logic gates that give out strong output in every case.
+Assuming we define a voltage of ***5.0V*** as `1` and a voltage of ***0.0V*** as `0`, a wire is driven with a ***strong*** `0` when its voltage is very close to 0 (e.g., 0.2V), and a ***strong*** `1` when its voltage is close to 5 (e.g., 4.8V). The truth is, the transistors we build in the real world aren't ideal, so they won't always provide strong signals. A signal is considered ***weak*** when it's far from 0.0V or 5.0V. For example, a voltage of 4.0V could be considered a ***weak*** `1`, and a voltage of 1.0V would be considered a ***weak*** `0`, whereas 4.7V could be considered a ***strong*** `1` and 0.3V a ***strong*** `0`. Type-P transistors, when built in the real world, are very good at producing strong `0` signals, but their `1` signals tend to be weak. On the other hand, Type-N transistors produce strong `1` signals, but their `0` signals are weak. By using both types of transistors together, we can build logic gates that provide strong outputs in all cases.
 
-## Primitives
+## The Transistor
 
-In our digital circuit simulator, we'll have two different types of components: Primitive components and components that are made of primitives. We'll define our components as primitives when we can't describe them as a group of smaller primitives.
+In our digital circuit simulator, we’ll have two different types of components: primitive components and components that are made of primitives. We’ll define components as primitives when they can’t be described as a group of smaller primitives.
 
-As an example, we can simulate Type-N and Type-P transistors as primitive components:
+For example, we can simulate Type-N and Type-P transistors as primitive components, since everything else can be constructed by combining Type-N and Type-P transistors together.
 
 ```python=
 class NTransistor:
@@ -289,15 +286,16 @@ class PTransistor:
             return True  # Trigger re-update
 ```
 
-Our primitive components are classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of that primitive based on its inputs. As a convention, we are going to prefix the input and output wires of our components with `in_` and `out_` respectively.
 
-The update function of our primitive components are also going to return a boolean value, which indicates if the element needs a re-update or not. Sometimes, the inputs of a component might not be ready when the update function is called. In the transistor examples, when the base wire is in FREE state, we assume that there is another transistor that need to be `update()`ed before the current transistor can calculate its output. By returning this boolean value, we'll let our circuit emulator know that the transistor is not "finalized" yet, and `update()` needs to be called again before deciding that all of the outputs of all components have been correctly calculated and the circuits is stabilized.
+Our primitive components are classes with an `update()` function. The `update()` function is called whenever we want to calculate the output of the primitive based on its inputs. As a convention, we will prefix the input and output wires of our components with `in_` and `out_`, respectively.
 
-Also remember that the `put()` function of the Wire class also returns a boolean value. This value indicates if the driver of that wire has put a new value on the wire. A new value on a wire means that there has been a change in the circuit and the whole circuit needs to be updated again.
+The `update()` function of our primitive components will also return a boolean value, which indicates whether the element needs to be updated again. Sometimes, the inputs of a component might not be ready when the update() function is called. For example, in the case of transistors, if the `base` wire is in the `Z` state, we assume there is another transistor that needs to be updated before the current transistor can calculate its output. By returning this boolean value, we inform our circuit emulator that the transistor is not "finalized" yet, and the `update()` function needs to be called again before determining that all component outputs have been correctly calculated and the circuit is stabilized.
 
-## The circuit
+Additionally, remember that the `put()` function of the `Wire` class also returns a boolean value. This value indicates whether the driver of that wire has placed a new value on the wire. A new value on a wire means there has been a change in the circuit, and the entire circuit needs to be updated again.
 
-Now, it'll be nice to have a data structure for keeping track of wires and transistors allocated in a circuit. We will call this class `Circuit`. It will give you methods for creating wires and adding transistors. The `Circuit` class is responsible for calling the `update()` function of the components and it will allow you to calculate the values of all wires in the network. 
+## The Circuit
+
+Now, it would be useful to have a data structure for keeping track of the wires and transistors allocated in a circuit. We will call this class `Circuit`. It will provide methods for creating wires and adding transistors. The `Circuit` class is responsible for calling the `update()` function of the primitive components and will allow you to calculate the values of all the wires in the network.
 
 ```python=
 class Circuit:
@@ -337,6 +335,8 @@ class Circuit:
         while self.update():
             pass
 ```
+
+[MARKER]
 
 The `update()` method of the `Circuit` class tries to calculate the values of the wires by iterating through the transistors and calling their update method. In case of circuits with feedback loops, things are not going to work as expected with a single iteration of updates, and you may need to go through this loop several times before the circuit reaches a stable state. We introduce an extra method designed for reaching the exact purpose: `stabilize`. It basically performs update several times, until no changes is seen in the values of wires, i.e it gets stable.
 
