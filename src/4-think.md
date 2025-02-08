@@ -529,8 +529,6 @@ Attention mechanism which has gave us humans the hope that someday we might have
 
 ## GPT
 
-## GPT
-
 GPT is a successfull neural network architecture for language models. It uses the ideas discussed in the Transformer paper. These are the neural network layers used in a GPT:
 
 Assuming the models accepts a sentence of maximum N tokens:

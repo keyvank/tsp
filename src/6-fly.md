@@ -981,6 +981,7 @@ class RenderingLibrary:
       pass
     def draw_sphere()
       pass
+```
 
 Our library will have 3 simple functions, one for clearing the screen, one for drawing a cube and one for drawing an sphere. It by default has some lighting to make the output image feel more 3D. We don’t care how the interface is implemented, but we’ll use it in our code. A working implementation will be provided in the git repo of the book!
 
