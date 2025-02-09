@@ -518,11 +518,13 @@ def Forward(circuit, inp, out):
 
 ## Hello World circuit!
 
-[MARKER]
+The simplest digital circuit we might consider a "computer" is one that can perform basic arithmetic, like adding two numbers together. In digital circuits, information is represented using binary signals—0s and 1s. So, when we talk about adding numbers in a digital circuit, we're working with binary numbers.
 
-The simplest digital circuit which is also useful is something that can add two numbers. Obviously we will be working with bunary numbers. Let's start with a circuit that can add two, one-bit numbers. The result of such an addition is a two bit number.
+To start with, let's focus on a very basic example: a circuit that can add two one-bit binary numbers. A one-bit number can only be either a 0 or a 1, so adding them together can yield one of three possible results: 0 + 0 = 0, 0 + 1 = 1, and 1 + 1 = 10 (which is 2 in decimal). Notice that the result of adding two one-bit numbers is always a two-bit number, because 1 + 1 produces a carry, which means we need two bits to store the result.
 
-A nice approach towards building logic such a circuit is to determine what the desired outputs are, for each possible input. Since the output is a 2-bit number, we can decompose such a circuit into two subcircuits, each calculating its corresponding digit.
+To design such a circuit, one of the most effective approaches is to start by figuring out what the output should be for each possible combination of inputs. Since there are two inputs (each one-bit numbers), there are four possible input combinations: 00, 01, 10, and 11. For each of these combinations, we can determine what the output should be. Since the result is always a two-bit number, we can break the circuit into two smaller subcircuits: one that calculates the sum bit (the least significant bit) and one that calculates the carry bit (the more significant bit). Each subcircuit works independently to compute its corresponding part of the result.
+
+In this way, we approach building the circuit step by step, using logic gates to implement the required operations for each input combination.
 
 | A | B | First digit | Second digit |
 |---|---|-------------|--------------|
@@ -531,9 +533,9 @@ A nice approach towards building logic such a circuit is to determine what the d
 | 1 | 0 | 1           | 0            |
 | 1 | 1 | 0           | 1            |
 
-The second digit's relation with A and B is very familiar, it's basically an AND gate! Try to find out how the first digit can be calculated by combining primitive gates. (Hint: It outputs 1 only when A is 0 AND B is 1, OR A is 1 AND B is 0)
+The relation of the second digit with A and B is very familiar; it's essentially an AND gate! Try to figure out how the first digit can be calculated by combining primitive gates. (Hint: It outputs 1 only when A is 0 AND B is 1, or A is 1 AND B is 0.)
 
-***Answer:*** It's an Xor gate! (\\(Xor(x, y) = Or(And(x, Not(y)), And(Not(x), y))\\)), and here is the Python code for it:
+***Answer:*** It's an XOR gate! (\\(Xor(x, y) = Or(And(x, Not(y)), And(Not(x), y))\\)), and here is the Python code for the entire thing:
 
 ```python=
 def HalfAdder(circuit, in_a, in_b, out_sum, out_carry):
@@ -541,7 +543,7 @@ def HalfAdder(circuit, in_a, in_b, out_sum, out_carry):
     And(circuit, in_a, in_b, out_carry)
 ```
 
-What we have just built is known as a half-adder. With an half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how primary school's addition algorithm works on binary numbers:
+What we have just built is known as a half-adder. With a half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how the addition algorithm we learn in primary school works on binary numbers:
 
 ```
  1111  1
@@ -552,7 +554,7 @@ What we have just built is known as a half-adder. With an half-adder, you can ad
  10010110
 ```
 
-By looking to the algorithm, we can see that for each digit, an addition of ***3 bits*** is being done (Not just two). So, in order to design a multi-bit adder we'll need a circuit that adds 3 one-bit numbers together. Such a circuit is known as a ***full-adder*** and the third number is often referred as the carry value. Truth table of a three bit adder:
+By looking at the algorithm, we can see that for each digit, the addition of ***three bits*** is being performed (not just two). So, to design a multi-bit adder, we'll need a circuit that adds three one-bit numbers together. Such a circuit is known as a ***full-adder***, and the third number is often referred to as the carry value. Here’s the truth table for a three-bit adder:
 
 | A | B | C | D0 | D1 |
 |---|---|---|----|----|
@@ -564,6 +566,8 @@ By looking to the algorithm, we can see that for each digit, an addition of ***3
 | 1 | 0 | 1 | 0  | 1  |
 | 0 | 1 | 1 | 0  | 1  |
 | 1 | 1 | 1 | 1  | 1  |
+
+[MARKER]
 
 Building a full-adder is still easy. You can use two Half-adders to calculate the first digit, and take the OR of the carry outputs which will give you the second digit.
 
