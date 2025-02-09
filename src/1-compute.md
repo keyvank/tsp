@@ -336,26 +336,24 @@ class Circuit:
             pass
 ```
 
-[MARKER]
+The `update()` method of the `Circuit` class calculates the values of the wires by iterating through the transistors and calling their update method. In circuits with feedback loops, a single iteration of updates may not be sufficient, and multiple iterations may be needed before the circuit reaches a stable state. To address this, we introduce an additional method specifically designed for this purpose: `stabilize()`. This method repeatedly performs updates until no changes are observed in the wire values, meaning the circuit has stabilized.
 
-The `update()` method of the `Circuit` class tries to calculate the values of the wires by iterating through the transistors and calling their update method. In case of circuits with feedback loops, things are not going to work as expected with a single iteration of updates, and you may need to go through this loop several times before the circuit reaches a stable state. We introduce an extra method designed for reaching the exact purpose: `stabilize`. It basically performs update several times, until no changes is seen in the values of wires, i.e it gets stable.
+Our `Circuit` class also provides global `zero()` and `one()` wires, which can be used by components requiring fixed `0` and `1` signals. These wires function like battery poles in our circuits.
 
-Our `Circuit` class will also provide global `zero()` and `one()` wires to be used by components which need fixed 0/1 signals.
-
-Our electronic components can be defined as methods which will add wires and transistors to a circuit. Let’s go through the implementation detail of some of them!
+Electronic components can be defined as functions that take a circuit as input and add wires and transistors to it. Let’s explore the implementation details of some of them!
 
 ## Life in a non-ideal world
 
-Digital circuits are effectively just logical expressions that are automatically calculated by the flow of electrons inside what we refer as gates. Logical expressions are defined on zeros and ones, but we just saw that wires in an electronic circuit are not guaranteed to be 0 or 1. So we have no choice but to re-define our gates and decide what their output should be in case of faulty inputs.
+Digital circuits are essentially logical expressions that are automatically evaluated by the flow of electrons through what we refer to as gates. Logical expressions are defined using zeros and ones, but as we have seen, wires in an electronic circuit are not always guaranteed to be either 0 or 1. Therefore, we must redefine our gates and determine their output in cases where the inputs are faulty.
 
-Take a NOT gate as an example. The truth table of a NOT gate in an ideal world is this:
+Consider a NOT gate as an example. In an ideal world, its truth table would be as follows:
 
 | A | NOT A |
 |---|-------|
 | 0 | 1     |
 | 1 | 0     |
 
-However, things are not ideal in the real-world, and wires connected to electronic logic gates could have unexpected voltages. Since a wire can have 4 different states in our emulation, our logic gates should also handle all the 4 states. This is the truth table of a NOT gate which gives you X outputs in case of X or Z inputs:
+However, the real world is not ideal, and wires connected to electronic logic gates can have unexpected voltages. Since a wire in our emulation can have four different states, our logic gates must be able to handle all four. The following is the definition of a NOT gate using our wire arithmetic. If the input to the NOT gate is `Z` or `X`, the output will be the faulty state `X`.
 
 | A | NOT A |
 |---|-------|
@@ -364,7 +362,7 @@ However, things are not ideal in the real-world, and wires connected to electron
 | Z | X     |
 | X | X     |
 
-There are two ways we can simulate gates in our simulator software. We either implement them through plain Python code, as primitive components just like transistors, or we describe them as a circuit of transistors. Here is an example implementation of a NOT gate using the former approach:
+There are two ways to simulate gates in our software. We can either implement them using plain Python code as primitive components, similar to transistors, or we can construct them as a circuit of transistors. The following is an example of a NOT gate implemented using the first approach:
 
 ```python=
 class Not:
@@ -395,9 +393,9 @@ if __name__ == '__main__':
     print(out.get())
 ```
 
-The Not gate modeled in this primitive component is accurate and works as expected, however, we all know that a Not gate itself is made of transistors and it might be more interesting to model the same thing through a pair of transistors, instead of ***cheating*** and emulating its high-level behavior through a piece of Python code.
+The NOT gate modeled as a primitive component is accurate and functions as expected. However, we know that a NOT gate is actually built from transistors, and it might be more interesting to model it using a pair of transistors rather than ***cheating*** by emulating its high-level behavior with Python code.
 
-Here is an example of a NOT gate, built with a type P and a type N transistor:
+The following is an example of a NOT gate constructed using a P-type and an N-type transistor:
 
 ```python=
 def Not(circuit, inp, out):
@@ -405,11 +403,15 @@ def Not(circuit, inp, out):
     circuit.add_component(NTransistor(inp, circuit.zero(), out))
 ```
 
-[NOT gate with transistors]
+![NOT gate with a pair of transistors](assets/not.png)
 
-Not gates are the simplest kind of components we can have in a circuit, and now that we've got familiar with transistors, it's the time to extend our component-set and build some of the most primitive logic-gates. Besides NOT gates, you might have heard of AND gates and OR gates which are slightly more complicated, mainly because they accept more than one input. Here is their definition:
+As you know, an N-type transistor connects its source pin to its drain pin when the voltage on its gate is higher than the voltage on its drain. So, when the `inp` wire is driven with `1`, the output gets connected to the `circuit.zero()` wire, causing `out` to hold a `0` signal. Notice that the P-type transistor is off when `inp` is `1`, so the `circuit.one()` wire will ***not*** get connected to the output pin. If that were the case, we would get a short circuit, causing the out signal to become a faulty (`X`)`.
 
-***AND gate:*** is zero when at least one of the inputs is zero, and gets One when all of the inputs are one. Otherwise the output is unknown.
+Likewise, when `inp` is `0`, the P-type transistor turns on and connects the output to `circuit.one()`, while the N-type transistor turns off, leaving the output unconnected to the ground.
+
+NOT gates are probably the simplest components you can build using the current primitive elements provided by our simulator. Now that we’re familiar with transistors, it’s time to expand our component set and build some of the most fundamental logic gates. In addition to NOT gates, you’ve likely heard of AND and OR gates, which are a bit more complex—mainly because they take more than one input. Here’s their definition:
+
+***AND gate:*** outputs `0` when at least one of the inputs is `0`, and gets `1` when all of the inputs are `1`. Otherwise the output is faulty (`X`).
 
 | A | B | A AND B |
 |---|---|---------|
@@ -418,7 +420,7 @@ Not gates are the simplest kind of components we can have in a circuit, and now 
 | 1 | 1 | 1       |
 |   |   | X       |
 
-***OR gate:*** is one when at least one of the inputs is one, and gets zero only when all of the inputs are zero. Otherwise the output is unknown.
+***OR gate:*** outputs `1` when at least one of the inputs is `1`, and gets `0` only when all of the inputs are `0`. Otherwise the output is unknown (`X`).
 
 | A | B | A OR B |
 |---|---|--------|
@@ -430,17 +432,17 @@ Not gates are the simplest kind of components we can have in a circuit, and now 
 
 ## Mother of the gates
 
-A NAND gate is a logic-gate that outputs 0 if and only if both of its inputs are 1. It's basically an AND gate which its output is inverted. It can be proven that you can build all of the primitive logic gates (AND, OR, NOT), using different combinations of this single gate:
+A NAND gate is a logic gate that outputs 0 if and only if both of its inputs are 1. It is essentially an AND gate with its output inverted. It can be proven that all the basic logic gates (AND, OR, NOT) can be built using different combinations of this single gate:
 
-- \\(Not(x) = Nand(x, x)\\)
-- \\(And(x, y) = Not(Nand(x, y)) = Nand(Nand(x, y), Nand(x, y))\\)
-- \\(Or(x, y) = Nand(Not(x), Not(y)) = Nand(Nand(x, x), Nand(y, y))\\)
+- \\(NOT(x) = NAND(x, x)\\)
+- \\(AND(x, y) = NOT(NAND(x, y)) = NAND(NAND(x, y), NAND(x, y))\\)
+- \\(OR(x, y) = NAND(NOT(x), NOT(y)) = NAND(NAND(x, x), NAND(y, y))\\)
 
-It's the mother gate of all logic circuits. Although, it would be very inefficient to build everything with NANDS in practice, for the sake of simplicity, we'll stick to NAND and will try to build other gates by connecting NAND gates to each other.
+It is the "mother gate" of all logic circuits. Although building everything with NAND gates would be very inefficient in practice, for the sake of simplicity, we'll stick to NAND gates and try to construct other gates by connecting them together.
 
 ![NAND gate with transistors](assets/nand.png)
 
-It turns out that we can build NAND gates with strong and accurate output signals using 4 transistors (x2 Type-N and x2 Type-P). Let's prototype a NAND using our simulated N/P transistors!
+It turns out that we can build NAND gates with strong and accurate output signals using 4 transistors (2 Type-N and 2 Type-P). Let's prototype a NAND gate using our simulated N/P transistors!
 
 ```python=
 def Nand(circuit, in_a, in_b, out):
@@ -451,14 +453,14 @@ def Nand(circuit, in_a, in_b, out):
     circuit.add_component(NTransistor(in_b, inter, out))
 ```
 
-Now, other primitive gates can be defined as combinations of NAND gates. Take the NOT gate as an example. Here is a 3rd way we can implement a NOT gate (So far, we have had implemented a NOT gate by 1. Describing its behavior through plain python code and 2. By connecting a pair of Type-N and Type-P transistors with each other):
+Now, other primitive gates can be defined as combinations of NAND gates. Take the NOT gate as an example. Here is a third way we can implement a NOT gate (So far, we have implemented a NOT gate in two ways: 1. Describing its behavior through plain Python code, and 2. By connecting a pair of Type-N and Type-P transistors):
 
 ```python=
 def Not(circuit, inp, out):
     Nand(circuit, inp, inp, out)
 ```
 
-Go ahead and implement other primitive gates using the NAND gate we just defined. After that, we can start making useful stuff out of these gates.
+Go ahead and implement the other primitive gates using the NAND gate we just defined. After that, we can start creating useful circuits from these gates!
 
 ```python=
 def And(circuit, in_a, in_b, out):
@@ -479,8 +481,11 @@ def Nor(circuit, in_a, in_b, out):
     circuit.add_component(PTransistor(in_b, inter, out))
     circuit.add_component(NTransistor(in_a, circuit.zero(), out))
     circuit.add_component(NTransistor(in_b, circuit.zero(), out))
+```
 
+An XOR gate is another incredibly useful gate that comes in handy when building circuits that can perform numerical additions. The XOR gate outputs 1 only when the inputs are unequal, and outputs 0 when they are equal. XOR gates can be built from AND, OR, and NOT gates: \\(Xor(x,y) = Or(And(x, Not(y)), And(Not(x), y))\\). However, since XOR gates will be used frequently in our future circuits, it makes more sense to provide a transistor-level implementation for them, as this will require fewer transistors!
 
+```python=
 def Xor(circuit, in_a, in_b, out):
     a_not = circuit.new_wire()
     b_not = circuit.new_wire()
@@ -502,9 +507,7 @@ def Xor(circuit, in_a, in_b, out):
     circuit.add_component(NTransistor(a_not, inter4, out))
 ```
 
-An `Xor` gate is another incredibly useful gate which comes handy when building circuits that can perform numerical additions. The Xor gate outputs 1 only when the inputs inequal, and outputs 0 when they are equal. Xor gates can be built out of AND/OR/NOT gates: \\(Xor(x,y) = Or(And(x, Not(y)), And(Not(x), y))\\), but since Xors are going to be pretty common in our future circuits, it makes more sense to provide a transistor-level implementation of them, this way, they will take less transistors!
-
-Sometimes we just need to connect two different wires with each other, instead of creating a new primitive component for that purpose, we may just use two consecutive Nots, it'll act like a simple jumper! We'll call this gate a `Forward` gate:
+Sometimes, we simply need to connect two different wires. Instead of creating a new primitive component for that purpose, we can use two consecutive NOT gates. This will act like a simple jumper! We'll call this gate a `Forward` gate:
 
 ```python=
 def Forward(circuit, inp, out):
@@ -514,6 +517,8 @@ def Forward(circuit, inp, out):
 ```
 
 ## Hello World circuit!
+
+[MARKER]
 
 The simplest digital circuit which is also useful is something that can add two numbers. Obviously we will be working with bunary numbers. Let's start with a circuit that can add two, one-bit numbers. The result of such an addition is a two bit number.
 
