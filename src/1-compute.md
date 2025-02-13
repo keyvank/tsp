@@ -543,7 +543,7 @@ def HalfAdder(circuit, in_a, in_b, out_sum, out_carry):
     And(circuit, in_a, in_b, out_carry)
 ```
 
-What we have just built is known as a half-adder. With a half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how the addition algorithm we learn in primary school works on binary numbers:
+What we have just built is known as a half-adder. With a half-adder, you can add 1-bit numbers together. You might think that we can build multi-bit adders by stacking multiple half-adders in a row, but that's not entirely correct. Recall that the addition algorithm we learned in primary school also applies to binary numbers. Imagine we want to add the binary numbers `1011001` (89) and `111101` (61) together. Here’s how it works:
 
 ```
  1111  1
@@ -554,7 +554,7 @@ What we have just built is known as a half-adder. With a half-adder, you can add
  10010110
 ```
 
-By looking at the algorithm, we can see that for each digit, the addition of ***three bits*** is being performed (not just two). So, to design a multi-bit adder, we'll need a circuit that adds three one-bit numbers together. Such a circuit is known as a ***full-adder***, and the third number is often referred to as the carry value. Here’s the truth table for a three-bit adder:
+By examining the algorithm, we can see that for each digit, the addition involves ***three bits*** (not just two). In addition to the original bits, there is also a third carry bit from the previous addition that must be considered. Therefore, to design a multi-bit adder, we need a circuit that can add three one-bit numbers together. Such a circuit is known as a ***full-adder***, and the third number is often referred to as the carry bit. Here’s the truth table for a three-bit adder:
 
 | A | B | C | D0 | D1 |
 |---|---|---|----|----|
@@ -567,9 +567,7 @@ By looking at the algorithm, we can see that for each digit, the addition of ***
 | 0 | 1 | 1 | 0  | 1  |
 | 1 | 1 | 1 | 1  | 1  |
 
-[MARKER]
-
-Building a full-adder is still easy. You can use two Half-adders to calculate the first digit, and take the OR of the carry outputs which will give you the second digit.
+Building a full-adder is not that challenging. You can use two half-adders to compute the sum bit and then take the OR of the carry outputs to obtain the final carry bit.
 
 ```python=
 def FullAdder(circuit, in_a, in_b, in_carry, out_sum, out_carry):
@@ -581,7 +579,7 @@ def FullAdder(circuit, in_a, in_b, in_carry, out_sum, out_carry):
     Or(circuit, carry1, carry2, out_carry)
 ```
 
-Once we have a triple adder ready, we can proceed and create multi-bit adders. Let's try building a 8-bit adder. We will need to put 8 full-adders in a row, connecting the second digit of the result of each adder as the third input value of the next adder, mimicking the addition algorithm we discussed earlier.
+Once we have a full-adder ready, we can proceed with building multi-bit adders. For example, to create an 8-bit adder, we need to connect eight full-adders in a row. The carry output of each adder serves as the carry input for the next, mimicking the addition algorithm we discussed earlier.
 
 ```python=
 def Adder8(circuit, in_a, in_b, in_carry, out_sum, out_carry):
@@ -597,7 +595,7 @@ def Adder8(circuit, in_a, in_b, in_carry, out_sum, out_carry):
         )
 ```
 
-Before designing more complicated gates, let's make sure our simulated model of a 8-bit adder is working properly. If the 8-bit adder is working, there is a high-chance that the other gates are also working well:
+Congratulations! We just added two 8-bit numbers using nothing but bare transistors. Before continuing our journey toward more complex circuits, let's ensure that our simulated model of the 8-bit adder is functioning correctly. If the 8-bit adder works properly, there is a high chance that the other gates are also functioning as expected.
 
 ```python=
 def num_to_wires(circuit, num):
@@ -631,30 +629,32 @@ if __name__ == "__main__":
 
 ```
 
-Here, we are checking if the outputs are correct given all possible inputs. We have defined two auxillary functions `num_to_wires` and `wires_to_num` in order to convert numbers into a set of wires which can connect to a electronic circuit, and vice versa.
+Here, we are checking if the outputs are correct for all possible inputs. We have defined two auxiliary functions, `num_to_wires` and `wires_to_num`, to convert numbers into a set of wires that can connect to an electronic circuit, and vice versa.
 
 ## When addition is subtraction
 
-So far we have been able to implement the add operation by combining N and P transistors. Our add operation is limited to 8-bits, which means, the input and output values are all in the range \\([0,255]\\). If you try to add two numbers, which their sum is more than 255, you will still get a number in range \\([0,255]\\). This happens since a number bigger than 255 can not be represented by 8-bits and an ***overflow*** will happen. If you look carefully, you will notice that what we have designed isn't doing a regular add operation we are used to in elementary school mathematics, but it's and addition that is done in a finite-field. This means, the addition results are mod-ed by 256:
+So far, we have been able to implement the addition operation by combining N and P transistors. Our adder is limited to 8 bits, meaning that the input and output values are all in the range \\([0,255]\\). If you try to add two numbers whose sum exceeds 255, you will still get a result in the range \\([0,255]\\). This happens because a number larger than 255 cannot be represented by 8 bits, and an ***overflow*** occurs. Upon closer inspection, you’ll notice that what we have designed isn’t the typical addition operation we are used to in elementary school mathematics; instead, it’s addition in a finite field. This means the addition results are taken modulo 256.
 
 \\(a \oplus b = (a + b) \mod 256\\)
 
 It is good to know that finite-fields have interesting properties:
 
 1. \\((a \oplus b) \oplus c = a \oplus (b \oplus c)\\)
-2. For every non-zero number \\(x \in \mathbb{F}\\), there is a number \\(y\\), where \\(x \oplus y = 0\\). \\(y\\) is know as the negative of \\(x\\).
+2. For every non-zero number \\(x \in \mathbb{F}\\), there is a number \\(y\\), where \\(x \oplus y = 0\\). \\(y\\) is known as the negative of \\(x\\).
 
-In a finite-field, the negative of a number can be calculated by subtracting that number from the field-size (Here the size of our field is \\(2^8=256\\)). E.g negative of \\(10\\) is \\(256-10=246\\), so \\(10 \oplus 246 = 0\\).
+In a finite field, the negative of a number can be calculated by subtracting that number from the field size (in this case, the size of our field is \\(2^8=256\\)).  For example, the negative of \\(10\\) is \\(256-10=246\\), so \\(10 \oplus 246 = 0\\).
 
-Surprisingly, the number \\(246\\), acts really like a \\(-10\\). Try adding \\(246\\) to \\(15\\). You will get \\(246 \oplus 15 = 5\\) which is equal with \\(15 + (-10)\\)! This has a important meaning, we can perform subtraction without designing a new circuit! We'll just need to negate the number. Calculating the negative of a number is like taking the XOR of that number (Which is equal with \\(255 - a\\)), and adding \\(1\\) to it (Which makes it \\(256 - a\\) which is our definition of negation). This is known as the two's-complement form of a number.
+Surprisingly, the number \\(246\\), behaves exactly like \\(-10\\). Try adding \\(246\\) to \\(15\\). You will get \\(246 \oplus 15 = 5\\) which is the same as \\(15 + (-10)\\)! This has an important implication: we can perform subtraction without designing a new circuit! All we need to do is negate the number. Calculating the negative of a number is like taking the XOR of that number (Which gives \\(255 - a\\)), and then adding \\(1\\) to it (Which results in \\(256 - a\\), our definition of negation). This is known as the two's complement form of a number.
 
-It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!
+It’s incredible to see that we can build electronic machines capable of adding and subtracting numbers by simply connecting a bunch of transistors together! The good news is that we can go even further and design circuits that can perform multiplication and division, using the same approach we used for designing addition circuits. The details of multiplication and division circuits are beyond the scope of this book, but you are strongly encouraged to study them on your own!
 
 ## Not gates can be fun too!
 
-If you remember, we discussed that you can't build interesting structures using only a single type of single-input/single-output component (such as NOT gates). In fact, we argued that using them we can only make domino-like structures, in which a single cause traverses through the components until reaching the last piece, but that's not totally true: what if we connect the last component of the chain to the first one? This makes a loop, which is definitely a new thing. Assuming two consecutive NOT gates cancel out each other, we can build two different kinds of NOT loops:
+If you remember, we discussed that you can't build interesting structures using only a single type of single-input/single-output component (such as NOT gates). In fact, we argued that using just them, we can only create domino-like structures, where a single cause traverses through the components until reaching the last one. However, that's not entirely true: what if we connect the last component of the chain to the first one? This creates a loop, which is definitely something new. Assuming two consecutive NOT gates cancel each other out, we can build two different kinds of NOT loops:
 
 ![Two possible kinds of NOT loops](assets/notloops.png)
+
+[MARKER]
 
 After analyzing both of the possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It's like a logical paradox, like the statement: *This sentence is not true*. The statement can be neither true nor false! Practically, if you build such a circuit, it may oscillate between the possible states very fast. Or the voltage of the wire may end up something between the logical voltages of 0 and 1.
 
