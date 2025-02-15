@@ -687,7 +687,7 @@ def Nor(circuit, in_a, in_b, out):
     Xor(circuit, in_a, in_b, out_sum)
     And(circuit, in_a, in_b, out_carry)
 </code></pre>
-<p>What we have just built is known as a half-adder. With a half-adder, you can add 1-bit numbers together, but what if we want to add multi-bit numbers? Let's see how the addition algorithm we learn in primary school works on binary numbers:</p>
+<p>What we have just built is known as a half-adder. With a half-adder, you can add 1-bit numbers together. You might think that we can build multi-bit adders by stacking multiple half-adders in a row, but that's not entirely correct. Recall that the addition algorithm we learned in primary school also applies to binary numbers. Imagine we want to add the binary numbers <code>1011001</code> (89) and <code>111101</code> (61) together. Here’s how it works:</p>
 <pre><code> 1111  1
    
   1011001
@@ -695,7 +695,7 @@ def Nor(circuit, in_a, in_b, out):
 -----------
  10010110
 </code></pre>
-<p>By looking at the algorithm, we can see that for each digit, the addition of <em><strong>three bits</strong></em> is being performed (not just two). So, to design a multi-bit adder, we'll need a circuit that adds three one-bit numbers together. Such a circuit is known as a <em><strong>full-adder</strong></em>, and the third number is often referred to as the carry value. Here’s the truth table for a three-bit adder:</p>
+<p>By examining the algorithm, we can see that for each digit, the addition involves <em><strong>three bits</strong></em> (not just two). In addition to the original bits, there is also a third carry bit from the previous addition that must be considered. Therefore, to design a multi-bit adder, we need a circuit that can add three one-bit numbers together. Such a circuit is known as a <em><strong>full-adder</strong></em>, and the third number is often referred to as the carry bit. Here’s the truth table for a three-bit adder:</p>
 <div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>C</th><th>D0</th><th>D1</th></tr></thead><tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
@@ -707,8 +707,7 @@ def Nor(circuit, in_a, in_b, out):
 <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
 </tbody></table>
 </div>
-<p>[MARKER]</p>
-<p>Building a full-adder is still easy. You can use two Half-adders to calculate the first digit, and take the OR of the carry outputs which will give you the second digit.</p>
+<p>Building a full-adder is not that challenging. You can use two half-adders to compute the sum bit and then take the OR of the carry outputs to obtain the final carry bit.</p>
 <pre><code class="language-python=">def FullAdder(circuit, in_a, in_b, in_carry, out_sum, out_carry):
     sum_ab = circuit.new_wire()
     carry1 = circuit.new_wire()
@@ -717,7 +716,7 @@ def Nor(circuit, in_a, in_b, out):
     HalfAdder(circuit, sum_ab, in_carry, out_sum, carry2)
     Or(circuit, carry1, carry2, out_carry)
 </code></pre>
-<p>Once we have a triple adder ready, we can proceed and create multi-bit adders. Let's try building a 8-bit adder. We will need to put 8 full-adders in a row, connecting the second digit of the result of each adder as the third input value of the next adder, mimicking the addition algorithm we discussed earlier.</p>
+<p>Once we have a full-adder ready, we can proceed with building multi-bit adders. For example, to create an 8-bit adder, we need to connect eight full-adders in a row. The carry output of each adder serves as the carry input for the next, mimicking the addition algorithm we discussed earlier.</p>
 <pre><code class="language-python=">def Adder8(circuit, in_a, in_b, in_carry, out_sum, out_carry):
     carries = [in_carry] + [circuit.new_wire() for _ in range(7)] + [out_carry]
     for i in range(8):
@@ -730,7 +729,7 @@ def Nor(circuit, in_a, in_b, out):
             carries[i + 1],
         )
 </code></pre>
-<p>Before designing more complicated gates, let's make sure our simulated model of a 8-bit adder is working properly. If the 8-bit adder is working, there is a high-chance that the other gates are also working well:</p>
+<p>Congratulations! We just added two 8-bit numbers using nothing but bare transistors. Before continuing our journey toward more complex circuits, let's ensure that our simulated model of the 8-bit adder is functioning correctly. If the 8-bit adder works properly, there is a high chance that the other gates are also functioning as expected.</p>
 <pre><code class="language-python=">def num_to_wires(circuit, num):
     wires = []
     for i in range(8):
@@ -761,30 +760,42 @@ if __name__ == &quot;__main__&quot;:
                 print(&quot;Adder is not working!&quot;)
 
 </code></pre>
-<p>Here, we are checking if the outputs are correct given all possible inputs. We have defined two auxillary functions <code>num_to_wires</code> and <code>wires_to_num</code> in order to convert numbers into a set of wires which can connect to a electronic circuit, and vice versa.</p>
+<p>Here, we are checking if the outputs are correct for all possible inputs. We have defined two auxiliary functions, <code>num_to_wires</code> and <code>wires_to_num</code>, to convert numbers into a set of wires that can connect to an electronic circuit, and vice versa.</p>
 <h2 id="when-addition-is-subtraction"><a class="header" href="#when-addition-is-subtraction">When addition is subtraction</a></h2>
-<p>So far we have been able to implement the add operation by combining N and P transistors. Our add operation is limited to 8-bits, which means, the input and output values are all in the range \([0,255]\). If you try to add two numbers, which their sum is more than 255, you will still get a number in range \([0,255]\). This happens since a number bigger than 255 can not be represented by 8-bits and an <em><strong>overflow</strong></em> will happen. If you look carefully, you will notice that what we have designed isn't doing a regular add operation we are used to in elementary school mathematics, but it's and addition that is done in a finite-field. This means, the addition results are mod-ed by 256:</p>
+<p>So far, we have been able to implement the addition operation by combining N and P transistors. Our adder is limited to 8 bits, meaning that the input and output values are all in the range \([0,255]\). If you try to add two numbers whose sum exceeds 255, you will still get a result in the range \([0,255]\). This happens because a number larger than 255 cannot be represented by 8 bits, and an <em><strong>overflow</strong></em> occurs. Upon closer inspection, you’ll notice that what we have designed isn’t the typical addition operation we are used to in elementary school mathematics; instead, it’s addition in a finite field. This means the addition results are taken modulo 256.</p>
 <p>\(a \oplus b = (a + b) \mod 256\)</p>
 <p>It is good to know that finite-fields have interesting properties:</p>
 <ol>
 <li>\((a \oplus b) \oplus c = a \oplus (b \oplus c)\)</li>
-<li>For every non-zero number \(x \in \mathbb{F}\), there is a number \(y\), where \(x \oplus y = 0\). \(y\) is know as the negative of \(x\).</li>
+<li>For every non-zero number \(x \in \mathbb{F}\), there is a number \(y\), where \(x \oplus y = 0\). \(y\) is known as the negative of \(x\).</li>
 </ol>
-<p>In a finite-field, the negative of a number can be calculated by subtracting that number from the field-size (Here the size of our field is \(2^8=256\)). E.g negative of \(10\) is \(256-10=246\), so \(10 \oplus 246 = 0\).</p>
-<p>Surprisingly, the number \(246\), acts really like a \(-10\). Try adding \(246\) to \(15\). You will get \(246 \oplus 15 = 5\) which is equal with \(15 + (-10)\)! This has a important meaning, we can perform subtraction without designing a new circuit! We'll just need to negate the number. Calculating the negative of a number is like taking the XOR of that number (Which is equal with \(255 - a\)), and adding \(1\) to it (Which makes it \(256 - a\) which is our definition of negation). This is known as the two's-complement form of a number.</p>
-<p>It's very incredible to see that we can build electronic machines that can add and subtract numbers by connecting a bunch of transistors to each other! The good news is, we can go further and design circuits that can perform multiplications and divisions, using the same thought process we had while designing add circuits. The details of multiplication and division circuits are beyond the scope of this book but you are strongly advised to study them yourself!</p>
+<p>In a finite field, the negative of a number can be calculated by subtracting that number from the field size (in this case, the size of our field is \(2^8=256\)).  For example, the negative of \(10\) is \(256-10=246\), so \(10 \oplus 246 = 0\).</p>
+<p>Surprisingly, the number \(246\), behaves exactly like \(-10\). Try adding \(246\) to \(15\). You will get \(246 \oplus 15 = 5\) which is the same as \(15 + (-10)\)! This has an important implication: we can perform subtraction without designing a new circuit! All we need to do is negate the number. Calculating the negative of a number is like taking the XOR of that number (Which gives \(255 - a\)), and then adding \(1\) to it (Which results in \(256 - a\), our definition of negation). This is known as the two's complement form of a number.</p>
+<p>It’s incredible to see that we can build electronic machines capable of adding and subtracting numbers by simply connecting a bunch of transistors together! The good news is that we can go even further and design circuits that can perform multiplication and division, using the same approach we used for designing addition circuits. The details of multiplication and division circuits are beyond the scope of this book, but you are strongly encouraged to study them on your own!</p>
 <h2 id="not-gates-can-be-fun-too"><a class="header" href="#not-gates-can-be-fun-too">Not gates can be fun too!</a></h2>
-<p>If you remember, we discussed that you can't build interesting structures using only a single type of single-input/single-output component (such as NOT gates). In fact, we argued that using them we can only make domino-like structures, in which a single cause traverses through the components until reaching the last piece, but that's not totally true: what if we connect the last component of the chain to the first one? This makes a loop, which is definitely a new thing. Assuming two consecutive NOT gates cancel out each other, we can build two different kinds of NOT loops:</p>
+<p>If you remember, we discussed that you can't build interesting structures using only a single type of single-input/single-output component (such as NOT gates). In fact, we argued that using just them, we can only create domino-like structures, where a single cause traverses through the components until reaching the last one. However, that's not entirely true: what if we connect the last component of the chain to the first one? This creates a loop, which is definitely something new. Assuming two consecutive NOT gates cancel each other out, we can build two different kinds of NOT loops:</p>
 <p><img src="assets/notloops.png" alt="Two possible kinds of NOT loops" /></p>
-<p>After analyzing both of the possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It's like a logical paradox, like the statement: <em>This sentence is not true</em>. The statement can be neither true nor false! Practically, if you build such a circuit, it may oscillate between the possible states very fast. Or the voltage of the wire may end up something between the logical voltages of 0 and 1.</p>
-<p>On the other hand, it's perfectly possible for the loop with two NOT gates to get stable. The resulting circuit can be in two-possible states: Either the first wire is 1 and the second wire is 0, or the first wire is zero and the second wire is one. It won't automatically switch between the states. If you build such a circuit using real components, the initial state would be somewhat random. A slight difference in the conditions of the transistors may cause the circuit to slip to the one of states and stabilize there!</p>
+<p>After analyzing both possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It creates a logical paradox, similar to the statement: <em>This sentence is not true</em>. The statement can be neither true nor false!</p>
+<p>Practically, if you build such a circuit, it may oscillate rapidly between possible states, or the wire's voltage may settle at a value between the logical voltages of 0 and 1.</p>
+<p>On the other hand, the loop with two NOT gates can achieve stability. The resulting circuit has two possible states: either the first wire is 1 and the second wire is 0, or the first wire is 0 and the second wire is 1. It will not switch between these states automatically. If you build such a circuit using real components, the initial state will be somewhat random. A slight difference in the transistor conditions may cause the circuit to settle into one of the states and remain there.</p>
 <h2 id="try-to-remember"><a class="header" href="#try-to-remember">Try to remember</a></h2>
-<p>What we care about right now is to design a circuit which is able to run arbitrary algorithms for us! An algorithm is nothing but a list of operations that need to be executed. So far we have been experimenting with state-less circuits, circuits that didn't need to memorize or remember anything in order to do their job. Obviously, you can't get much creative with circuits that do now store anything from the past, thus, we are going to talk about ways we can store data on a digital circuit circuit and keep it through time!</p>
-<p>When you were a child, you have most probably tried to put a light-switch in a middle state. If the switch had been in good condition and quality, you know how frustrating it can get to do it! The concept of <em><strong>memory</strong></em> emerges when a system with multiple possible states can only stabilize in a single state at a time, and once it gets stable, the state can only be changed by an external force. A light-switch can be used as a single-bit memory cell. </p>
-<p>Imagine a piece of paper. It's stable. When you put it on fire, it slowly changes its state until it becomes completely burnt and stabilizes there. It's not easy to keep the paper a middle state. You can use a paper as a single bit memory cell. It's not the best memory cell and the most obvious reason is that you can't turn it back to its unburnt state!</p>
-<p>Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). The problem with a NOT loop is that you can't control it, so you can't change its state. It doesn't accept inputs from the external world. We can change this: replace the NOT gate with a gate that accepts two inputs instead of one (For example, use a NAND gate instead), and give those extra pins to a user. The user can change the internal state of the loop by giving voltages to the extra pins. The described circuit is also known as a SR-Latch:</p>
+<p>So far, we have been experimenting with stateless circuits—circuits that do not need to store or remember anything to function. However, circuits without memory are severely limited in their capabilities. To unlock their full potential, we need to explore how to store data within a digital circuit and maintain it over time. This is one of the most critical steps before we can build a computer, as computers are essentially machines that manipulate values stored in some kind of <em><strong>memory</strong></em>. Without memory, a computer cannot perform complex tasks or execute meaningful programs.</p>
+<p>As a child, you may have tried to leave a light switch in a &quot;middle&quot; position. If the switch was well-made, you probably found it frustratingly difficult to do! The concept of memory arises when a system with multiple possible states can only stabilize in a single state at a time. Once it becomes stable, it can only change through an external force. In this sense, a light switch can function as a single-bit memory cell.</p>
+<p>Another silly example: imagine a piece of paper—it remains stable in its current state. If you set it on fire, it gradually changes until it is completely burned, after which it stabilizes again. Keeping the paper in a &quot;half-burned&quot; state is not easy! You could consider the paper as a crude single-bit memory cell, but it has a major flaw: once burned, it cannot return to its original state.</p>
+<p>Fortunately, there are ways to build circuits with multiple possible states, where only one state remains stable at a time. The simplest example is a circuit that forms a loop by connecting two NOT gates to each other. This setup involves two wires: if the first wire is 1, the second wire will be 0, and the circuit will stabilize in that configuration (and vice versa).</p>
+<p>The problem with a simple NOT gate loop is that it cannot be controlled externally—it lacks an input mechanism to change its state. To fix this, we can replace the NOT gates with logic gates that accept two inputs instead of one. For example, using NAND gates instead allows us to introduce external control. By providing voltages to the extra input pins, a user can modify the internal state of the loop. This type of circuit is known as an SR latch:</p>
 <p><img src="assets/srlatch.png" alt="Set-Reset latch" /></p>
-<p>Now, the user can put on the first and second state, by setting S=1 and R=0, or setting S=0 and R=1, respectively. After doing so, the user can set both S and R pins to 0. The magic is: <em><strong>the circuit will stably remain on the latest state</strong></em>.</p>
+<p>Now, the user can set the latch to the first or second state by setting S=1 and R=0, or S=0 and R=1, respectively. The magic lies in the fact that <em><strong>the circuit will stably remain in the latest state</strong></em>, even after both S and R inputs are set to zero!</p>
+<p>Here you can find an example of a SR latch implemented in Python:</p>
+<pre><code class="language-python=">def SRLatch(circuit, in_r, in_s, out_data, initial=0):
+    neg_out = circuit.new_wire()
+    Nor(circuit, in_r, neg_out, out_data)
+    Nor(circuit, in_s, out_data, neg_out)
+    neg_out.assume(1 - initial)
+    out_data.assume(initial)
+</code></pre>
+<p>Notice how we ingeniously fed two set/reset inputs into something that is essentially a NOT loop!</p>
+<p>[MARKER]</p>
 <p><img src="assets/dlatch.png" alt="DLatch made of logic gates" /></p>
 <pre><code class="language-python=">def DLatch(circuit, in_clk, in_data, out_data, initial=0):
     not_data = circuit.new_wire()

@@ -654,27 +654,42 @@ If you remember, we discussed that you can't build interesting structures using 
 
 ![Two possible kinds of NOT loops](assets/notloops.png)
 
-[MARKER]
+After analyzing both possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It creates a logical paradox, similar to the statement: *This sentence is not true*. The statement can be neither true nor false!
 
-After analyzing both of the possible loops, you will soon understand that the one with a single NOT gate is unstable. The voltage of the wire can be neither 0 nor 1. It's like a logical paradox, like the statement: *This sentence is not true*. The statement can be neither true nor false! Practically, if you build such a circuit, it may oscillate between the possible states very fast. Or the voltage of the wire may end up something between the logical voltages of 0 and 1.
+Practically, if you build such a circuit, it may oscillate rapidly between possible states, or the wire's voltage may settle at a value between the logical voltages of 0 and 1.
 
-On the other hand, it's perfectly possible for the loop with two NOT gates to get stable. The resulting circuit can be in two-possible states: Either the first wire is 1 and the second wire is 0, or the first wire is zero and the second wire is one. It won't automatically switch between the states. If you build such a circuit using real components, the initial state would be somewhat random. A slight difference in the conditions of the transistors may cause the circuit to slip to the one of states and stabilize there!
+On the other hand, the loop with two NOT gates can achieve stability. The resulting circuit has two possible states: either the first wire is 1 and the second wire is 0, or the first wire is 0 and the second wire is 1. It will not switch between these states automatically. If you build such a circuit using real components, the initial state will be somewhat random. A slight difference in the transistor conditions may cause the circuit to settle into one of the states and remain there.
 
 ## Try to remember
 
-What we care about right now is to design a circuit which is able to run arbitrary algorithms for us! An algorithm is nothing but a list of operations that need to be executed. So far we have been experimenting with state-less circuits, circuits that didn't need to memorize or remember anything in order to do their job. Obviously, you can't get much creative with circuits that do now store anything from the past, thus, we are going to talk about ways we can store data on a digital circuit circuit and keep it through time!
+So far, we have been experimenting with stateless circuits—circuits that do not need to store or remember anything to function. However, circuits without memory are severely limited in their capabilities. To unlock their full potential, we need to explore how to store data within a digital circuit and maintain it over time. This is one of the most critical steps before we can build a computer, as computers are essentially machines that manipulate values stored in some kind of ***memory***. Without memory, a computer cannot perform complex tasks or execute meaningful programs.
 
-When you were a child, you have most probably tried to put a light-switch in a middle state. If the switch had been in good condition and quality, you know how frustrating it can get to do it! The concept of ***memory*** emerges when a system with multiple possible states can only stabilize in a single state at a time, and once it gets stable, the state can only be changed by an external force. A light-switch can be used as a single-bit memory cell. 
+As a child, you may have tried to leave a light switch in a "middle" position. If the switch was well-made, you probably found it frustratingly difficult to do! The concept of memory arises when a system with multiple possible states can only stabilize in a single state at a time. Once it becomes stable, it can only change through an external force. In this sense, a light switch can function as a single-bit memory cell.
 
-Imagine a piece of paper. It's stable. When you put it on fire, it slowly changes its state until it becomes completely burnt and stabilizes there. It's not easy to keep the paper a middle state. You can use a paper as a single bit memory cell. It's not the best memory cell and the most obvious reason is that you can't turn it back to its unburnt state!
+Another silly example: imagine a piece of paper—it remains stable in its current state. If you set it on fire, it gradually changes until it is completely burned, after which it stabilizes again. Keeping the paper in a "half-burned" state is not easy! You could consider the paper as a crude single-bit memory cell, but it has a major flaw: once burned, it cannot return to its original state.
 
-Fortunately, there are ways you can build circuits with multiple possible states, in which only one state can stabilize. The simplest example of such a circuit is when you create a cycle by connecting two NOT gates to each other. There are two wires involved, if the state of the first wire is 1, the other wire will be 0 and the circuit will get stable (And vice versa). The problem with a NOT loop is that you can't control it, so you can't change its state. It doesn't accept inputs from the external world. We can change this: replace the NOT gate with a gate that accepts two inputs instead of one (For example, use a NAND gate instead), and give those extra pins to a user. The user can change the internal state of the loop by giving voltages to the extra pins. The described circuit is also known as a SR-Latch:
+Fortunately, there are ways to build circuits with multiple possible states, where only one state remains stable at a time. The simplest example is a circuit that forms a loop by connecting two NOT gates to each other. This setup involves two wires: if the first wire is 1, the second wire will be 0, and the circuit will stabilize in that configuration (and vice versa).
+
+The problem with a simple NOT gate loop is that it cannot be controlled externally—it lacks an input mechanism to change its state. To fix this, we can replace the NOT gates with logic gates that accept two inputs instead of one. For example, using NAND gates instead allows us to introduce external control. By providing voltages to the extra input pins, a user can modify the internal state of the loop. This type of circuit is known as an SR latch:
 
 ![Set-Reset latch](assets/srlatch.png)
 
-Now, the user can put on the first and second state, by setting S=1 and R=0, or setting S=0 and R=1, respectively. After doing so, the user can set both S and R pins to 0. The magic is: ***the circuit will stably remain on the latest state***.
+Now, the user can set the latch to the first or second state by setting S=1 and R=0, or S=0 and R=1, respectively. The magic lies in the fact that ***the circuit will stably remain in the latest state***, even after both S and R inputs are set to zero!
 
+Here you can find an example of a SR latch implemented in Python:
 
+```python=
+def SRLatch(circuit, in_r, in_s, out_data, initial=0):
+    neg_out = circuit.new_wire()
+    Nor(circuit, in_r, neg_out, out_data)
+    Nor(circuit, in_s, out_data, neg_out)
+    neg_out.assume(1 - initial)
+    out_data.assume(initial)
+```
+
+Notice how we ingeniously fed two set/reset inputs into something that is essentially a NOT loop!
+
+[MARKER]
 
 ![DLatch made of logic gates](assets/dlatch.png)
 
