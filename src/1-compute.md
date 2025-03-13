@@ -687,11 +687,38 @@ def SRLatch(circuit, in_r, in_s, out_data, initial=0):
     out_data.assume(initial)
 ```
 
-Notice how we ingeniously fed two set/reset inputs into something that is essentially a NOT loop!
+Notice how we ingeniously feed two set/reset inputs into something that is essentially a NOT loop! Now, there’s something tricky about simulating a NOR/NOT loop: How can the first NOR gate function when `neg_out` is still not calculated? Or similarly, how can the second NOR gate calculate `neg_out` when `out_data` is still not calculated? There are two approaches we can use to resolve the chicken-and-egg problem in our simulation:
 
-[MARKER]
+1. Give up and attempt to simulate a memory-cell component without performing low-level transistor simulations. This would require us to define a new ***Primitive Component*** (similar to N/P transistors), which includes an `update()` function that mimics the expected behavior of a latch.
+2. Hint the simulator with the initial values of wires, and let the simulator to settle in an stable state by running the update function of the transistors for a few iterations and stopping the iterations after the wire values stop changing (Meaning that the system has entered a stable state).
+
+That’s where the `assume` function we defined for our `Wire` class comes in handy. The `assume` function essentially hints to the simulator the initial value(s) of the wires in our memory cell, making it stable. In fact, if you don’t call these `assume` functions when defining the gates, the simulator won’t be able to simulate it, and the output of both NOR gates would become `X`. Assumption is only necessary when we want to initialize the circuit in a stable state for the first time. After that, the circuit will ignore the initial assumed values and will start working as expected. *Note: In the real world, the memory cell randomly settles into one of the set/reset states due to environmental noise and slight differences between the transistors.*
+
+## A more user-friendly latch
+
+SR latches are perfect examples of memory cells since they can store a single bit of data. However, the unusual aspect of SR latches is that they require two inputs to determine whether to set them to a set (1) or reset (0) state. To set the latch to a 1 (set) state, you would feed it `S=1 & R=0`, and to reset it to 0 (reset) state, you would feed it `S=0 & R=1`. But what if we only had a single wire, `D=0/1`, and wanted the latch to remember the value stored in that wire? This is where the D-latch, a second type of latch, comes in handy.
+
+Building a D-latch is quite straightforward: you simply need to create a circuit that decodes a single `D` bit into two `S` and `R` bits. The circuit should output `SR=01` when `D=0` and `SR=10` when `D=1`. This circuit is essentially a 1x2 decoder, which can then be connected to your existing SR-latch.
+
+There’s a problem when we simply connect a 2x1 decoder to an SR latch: how can we tell the latch to stop copying whatever value is present on the `D` wire into its internal state? In an SR latch, the answer is straightforward: when both `S` and `R` are set to 0, the latch’s internal state won’t change and will simply remain in its most recent state. We would like to have the same kind of control in a D-latch, or else the D-latch would be no different than a simple wire! To achieve this, we introduce a new ***control*** wire called `clock` (or `clk`), which stops the latch from acquiring the value of `D`. The truth table for such a circuit would look something like this:
+
+| Previous state | CLK | D | Next state |
+|----------------|-----|---|------------|
+|       0        |  0  | 0 |     0      |
+|       0        |  0  | 1 |     0      |
+|       0        |  1  | 0 |     0      |
+|       0        |  1  | 1 |     1      |
+|       1        |  0  | 0 |     1      |
+|       1        |  0  | 1 |     1      |
+|       1        |  1  | 0 |     0      |
+|       1        |  1  | 1 |     1      |
+
+
+Here is how the schematic representation of a D-latch would look:
 
 ![DLatch made of logic gates](assets/dlatch.png)
+
+And how it can be represented with our Python simulator:
 
 ```python=
 def DLatch(circuit, in_clk, in_data, out_data, initial=0):
@@ -709,14 +736,9 @@ def DLatch(circuit, in_clk, in_data, out_data, initial=0):
     out_data.assume(initial)
 ```
 
-In our `DLatch` component, the `wire_out` pin is always equal with the internal state of the memory cell. Whenever `wire_clk` is equal with one, the value of `wire_data` will be copied into the state, and will stay there, even when we 
+## Flip Flop!
 
-Simulating such a circuit in our Python simulator is a bit tricky: take a look at the schematic of a DLatch circuit, the input of the Nor cell is dependant on the output of tha latch. If we try to calculate the correct values of wires in a latch component for the first time, the simulation will crash when updating the Nor gate, because not all of its inputs are ready. There are two approaches by which we can fix our simulation:
-
-1. Give up, and try to simulate a memory-cell component without doing low-level transistor simulations.
-2. Break the update loop, when the state of the wires do not change after a few iterations (Meaning that the system has entered a stable state).
-
-Since we want to make our simulation as accurate as possible, we'll go with the second route. We'll just describe our memory-cells as a set of transistors, and will try to converge to a correct solution by using the `assume()` function of our circuit.
+[MARKER]
 
 ![DFlipFlop made of two DLatches](assets/dflipflop.png)
 
