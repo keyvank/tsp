@@ -736,24 +736,7 @@ def DLatch(circuit, in_clk, in_data, out_data, initial=0):
     out_data.assume(initial)
 ```
 
-## Flip Flop!
-
-[MARKER]
-
-![DFlipFlop made of two DLatches](assets/dflipflop.png)
-
-When the clock signal rises up, the first DLatch gets activated and it "Flip"s, and when the clock signal goes down, the first DLatch will get inactive, and the one will get active, and "Flop"s, that's probably why it's called a FlipFlop!
-
-```python=
-def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
-    neg_clk = circuit.new_wire()
-    Not(circuit, in_clk, neg_clk)
-    inter = circuit.new_wire()
-    DLatch(circuit, in_clk, in_data, inter, initial)
-    DLatch(circuit, neg_clk, inter, out_data, initial)
-```
-
-Put 8 flip-flops in a row and you will have a 8-bit register!
+Later in this book, we will be building a computer with memory cells of size 8 bits (a.k.a. a byte). It might make sense to group 8 of these DLatches together as a separate component in order to build our memory cells, registers, and RAM. We'll need to arrange the latches in a row and connect their enable pins together. The resulting component will have 9 input wires (1-bit `in_clk` and 8-bit `in_data`) and 8 output wires (8-bit `out_data`):
 
 ```python=
 class Reg8:
@@ -763,7 +746,7 @@ class Reg8:
     def __init__(self, circuit, in_clk, in_data, out_data, initial=0):
         self.out_data = out_data
         for i in range(8):
-            DFlipFlop(
+            DLatch(  # WARN: A DLatch may not be appropriate here...
                 circuit,
                 in_clk,
                 in_data[i],
@@ -773,50 +756,13 @@ class Reg8:
             initial //= 2
 ```
 
-I'm defining `Reg8` as a class, to define auxillary methods like `snapshot()` in order to make it easier to investigate the internal value of a register.
-
----
-
-So far, we have been able to design a circuit that stays stable in a single state, and we can set its state by triggering it through an auxillary port we call "enable". This circuit is known as a Latch, and since it's hard to simulate it using bare transistors (Since there will be infinite loops which are unhandled by our simulator, as discussed), we are going to hardcode its behavior using plain Python code. It will have a fairly simple logic. It will accept a data and an enable wire as its inputs, and will have a single output. The output pin will output the current state of the Latch, and when 'enable' is 0, it will ignore the 'data' pin and won't change its state. As soon as the enable pin gets 1, the value of data pin will be copied to the internal state of the latch. We can describe the behavior of a Latch like this:
-
-| Enable | Data | Output     |
-|--------|------|------------|
-| 0      | 0    | s          |
-| 0      | 1    | s          |
-| 1      | 0    | 0 (s <= 0) |
-| 1      | 1    | 1 (s <= 1) |
-
-A latch is an electronic component that can store a single bit of information. Later on this book, we will be building a computer with memory-cells of size 8-bit (A.k.a a byte). So it might make sense to put 8 of these latches together as a separate component in order to build our memory-cells, registers and RAMs. We'll just need to put the latches in a row and connect their enable pins together. The resulting component will have 9 input wires and 8 output wires.
+There is something wrong with this register component. Let's discover the problem in action!
 
 ## Make it count!
 
-Considering that now we know how to build memory-cells and maintain a state in our circuits, we can know build circuits that can maintain an state/memory and behave according to it! Let's build something useful out of it!
+Since we now know how to build memory cells, we can create circuits that maintain state/memory and behave accordingly! Let's build something useful with it!
 
-A very simple yet useful circuit you can build, using adders and memory-cells, is a counter. A counter can be made by feeding in the incremented value of the output of a 8-bit memory cell, back as its input. The challenge is now to capture the memory cell input value by trigerring the cell to update its inner value by setting its enable pin to 1.
-
-The enable input should be set to 1 for a very VERY short time, otherwise, the circuit will enter and unstable state. As soon as the input of the memory-cell is captures, the output will also change in a short time, and if the value of enable field is still 1, the circuit will keep incrementing and updating its internal state. The duration which the enable wire is 1 should be short enough, so that the incrementor component doesn't have enough time to update its output. In fact, we will need to connect a pulse generator to the enable pin in order to make our counter circuit work correctly, and the with of the pulse should be smaller than the duration by which the output of the incrementor circuit is updated.
-
-One way we can have such pulses is to connect a regular clock generator to an edge-detector. The edge-detector is a an electronic circuit which can recognize sharp changes in a signal.
-
-In the real world, since gates propagate their results with delays, strange things can happen. The gates may output unexpected and invalid results, known as hazards. Take this circuit for example:
-
-![An AND gate where one of the inputs is routed through three NOTs](assets/edgedetector.png)
-
-When the input is 0, the output of the NOT gate is 1. When the input gets 1, the input wire without a NOT gate will get 1 immediately, but the second input will get 0 with a delay, thus there will be a very small moment where both of the inputs are 1, causing the AND gate to output 1.
-
-Looking carefully to the behavior of this structure, we will notice that it can convert a clock signal into a train of pulses with ultra tiny widths. Let's connect this component to the enable pin of a Latch, so that the latch is updated only when a rise happens in the clock signal. The resulting circuit is known as a FlipFlop. The only difference between a FlipFlop and a Latch is that FlipFlops are edge-triggered while Latches are level-triggered. FlipFlops should be used instead of Latches in order to design synchronous circuits.
-
-Let's simulate all these components and try to implement a counter circuit with FlipFlops:
-
-```python=
-class EdgeDetector:
-    pass
-```
-
-```python=
-class FlipFlop:
-    pass
-```
+A very simple yet useful ***stateful*** circuit you can build, using adders and memory cells, is a counter. An 8-bit counter can be made by taking the output of an 8-bit memory cell, incrementing it, and then feeding it back to the input of the memory cell. In this case, we expect the value of the counter to be incremented every time the clock signal rises and falls. Here’s what the Python simulator for an 8-bit counter would look like. Try running it, and you’ll see that the simulator gets stuck and is unable to stabilize!
 
 ```python=
 class Counter:
@@ -853,14 +799,51 @@ if __name__ == "__main__":
     print("Num components:", circ.num_components())
 
     while True:
-        circ.stabilize()
+        circ.stabilize()  # WARN: Gets stuck here!
         counter.snapshot()
         clk.put(OSCILLATOR, 1 - clk.get())
 ```
 
+When you think about it, the reason the circuit doesn’t stabilize becomes clear: as soon as the clock signal rises to 1, the feedback loop activates and continues to operate as long as the clock remains at 1. However, the clock signal stays at 1 for a certain period before dropping back down to 0. During that time, the circuit keeps trying to increment the value of the memory cell, which prevents it from stabilizing. We introduced the clock signal to allow us to control our stateful circuit as it iterates through different states, but it seems that a DLatch isn't giving us the control we need.
+
+In fact, the enable input of the D-Latch (the clock signal) should be set to 1 for only a very short time—we just need a brief tick. Otherwise, the circuit will enter an unstable state. As soon as the input of the memory cell is captured, the output will change shortly after. If the enable signal is still 1, the circuit will continue incrementing and updating its internal state. The duration for which the enable signal is 1 should be short enough that the incrementor component doesn't have enough time to update its output. In fact, we will need to connect a pulse generator to the enable pin in order for the counter circuit to work correctly, and the width of the pulse should be smaller than the duration it takes for the incrementor circuit to update its output.
+
+[MARKER]
+
+One way we can have such pulses is to connect a regular clock generator to an edge-detector. The edge-detector is a an electronic circuit which can recognize sharp changes in a signal.
+
+In the real world, since gates propagate their results with delays, strange things can happen. The gates may output unexpected and invalid results, known as hazards. Take this circuit for example:
+
+![An AND gate where one of the inputs is routed through three NOTs](assets/edgedetector.png)
+
+When the input is 0, the output of the NOT gate is 1. When the input gets 1, the input wire without a NOT gate will get 1 immediately, but the second input will get 0 with a delay, thus there will be a very small moment where both of the inputs are 1, causing the AND gate to output 1.
+
+Looking carefully to the behavior of this structure, we will notice that it can convert a clock signal into a train of pulses with ultra tiny widths. Let's connect this component to the enable pin of a Latch, so that the latch is updated only when a rise happens in the clock signal. The resulting circuit is known as a FlipFlop. The only difference between a FlipFlop and a Latch is that FlipFlops are edge-triggered while Latches are level-triggered. FlipFlops should be used instead of Latches in order to design synchronous circuits.
+
+Let's simulate all these components and try to implement a counter circuit with FlipFlops:
+
 A counter circuit is a great example of how computers can memorize their state and jump to a new state given a past state. The counter circuit is a great starting point for building a computer too. A CPU is basically a circuit which fetches instructions from a memory one-by-one, and runs them in order, effectively transforming the state of the system to a newer state, per instruction.
 
 Let's focus on the part where we want to fetch instructions. The instructions that we are going to fetch reside on a RAM. A RAM allows you to get data in a memory-cell, given the address of that memory cell. Since we are reading the instructions in order, the address given to the RAM can basically be a sequentially increasing number, which is what we can get using a counter circuit!
+
+## Flip Flop!
+
+![DFlipFlop made of two DLatches](assets/dflipflop.png)
+
+When the clock signal rises up, the first DLatch gets activated and it "Flip"s, and when the clock signal goes down, the first DLatch will get inactive, and the one will get active, and "Flop"s, that's probably why it's called a FlipFlop!
+
+```python=
+def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
+    neg_clk = circuit.new_wire()
+    Not(circuit, in_clk, neg_clk)
+    inter = circuit.new_wire()
+    DLatch(circuit, in_clk, in_data, inter, initial)
+    DLatch(circuit, neg_clk, inter, out_data, initial)
+```
+
+
+
+Auxillary methods like `snapshot()` in order to make it easier to investigate the internal value of a register.
 
 ## Chaotic access
 
