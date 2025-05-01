@@ -822,15 +822,13 @@ By closely observing the behavior of this circuit, we can see that it effectivel
 
 The only difference between a flip-flop and a latch is in how they respond to the clock: flip-flops are edge-triggered, while latches are level-triggered. Flip-flops are preferred when designing synchronous circuits, as they provide better timing control and predictability.
 
-Unfortunately, our digital circuit simulator is not a perfect representation of the real world. Since it doesn't account for gate delays, we can't build edge detectors as we discussed earlier. Even if we could, it wouldn't be a very clean solution for someone like me, who tends to be a bit paranoid. Just imagine if one of those pulses happens to be shorter or longer than expected—it could break the entire computation! Fortunately, there's a cleaner and more reliable way to solve the looping problem, one that doesn’t rely on exploiting subtle physical behaviors.
+Unfortunately, our digital circuit simulator is not a perfect representation of the real world. Since it doesn't account for gate delays, we can't build edge detectors as we discussed earlier. Even if we could, it wouldn't be a very clean solution for someone like me, who tends to be a bit paranoid. Just imagine if one of those pulses happens to be shorter or longer than expected—it could break the entire computation!
 
-Imagine what would happen if we serially connect two D-latches, where one activates when the clock signal goes low and the other activates when the clock signal goes high:
+Fortunately, there's a cleaner and more reliable way to solve the looping problem, one that doesn’t rely on exploiting subtle physical behaviors. It starts by breaking the loop through serially connecting two D-latches: one that activates when the clock signal goes low, and the other when the clock signal goes high. This way, there is no point in time when both latches are active, so a loop can't form, even though data is still being reliably stored. Curious why it's called a flip-flop? When the clock signal rises, the first D-latch gets activated and it "flips." Then, when the clock signal falls, the first latch becomes inactive, the second latch activates, and it "flops!" And just like that, we form a flip-flop!
 
 ![DFlipFlop made of two DLatches](assets/dflipflop.png)
 
-[MARKER]
-
-When the clock signal rises up, the first DLatch gets activated and it "Flip"s, and when the clock signal goes down, the first DLatch will get inactive, and the one will get active, and "Flop"s, that's probably why it's called a FlipFlop!
+Here's the Python implementation of the structure we just described:
 
 ```python=
 def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
@@ -841,12 +839,11 @@ def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
     DLatch(circuit, neg_clk, inter, out_data, initial)
 ```
 
-
-
-Auxillary methods like `snapshot()` in order to make it easier to investigate the internal value of a register.
+In our `Counter` circuit example, substitute the registers we built with `DLatch`es with ones built using `DFlipFlop`s, and the stabilization problem is solved!
 
 ## Chaotic access
 
+[MARKER]
 
 A counter circuit is a perfect example of how computers can remember their state and transition to a new state based on the current one. It’s also a fundamental building block for creating more complex digital systems, including computers.
 
