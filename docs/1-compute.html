@@ -809,19 +809,26 @@ if __name__ == &quot;__main__&quot;:
     DLatch(circuit, neg_clk, inter, out_data, initial)
 </code></pre>
 <p>In our <code>Counter</code> circuit example, substitute the registers we built with <code>DLatch</code>es with ones built using <code>DFlipFlop</code>s, and the stabilization problem is solved!</p>
-<h2 id="chaotic-access"><a class="header" href="#chaotic-access">Chaotic access</a></h2>
+<h2 id="counters-on-steroids"><a class="header" href="#counters-on-steroids">Counters on steroids!</a></h2>
+<p>A counter circuit is a perfect example of how digital circuits can remember their state and transition to a new state in a controlled fashion. It’s also a fundamental concept that inspires us to build much more complex systems, including computers.</p>
+<p>A computer, in its simplest form, consists of memory, which stores all instructions and data, and a CPU, which fetches and interprets them. Looking closely at the whole system, you can see that the CPU/memory pair is not very different from the register/incrementer pair in a counter circuit. There is a state (in the counter circuit, a single byte within a register; in the computer, several billion memory cells), and there is a state manipulator (in the counter circuit, an incrementer; in the computer, a component that decodes the current instruction and executes it). On every clock pulse, the old state is processed by the manipulator, and the result is saved back into the state holder.</p>
+<p>However, there is an important difference: in the case of a computer, we can't feed the entire state (all several billion 8-bit cells) into the manipulator to compute the next state—that would be enormous. It would require a giant manipulator circuit and billions of wires, which is excessive for a state change that typically affects only a small portion of the entire state.</p>
+<p>We don't want to give up on having a large memory. But as previously mentioned, a single state transition typically affects only a small portion of the overall state. So, we don’t need to feed the entire memory into the manipulator—<em><strong>we only need to feed in the parts that are relevant</strong></em>.</p>
+<p>But how do we specify which part of the memory we want to use?</p>
+<p>The solution is simple but powerful: let's assign a unique identity to each memory cell and call it its address. That way, we can reference and access only the specific parts of memory we need during each operation.</p>
+<p>Yes, what we need is an <em><strong>Addressable Memory</strong></em>.</p>
+<p>In this section, we're going to implement a very simple—and admittedly foolish—way to build an addressable memory. I say &quot;foolish&quot; because the memory in a typical computer is far more complex and efficient than what we're about to construct. But that's fine—the goal here isn't efficiency. It's to understand the core concept and to get creative with the tools we already have.</p>
+<p>So, let’s begin by defining what we want to build. We'll assume we're designing an 8-bit computer. This computer will have a CPU capable of handling 8-bit instructions and an addressable memory (RAM) with an 8-bit address space. That means it will contain \(2^8 = 256\) memory cells, and each cell will store 8 bits of data.</p>
+<p>In this section, we’ll focus specifically on building the RAM component.</p>
+<p>Given these specifications, our RAM will need:</p>
+<ul>
+<li><strong>8 address input wires</strong> — to specify the memory cell we want to read from or write to.</li>
+<li><strong>1 read/write control wire</strong> — to determine whether the operation is a read or a write.</li>
+<li><strong>8 data input wires</strong> — used only in write mode, to supply the value to store at the specified address.</li>
+<li><strong>8 data output wires</strong> — used only in read mode, to output the value stored at the specified address.</li>
+</ul>
+<p>That gives us a total of <strong>17 input wires</strong> (8 for address, 8 for data-in, 1 for read/write control) and <strong>8 output wires</strong> (for data-out).</p>
 <p>[MARKER]</p>
-<p>A counter circuit is a perfect example of how computers can remember their state and transition to a new state based on the current one. It’s also a fundamental building block for creating more complex digital systems, including computers.</p>
-<p>At the heart of a computer is the CPU, a circuit that fetches and executes instructions one by one from memory. With each instruction, it transforms the system's state.</p>
-<p>Let’s focus on the instruction fetching process. Instructions are stored in RAM (Random Access Memory), which allows data retrieval from a specific memory cell given its address. Since instructions are typically fetched in order, the address can be a sequentially increasing number—which is exactly what a counter circuit provides!</p>
-<p>By connecting a flip-flop-based counter to the RAM’s address lines, we can fetch instructions sequentially, forming the basis of a working instruction cycle.</p>
-<p>Now imagine we have a big number of these 8-bit memory cells which are identified by different addresses. We would like to build an electronic component which enabled us to read and write a memory-cell (Out of many memory-cells), given its address. We will call it a RAM, since we can access arbitrary and random addresses without losing speed (It's hard to randomly move on a disk-storage). In case of a RAM with 256 memory-cells (Each 8-bit), we'll need 17 input wires and 8 output wires.</p>
-<p>The inputs are as follows:</p>
-<ol>
-<li>8 wires, choosing the memory-cell we want to read/write</li>
-<li>8 wires, containing the data to be written on the chosen cell when enable is 1</li>
-<li>1 enable wire</li>
-</ol>
 <p>And the output will be the data inside the chosen address.</p>
 <p>The memory-cells in our RAM will need to know when to allow write operation. For each 8-bit memory cell, enable is set 1 when the chosen address is equal with the cell's address AND the enable pin of the RAM is also 1: <code>(addr == cell_index) &amp; enable</code></p>
 <p>We will also need to route the output of the chosen cell to the output of a RAM. We can use a multiplexer component here.</p>

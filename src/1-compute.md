@@ -841,25 +841,38 @@ def DFlipFlop(circuit, in_clk, in_data, out_data, initial=0):
 
 In our `Counter` circuit example, substitute the registers we built with `DLatch`es with ones built using `DFlipFlop`s, and the stabilization problem is solved!
 
-## Chaotic access
+## Counters on steroids!
+
+A counter circuit is a perfect example of how digital circuits can remember their state and transition to a new state in a controlled fashion. It’s also a fundamental concept that inspires us to build much more complex systems, including computers.
+
+A computer, in its simplest form, consists of memory, which stores all instructions and data, and a CPU, which fetches and interprets them. Looking closely at the whole system, you can see that the CPU/memory pair is not very different from the register/incrementer pair in a counter circuit. There is a state (in the counter circuit, a single byte within a register; in the computer, several billion memory cells), and there is a state manipulator (in the counter circuit, an incrementer; in the computer, a component that decodes the current instruction and executes it). On every clock pulse, the old state is processed by the manipulator, and the result is saved back into the state holder.
+
+However, there is an important difference: in the case of a computer, we can't feed the entire state (all several billion 8-bit cells) into the manipulator to compute the next state—that would be enormous. It would require a giant manipulator circuit and billions of wires, which is excessive for a state change that typically affects only a small portion of the entire state.
+
+We don't want to give up on having a large memory. But as previously mentioned, a single state transition typically affects only a small portion of the overall state. So, we don’t need to feed the entire memory into the manipulator—***we only need to feed in the parts that are relevant***.
+
+But how do we specify which part of the memory we want to use?
+
+The solution is simple but powerful: let's assign a unique identity to each memory cell and call it its address. That way, we can reference and access only the specific parts of memory we need during each operation.
+
+Yes, what we need is an ***Addressable Memory***.
+
+In this section, we're going to implement a very simple—and admittedly foolish—way to build an addressable memory. I say "foolish" because the memory in a typical computer is far more complex and efficient than what we're about to construct. But that's fine—the goal here isn't efficiency. It's to understand the core concept and to get creative with the tools we already have.
+
+So, let’s begin by defining what we want to build. We'll assume we're designing an 8-bit computer. This computer will have a CPU capable of handling 8-bit instructions and an addressable memory (RAM) with an 8-bit address space. That means it will contain \\(2^8 = 256\\) memory cells, and each cell will store 8 bits of data.
+
+In this section, we’ll focus specifically on building the RAM component.
+
+Given these specifications, our RAM will need:
+
+- **8 address input wires** — to specify the memory cell we want to read from or write to.
+- **1 read/write control wire** — to determine whether the operation is a read or a write.
+- **8 data input wires** — used only in write mode, to supply the value to store at the specified address.
+- **8 data output wires** — used only in read mode, to output the value stored at the specified address.
+
+That gives us a total of **17 input wires** (8 for address, 8 for data-in, 1 for read/write control) and **8 output wires** (for data-out).
 
 [MARKER]
-
-A counter circuit is a perfect example of how computers can remember their state and transition to a new state based on the current one. It’s also a fundamental building block for creating more complex digital systems, including computers.
-
-At the heart of a computer is the CPU, a circuit that fetches and executes instructions one by one from memory. With each instruction, it transforms the system's state.
-
-Let’s focus on the instruction fetching process. Instructions are stored in RAM (Random Access Memory), which allows data retrieval from a specific memory cell given its address. Since instructions are typically fetched in order, the address can be a sequentially increasing number—which is exactly what a counter circuit provides!
-
-By connecting a flip-flop-based counter to the RAM’s address lines, we can fetch instructions sequentially, forming the basis of a working instruction cycle.
-
-Now imagine we have a big number of these 8-bit memory cells which are identified by different addresses. We would like to build an electronic component which enabled us to read and write a memory-cell (Out of many memory-cells), given its address. We will call it a RAM, since we can access arbitrary and random addresses without losing speed (It's hard to randomly move on a disk-storage). In case of a RAM with 256 memory-cells (Each 8-bit), we'll need 17 input wires and 8 output wires.
-
-The inputs are as follows:
-
-1. 8 wires, choosing the memory-cell we want to read/write
-2. 8 wires, containing the data to be written on the chosen cell when enable is 1
-3. 1 enable wire
 
 And the output will be the data inside the chosen address.
 
