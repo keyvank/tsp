@@ -1014,8 +1014,19 @@ Mux8x256 = Mux(8, Mux7x128)
 </code></pre>
 <p>Alright folks—the &quot;state&quot; storage part of our magical CPU/memory duo is now up and running! Now it’s time to build the state manipulator—the CPU itself—and bring everything together to finalize our design of a computer!</p>
 <h2 id="the-manipulator"><a class="header" href="#the-manipulator">The manipulator</a></h2>
+<p>Our definition of a computer in this chapter is a machine that can be programmed—something on which you can deploy arbitrary algorithms. We want this program to be replaceable, meaning we may deploy one program now and later substitute it with another. Therefore, it makes perfect sense that the programs on this computer need to be stored in some form of alterable memory.</p>
+<p>Our construction of memory is simply an addressable group of memory cells that can store a certain number of bits. So, the &quot;programs&quot; we're referring to must be representable in a binary format—otherwise, how could they persist in memory that only stores data as bits?</p>
+<p>In this section, we will discuss how we can assign meaning to numbers and bit patterns. Essentially, we want to design a very simplistic mapping from 8-bit values to &quot;meanings.&quot; These mappings will make up the <em><strong>instruction set</strong></em> of our computer. We'll also design circuits that can fetch those values from memory, interpret them, and execute their intended operations.</p>
+<p>Before diving into this book's design and implementation of a processor, there’s an important question we need to address. Computer programs need a place to store and manipulate temporary values—much like using a sheet of paper as a draft when solving a math problem. That’s actually one of the primary reasons computers have memory. But we just said that a &quot;program&quot; itself is also data stored in memory. So, <em><strong>is the memory used by the program for drafting its data the same as the memory where the program itself is stored? Or are these two separate memory spaces?</strong></em></p>
+<p>For modern computers, the answer is yes—both the program and its data reside in the same memory. This concept is often summed up by the phrase: <em><strong>code is data, and data is code</strong></em>. It's one of the most brilliant and fundamental ideas that form the basis of modern computing.</p>
+<p>The implications of this design—known as the Von Neumann architecture—are profound. When a computer stores both the program and the data it operates on in the same memory, several important things become possible:</p>
+<ul>
+<li>Since programs are stored as data, they can modify themselves during execution, enabling dynamic behavior!</li>
+<li>A program may generate another program: it just needs to dump some instructions on memory and jump to it!</li>
+<li>Errors like buffer overflows can overwrite program instructions, leading to vulnerabilities and exploits.</li>
+</ul>
+<p>To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components.</p>
 <p>[MARKER]</p>
-<p>Now you know how tranistors work and how you can use them to build logical gates. It's time to build a full-featured computer with those gates!</p>
 <p>In order to decode an instruction, we first need a component that can check equality of some bits with others:</p>
 <p>In order to handle the implementation complexity of our CPU, we'll organize our implementation into 5 different modules:</p>
 <ol>

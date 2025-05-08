@@ -1104,9 +1104,25 @@ Alright folks—the "state" storage part of our magical CPU/memory duo is now up
 
 ## The manipulator
 
-[MARKER]
+Our definition of a computer in this chapter is a machine that can be programmed—something on which you can deploy arbitrary algorithms. We want this program to be replaceable, meaning we may deploy one program now and later substitute it with another. Therefore, it makes perfect sense that the programs on this computer need to be stored in some form of alterable memory.
 
-Now you know how tranistors work and how you can use them to build logical gates. It's time to build a full-featured computer with those gates!
+Our construction of memory is simply an addressable group of memory cells that can store a certain number of bits. So, the "programs" we're referring to must be representable in a binary format—otherwise, how could they persist in memory that only stores data as bits?
+
+In this section, we will discuss how we can assign meaning to numbers and bit patterns. Essentially, we want to design a very simplistic mapping from 8-bit values to "meanings." These mappings will make up the ***instruction set*** of our computer. We'll also design circuits that can fetch those values from memory, interpret them, and execute their intended operations.
+
+Before diving into this book's design and implementation of a processor, there’s an important question we need to address. Computer programs need a place to store and manipulate temporary values—much like using a sheet of paper as a draft when solving a math problem. That’s actually one of the primary reasons computers have memory. But we just said that a "program" itself is also data stored in memory. So, ***is the memory used by the program for drafting its data the same as the memory where the program itself is stored? Or are these two separate memory spaces?***
+
+For modern computers, the answer is yes—both the program and its data reside in the same memory. This concept is often summed up by the phrase: ***code is data, and data is code***. It's one of the most brilliant and fundamental ideas that form the basis of modern computing.
+
+The implications of this design—known as the Von Neumann architecture—are profound. When a computer stores both the program and the data it operates on in the same memory, several important things become possible:
+
+- Since programs are stored as data, they can modify themselves during execution, enabling dynamic behavior!
+- A program may generate another program: it just needs to dump some instructions on memory and jump to it!
+- Errors like buffer overflows can overwrite program instructions, leading to vulnerabilities and exploits.
+
+To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components.
+
+[MARKER]
 
 In order to decode an instruction, we first need a component that can check equality of some bits with others:
 
