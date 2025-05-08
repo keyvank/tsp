@@ -859,7 +859,7 @@ Yes, what we need is an ***Addressable Memory***.
 
 In this section, we're going to implement a very simple—and admittedly foolish—way to build an addressable memory. I say "foolish" because the memory in a typical computer is far more complex and efficient than what we're about to construct. But that's fine—the goal here isn't efficiency. It's to understand the core concept and to get creative with the tools we already have.
 
-So, let’s begin by defining what we want to build. We'll assume we're designing an 8-bit computer. This computer will have a CPU capable of handling 8-bit instructions and an addressable memory (RAM) with an 8-bit address space. That means it will contain \\(2^8 = 256\\) memory cells, and each cell will store 8 bits of data.
+So, let’s begin by defining what we want to build. We'll assume we're designing an 8-bit computer. This computer will have a CPU capable of handling 8-bit instructions and an addressable memory (RAM) with an 8-bit address space. That means it will contain \\(2^8 = 256\\) memory cells, and each cell will store 8 bits of data. A 256-byte random-access memory, which is embarrassingly small by today's standards!
 
 In this section, we’ll focus specifically on building the RAM component.
 
@@ -872,15 +872,113 @@ Given these specifications, our RAM will need:
 
 That gives us a total of **17 input wires** (8 for address, 8 for data-in, 1 for read/write control) and **8 output wires** (for data-out).
 
+Now the challenging question is how to allow only a single 8-bit memory-cell to be read/written, given an address? Not too hard, let's solve the problem for read and write operations independently.
+
+Let's assume that the 8-bit input pins of all the memory cells within our memory are connected to the 8 input pins of the memory component. This would cause the internal value of every memory cell to be updated to the given input value on the next clock cycle. We definitely don't want that! So how can we prevent it?
+
+Remember how a register only stores its input value when a full clock cycle occurs? We can use a similar idea here. Specifically, we need to prevent the clock signal from reaching all memory cells except the one whose address matches the input address. Additionally, when the memory is in read mode, the clock signal should be completely disabled for all memory cells.
+
+Technically, the clock signal should only reach a memory cell if: `(addr == cell_index) && write_mode`. To achieve this, simply set the input clock signal of each memory cell to: `(addr == cell_index) && write_mode && clk`
+
+If you're still unsure why this works, try analyzing the value of the equation for different input scenarios.
+
+If `write_mode` is false, the entire expression evaluates to false for all memory cells, which is exactly what we want—no writes occur. If the address provided to the memory component doesn't match a given cell's index, the expression again evaluates to false, regardless of whether `write_mode` is true or whether the clock signal is high. This, too, is the intended behavior.
+
+However, when the memory is in write mode and the address matches a specific memory cell’s index, the condition becomes: `true && true && clk = clk`
+
+This means the global clock signal is effectively passed through to only that memory cell, allowing it to store the input value on the next rising edge—just as intended.
+
+The read-mode scenario is even simpler. Memory cells continuously output their internal values to their output pins, regardless of the clock signal—so the clock doesn't matter at all in this case. What we do need is a way to ***select*** which register's outputs should be routed to the memory component’s output pins, based on the given address.
+
+To handle this, we introduce a new and very useful component: the multiplexer. Before moving on to our final RAM implementation, let’s take a closer look at how a multiplexer works and how it can be implemented.
+
+A **vanilla multiplexer** is a digital circuit that takes in \\(2^n\\) input bits—representing the options to choose from—and another \\(n\\) bits as a `selection` input, which tells the circuit which option to access. The output is a single bit: the value of the selected input at the specified index.
+
+You can think of a multiplexer as being conceptually similar to accessing a boolean array: ```output = data[selection]```, where `data` is a bit array with \\(2^n\\) elements and `selection` is an \\(n\\)-bit value indicating which array entry to output.
+
+You can start by building a 2-input multiplexer and then use it to construct larger multiplexers. A 2-input multiplexer takes two data bits as available options and a single selection bit. If the selection bit is 0, the first data bit is output. If the selection bit is 1, the second data bit is output.
+
+Here is a truth-table for the multiplexer described:
+
+| data | sel | out |
+|------|-----|-----|
+|  00  |  0  |  0  |
+|  00  |  1  |  0  |
+|  01  |  0  |  0  |
+|  01  |  1  |  1  |
+|  10  |  0  |  1  |
+|  10  |  1  |  0  |
+|  11  |  0  |  1  |
+|  11  |  1  |  1  |
+
+Which can be easily constructed using basic logic gates:
+
+`out = (!data[0] & sel) | (data[1] & sel)`
+
+And here is the equivalent Python component:
+
+```python=
+def Mux1x2(circuit, in_sel, in_options, out):
+    wire_select_not = circuit.new_wire()
+    and1_out = circuit.new_wire()
+    and2_out = circuit.new_wire()
+    Not(circuit, in_sel[0], wire_select_not)
+    And(circuit, wire_select_not, in_options[0], and1_out)
+    And(circuit, in_sel[0], in_options[1], and2_out)
+    Or(circuit, and1_out, and2_out, out)
+```
+
+Now given two \\(2^n\\) input multiplexers you can build a \\(2^{n+1}\\) multiplexer!
+
+1. A \\(2^{n+1}\\) input multiplexer has \\(2^{n+1}=2 \times 2^n\\) inputs.
+2. Feed the first \\(2^n\\) input bits to the first multiplexer and the second \\(2^n\\) input bits to the second multiplexer.
+3. Connect the first \\(n\\) bits of the \\(n+1\\) selection pins to both multiplexers.
+4. Now you have two outputs—one from each multiplexer. The final output depends on the last (most significant) selection bit. Use a 2-input multiplexer to select between these two outputs and compute the final result.
+
+We can define a meta-function that generates multiplexer component creators, given the number of input pins and a multiplexer component with one fewer selection bit.
+For example, you can build a \\(2^5\\)-input multiplexer using two \\(2^4\\)-input multiplexers like this: `Mux5x32 = Mux(5, Mux4x16)`
+
+Then, we’ll iteratively build a \\(2^8=256\\) input multiplexer, which is exactly what we need for constructing our 8-bit RAM:
+
+```python=
+def Mux(bits, sub_mux):
+    def f(circuit, in_sel, in_options, out):
+        out_mux1 = circuit.new_wire()
+        out_mux2 = circuit.new_wire()
+
+        sub_mux(
+            circuit,
+            in_options[0 : bits - 1],
+            in_options[0 : 2 ** (bits - 1)],
+            out_mux1,
+        )
+        sub_mux(
+            circuit,
+            in_sel[0 : bits - 1],
+            in_options[2 ** (bits - 1) : 2**bits],
+            out_mux2,
+        )
+        Mux1x2(circuit, [in_sel[bits - 1]], [out_mux1, out_mux2], out)
+
+    return f
+
+
+Mux2x4 = Mux(2, Mux1x2)
+Mux3x8 = Mux(3, Mux2x4)
+Mux4x16 = Mux(4, Mux3x8)
+Mux5x32 = Mux(5, Mux4x16)
+Mux6x64 = Mux(6, Mux5x32)
+Mux7x128 = Mux(7, Mux6x64)
+Mux8x256 = Mux(8, Mux7x128)
+```
+
+Now we're fully ready to move forward and implement our RAM design!
+
+### Chaotic access
+
 [MARKER]
 
-And the output will be the data inside the chosen address.
-
-The memory-cells in our RAM will need to know when to allow write operation. For each 8-bit memory cell, enable is set 1 when the chosen address is equal with the cell's address AND the enable pin of the RAM is also 1: `(addr == cell_index) & enable`
-
-We will also need to route the output of the chosen cell to the output of a RAM. We can use a multiplexer component here.
-
-Now, put many of these registers in a row, and you will have a RAM!
+RAM is the abbreviation of Random-Access-Memory. Why do we call it random access? Because it's very efficient to get/set a value on a random address in a RAM. Remember how optical disks and hard-disks worked? The device had to keep track of the current position, and seek the requested position relative to its current positions. It is efficient only if the pattern of memory access is like going forward/backward 1 byte by 1 byte. But life is not that ideal and many programs will just request very different parts of the memory, which are very far from each other, in other words, it seems so unpredictable that we can call it random.
 
 ```python=
 class RAM:
@@ -944,52 +1042,7 @@ class FastRAM:
         return False
 ```
 
-***Multiplexer***
-
-A gate that gets \\(2^n\\) value bits and \\(n\\) address bits and will output the values existing at the requested position as its output. A multiplexer with static inputs can be considered as a ROM. (Read-Only Memory)
-
 ```python=
-def Mux1x2(circuit, in_sel, in_options, out):
-    wire_select_not = circuit.new_wire()
-    and1_out = circuit.new_wire()
-    and2_out = circuit.new_wire()
-    Not(circuit, in_sel[0], wire_select_not)
-    And(circuit, wire_select_not, in_options[0], and1_out)
-    And(circuit, in_sel[0], in_options[1], and2_out)
-    Or(circuit, and1_out, and2_out, out)
-
-
-def Mux(bits, sub_mux):
-    def f(circuit, in_sel, in_options, out):
-        out_mux1 = circuit.new_wire()
-        out_mux2 = circuit.new_wire()
-
-        sub_mux(
-            circuit,
-            in_options[0 : bits - 1],
-            in_options[0 : 2 ** (bits - 1)],
-            out_mux1,
-        )
-        sub_mux(
-            circuit,
-            in_sel[0 : bits - 1],
-            in_options[2 ** (bits - 1) : 2**bits],
-            out_mux2,
-        )
-        Mux1x2(circuit, [in_sel[bits - 1]], [out_mux1, out_mux2], out)
-
-    return f
-
-
-Mux2x4 = Mux(2, Mux1x2)
-Mux3x8 = Mux(3, Mux2x4)
-Mux4x16 = Mux(4, Mux3x8)
-Mux5x32 = Mux(5, Mux4x16)
-Mux6x64 = Mux(6, Mux5x32)
-Mux7x128 = Mux(7, Mux6x64)
-Mux8x256 = Mux(8, Mux7x128)
-
-
 def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
     for i in range(8):
         Mux1x2(
@@ -1003,10 +1056,6 @@ def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
 ## Computer
 
 Now you know how tranistors work and how you can use them to build logical gates. It's time to build a full-featured computer with those gates!
-
-I would say, the most important parts of a modern computer are its RAM and CPU. I would like to start by explaining a Random-Access-Memory by designing one. It will be the simplest implementation of a RAM and it won't be similar to what it's used in production today, but the idea is still the same.
-
-RAM is the abbreviation of Random-Access-Memory. Why do we call it random access? Because it's very efficient to get/set a value on a random address in a RAM. Remember how optical disks and hard-disks worked? The device had to keep track of the current position, and seek the requested position relative to its current positions. It is efficient only if the pattern of memory access is like going forward/backward 1 byte by 1 byte. But life is not that ideal and many programs will just request very different parts of the memory, which are very far from each other, in other words, it seems so unpredictable that we can call it random.
 
 In order to decode an instruction, we first need a component that can check equality of some bits with others:
 
