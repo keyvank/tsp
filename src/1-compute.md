@@ -853,6 +853,8 @@ We don't want to give up on having a large memory. But as previously mentioned, 
 
 But how do we specify which part of the memory we want to use?
 
+### A smarter state storage
+
 The solution is simple but powerful: let's assign a unique identity to each memory cell and call it its address. That way, we can reference and access only the specific parts of memory we need during each operation.
 
 Yes, what we need is an ***Addressable Memory***.
@@ -874,6 +876,8 @@ That gives us a total of **17 input wires** (8 for address, 8 for data-in, 1 for
 
 Now the challenging question is how to allow only a single 8-bit memory-cell to be read/written, given an address? Not too hard, let's solve the problem for read and write operations independently.
 
+### Selective writing
+
 Let's assume that the 8-bit input pins of all the memory cells within our memory are connected to the 8 input pins of the memory component. This would cause the internal value of every memory cell to be updated to the given input value on the next clock cycle. We definitely don't want that! So how can we prevent it?
 
 Remember how a register only stores its input value when a full clock cycle occurs? We can use a similar idea here. Specifically, we need to prevent the clock signal from reaching all memory cells except the one whose address matches the input address. Additionally, when the memory is in read mode, the clock signal should be completely disabled for all memory cells.
@@ -887,6 +891,52 @@ If `write_mode` is false, the entire expression evaluates to false for all memor
 However, when the memory is in write mode and the address matches a specific memory cell’s index, the condition becomes: `true && true && clk = clk`
 
 This means the global clock signal is effectively passed through to only that memory cell, allowing it to store the input value on the next rising edge—just as intended.
+
+Implementation-wise, we already have AND gates, and the only missing piece is the ability to check the equality of two 8-bit values. As always, it's best to start simple: we'll first design a circuit that can check the equality of two single bits, and then extend that solution to handle multi-bit inputs.
+
+To achieve this, we'll create two modules:
+
+- `Equals`: This module checks the equality of two single bits. Functionally, it's just `Not(Xor(a, b))`.
+- `MultiEquals`: This module checks the equality of two multi-bit values. It will be especially useful for comparing memory addresses and decoding instructions in the sections to come.
+
+```python=
+def Equals(circuit, in_a, in_b, out_eq):
+    xor_out = circuit.new_wire()
+    Xor(circuit, in_a, in_b, xor_out)
+    Not(circuit, xor_out, out_eq)
+
+
+def MultiEquals(circuit, in_a, in_b, out_eq):
+    if len(in_a) != len(in_b):
+        raise Exception("Expected equal num of wires!")
+
+    count = len(in_a)
+    xor_outs = []
+    for i in range(count):
+        xor_out = circuit.new_wire()
+        Xor(circuit, in_a[i], in_b[i], xor_out)
+        xor_outs.append(xor_out)
+
+    inter = circuit.new_wire()
+    Or(circuit, xor_outs[0], xor_outs[1], inter)
+    for i in range(2, count):
+        next_inter = circuit.new_wire()
+        Or(circuit, inter, xor_outs[i], next_inter)
+        inter = next_inter
+    Not(circuit, inter, out_eq)
+```
+
+To keep our implementation of `MultiEquals` efficient—especially since we'll use many of them in our RAM module—we'll avoid the naive approach of using an array of `Equals` components followed by a big AND gate.
+
+Instead, we'll take a more optimized route:
+
+- XOR each pair of corresponding bits from the two inputs. This will produce a 1 for any position where the bits differ.
+- OR all the XOR results together. If any pair of bits is unequal, the result will be 1.
+- NOT the final result. This gives us 1 only if all bits are equal—exactly what we want.
+
+This approach reduces the depth of the logic and avoids constructing redundant gates, making it both faster and more resource-efficient.
+
+### Selective reading
 
 The read-mode scenario is even simpler. Memory cells continuously output their internal values to their output pins, regardless of the clock signal—so the clock doesn't matter at all in this case. What we do need is a way to ***select*** which register's outputs should be routed to the memory component’s output pins, based on the given address.
 
@@ -976,9 +1026,17 @@ Now we're fully ready to move forward and implement our RAM design!
 
 ### Chaotic access
 
-[MARKER]
+First things first—what do we mean by ***random-access*** memory?
 
-RAM is the abbreviation of Random-Access-Memory. Why do we call it random access? Because it's very efficient to get/set a value on a random address in a RAM. Remember how optical disks and hard-disks worked? The device had to keep track of the current position, and seek the requested position relative to its current positions. It is efficient only if the pattern of memory access is like going forward/backward 1 byte by 1 byte. But life is not that ideal and many programs will just request very different parts of the memory, which are very far from each other, in other words, it seems so unpredictable that we can call it random.
+Because in RAM, it's very efficient to read or write a value at any address, regardless of its position. The key idea is that accessing a memory cell takes the same amount of time no matter which address is used.
+
+Now, compare this to how optical disks or hard drives work. These devices have to keep track of the current read/write head position, and to reach a new location, they must seek—move to the requested position relative to where they are. This makes access efficient only when reading or writing data sequentially, like going forward or backward one byte at a time.
+
+However, real-world programs don't access memory so predictably. Instead, they often jump around, requesting data from widely different memory addresses. Since these access patterns are hard to predict, we call it "random access." And RAM is designed specifically to handle such patterns efficiently.
+
+As discussed in the previous section, the read and write modes of our RAM work independently. For the write-mode functionality, we simply need to initialize 256 8-bit registers using a loop and condition their clock signals.
+
+While tracking their outputs in the wire array `reg_outs`, we’ll use eight `Mux8x256` components to select which register's output pins should be routed to the RAM’s output. Eight multiplexers are required because each of our registers has 8 bits.
 
 ```python=
 class RAM:
@@ -1006,7 +1064,7 @@ class RAM:
             )
 ```
 
-Soon you'll figure that our simulator is not efficient enough to perform transistor level simulation of RAMs, so it might make sense to cheat a bit and provide a secondary, fast implementation of a RAM, as a primitive component that is described in plain Python code (Just like transistors):
+Soon, you’ll realize that our simulator isn't efficient enough to handle transistor-level simulations of RAM, especially as memory size grows. To keep things practical, it makes sense to cheat a little and provide a secondary, faster implementation of RAM—a primitive component described directly in plain Python code, much like how we handled transistors.
 
 ```python=
 class FastRAM:
@@ -1042,51 +1100,15 @@ class FastRAM:
         return False
 ```
 
-```python=
-def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
-    for i in range(8):
-        Mux1x2(
-            circuit,
-            [in_sel],
-            [in_a[i], in_b[i]],
-            out[i],
-        )
-```
+Alright folks—the "state" storage part of our magical CPU/memory duo is now up and running! Now it’s time to build the state manipulator—the CPU itself—and bring everything together to finalize our design of a computer!
 
-## Computer
+## The manipulator
+
+[MARKER]
 
 Now you know how tranistors work and how you can use them to build logical gates. It's time to build a full-featured computer with those gates!
 
 In order to decode an instruction, we first need a component that can check equality of some bits with others:
-
-```python=
-def Equals(circuit, in_a, in_b, out_eq):
-    xor_out = circuit.new_wire()
-    Xor(circuit, in_a, in_b, xor_out)
-    Not(circuit, xor_out, out_eq)
-
-
-def MultiEquals(circuit, in_a, in_b, out_eq):
-    if len(in_a) != len(in_b):
-        raise Exception("Expected equal num of wires!")
-
-    count = len(in_a)
-    xor_outs = []
-    for i in range(count):
-        xor_out = circuit.new_wire()
-        Xor(circuit, in_a[i], in_b[i], xor_out)
-        xor_outs.append(xor_out)
-
-    inter = circuit.new_wire()
-    Or(circuit, xor_outs[0], xor_outs[1], inter)
-    for i in range(2, count):
-        next_inter = circuit.new_wire()
-        Or(circuit, inter, xor_outs[i], next_inter)
-        inter = next_inter
-    Not(circuit, inter, out_eq)
-```
-
-The `Equals` module checks the equality of two input bits (Which is essentially `Not(Xor(a,b))`!). The `MultiEquals` module on the other hand, allows us to check equality of two multi-bit inputs. This comes handy especially when we want to decode the instructions that we fetch from memory.
 
 In order to handle the implementation complexity of our CPU, we'll organize our implementation into 5 different modules:
 
@@ -1160,6 +1182,16 @@ Unfortunately, since our instruction are 8-bits wide and the first bit is alread
 Here is the implementation of our simplified `InstructionPointer` module:
 
 ```python=
+def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
+    for i in range(8):
+        Mux1x2(
+            circuit,
+            [in_sel],
+            [in_a[i], in_b[i]],
+            out[i],
+        )
+
+
 def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_pointer):
     zero = [circuit.zero()] * 8
     one = [circuit.one()] + [circuit.zero()] * 7
