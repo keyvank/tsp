@@ -1122,11 +1122,34 @@ The implications of this design—known as the Von Neumann architecture—are pr
 
 To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components.
 
+The computer we are going to implement will be very minimal. In fact, it will have only six different instructions. However, these six instructions are enough to build programs that are more than interesting. Our goal is to design a CPU with enough features to create a Brainfuck compiler that can target its instruction set. We have a whole section dedicated to describing the Brainfuck programming language and the ways you can build complex programs using it. For now, let's focus on the processor's instructions.
+
+Imagine the processor we're discussing has a single register called "data-pointer," which, as its name suggests, points to a specific cell in memory. By default, it is initialized to zero (pointing to the first cell of memory).
+
+Based on that, here is a list of instructions:
+
+- ***FWD***: Increases the data-pointer by 1, i.e., moves the data-pointer to the next cell.
+- ***BWD***: Decreases the data-pointer by 1, i.e., moves the data-pointer to the previous cell.
+- ***INC***: Increases the value of the current data cell by 1.
+- ***DEC***: Decreases the value of the current data cell by 1.
+- ***JNZ***: Jumps to a given address if the value in the current cell is not zero.
+- ***PRNT***: Outputs the value of the 
+
+(Note: Since our memory cells are 8 bits wide, they can hold values between 0 and 255. Increasing 255 will cause an overflow, resetting the value to 0, and decreasing 0 will cause an underflow, wrapping the value around to 255.)
+
+Now, we need to design a mapping from 8-bit numbers to these instructions. Here's my proposed way this mapping can be done:
+
+![Decoding rules of instruction](assets/decoder.png){ width=300px }
+
+If you're wondering why I designed the opcodes of the instruction set for our CPU this way: we have only six instructions, and the first thing a CPU needs to do after fetching an instruction is determine its type. A naive approach would be to prefix our instructions with at least 3 bits to specify the instruction type.
+
+However, the only instruction in our set that requires an argument is JNZ, and if we reserve 3 bits just for the instruction type, we’d only have 5 bits left for the argument (the memory address to jump to). Since our memory has 256 cells, 5 bits would only allow us to specify 32 locations for the jump, leaving 224 locations unused, which isn’t ideal.
+
+Instead, a more efficient design is to dedicate the first bit of the 8-bit instruction to indicate whether the instruction is JNZ or something else. If it’s not JNZ, the CPU can use the remaining bits to determine the exact instruction type. This gives us 7 bits for the jump location, allowing us to access 128 memory locations instead of just 32. This is a much more efficient use of the available space!
+
+Perfect! Now it's time to get our hands dirty and begin by building hardware that can recognize the type of instruction after fetching it from memory. We'll call this component the `Decoder`, since it decodes the instruction. The way it works is simple: it performs several equality checks using the `MultiEquals` component we used earlier when designing the memory.
+
 [MARKER]
-
-In order to decode an instruction, we first need a component that can check equality of some bits with others:
-
-In order to handle the implementation complexity of our CPU, we'll organize our implementation into 5 different modules:
 
 1. `Decoder` module takes an instruction (A 8-bit number) as its input and gives out 6 different boolean flags as its output, specifying the type of instructions.
 2. `InstructionPointer` module is responsible for choosing the next instruction-pointer.
@@ -1135,10 +1158,6 @@ In order to handle the implementation complexity of our CPU, we'll organize our 
 2. `DataMemory` module is a 256-byte memory, allowing you to read/write its cells given 8-bit addresses.
 
 The `Decoder` is composed of 5 `MultiEquals` and a single `Equals` module, outputing the type of instruction as boolean flags with this rules:
-
-![Decoding rules of instruction](assets/decoder.png)
-
-If you wonder why I designed the opcodes of the instruction-set of our CPU like this: we have only 6 instructions in our CPU, and the first thing a CPU needs to recognize after fetching an instruction is the type of that instruction. A naive way is to prefix our instructions with a prefix of size at least 3-bits. The only instruction in our instruction set that needs an argument is `JNZ`, and if we spend 3-bits only for specifying the instruction type, we'll only have 5 bits left for the extra argument (Which is the location of program memory to jump). Our memory has 256 cells, and you can point only to 32 locations using 5 bits. 224 locations will be wasted and we won't be able to jump to using this design! Since `JNZ` is the only instruction with an argument, a more clever approach would be to dedicate the first bit of the 8 bits for telling the CPU if the instruction is a JNZ, or something else. In case the instruction is not `JNZ`, the CPU may recognize the exact type by looking at the other bits. In this case, we'll have 7 bits left for the location of the jump, which means 128 memory locations. Much better than 32!
 
 ```python=
 def Decoder(
