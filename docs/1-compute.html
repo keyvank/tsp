@@ -1043,21 +1043,39 @@ Mux8x256 = Mux(8, Mux7x128)
 <li><em><strong>PRNT</strong></em>: Outputs the value of the </li>
 </ul>
 <p>(Note: Since our memory cells are 8 bits wide, they can hold values between 0 and 255. Increasing 255 will cause an overflow, resetting the value to 0, and decreasing 0 will cause an underflow, wrapping the value around to 255.)</p>
-<p>Now, we need to design a mapping from 8-bit numbers to these instructions. Here's my proposed way this mapping can be done:</p>
+<p>To get an idea of how this instruction set actually works, let's look at some examples.</p>
+<p>This is a program that stores the number 2 in the 2nd memory cell and the number 4 in the 3rd one:</p>
+<pre><code>0: FWD // Now we are on the second memory-cell
+1: INC
+2: INC
+3: FWD // Moving forward to the third memory-cell
+4: INC
+5: INC
+6: INC
+7: INC
+</code></pre>
+<p>Or, this is a program that moves the number from the first memory cell to the second one:</p>
+<pre><code>0: INC
+1: INC
+2: INC
+
+3: DEC
+4: FWD
+5: INC
+6: BWD
+7: JNZ(3)
+</code></pre>
+<p>In this program, we'll assume that the number 3 is stored in the first memory cell by initially incrementing it three times. Then, the move logic follows. In each step, we decrement the value in the first cell and add to the second cell. This process continues while the value in the first cell is not zero (using the <code>JNZ</code> instruction).</p>
+<p>(Note: <code>JNZ(3)</code> means set the program-counter register to 3.)</p>
+<p>The interesting thing is that you can perform unbelievably complex tasks using a simple instruction set like this. If you're up for a challenge, try implementing a program that calculates the factorial of a number using these instructions.</p>
+<h3 id="decoder"><a class="header" href="#decoder">Decoder</a></h3>
+<p>Up until now, we know what our instructions are, how they're fetched from memory, and what can be done using them. But as you know, the output of the <code>InstructionMemory</code> is simply an 8-bit number. How do we know if a number represents <code>FWD</code>, <code>BWD</code>, or other instructions? Well, we need to design a mapping from 8-bit numbers to these instructions. Here's my proposed method for how this mapping can be done:</p>
 <p><img src="assets/decoder.png" alt="Decoding rules of instruction" />{ width=300px }</p>
 <p>If you're wondering why I designed the opcodes of the instruction set for our CPU this way: we have only six instructions, and the first thing a CPU needs to do after fetching an instruction is determine its type. A naive approach would be to prefix our instructions with at least 3 bits to specify the instruction type.</p>
 <p>However, the only instruction in our set that requires an argument is JNZ, and if we reserve 3 bits just for the instruction type, we’d only have 5 bits left for the argument (the memory address to jump to). Since our memory has 256 cells, 5 bits would only allow us to specify 32 locations for the jump, leaving 224 locations unused, which isn’t ideal.</p>
 <p>Instead, a more efficient design is to dedicate the first bit of the 8-bit instruction to indicate whether the instruction is JNZ or something else. If it’s not JNZ, the CPU can use the remaining bits to determine the exact instruction type. This gives us 7 bits for the jump location, allowing us to access 128 memory locations instead of just 32. This is a much more efficient use of the available space!</p>
 <p>Perfect! Now it's time to get our hands dirty and begin by building hardware that can recognize the type of instruction after fetching it from memory. We'll call this component the <code>Decoder</code>, since it decodes the instruction. The way it works is simple: it performs several equality checks using the <code>MultiEquals</code> component we used earlier when designing the memory.</p>
-<p>[MARKER]</p>
-<ol>
-<li><code>Decoder</code> module takes an instruction (A 8-bit number) as its input and gives out 6 different boolean flags as its output, specifying the type of instructions.</li>
-<li><code>InstructionPointer</code> module is responsible for choosing the next instruction-pointer.</li>
-<li><code>InstructionMemory</code> module is a read-only 256-byte memory, giving out the instruction given its 8-bit address.</li>
-<li><code>DataPointer</code> module is responsible for choosing the next data-pointer.</li>
-<li><code>DataMemory</code> module is a 256-byte memory, allowing you to read/write its cells given 8-bit addresses.</li>
-</ol>
-<p>The <code>Decoder</code> is composed of 5 <code>MultiEquals</code> and a single <code>Equals</code> module, outputing the type of instruction as boolean flags with this rules:</p>
+<p>The <code>Decoder</code> is composed of 5 <code>MultiEquals</code> components to distinguish between <code>FWD</code>, <code>BWD</code>, <code>INC</code>, <code>DEC</code>, and <code>PRNT</code>, as well as a single Equals module responsible for detecting whether the instruction is a <code>JMP</code>s by examining the first bit. The module outputs 6 boolean bits, indicating the type of instruction:</p>
 <pre><code class="language-python=">def Decoder(
     circuit,
     in_inst,
@@ -1100,6 +1118,7 @@ Mux8x256 = Mux(8, Mux7x128)
     )
     Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
 </code></pre>
+<p>[MARKER]</p>
 <p><code>InstructionPointer</code> is a module that decides the next memory location from which the next instruction should be fetched. You might think that the next instruction pointer is just the result of increasing the current instruction pointer by one, and we won't need to consider a independent module for calculating something as simple as that, but that's not always the case. Even in our super simple computer, there is a command that may cause our instruction pointer to jump to a completely random location of the memory: <code>JNZ</code></p>
 <p>The <code>InstructionPointer</code> module could first check if a jump is needed (Based on the current instruction) and set the instruction pointer to the new value, or just increase it:</p>
 <pre><code>ShouldJump = IsJNZ &amp;&amp; (Data[DataPointer] == 0)

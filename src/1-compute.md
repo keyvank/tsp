@@ -1147,7 +1147,44 @@ So, what can our computer actually do? Here's a list of instructions we want our
 
 (Note: Since our memory cells are 8 bits wide, they can hold values between 0 and 255. Increasing 255 will cause an overflow, resetting the value to 0, and decreasing 0 will cause an underflow, wrapping the value around to 255.)
 
-Now, we need to design a mapping from 8-bit numbers to these instructions. Here's my proposed way this mapping can be done:
+To get an idea of how this instruction set actually works, let's look at some examples.
+
+This is a program that stores the number 2 in the 2nd memory cell and the number 4 in the 3rd one:
+
+```
+0: FWD // Now we are on the second memory-cell
+1: INC
+2: INC
+3: FWD // Moving forward to the third memory-cell
+4: INC
+5: INC
+6: INC
+7: INC
+```
+
+Or, this is a program that moves the number from the first memory cell to the second one:
+
+```
+0: INC
+1: INC
+2: INC
+
+3: DEC
+4: FWD
+5: INC
+6: BWD
+7: JNZ(3)
+```
+
+In this program, we'll assume that the number 3 is stored in the first memory cell by initially incrementing it three times. Then, the move logic follows. In each step, we decrement the value in the first cell and add to the second cell. This process continues while the value in the first cell is not zero (using the `JNZ` instruction).
+
+(Note: `JNZ(3)` means set the program-counter register to 3.)
+
+The interesting thing is that you can perform unbelievably complex tasks using a simple instruction set like this. If you're up for a challenge, try implementing a program that calculates the factorial of a number using these instructions.
+
+### Decoder
+
+Up until now, we know what our instructions are, how they're fetched from memory, and what can be done using them. But as you know, the output of the `InstructionMemory` is simply an 8-bit number. How do we know if a number represents `FWD`, `BWD`, or other instructions? Well, we need to design a mapping from 8-bit numbers to these instructions. Here's my proposed method for how this mapping can be done:
 
 ![Decoding rules of instruction](assets/decoder.png){ width=300px }
 
@@ -1159,15 +1196,7 @@ Instead, a more efficient design is to dedicate the first bit of the 8-bit instr
 
 Perfect! Now it's time to get our hands dirty and begin by building hardware that can recognize the type of instruction after fetching it from memory. We'll call this component the `Decoder`, since it decodes the instruction. The way it works is simple: it performs several equality checks using the `MultiEquals` component we used earlier when designing the memory.
 
-[MARKER]
-
-1. `Decoder` module takes an instruction (A 8-bit number) as its input and gives out 6 different boolean flags as its output, specifying the type of instructions.
-2. `InstructionPointer` module is responsible for choosing the next instruction-pointer.
-2. `InstructionMemory` module is a read-only 256-byte memory, giving out the instruction given its 8-bit address.
-2. `DataPointer` module is responsible for choosing the next data-pointer.
-2. `DataMemory` module is a 256-byte memory, allowing you to read/write its cells given 8-bit addresses.
-
-The `Decoder` is composed of 5 `MultiEquals` and a single `Equals` module, outputing the type of instruction as boolean flags with this rules:
+The `Decoder` is composed of 5 `MultiEquals` components to distinguish between `FWD`, `BWD`, `INC`, `DEC`, and `PRNT`, as well as a single Equals module responsible for detecting whether the instruction is a `JMP`s by examining the first bit. The module outputs 6 boolean bits, indicating the type of instruction:
 
 ```python=
 def Decoder(
@@ -1212,6 +1241,8 @@ def Decoder(
     )
     Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
 ```
+
+[MARKER]
 
 `InstructionPointer` is a module that decides the next memory location from which the next instruction should be fetched. You might think that the next instruction pointer is just the result of increasing the current instruction pointer by one, and we won't need to consider a independent module for calculating something as simple as that, but that's not always the case. Even in our super simple computer, there is a command that may cause our instruction pointer to jump to a completely random location of the memory: `JNZ`
 
