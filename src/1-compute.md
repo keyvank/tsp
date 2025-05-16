@@ -1120,7 +1120,11 @@ The implications of this design—known as the Von Neumann architecture—are pr
 - A program may generate another program: it just needs to dump some instructions on memory and jump to it!
 - Errors like buffer overflows can overwrite program instructions, leading to vulnerabilities and exploits.
 
-To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components.
+An interesting perspective is that the reason you can download a compressed executable file from the internet, decompress it, and run it right away is that the data and the program are in the same place!
+
+To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components. This has made our lives much easier, mainly because we can now read an instruction, decode it, and execute it all in a single clock cycle. If the program and data were both stored in a single memory component, the CPU would need to perform at least two memory reads to execute an instruction: one to read the instruction itself, and another in case the fetched instruction involves accessing memory. (Our current RAM doesn't allow reading from two different memory locations at the same time.) Moreover, the CPU would also require additional circuitry to determine which "stage" it is in during a cycle: Is it supposed to "read" an instruction, or execute one that it has already read and stored in a temporary buffer? We avoided all of this simply by separating the memories.
+
+### Fetching the instruction
 
 The computer we are going to implement will be very minimal. In fact, it will have only six different instructions. However, these six instructions are enough to build programs that are more than interesting. Our goal is to design a CPU with enough features to create a Brainfuck compiler that can target its instruction set. We have a whole section dedicated to describing the Brainfuck programming language and the ways you can build complex programs using it. For now, let's focus on the processor's instructions and the way they are fetched.
 
@@ -1132,9 +1136,132 @@ To answer the first question, we need a register to hold the current location in
 
 If the current instruction is not a jump, then the next value of the PC should simply be `PC + 1`. However, if the current instruction is a jump, then the next value of the PC is determined by that instruction. We'll dedicate a module to holding the PC and determining its next value. We’ll call this module the `InstructionPointer`.
 
+Practically speaking, the `InstructionPointer` module could first check if a jump is needed (based on the current instruction) and set the instruction pointer to the new value; otherwise, it would simply increment it.
+
+```
+ShouldJump = IsJNZ && (Data[DataPointer] == 0)
+InstPtr = ShouldJump ? JNZ_Addr : InstPtr + 1
+```
+
+Unfortunately, since our instructions are 8 bits wide and the first bit is already being used by the decoder to detect if the instruction is a JNZ, our jumps will be limited to memory locations in the range 0-127 (instead of 0-255), as we have only 7 bits left. While we’re okay with this limitation, there are different ways to overcome it. For example, we could make our instructions wider (e.g., 16 bits), or allow some instructions to take extra arguments by performing additional memory reads. For instance, when the current instruction is JNZ, we could wait for another clock cycle and perform an extra memory read to get the memory location to jump to.
+
+That would again make the JNZ instruction multi-staged, as it would require adding extra circuitry to read the memory cell following the PC to get the target PC in the next clock cycle. Handling all of that would significantly increase the complexity of our processor, so let's keep it simple. Here is the implementation of our simplified `InstructionPointer` module:
+
+```python=
+def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
+    for i in range(8):
+        Mux1x2(
+            circuit,
+            [in_sel],
+            [in_a[i], in_b[i]],
+            out[i],
+        )
+
+
+def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_pointer):
+    zero = [circuit.zero()] * 8
+    one = [circuit.one()] + [circuit.zero()] * 7
+
+    # should_jump = Data[DataPointer] != 0 && in_is_jnz
+    is_data_zero = circuit.new_wire()
+    is_data_not_zero = circuit.new_wire()
+    should_jump = circuit.new_wire()
+    MultiEquals(circuit, in_data, zero, is_data_zero)
+    Not(circuit, is_data_zero, is_data_not_zero)
+    And(circuit, in_is_jnz, is_data_not_zero, should_jump)
+
+    # InstPointer = should_jump ? in_addr : InstPointer + 1
+    inst_pointer_inc = [circuit.new_wire() for _ in range(8)]
+    inst_pointer_next = [circuit.new_wire() for _ in range(8)]
+    Adder8(
+        circuit,
+        out_inst_pointer,
+        one,
+        circuit.zero(),
+        inst_pointer_inc,
+        circuit.new_wire(),
+    )
+    Mux1x2Byte(
+        circuit,
+        should_jump,
+        inst_pointer_inc,
+        in_addr + [circuit.zero()],
+        inst_pointer_next,
+    )
+
+    return Reg8(circuit, in_clk, inst_pointer_next, out_inst_pointer, 0)
+```
+
 Next, we will have an `InstructionMemory`, which is a 256-byte RAM that holds our program. We'll connect the `InstructionPointer` to the `InstructionMemory`, which will output the fetched instruction. This instruction is then passed to a separate module responsible for decoding it and determining what action to take.
 
+```python=
+def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code):
+    return FastRAM(
+        circuit,
+        in_clk,
+        circuit.zero(),
+        in_inst_pointer,
+        [circuit.zero()] * 8,
+        out_inst,
+        code,
+    )
+```
+
 Remember how we decided to separate the program and its data into different memory modules? In a similar way to how we introduced the Program Counter to track the location of the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the ***data*** memory. By default, it is initialized to zero, pointing to the first cell of memory.
+
+[MARKER]
+
+```python=
+def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
+    one = [circuit.one()] + [circuit.zero()] * 7
+    minus_one = [circuit.one()] * 8
+
+    # data_pointer_inc = data_pointer + 1
+    data_pointer_inc = [circuit.new_wire() for _ in range(8)]
+    Adder8(
+        circuit, data_pointer, one, circuit.zero(), data_pointer_inc, circuit.new_wire()
+    )
+
+    # data_pointer_inc = data_pointer - 1
+    data_pointer_dec = [circuit.new_wire() for _ in range(8)]
+    Adder8(
+        circuit,
+        data_pointer,
+        minus_one,
+        circuit.zero(),
+        data_pointer_dec,
+        circuit.new_wire(),
+    )
+
+    data_pointer_next = [circuit.new_wire() for _ in range(8)]
+    in_is_fwd_bwd = circuit.new_wire()
+    Or(circuit, in_is_fwd, in_is_bwd, in_is_fwd_bwd)
+    tmp = [circuit.new_wire() for _ in range(8)]
+    Mux1x2Byte(circuit, in_is_bwd, data_pointer_inc, data_pointer_dec, tmp)
+    Mux1x2Byte(circuit, in_is_fwd_bwd, data_pointer, tmp, data_pointer_next)
+
+    return Reg8(circuit, in_clk, data_pointer_next, data_pointer, 0)
+```
+
+```python=
+def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):
+    one = [circuit.one()] + [circuit.zero()] * 7
+    min_one = [circuit.one()] * 8
+
+    is_wr = circuit.new_wire()
+    Or(circuit, in_is_inc, in_is_dec, is_wr)
+
+    data_inc = [circuit.new_wire() for _ in range(8)]
+    data_dec = [circuit.new_wire() for _ in range(8)]
+    Adder8(circuit, out_data, one, circuit.zero(), data_inc, circuit.new_wire())
+    Adder8(circuit, out_data, min_one, circuit.zero(), data_dec, circuit.new_wire())
+    data_next = [circuit.new_wire() for _ in range(8)]
+    Mux1x2Byte(circuit, in_is_dec, data_inc, data_dec, data_next)
+
+    return FastRAM(
+        circuit, in_clk, is_wr, in_addr, data_next, out_data, [0 for _ in range(256)]
+    )
+```
 
 So, what can our computer actually do? Here's a list of instructions we want our processor to support:
 
@@ -1240,141 +1367,6 @@ def Decoder(
         out_is_prnt,
     )
     Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
-```
-
-[MARKER]
-
-`InstructionPointer` is a module that decides the next memory location from which the next instruction should be fetched. You might think that the next instruction pointer is just the result of increasing the current instruction pointer by one, and we won't need to consider a independent module for calculating something as simple as that, but that's not always the case. Even in our super simple computer, there is a command that may cause our instruction pointer to jump to a completely random location of the memory: `JNZ`
-
-The `InstructionPointer` module could first check if a jump is needed (Based on the current instruction) and set the instruction pointer to the new value, or just increase it:
-
-```
-ShouldJump = IsJNZ && (Data[DataPointer] == 0)
-InstPtr = ShouldJump ? JNZ_Addr : InstPtr + 1
-```
-
-Unfortunately, since our instruction are 8-bits wide and the first bit is already being used by the decoder to detect if the instruction is a JNZ, our jumps will be limited to memory locations in the range 0-127 (Instead of 0-255), since we have 7 bits left. While we are cool with a limitation like that, there are different ways we can overcome this, like, we can make our instructions wider (E.g 16 bits), or, allow some instruction to get extra arguments by performing extra memory-reads (E.g when the current instruction is JNZ, wait for another clock cycle, and perform an extra memory-read to get the memory location to jump to).
-
-Here is the implementation of our simplified `InstructionPointer` module:
-
-```python=
-def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
-    for i in range(8):
-        Mux1x2(
-            circuit,
-            [in_sel],
-            [in_a[i], in_b[i]],
-            out[i],
-        )
-
-
-def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_pointer):
-    zero = [circuit.zero()] * 8
-    one = [circuit.one()] + [circuit.zero()] * 7
-
-    # should_jump = Data[DataPointer] != 0 && in_is_jnz
-    is_data_zero = circuit.new_wire()
-    is_data_not_zero = circuit.new_wire()
-    should_jump = circuit.new_wire()
-    MultiEquals(circuit, in_data, zero, is_data_zero)
-    Not(circuit, is_data_zero, is_data_not_zero)
-    And(circuit, in_is_jnz, is_data_not_zero, should_jump)
-
-    # InstPointer = should_jump ? in_addr : InstPointer + 1
-    inst_pointer_inc = [circuit.new_wire() for _ in range(8)]
-    inst_pointer_next = [circuit.new_wire() for _ in range(8)]
-    Adder8(
-        circuit,
-        out_inst_pointer,
-        one,
-        circuit.zero(),
-        inst_pointer_inc,
-        circuit.new_wire(),
-    )
-    Mux1x2Byte(
-        circuit,
-        should_jump,
-        inst_pointer_inc,
-        in_addr + [circuit.zero()],
-        inst_pointer_next,
-    )
-
-    return Reg8(circuit, in_clk, inst_pointer_next, out_inst_pointer, 0)
-```
-
-A very important difference of the computer we have designed and the computer you are using to read this book is that, we have considered two independent memory modules for storing the program/data. In a regular computer both the program and the data it manipulates are stored in a single memory component (This is also known as Von-Neumann architecture!).
-
-The reason we didn't go in that direction is merely avoiding complexity. This has secretly made our life much easier mainly because we can now read a instruction, decode it and execute it all in a single clock cycle. If the program and the data were both stored in a single memory component, the CPU would need to at least perform 2 memory reads in order to execute an instruction, one for reading the instruction itself, and one in case the fetched instructions has something to do with the memory. (Our current RAM doesn't allow you to read two different memory locations at the same time). Not only that, your CPU would also need extra circuitry in order to know which "stage" it is during a cycle. Is it supposed to "read" an instruction, or execute an instruction that it has already read and stored in a temporary buffer? We avoided all this just by separating the memories.
-
-Although having program/data in a single memory component makes your CPU much more complicated, it gives you interesting features: Imagine a program write on itself, changing its own behavior, or imagine a program generating another program, and jumping into it! It provides us whole new set of opportunities.
-
-The reason you can download a compressed executable file from the internet, uncompress it, and run it right away is that the data and program are in the same place!
-
-Anyway, since a multi-stage CPU is something that you can figure out and build on your own, we'll keep our implementation simple and just consider an independent RAM for storing the instructions:
-
-```python=
-def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code=""):
-    return FastRAM(
-        circuit,
-        in_clk,
-        circuit.zero(),
-        in_inst_pointer,
-        [circuit.zero()] * 8,
-        out_inst,
-        compile(code),
-    )
-```
-
-```python=
-def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
-    one = [circuit.one()] + [circuit.zero()] * 7
-    minus_one = [circuit.one()] * 8
-
-    # data_pointer_inc = data_pointer + 1
-    data_pointer_inc = [circuit.new_wire() for _ in range(8)]
-    Adder8(
-        circuit, data_pointer, one, circuit.zero(), data_pointer_inc, circuit.new_wire()
-    )
-
-    # data_pointer_inc = data_pointer - 1
-    data_pointer_dec = [circuit.new_wire() for _ in range(8)]
-    Adder8(
-        circuit,
-        data_pointer,
-        minus_one,
-        circuit.zero(),
-        data_pointer_dec,
-        circuit.new_wire(),
-    )
-
-    data_pointer_next = [circuit.new_wire() for _ in range(8)]
-    in_is_fwd_bwd = circuit.new_wire()
-    Or(circuit, in_is_fwd, in_is_bwd, in_is_fwd_bwd)
-    tmp = [circuit.new_wire() for _ in range(8)]
-    Mux1x2Byte(circuit, in_is_bwd, data_pointer_inc, data_pointer_dec, tmp)
-    Mux1x2Byte(circuit, in_is_fwd_bwd, data_pointer, tmp, data_pointer_next)
-
-    return Reg8(circuit, in_clk, data_pointer_next, data_pointer, 0)
-```
-
-```python=
-def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):
-    one = [circuit.one()] + [circuit.zero()] * 7
-    min_one = [circuit.one()] * 8
-
-    is_wr = circuit.new_wire()
-    Or(circuit, in_is_inc, in_is_dec, is_wr)
-
-    data_inc = [circuit.new_wire() for _ in range(8)]
-    data_dec = [circuit.new_wire() for _ in range(8)]
-    Adder8(circuit, out_data, one, circuit.zero(), data_inc, circuit.new_wire())
-    Adder8(circuit, out_data, min_one, circuit.zero(), data_dec, circuit.new_wire())
-    data_next = [circuit.new_wire() for _ in range(8)]
-    Mux1x2Byte(circuit, in_is_dec, data_inc, data_dec, data_next)
-
-    return FastRAM(
-        circuit, in_clk, is_wr, in_addr, data_next, out_data, [0 for _ in range(256)]
-    )
 ```
 
 Lastly, our computing machine start working when all of these modules get together in a single place:
