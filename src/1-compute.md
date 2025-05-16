@@ -1122,11 +1122,21 @@ The implications of this design—known as the Von Neumann architecture—are pr
 
 To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components.
 
-The computer we are going to implement will be very minimal. In fact, it will have only six different instructions. However, these six instructions are enough to build programs that are more than interesting. Our goal is to design a CPU with enough features to create a Brainfuck compiler that can target its instruction set. We have a whole section dedicated to describing the Brainfuck programming language and the ways you can build complex programs using it. For now, let's focus on the processor's instructions.
+The computer we are going to implement will be very minimal. In fact, it will have only six different instructions. However, these six instructions are enough to build programs that are more than interesting. Our goal is to design a CPU with enough features to create a Brainfuck compiler that can target its instruction set. We have a whole section dedicated to describing the Brainfuck programming language and the ways you can build complex programs using it. For now, let's focus on the processor's instructions and the way they are fetched.
 
-Imagine the processor we're discussing has a single register called "data-pointer," which, as its name suggests, points to a specific cell in memory. By default, it is initialized to zero (pointing to the first cell of memory).
+Before our processor can decode an instruction, it must first fetch it from memory. The first question is: ***which memory address should be fetched***—that is, where is the instruction to be executed located? The next important question is: ***what is the location of the next instruction*** that should be fetched and executed?
 
-Based on that, here is a list of instructions:
+You might think the next instruction to be executed resides in the program memory cell immediately after the current one. However, that is not always the case. In fact, programs often jump to other parts of the code that are not simply the next instruction. This is how loops and conditional branches are implemented.
+
+To answer the first question, we need a register to hold the current location in program memory from which the instruction should be fetched. Let’s call this register the Program Counter (or simply PC). The PC is initialized to 0, meaning the first instruction to be executed is located at the 0th cell of program memory.
+
+If the current instruction is not a jump, then the next value of the PC should simply be `PC + 1`. However, if the current instruction is a jump, then the next value of the PC is determined by that instruction. We'll dedicate a module to holding the PC and determining its next value. We’ll call this module the `InstructionPointer`.
+
+Next, we will have an `InstructionMemory`, which is a 256-byte RAM that holds our program. We'll connect the `InstructionPointer` to the `InstructionMemory`, which will output the fetched instruction. This instruction is then passed to a separate module responsible for decoding it and determining what action to take.
+
+Remember how we decided to separate the program and its data into different memory modules? In a similar way to how we introduced the Program Counter to track the location of the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the ***data*** memory. By default, it is initialized to zero, pointing to the first cell of memory.
+
+So, what can our computer actually do? Here's a list of instructions we want our processor to support:
 
 - ***FWD***: Increases the data-pointer by 1, i.e., moves the data-pointer to the next cell.
 - ***BWD***: Decreases the data-pointer by 1, i.e., moves the data-pointer to the previous cell.
