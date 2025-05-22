@@ -1499,180 +1499,17 @@ Typically, there are 2 ways CPUs can communicate with the external world:
 1. By allocating dedicated in/out wires.
 2. Sharing the RAM with other devices
 
-## Other ways to compute?
-
-I just got reminded of an interesting article I read 5 years ago on an IEEE Specturm magazine (You can find a lot of interesting stuff there!). The article was discussing some strange form of computing, known as ***Stochastic Computing***. It has also been a popular research topic in 1960s, according to the article. I'm bringing it here to remind you that there isn't a single way to build machines that can compute.
-
-The idea is emerged from the fact that computation costs a lot of energy. You'll need hundred (Or even thousands) of transistors in order to do single addition/multiplications, and each of these transistors are going to cost energy. Stochastic Computing, as its name suggests, tries to exploit the laws of probability for performing calculations. The concept can be perfectly understood with an example:
-
-What is the odds of throwing a dice and getting a value less-than-or-equal to 3? Easy! There are a total of 3 outcomes that are less-than-equal 3 (1,2 and 3), thus, dividing \\(\frac{3}{6}\\) gives us 0.5. In the general case, the odds of getting an outcome less-than-equal \\(n\\) would be \\(\frac{n}{6}\\).
-
-Now imagine we have two dices. If we throw them both, what is the odds of getting a value less-than-equal \\(n_1\\) for the first dice and a value less-than-equal \\(n_2\\) for the second dice? Based on the rules of probability, we know that the probability would be \\(\frac{n_1}{6}\times\frac{n_2}{6}=\frac{n_1n_2}{36}\\). For example, in case \\(n_1=3\\) and \\(n_2=2\\), the probability would be \\(\frac{3}{6}\frac{2}{6}=\frac{1}{6}\\). As you can see, a multiplication is happening here.
-
-Now, the point is you don't have to do the calculation yourself. You can let the universe do it for you: just throw the pair of dices as many times as you can, and count the cases where the first dice got less-than-equal 3 and the second dice got less-than-equal 2, and then divide it by the total number of experiments. If you perform the experiment many times, the value calculated value will get closer and closer to \\(\frac{1}{6}\\).
-
-In order to make use of this concept in an actual hardware, we first need some kind of encoding: a method by which we can translate actual numbers into probabilities (Because our method was only able to multiply probability values with each other and not any actual numbers). A smart-conversion for translating numbers in the range \\(0 \le p \le 1\\) is to create bit-streams in which you'll get 1s with probabiliy \\(p\\). E.g, you can translate the number 0.3 to a bit-stream like this: `00101000011001100000`.
-
-Now, the goal would be to create a third bit-stream, in which the probability of getting a 1 is \\(p_1 \times p_2\\). This can be achieved with a regular AND gate! AND gates really behave like multipliers, if the numbers we are working with are binary. So just substitute deterministic 0 and 1 with probabilistic bit-streams, and you'll be able to multiply floating-point numbers between 0 and 1!
-
-[IMG AND two bit-streams]
-
-Unlike multiplying, adding is not as straightforward. The reason is, by adding two probabilities, which are numbers between 0 and 1, you'll get a value that can get above 1 (Maximum 2). This is not a valid probability, thus you can't represent it with a bit-stream. But there is a hack! Assume our goal is not to calculate \\(p_1+p_2\\) but to calculate \\(\frac{p_1+p_2}{2}\\), which is indeed a number below 1. If that's what we want to calculate, we can do it using a Multiplexer gate which its control pin is connected to a third bit-stream which gives out 1s 50% of the times. This way, we are effectively calculating the average of the inputs of the multiplexer, which is equal to \\(\frac{p_1+p_2}{2}\\). Smart, right?
-
-In case you found the topic interesting, try designing a more challeging circuit yourself. E.g. try designing a circuit that can add two probabilities like this: \\(min(p_1 + p_2,1)\\) instead of \\(\frac{p_1+p_2}{2}\\). I'm not sure if such thing is possible at all, it's just something that popped in my mind, but it might be work thinking, and may also show you the limitations of this kind of computing.
-
-That's it, yet another way to compute! The point is to admire how little pieces that do simple stuff can get together and do amazing stuff!
-
-## Exploiting the subatomic world
-
-So far, we have been working on cause-and-effect chains that were totally deterministic and predictable. We saw how we can exploit the flow of electricity and route it in a way so that it can do logical operations like AND, OR, NOT and etc.
-
-There are some particles in our universe that do not have determinsitic behaviors but are probabilistic. You might first think that randomness is a poison for computers, but we humans are greedy, we want to take advantage of everything, and luckily, we have found ways to exploit non-determinism and solve problems with it that a normal computer just can't (Without spending more time than the age of the universe).
-
-Before getting into the details of quantum computing and algorithms, it's good to know the history behind it.
-
-As you may already know, Albert Einstein, the famous German physicist, in his special theory of relativity, argued that you can't transfer data between two points in the space faster than the speed of light. This means that, there are some unfortunate limitations in our universe. For example:
-
-* We can't have real-time communication with people living in Mars, there will always be an annoting lag.
-* We can't  see the current state of the stars far away from us. We can only see their past. The star could be long gone and what we percieve could be really old photons that are reaching to our eyes from millions of years ago.
-* As humans residing on Earth, we will never see other humans reach planets that are more than hundreds of light-years far from us, even if we assume that we are capable of building spaceships that can travel near the speed of light. It will take hundreds of years to reach there, and we'll be dead by then!
-
-There is no way to escape this limitation. In fact, not only physical stuff, but also ***data*** cannot travel that fast. It takes around 7 minutes for light to travel from sun to earth. This means, it takes at least 7 minutes to send any kind of data from sun to earth. Sun, as you know, pulls the earth because of its gravity. What happens when you remove the sun from the solar system? Will the earth stop rotating around the non-existing sun and start moving in a straight line, immediately? No, it takes at least 7 minutes for earth to feel that nothing is pulling it anymore. The non-existing sun would just shine normally, and earth will rotate around it just as before, for 7 minutes, and then comes the darkness! If the loss of gravity of the sun was felt immediatly, we could build a communication system with no delay, i.e faster than the speed of light! You can just map existing of gravity to 1, and loss of gravity as 0, and send your data through such a protocol!
-
-Everything was alright and made sense, until some physicists claimed that there are some particles in the universe that are somehow coupled/connected with each other. These particles have immediate effects on each other, even if they are millions of years away from each other. This meant that we can transfer data faster than light: given two particles that are "paired" with each other, you can do something with the first particle, and someone holding the other particle in the other side of the universe, can "sense" there is something going on with the first particle. Thus you guys can communicate with each other faster than the speed of light!
-
-## We live in The Matrix!
-
-We are not going to explore all the physics and math behind these phenomena, we are engineers, not physicists. In order to make sense of it, let's assume that the world we live in is a computer simulation, just like the movie: The Matrix
-
-In this simulation, our world is made of ***particles***. Smallest possible building blocks of this universe. For optimization purposes, some properties of these particles are undetermined and random. These properties will only get their determined values when someone tries to measure them!
-
-Now, here is the strange thing: assume there are some particles in our simulated world that have a boolean property named "spin", which can ***randomly*** become false (Down!), or true (Up!), upon measurement. But, some of these particles have a pair that are guaranteed to have opposite spin.
-
-How is this possible? How can the spin of a particle be both:
-
-1. Random
-2. Opposite of its pair
-
-at the same time? Quantum physicists argued that, when we measure the spin of the particle A, the second particle will collapse into the opposite state of B, instantly. That holds true even if the particles are light-years apart!
-
-Let's investigate the behavior in an experiment. Assume we have a machine that is able to generate entangled particles and shoot them to the left and right sides, and there are some spin-detectors in both sides that will show the spin of the particles once they reach there:
-
-![The spin of a particle is determined according to its pair](assets/entangled.png)
-
-When you actually do this experiment in a lab, you'll always see that the spin of the right and left particles are opposite of each other. Quantum physicist's theory is that, the particles do not have definite spins when they are generated. They only acquire a definite spin when they reach the detector. If that's the case, and their spin is truly random, then how do these particles get opposite spins? If their spin is truly random, they'll have to to talk with each other, telling their spin so that the other particle can get the other spin. If the particles are far from each other, their data-transmission should happen faster than the speed of light.
-
-Einstein, seeing that particles are not obeying his no-faster-than-light law, claimed that the spin of the entangled particles are not random, but their spins are deterministically chosen upon creation, so they don't have to "communicate" with each other. Nobody could prove that Einstein is wrong. Nobody could prove he is right either. In fact, some scientists claimed that this will always remain a mystery, since there is no way to experiment whether the particles know their spin before the measurement or not, until, an Irish physicist named John Stewart Bell designed an experiment that could show which theorem is true!
-
-Fortunately, one doesn't need to know a lot of math and physics in order to understand his experiment. The experiment is as follows:
-
-Imagine, instead of measuring only a single property, we measure three different properties (E.g spin of the particle around three different axis). The results will be similar to the case where we only measure a single axis: the spins of the right-hand-side will be opposite of the respective spins of the left hand side (E.g If the left-hand-side particle's spins are Up-Up-Down, the right-hand-side spins will be Down-Down-Up). Now, instead of measuring the spins in all three axis at the same time, we'll put three buttons on the detectors, allowing us to choose the axis we want to measure the spin in.
-
-![If Einstein's claim is true, the all three properties of the particle are determined prior reaching to the detectors](assets/bellsinequality.png)
-
-Unlike the previous experiment in which the spin of the left detector and right detector were opposite of each other, now it is possible to observe same spins by the detectors. Now, let's assume that Einstein's statement is true, and the spins of the particles are determined when the particles are generated. Assuming we randomly choose the button on the detectors, what is the probability of observing opposite directions on them? It's simple probability, let's try all different combinations:
-
-[TODO]
-
-It is obvious that in at least \\(\frac{5}{9} \approx 55%\\) of the experiments, the detectors should show opposite directions. Physicists experimented this and only in 50% of the samples the detectors appeared to show opposite directions. ***This was a strong proof that we live in The Matrix!***
-
-## Exploiting the indeterminism
-
-If you are now convinced that we are living in a computer simulation, we can now exploit the fact that some particles in our world do not have definite states, and try to build new types of computers with it, computers than can compute stuff that a simple classical computer just can't, welcome to the world of quantum computers!
-
-Before teleporting to the quantum world, let's first agree on what ***state*** means on a classical computer. In a classical computer (E.g the Brainfuck processor we built in the previous sections), a n-bit register may only be in one of the \\(2^n\\) possible states. In the quantum world however, particles may have indefinite states. A particle may be 50% spin up and 50% spin down. By interpreting those indefinite properties as bits, we may have bits that are both 1 and 0 at the same time! So a n-bit quantum register maybe in all \\(2^n\\) states as a same time. In other words, an n-bit qunatum register is a probability distribution showing how possible each of the \\(2^n\\) states are. Let's simulate the a quantum-state as a Python class:
-
-```python=
-import math
-import random
-
-
-class QuantumState:
-    def __init__(self, bits):
-        self.bits = bits
-        self.values = [0 + 0j] * (2**bits)
-        self.values[0] = 1 + 0j
-
-    def is_unitary(self):
-        return math.isclose(abs(sum(map(lambda v: v * v, self.values))), 1)
-
-    def apply(self, gate):
-        res = []
-        for row in gate:
-            res.append(sum([row[i] * self.values[i] for i in range(len(self.values))]))
-        self.values = res
-
-    def observe(self):
-        dice = random.random()
-        accum = 0
-        for i, p in enumerate(self.values):
-            accum += abs(p * p)
-            if dice < accum:
-                s = bin(i)[2:]
-                while len(s) < self.bits:
-                    s = "0" + s
-                return s
-        raise Exception()
-
-    def sample(self, times=1000):
-        states = {}
-        for _ in range(times):
-            v = self.observe()
-            if v not in states:
-                states[v] = 0
-            states[v] += 1
-        return states
-```
-
-As you can see in the code, a n-bit Quantum register is a list of \\(2^n\\) complex numbers. We can also assume that quantum-state is a unitary vector (A vector that its length is 1). In order to check if a qunatum-state is valid or not, we have implemented a `is_unitary` method which calculates the length of the vector, and checks if it is equal to 1.
-
-Quantum-gates are transformations that can convert a unitary vector to another unitary vector. Such transformations can be represented with square matrices! The `apply` method applies a quantum-gate \\(T\\) (Which is basically a \\(2^n \times 2^n\\) matrix) on the gate, resulting to a new state: \\(S_{next}=S \times T\\)
-
-Lastly, in order to simulate a quantum-state's non-deterministic behavior, we have added a `observe` which throws a dice (Using Python's `random.random()` function) and decides what the observed state of the quantum-state is, given the probability distribution.
-
-We can sample the results of the `observe` function for many times, in order to get more sense of what is happening. We have defined a method `sample` for this purpose.
-
-Initially, we set the probability of the n-bit quantum-state to be \\(000 \dots 000\\) for 100% of the time. Thus, if we start sampling a state with no transformations, we will always be in the first state:
-
-```python=
-s = QuantumState(3)
-print(s.sample(1000))  # {'000': 1000}
-```
-
-Here are some gates that can be applied on single qubits:
-
-```python=
-def not_gate():
-    return [[0, 1], [1, 0]]
-```
-
-And there are some 
-
-```python=
-def cnot_gate():
-    return [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]
-
-
-def swap_gate():
-    return [[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]]
-```
-
-## Why matrices?
-
-The term quantum computer is a bit misleading. In fact, a quantum-computer is a regular classical-computer equipped with a device that can perform operations on a quantum-state (Maybe someday, you’ll be able to connect a quantum-state to your laptop too). For example, the quantum operation could be radiating the “state” with a electromagnetic wave of some frequency. A real quantum computer doesn’t perform matrix multiplications, like what we did in our simulator! Matrices just happened to be good mathematical structures for modeling different quantum operations!
-
-As previously noted, a quantum-state is somehow a probability distribution over its different possible states.
-
-The state is a vector of length one. It’s length will always be one.
-
-In a quantum operation, the final result of one bit is somehow a linear combination of all other bits. That's why quantum operations are defined by matrices, because matrices are just a group of coefficient-rows that are stacked on top of each other.
-
-
 ## Brainfuck
 
-Most people say it's crucial to learn C, if you want to be a good programmer! I say, knowing how to program in Brainfuck is what makes you a Super Programmer! Brainfuck, built in 1993 by Urban Müller, is an esoteric programming language, which means, it has been designed in a way so that very few people understand or like it! Learning how to program in Brainfuck is a great way to see how it's possible to build wonderful stuff by putting simple components together.
+Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become a true programmer when you learn how to program in a strange language called Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language — designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to understand how amazing things can be built by combining simple components.
 
-Brainfuck is extremely minimalistic, it only consists of 8 simple commands. It is also very simple to learn, but hard to build anything meaningful out of it! Brainfuck is Turing-Complete, which means, you can theoritically build web browsers, 3D games, and any kind of complicated software with it! Here is the specification of the language:
+Brainfuck is extremely minimalistic, consisting of only 8 simple commands. It’s easy to learn but hard to build anything meaningful with! Brainfuck is Turing-complete, which means you can theoretically build web browsers, 3D games, and all kinds of complex software with it.
+
+The processor we are going to design and implement will be heavily inspired by this language. In fact, the CPU will have instructions almost identical to those in Brainfuck. Therefore, it’s crucial to first take a quick look at the language and be convinced that serious, complex tasks can be accomplished with it. After that, we will continue by examining how you can build hardware capable of understanding and executing Brainfuck programs.
+
+Brainfuck is a minimalistic language that works with a simple array of memory cells, each initially set to zero, and a pointer that moves along these cells. You can increase or decrease the value in the current cell, move the pointer to adjacent cells, and perform input and output operations based on the value at the pointer’s position. The language also lets you jump to other parts of your code depending on whether the value of the current cell is zero or not. This basic setup enables surprisingly powerful computation through careful manipulation of memory and control structures.
+
+Here is the specification of the instructions:
 
 | Instruction | Description |
 |-|-|
@@ -1682,8 +1519,10 @@ Brainfuck is extremely minimalistic, it only consists of 8 simple commands. It i
 | - | Decrement the byte at the data pointer |
 | . | Output the byte at the data pointer |
 | , | Store an input at the data pointer |
-| [ | Does nothing, acts as a flag |
-| ] | If the byte at the data pointer is not 0, jump to the corresponding [ |
+| [ | If the byte at the data pointer is zero, jump forward to the command after the corresponding ] |
+| ] | If the byte at the data pointer is not zero, jump back to the command after the corresponding [ |
+
+[MARKER]
 
 Before trying to build anything with Brainfuck, let's write an interpreter for this language first! The original Brainfuck machine specification has 30000 memory-cells, each storing a 8-bit byte (Unsigned integer between 0 to 255). 
 
@@ -2062,3 +1901,172 @@ Here is a popular design of a programmable gate among FPGAs. They are also known
 ## CHIP-8
 
 ## Operating Systems
+
+
+## Other ways to compute?
+
+I just got reminded of an interesting article I read 5 years ago on an IEEE Specturm magazine (You can find a lot of interesting stuff there!). The article was discussing some strange form of computing, known as ***Stochastic Computing***. It has also been a popular research topic in 1960s, according to the article. I'm bringing it here to remind you that there isn't a single way to build machines that can compute.
+
+The idea is emerged from the fact that computation costs a lot of energy. You'll need hundred (Or even thousands) of transistors in order to do single addition/multiplications, and each of these transistors are going to cost energy. Stochastic Computing, as its name suggests, tries to exploit the laws of probability for performing calculations. The concept can be perfectly understood with an example:
+
+What is the odds of throwing a dice and getting a value less-than-or-equal to 3? Easy! There are a total of 3 outcomes that are less-than-equal 3 (1,2 and 3), thus, dividing \\(\frac{3}{6}\\) gives us 0.5. In the general case, the odds of getting an outcome less-than-equal \\(n\\) would be \\(\frac{n}{6}\\).
+
+Now imagine we have two dices. If we throw them both, what is the odds of getting a value less-than-equal \\(n_1\\) for the first dice and a value less-than-equal \\(n_2\\) for the second dice? Based on the rules of probability, we know that the probability would be \\(\frac{n_1}{6}\times\frac{n_2}{6}=\frac{n_1n_2}{36}\\). For example, in case \\(n_1=3\\) and \\(n_2=2\\), the probability would be \\(\frac{3}{6}\frac{2}{6}=\frac{1}{6}\\). As you can see, a multiplication is happening here.
+
+Now, the point is you don't have to do the calculation yourself. You can let the universe do it for you: just throw the pair of dices as many times as you can, and count the cases where the first dice got less-than-equal 3 and the second dice got less-than-equal 2, and then divide it by the total number of experiments. If you perform the experiment many times, the value calculated value will get closer and closer to \\(\frac{1}{6}\\).
+
+In order to make use of this concept in an actual hardware, we first need some kind of encoding: a method by which we can translate actual numbers into probabilities (Because our method was only able to multiply probability values with each other and not any actual numbers). A smart-conversion for translating numbers in the range \\(0 \le p \le 1\\) is to create bit-streams in which you'll get 1s with probabiliy \\(p\\). E.g, you can translate the number 0.3 to a bit-stream like this: `00101000011001100000`.
+
+Now, the goal would be to create a third bit-stream, in which the probability of getting a 1 is \\(p_1 \times p_2\\). This can be achieved with a regular AND gate! AND gates really behave like multipliers, if the numbers we are working with are binary. So just substitute deterministic 0 and 1 with probabilistic bit-streams, and you'll be able to multiply floating-point numbers between 0 and 1!
+
+[IMG AND two bit-streams]
+
+Unlike multiplying, adding is not as straightforward. The reason is, by adding two probabilities, which are numbers between 0 and 1, you'll get a value that can get above 1 (Maximum 2). This is not a valid probability, thus you can't represent it with a bit-stream. But there is a hack! Assume our goal is not to calculate \\(p_1+p_2\\) but to calculate \\(\frac{p_1+p_2}{2}\\), which is indeed a number below 1. If that's what we want to calculate, we can do it using a Multiplexer gate which its control pin is connected to a third bit-stream which gives out 1s 50% of the times. This way, we are effectively calculating the average of the inputs of the multiplexer, which is equal to \\(\frac{p_1+p_2}{2}\\). Smart, right?
+
+In case you found the topic interesting, try designing a more challeging circuit yourself. E.g. try designing a circuit that can add two probabilities like this: \\(min(p_1 + p_2,1)\\) instead of \\(\frac{p_1+p_2}{2}\\). I'm not sure if such thing is possible at all, it's just something that popped in my mind, but it might be work thinking, and may also show you the limitations of this kind of computing.
+
+That's it, yet another way to compute! The point is to admire how little pieces that do simple stuff can get together and do amazing stuff!
+
+## Exploiting the subatomic world
+
+So far, we have been working on cause-and-effect chains that were totally deterministic and predictable. We saw how we can exploit the flow of electricity and route it in a way so that it can do logical operations like AND, OR, NOT and etc.
+
+There are some particles in our universe that do not have determinsitic behaviors but are probabilistic. You might first think that randomness is a poison for computers, but we humans are greedy, we want to take advantage of everything, and luckily, we have found ways to exploit non-determinism and solve problems with it that a normal computer just can't (Without spending more time than the age of the universe).
+
+Before getting into the details of quantum computing and algorithms, it's good to know the history behind it.
+
+As you may already know, Albert Einstein, the famous German physicist, in his special theory of relativity, argued that you can't transfer data between two points in the space faster than the speed of light. This means that, there are some unfortunate limitations in our universe. For example:
+
+* We can't have real-time communication with people living in Mars, there will always be an annoting lag.
+* We can't  see the current state of the stars far away from us. We can only see their past. The star could be long gone and what we percieve could be really old photons that are reaching to our eyes from millions of years ago.
+* As humans residing on Earth, we will never see other humans reach planets that are more than hundreds of light-years far from us, even if we assume that we are capable of building spaceships that can travel near the speed of light. It will take hundreds of years to reach there, and we'll be dead by then!
+
+There is no way to escape this limitation. In fact, not only physical stuff, but also ***data*** cannot travel that fast. It takes around 7 minutes for light to travel from sun to earth. This means, it takes at least 7 minutes to send any kind of data from sun to earth. Sun, as you know, pulls the earth because of its gravity. What happens when you remove the sun from the solar system? Will the earth stop rotating around the non-existing sun and start moving in a straight line, immediately? No, it takes at least 7 minutes for earth to feel that nothing is pulling it anymore. The non-existing sun would just shine normally, and earth will rotate around it just as before, for 7 minutes, and then comes the darkness! If the loss of gravity of the sun was felt immediatly, we could build a communication system with no delay, i.e faster than the speed of light! You can just map existing of gravity to 1, and loss of gravity as 0, and send your data through such a protocol!
+
+Everything was alright and made sense, until some physicists claimed that there are some particles in the universe that are somehow coupled/connected with each other. These particles have immediate effects on each other, even if they are millions of years away from each other. This meant that we can transfer data faster than light: given two particles that are "paired" with each other, you can do something with the first particle, and someone holding the other particle in the other side of the universe, can "sense" there is something going on with the first particle. Thus you guys can communicate with each other faster than the speed of light!
+
+## We live in The Matrix!
+
+We are not going to explore all the physics and math behind these phenomena, we are engineers, not physicists. In order to make sense of it, let's assume that the world we live in is a computer simulation, just like the movie: The Matrix
+
+In this simulation, our world is made of ***particles***. Smallest possible building blocks of this universe. For optimization purposes, some properties of these particles are undetermined and random. These properties will only get their determined values when someone tries to measure them!
+
+Now, here is the strange thing: assume there are some particles in our simulated world that have a boolean property named "spin", which can ***randomly*** become false (Down!), or true (Up!), upon measurement. But, some of these particles have a pair that are guaranteed to have opposite spin.
+
+How is this possible? How can the spin of a particle be both:
+
+1. Random
+2. Opposite of its pair
+
+at the same time? Quantum physicists argued that, when we measure the spin of the particle A, the second particle will collapse into the opposite state of B, instantly. That holds true even if the particles are light-years apart!
+
+Let's investigate the behavior in an experiment. Assume we have a machine that is able to generate entangled particles and shoot them to the left and right sides, and there are some spin-detectors in both sides that will show the spin of the particles once they reach there:
+
+![The spin of a particle is determined according to its pair](assets/entangled.png)
+
+When you actually do this experiment in a lab, you'll always see that the spin of the right and left particles are opposite of each other. Quantum physicist's theory is that, the particles do not have definite spins when they are generated. They only acquire a definite spin when they reach the detector. If that's the case, and their spin is truly random, then how do these particles get opposite spins? If their spin is truly random, they'll have to to talk with each other, telling their spin so that the other particle can get the other spin. If the particles are far from each other, their data-transmission should happen faster than the speed of light.
+
+Einstein, seeing that particles are not obeying his no-faster-than-light law, claimed that the spin of the entangled particles are not random, but their spins are deterministically chosen upon creation, so they don't have to "communicate" with each other. Nobody could prove that Einstein is wrong. Nobody could prove he is right either. In fact, some scientists claimed that this will always remain a mystery, since there is no way to experiment whether the particles know their spin before the measurement or not, until, an Irish physicist named John Stewart Bell designed an experiment that could show which theorem is true!
+
+Fortunately, one doesn't need to know a lot of math and physics in order to understand his experiment. The experiment is as follows:
+
+Imagine, instead of measuring only a single property, we measure three different properties (E.g spin of the particle around three different axis). The results will be similar to the case where we only measure a single axis: the spins of the right-hand-side will be opposite of the respective spins of the left hand side (E.g If the left-hand-side particle's spins are Up-Up-Down, the right-hand-side spins will be Down-Down-Up). Now, instead of measuring the spins in all three axis at the same time, we'll put three buttons on the detectors, allowing us to choose the axis we want to measure the spin in.
+
+![If Einstein's claim is true, the all three properties of the particle are determined prior reaching to the detectors](assets/bellsinequality.png)
+
+Unlike the previous experiment in which the spin of the left detector and right detector were opposite of each other, now it is possible to observe same spins by the detectors. Now, let's assume that Einstein's statement is true, and the spins of the particles are determined when the particles are generated. Assuming we randomly choose the button on the detectors, what is the probability of observing opposite directions on them? It's simple probability, let's try all different combinations:
+
+[TODO]
+
+It is obvious that in at least \\(\frac{5}{9} \approx 55%\\) of the experiments, the detectors should show opposite directions. Physicists experimented this and only in 50% of the samples the detectors appeared to show opposite directions. ***This was a strong proof that we live in The Matrix!***
+
+## Exploiting the indeterminism
+
+If you are now convinced that we are living in a computer simulation, we can now exploit the fact that some particles in our world do not have definite states, and try to build new types of computers with it, computers than can compute stuff that a simple classical computer just can't, welcome to the world of quantum computers!
+
+Before teleporting to the quantum world, let's first agree on what ***state*** means on a classical computer. In a classical computer (E.g the Brainfuck processor we built in the previous sections), a n-bit register may only be in one of the \\(2^n\\) possible states. In the quantum world however, particles may have indefinite states. A particle may be 50% spin up and 50% spin down. By interpreting those indefinite properties as bits, we may have bits that are both 1 and 0 at the same time! So a n-bit quantum register maybe in all \\(2^n\\) states as a same time. In other words, an n-bit qunatum register is a probability distribution showing how possible each of the \\(2^n\\) states are. Let's simulate the a quantum-state as a Python class:
+
+```python=
+import math
+import random
+
+
+class QuantumState:
+    def __init__(self, bits):
+        self.bits = bits
+        self.values = [0 + 0j] * (2**bits)
+        self.values[0] = 1 + 0j
+
+    def is_unitary(self):
+        return math.isclose(abs(sum(map(lambda v: v * v, self.values))), 1)
+
+    def apply(self, gate):
+        res = []
+        for row in gate:
+            res.append(sum([row[i] * self.values[i] for i in range(len(self.values))]))
+        self.values = res
+
+    def observe(self):
+        dice = random.random()
+        accum = 0
+        for i, p in enumerate(self.values):
+            accum += abs(p * p)
+            if dice < accum:
+                s = bin(i)[2:]
+                while len(s) < self.bits:
+                    s = "0" + s
+                return s
+        raise Exception()
+
+    def sample(self, times=1000):
+        states = {}
+        for _ in range(times):
+            v = self.observe()
+            if v not in states:
+                states[v] = 0
+            states[v] += 1
+        return states
+```
+
+As you can see in the code, a n-bit Quantum register is a list of \\(2^n\\) complex numbers. We can also assume that quantum-state is a unitary vector (A vector that its length is 1). In order to check if a qunatum-state is valid or not, we have implemented a `is_unitary` method which calculates the length of the vector, and checks if it is equal to 1.
+
+Quantum-gates are transformations that can convert a unitary vector to another unitary vector. Such transformations can be represented with square matrices! The `apply` method applies a quantum-gate \\(T\\) (Which is basically a \\(2^n \times 2^n\\) matrix) on the gate, resulting to a new state: \\(S_{next}=S \times T\\)
+
+Lastly, in order to simulate a quantum-state's non-deterministic behavior, we have added a `observe` which throws a dice (Using Python's `random.random()` function) and decides what the observed state of the quantum-state is, given the probability distribution.
+
+We can sample the results of the `observe` function for many times, in order to get more sense of what is happening. We have defined a method `sample` for this purpose.
+
+Initially, we set the probability of the n-bit quantum-state to be \\(000 \dots 000\\) for 100% of the time. Thus, if we start sampling a state with no transformations, we will always be in the first state:
+
+```python=
+s = QuantumState(3)
+print(s.sample(1000))  # {'000': 1000}
+```
+
+Here are some gates that can be applied on single qubits:
+
+```python=
+def not_gate():
+    return [[0, 1], [1, 0]]
+```
+
+And there are some 
+
+```python=
+def cnot_gate():
+    return [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]
+
+
+def swap_gate():
+    return [[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]]
+```
+
+## Why matrices?
+
+The term quantum computer is a bit misleading. In fact, a quantum-computer is a regular classical-computer equipped with a device that can perform operations on a quantum-state (Maybe someday, you’ll be able to connect a quantum-state to your laptop too). For example, the quantum operation could be radiating the “state” with a electromagnetic wave of some frequency. A real quantum computer doesn’t perform matrix multiplications, like what we did in our simulator! Matrices just happened to be good mathematical structures for modeling different quantum operations!
+
+As previously noted, a quantum-state is somehow a probability distribution over its different possible states.
+
+The state is a vector of length one. It’s length will always be one.
+
+In a quantum operation, the final result of one bit is somehow a linear combination of all other bits. That's why quantum operations are defined by matrices, because matrices are just a group of coefficient-rows that are stacked on top of each other.
