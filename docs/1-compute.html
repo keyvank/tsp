@@ -1348,9 +1348,9 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
 <li>Sharing the RAM with other devices</li>
 </ol>
 <h2 id="brainfuck"><a class="header" href="#brainfuck">Brainfuck</a></h2>
-<p>Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become a true programmer when you learn how to program in a strange language called Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language — designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to understand how amazing things can be built by combining simple components.</p>
-<p>Brainfuck is extremely minimalistic, consisting of only 8 simple commands. It’s easy to learn but hard to build anything meaningful with! Brainfuck is Turing-complete, which means you can theoretically build web browsers, 3D games, and all kinds of complex software with it.</p>
-<p>The processor we are going to design and implement will be heavily inspired by this language. In fact, the CPU will have instructions almost identical to those in Brainfuck. Therefore, it’s crucial to first take a quick look at the language and be convinced that serious, complex tasks can be accomplished with it. After that, we will continue by examining how you can build hardware capable of understanding and executing Brainfuck programs.</p>
+<p>Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become truly skilled in programming when you learn how to program in a strange programming language named Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language — designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to see and understand how amazing things can be built by combining really simple components.</p>
+<p>Brainfuck is extremely minimalistic, consisting of only eight simple commands. It’s easy to learn but hard to build anything meaningful with! Despite its simplicity, it can be mathematically proven that Brainfuck is Turing-complete, which means you can theoretically build web browsers, 3D games, and all kinds of complex software with it.</p>
+<p>The processor we are going to design and implement in this chapter will be heavily inspired by this language. In fact, the CPU will have instructions almost identical to those in Brainfuck (with some slight differences). Therefore, it’s crucial to first take a quick look at the language and see how different programs can be built with it. After that, we will explore how to build hardware capable of understanding and executing Brainfuck programs.</p>
 <p>Brainfuck is a minimalistic language that works with a simple array of memory cells, each initially set to zero, and a pointer that moves along these cells. You can increase or decrease the value in the current cell, move the pointer to adjacent cells, and perform input and output operations based on the value at the pointer’s position. The language also lets you jump to other parts of your code depending on whether the value of the current cell is zero or not. This basic setup enables surprisingly powerful computation through careful manipulation of memory and control structures.</p>
 <p>Here is the specification of the instructions:</p>
 <div class="table-wrapper"><table><thead><tr><th>Instruction</th><th>Description</th></tr></thead><tbody>
@@ -1364,7 +1364,30 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
 <tr><td>]</td><td>If the byte at the data pointer is not zero, jump back to the command after the corresponding [</td></tr>
 </tbody></table>
 </div>
-<p>[MARKER]</p>
+<p>Nothing explains the language better than a few examples:</p>
+<p><em><strong>Putting numbers within memory slots</strong></em></p>
+<pre><code>+++++       (set cell #0 to 5)
+&gt; +++++++   (move to cell #1 and set it to 7)
+</code></pre>
+<p>This sets the first memory cell to 5 and the second memory cell to 7.</p>
+<p><em><strong>Moving numbers</strong></em></p>
+<pre><code>+++         (set cell #0 to 3)
+[-&gt;+&lt;]      (move the value from cell #0 to cell #1)
+</code></pre>
+<p>This moves the number 3 from cell #0 to cell #1, leaving cell #0 empty.</p>
+<p><em><strong>Clearing out a memory cell</strong></em></p>
+<pre><code>+++         (set cell #0 to 3)
+[-]         (decrement cell #0 until it becomes zero)
+</code></pre>
+<p>This clears out the memory cell #0</p>
+<p><em><strong>Copying numbers</strong></em></p>
+<pre><code>+++         (set cell #0 to 3)
+[-&gt;+&gt;+&lt;&lt;]   (move the value in cell #0 to both cell #1 and #2)
+&gt;&gt; [-&lt;+&gt;]   (move the value in cell #2 to cell #0)
+</code></pre>
+<p>This copies the number 3 from cell #0 to cell #1, without clearing out the value of cell #0.</p>
+<p>This brief introduction to the language is enough to inspire ideas about how we want our CPU instructions to look. We will take a much deeper approach to implementing Brainfuck programs in the later sections.</p>
+<h2 id="brainfuck-1"><a class="header" href="#brainfuck-1">Brainfuck</a></h2>
 <p>Before trying to build anything with Brainfuck, let's write an interpreter for this language first! The original Brainfuck machine specification has 30000 memory-cells, each storing a 8-bit byte (Unsigned integer between 0 to 255). </p>
 <p>The following code is an Brainfuck interpreter written in Python, which executes a &quot;Hello World!&quot; program written in Brainfuck.</p>
 <pre><code class="language-python3=">code = '''

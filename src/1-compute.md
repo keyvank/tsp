@@ -1501,11 +1501,11 @@ Typically, there are 2 ways CPUs can communicate with the external world:
 
 ## Brainfuck
 
-Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become a true programmer when you learn how to program in a strange language called Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language — designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to understand how amazing things can be built by combining simple components.
+Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become truly skilled in programming when you learn how to program in a strange programming language named Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language — designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to see and understand how amazing things can be built by combining really simple components.
 
-Brainfuck is extremely minimalistic, consisting of only 8 simple commands. It’s easy to learn but hard to build anything meaningful with! Brainfuck is Turing-complete, which means you can theoretically build web browsers, 3D games, and all kinds of complex software with it.
+Brainfuck is extremely minimalistic, consisting of only eight simple commands. It’s easy to learn but hard to build anything meaningful with! Despite its simplicity, it can be mathematically proven that Brainfuck is Turing-complete, which means you can theoretically build web browsers, 3D games, and all kinds of complex software with it.
 
-The processor we are going to design and implement will be heavily inspired by this language. In fact, the CPU will have instructions almost identical to those in Brainfuck. Therefore, it’s crucial to first take a quick look at the language and be convinced that serious, complex tasks can be accomplished with it. After that, we will continue by examining how you can build hardware capable of understanding and executing Brainfuck programs.
+The processor we are going to design and implement in this chapter will be heavily inspired by this language. In fact, the CPU will have instructions almost identical to those in Brainfuck (with some slight differences). Therefore, it’s crucial to first take a quick look at the language and see how different programs can be built with it. After that, we will explore how to build hardware capable of understanding and executing Brainfuck programs.
 
 Brainfuck is a minimalistic language that works with a simple array of memory cells, each initially set to zero, and a pointer that moves along these cells. You can increase or decrease the value in the current cell, move the pointer to adjacent cells, and perform input and output operations based on the value at the pointer’s position. The language also lets you jump to other parts of your code depending on whether the value of the current cell is zero or not. This basic setup enables surprisingly powerful computation through careful manipulation of memory and control structures.
 
@@ -1522,7 +1522,48 @@ Here is the specification of the instructions:
 | [ | If the byte at the data pointer is zero, jump forward to the command after the corresponding ] |
 | ] | If the byte at the data pointer is not zero, jump back to the command after the corresponding [ |
 
-[MARKER]
+Nothing explains the language better than a few examples:
+
+***Putting numbers within memory slots***
+
+```
++++++       (set cell #0 to 5)
+> +++++++   (move to cell #1 and set it to 7)
+```
+
+This sets the first memory cell to 5 and the second memory cell to 7.
+
+***Moving numbers***
+
+```
++++         (set cell #0 to 3)
+[->+<]      (move the value from cell #0 to cell #1)
+```
+
+This moves the number 3 from cell #0 to cell #1, leaving cell #0 empty.
+
+***Clearing out a memory cell***
+
+```
++++         (set cell #0 to 3)
+[-]         (decrement cell #0 until it becomes zero)
+```
+
+This clears out the memory cell #0
+
+***Copying numbers***
+
+```
++++         (set cell #0 to 3)
+[->+>+<<]   (move the value in cell #0 to both cell #1 and #2)
+>> [-<+>]   (move the value in cell #2 to cell #0)
+```
+
+This copies the number 3 from cell #0 to cell #1, without clearing out the value of cell #0.
+
+This brief introduction to the language is enough to inspire ideas about how we want our CPU instructions to look. We will take a much deeper approach to implementing Brainfuck programs in the later sections.
+
+## Brainfuck
 
 Before trying to build anything with Brainfuck, let's write an interpreter for this language first! The original Brainfuck machine specification has 30000 memory-cells, each storing a 8-bit byte (Unsigned integer between 0 to 255). 
 
