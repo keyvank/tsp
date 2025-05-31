@@ -1524,44 +1524,50 @@ Here is the specification of the instructions:
 
 Nothing explains the language better than a few examples:
 
-***Putting numbers within memory slots***
+Setting the value of different slots is quite easy. You just have to navigate to the target cell using the `<>` instructions, and then repeat `+` as many times as needed. For example, the following code sets the first memory cell to 5 and the second memory cell to 7:
 
 ```
 +++++       (set cell #0 to 5)
 > +++++++   (move to cell #1 and set it to 7)
 ```
 
-This sets the first memory cell to 5 and the second memory cell to 7.
-
-***Moving numbers***
+The values you'll be working with in your program are not always static. Sometimes, you'll want to move an existing value from one memory cell to another. That's where the loop instructions `[]` come in handy. The code below simply decrements the source cell and increments the target cell as long as the source cell is above zero—effectively zeroing out the source cell and incrementing the target cell by the same amount:
 
 ```
 +++         (set cell #0 to 3)
 [->+<]      (move the value from cell #0 to cell #1)
 ```
 
-This moves the number 3 from cell #0 to cell #1, leaving cell #0 empty.
-
-***Clearing out a memory cell***
-
-```
-+++         (set cell #0 to 3)
-[-]         (decrement cell #0 until it becomes zero)
-```
-
-This clears out the memory cell #0
-
-***Copying numbers***
+Yes, the fact that the source cell becomes zero is sometimes inconvenient. What if you want to copy a value while preserving the original value of the source cell? This is typically done by decrementing the source cell while incrementing both the target cell and a ***temporary*** memory cell. You then move the value from the temporary cell back into the source cell, restoring its original value. The code would look like this (we are copying cell #0 to cell #1, using cell #2 as temporary storage):
 
 ```
 +++         (set cell #0 to 3)
 [->+>+<<]   (move the value in cell #0 to both cell #1 and #2)
->> [-<+>]   (move the value in cell #2 to cell #0)
+>> [-<+>]   (restore the value of cell #0 by moving the value in cell #2 to back cell #0)
 ```
 
-This copies the number 3 from cell #0 to cell #1, without clearing out the value of cell #0.
+Now, an important point when moving or copying values is that the target cell is not necessarily zero. In this case, you are effectively adding two numbers together. (Voila! The first useful case of Brainfuck!):
 
-This brief introduction to the language is enough to inspire ideas about how we want our CPU instructions to look. We will take a much deeper approach to implementing Brainfuck programs in the later sections.
+```
++++         (set cell #0 to 3)
+> ++++ <    (set cell #1 to 4 and go back to cell #0)
+[->+<]      (move the value from cell #0 to cell #1)
+```
+
+So, what if you want to ignore the current value of the target cell and ensure it holds exactly the value from the source cell? Easy! Just clear out the target cell before performing the move. Clearing a cell is as simple as using a loop with a decrement instruction: `[-]`
+
+```
++++         (set cell #0 to 3)
+> ++++ <    (assume the target cell is not zero)
+> [-] <     (clear out the target cell)
+[->+<]      (perform the move operation)
+```
+
+These are some very simple and primitive operations you can perform in a Brainfuck program. Things get more interesting when you start nesting loops—for example, you can implement multiplication by placing one loop inside another. We'll take a much deeper approach to implementing Brainfuck programs in the later sections.
+
+Now that you're convinced real programs can be implemented using Brainfuck, we're ready to design a minimalistic set of instructions that our processor can execute. This instruction set will be just powerful enough to allow us to write a compiler that translates Brainfuck programs into these instructions.
+
+To test whether everything works correctly, we'll use a sample Brainfuck program that calculates and outputs numbers from the Fibonacci sequence.
 
 ## Brainfuck
 
