@@ -319,7 +319,7 @@ Imagine a fair dice with 6 sides.
 - If you want to get a 1, you must approximately roll the dice for \\(\frac{6}{1}=6\\) timess.
 - If you want to get a \\(\leq 2\\), you must approximately roll the dice for \\(\frac{6}{2}=3\\) timess.
 - If you want to get a \\(\leq 3\\), you must approximately roll the dice for \\(\frac{6}{3}=2\\) timess.
-- If you want to get a \\(\leq 6\\), you must approximately roll the dice for \\(\frac{6}{3}=1\\) timess.
+- If you want to get a \\(\leq 6\\), you must approximately roll the dice for \\(\frac{6}{6}=1\\) timess.
 
 The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \\(0\\) to \\(2^{256}-1\\). In order to get an output below \\(\theta\\), you will need to try different inputs (Roll the dice) for \\(\frac{2^{256}}{\theta}\\) times. You can roll a hash-function by "slightly" changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).
 
