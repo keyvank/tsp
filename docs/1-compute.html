@@ -1095,7 +1095,13 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
     )
 </code></pre>
 <p>Remember how we decided to separate the program and its data into different memory modules? In a similar way to how we introduced the Program Counter to track the location of the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the <em><strong>data</strong></em> memory. By default, it is initialized to zero, pointing to the first cell of memory.</p>
-<p>[MARKER]</p>
+<p>Unlike the <code>InstructionPointer</code>, which is automatically incremented on every clock tick, the <code>DataPointer</code> usually remains unchanged. Its value is only updated when a <code>FWD</code> or <code>BWD</code> instruction is executed, which increments or decrements the pointer respectively. To describe this behavior using multiplexers, we can introduce two input wires, <code>is_fwd</code> and <code>is_bwd</code>, which indicate whether the current instruction is <code>FWD</code> or <code>BWD</code>.</p>
+<p>From these signals, we can derive an intermediary signal <code>is_fwd_bwd</code> that indicates whether the current instruction modifies the data pointer at all. If neither instruction is active, the data pointer should retain its previous value. We can also define a <code>data_pointer_next</code> signal that stores <code>data_pointer + 1</code> when <code>is_fwd</code> is high, and <code>data_pointer - 1</code> otherwise.</p>
+<pre><code>IsFwdOrBwd = IsFwd | IsBwd
+DataPtrNext = IsFwd ? (DataPtr + 1) : (DataPtr - 1)
+DataPtr = IsFwdOrBwd ? DataPtrNext : DataPtr
+</code></pre>
+<p>In the Python implementation of this logic, we first precompute the incremented and decremented versions of the data pointer by adding <code>00000001</code> and <code>11111111</code> respectively. We then feed either the old value, the incremented value, or the decremented value back into the data pointer register, following the logic described above using two multiplexers.</p>
 <pre><code class="language-python=">def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
     one = [circuit.one()] + [circuit.zero()] * 7
     minus_one = [circuit.one()] * 8
@@ -1126,6 +1132,8 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
 
     return Reg8(circuit, in_clk, data_pointer_next, data_pointer, 0)
 </code></pre>
+<p>The data-pointer register points to a memory location, right? That means we also need a <code>DataMemory</code> module to actually store data. This module takes the data address to be read from or written to as an input (which is driven by the data pointer). It also receives two control wires, <code>is_inc</code> and <code>is_dec</code>, which indicate whether the processor has reached an <code>INC</code> or <code>DEC</code> instruction and should increment or decrement the value stored at the given memory location on the next clock cycle. The module outputs the current value stored in the memory slot being pointed to.</p>
+<p>Our <code>DataMemory</code> module is essentially a wrapper around a RAM module. The RAM module’s write-enable flag is set to true only when either <code>is_inc</code> or <code>is_dec</code> is high. The new value to be written to memory is selected using a multiplexer between two precomputed values: <code>data_inc</code> and <code>data_dec</code>.</p>
 <pre><code class="language-python=">def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):
     one = [circuit.one()] + [circuit.zero()] * 7
     min_one = [circuit.one()] * 8

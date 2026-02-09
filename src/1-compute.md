@@ -1209,7 +1209,18 @@ def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code):
 
 Remember how we decided to separate the program and its data into different memory modules? In a similar way to how we introduced the Program Counter to track the location of the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the ***data*** memory. By default, it is initialized to zero, pointing to the first cell of memory.
 
-[MARKER]
+
+Unlike the `InstructionPointer`, which is automatically incremented on every clock tick, the `DataPointer` usually remains unchanged. Its value is only updated when a `FWD` or `BWD` instruction is executed, which increments or decrements the pointer respectively. To describe this behavior using multiplexers, we can introduce two input wires, `is_fwd` and `is_bwd`, which indicate whether the current instruction is `FWD` or `BWD`.
+
+From these signals, we can derive an intermediary signal `is_fwd_bwd` that indicates whether the current instruction modifies the data pointer at all. If neither instruction is active, the data pointer should retain its previous value. We can also define a `data_pointer_next` signal that stores `data_pointer + 1` when `is_fwd` is high, and `data_pointer - 1` otherwise.
+
+```
+IsFwdOrBwd = IsFwd | IsBwd
+DataPtrNext = IsFwd ? (DataPtr + 1) : (DataPtr - 1)
+DataPtr = IsFwdOrBwd ? DataPtrNext : DataPtr
+```
+
+In the Python implementation of this logic, we first precompute the incremented and decremented versions of the data pointer by adding `00000001` and `11111111` respectively. We then feed either the old value, the incremented value, or the decremented value back into the data pointer register, following the logic described above using two multiplexers.
 
 ```python=
 def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
@@ -1242,6 +1253,10 @@ def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
 
     return Reg8(circuit, in_clk, data_pointer_next, data_pointer, 0)
 ```
+
+The data-pointer register points to a memory location, right? That means we also need a `DataMemory` module to actually store data. This module takes the data address to be read from or written to as an input (which is driven by the data pointer). It also receives two control wires, `is_inc` and `is_dec`, which indicate whether the processor has reached an `INC` or `DEC` instruction and should increment or decrement the value stored at the given memory location on the next clock cycle. The module outputs the current value stored in the memory slot being pointed to.
+
+Our `DataMemory` module is essentially a wrapper around a RAM module. The RAM module’s write-enable flag is set to true only when either `is_inc` or `is_dec` is high. The new value to be written to memory is selected using a multiplexer between two precomputed values: `data_inc` and `data_dec`.
 
 ```python=
 def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):

@@ -187,6 +187,8 @@
 <p>A few days have passed, and I rarely see people talking about Sora. It’s starting to become normal, I guess. People who were excited at first are now finding Sora boring. I just realized there is something called “Hedonic Adaptation.” It argues that humans will always return to a stable level of happiness, despite positive or negative changes in their lives. This happens with the advancement of technology all the time. At first, we are all like &quot;woah,&quot; and after some time, everything already gets boring. Although this may seem unfair, it drives us humans to progress because, you know, being stuck is boring.</p>
 <p>I can’t imagine how many &quot;woah&quot; moments humans have had throughout history. Things we have in our hands right now seem like miracles for people living 300 years ago, but in our days, old technology seems basic and trivial.</p>
 <p>I really hope this book will be able to fulfill its purpose: to make the interested reader appreciate what it took for us to reach this level of advancement in the computer-driven technology.</p>
+<p><em><strong>February 10th, 2026</strong></em></p>
+<p>People are pretending as if text-to-video models have always existed.</p>
 <h2 id="preface"><a class="header" href="#preface">Preface</a></h2>
 <p>The book you're about to read is the result of exploring various areas in computer science for over 15 years. The idea of writing this book began around 8 years ago when I was a high-school student, getting ready for college. At that time, my focus was on learning computer graphics and 3D rendering algorithms. The idea of generating 3D images by manually calculating the raw RGB values of pixels intrigued me, and I'm the kind of person who wants to teach everyone the exciting things I have learned. Unfortunately, not everyone I knew at that time was interested in learning low-level stuff like this. Instead of trying to teach what I had learned, I decided to write a book. I was confident I'd have an audience, as many programmers worldwide are eager to learn more than just web-application development (a common career path among software engineers).</p>
 <p>So, I started writing the book, named it &quot;Programming the Visuals,&quot; and made a lot of progress! Not sure what happened exactly, but I got a bit discouraged after finding it hard to fill a book with content. I found myself explaining everything I wanted to explain in less than 40 pages, and well, 40 pages are not enough for a technical book. I didn't want to clutter my book with all the details of different rendering algorithms. I just wanted to explain the <em><strong>core idea</strong></em>, in very simple words and with easy-to-understand code examples. My goal was to introduce this specific field of computer science to people, hoping they would get encouraged enough to learn anything else they'd need by themselves.</p>
@@ -1198,7 +1200,13 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
     )
 </code></pre>
 <p>Remember how we decided to separate the program and its data into different memory modules? In a similar way to how we introduced the Program Counter to track the location of the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the <em><strong>data</strong></em> memory. By default, it is initialized to zero, pointing to the first cell of memory.</p>
-<p>[MARKER]</p>
+<p>Unlike the <code>InstructionPointer</code>, which is automatically incremented on every clock tick, the <code>DataPointer</code> usually remains unchanged. Its value is only updated when a <code>FWD</code> or <code>BWD</code> instruction is executed, which increments or decrements the pointer respectively. To describe this behavior using multiplexers, we can introduce two input wires, <code>is_fwd</code> and <code>is_bwd</code>, which indicate whether the current instruction is <code>FWD</code> or <code>BWD</code>.</p>
+<p>From these signals, we can derive an intermediary signal <code>is_fwd_bwd</code> that indicates whether the current instruction modifies the data pointer at all. If neither instruction is active, the data pointer should retain its previous value. We can also define a <code>data_pointer_next</code> signal that stores <code>data_pointer + 1</code> when <code>is_fwd</code> is high, and <code>data_pointer - 1</code> otherwise.</p>
+<pre><code>IsFwdOrBwd = IsFwd | IsBwd
+DataPtrNext = IsFwd ? (DataPtr + 1) : (DataPtr - 1)
+DataPtr = IsFwdOrBwd ? DataPtrNext : DataPtr
+</code></pre>
+<p>In the Python implementation of this logic, we first precompute the incremented and decremented versions of the data pointer by adding <code>00000001</code> and <code>11111111</code> respectively. We then feed either the old value, the incremented value, or the decremented value back into the data pointer register, following the logic described above using two multiplexers.</p>
 <pre><code class="language-python=">def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
     one = [circuit.one()] + [circuit.zero()] * 7
     minus_one = [circuit.one()] * 8
@@ -1229,6 +1237,8 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
 
     return Reg8(circuit, in_clk, data_pointer_next, data_pointer, 0)
 </code></pre>
+<p>The data-pointer register points to a memory location, right? That means we also need a <code>DataMemory</code> module to actually store data. This module takes the data address to be read from or written to as an input (which is driven by the data pointer). It also receives two control wires, <code>is_inc</code> and <code>is_dec</code>, which indicate whether the processor has reached an <code>INC</code> or <code>DEC</code> instruction and should increment or decrement the value stored at the given memory location on the next clock cycle. The module outputs the current value stored in the memory slot being pointed to.</p>
+<p>Our <code>DataMemory</code> module is essentially a wrapper around a RAM module. The RAM module’s write-enable flag is set to true only when either <code>is_inc</code> or <code>is_dec</code> is high. The new value to be written to memory is selected using a multiplexer between two precomputed values: <code>data_inc</code> and <code>data_dec</code>.</p>
 <pre><code class="language-python=">def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):
     one = [circuit.one()] + [circuit.zero()] * 7
     min_one = [circuit.one()] * 8
@@ -3479,7 +3489,7 @@ R_z &amp;&amp; U_z &amp;&amp; F_z &amp;&amp; 0 \\
 <div style="break-before: page; page-break-before: always;"></div><h1 id="think"><a class="header" href="#think">Think!</a></h1>
 <p><strong>Music of the chapter:</strong> <em>One is glad to be of service - By April Rain</em></p>
 <h2 id="the-game-of-life"><a class="header" href="#the-game-of-life">The Game of Life</a></h2>
-<p>The Game of Life is a very simple environment and set of rules in which creatures and evolve. It was created by the famous mathematician, John Horton Conway to demonstrate, as its name suggests, how a living creature can evolve in a simple environment with simple rules. The model is straightforward. It is a two-dimensional infinite plane of squares, in which each square can be either on or off. Conway's artificial world has 4 rules:</p>
+<p>The Game of Life is a very simple environment and set of rules in which creatures evolve. It was created by the famous mathematician, John Horton Conway to demonstrate, as its name suggests, how a living creature can evolve in a simple environment with simple rules. The model is straightforward. It is a two-dimensional infinite plane of squares, in which each square can be either on or off. Conway's artificial world has 4 rules:</p>
 <ol>
 <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
 <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
@@ -4207,7 +4217,7 @@ while True:
 <li>If you want to get a 1, you must approximately roll the dice for \(\frac{6}{1}=6\) timess.</li>
 <li>If you want to get a \(\leq 2\), you must approximately roll the dice for \(\frac{6}{2}=3\) timess.</li>
 <li>If you want to get a \(\leq 3\), you must approximately roll the dice for \(\frac{6}{3}=2\) timess.</li>
-<li>If you want to get a \(\leq 6\), you must approximately roll the dice for \(\frac{6}{3}=1\) timess.</li>
+<li>If you want to get a \(\leq 6\), you must approximately roll the dice for \(\frac{6}{6}=1\) timess.</li>
 </ul>
 <p>The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \(0\) to \(2^{256}-1\). In order to get an output below \(\theta\), you will need to try different inputs (Roll the dice) for \(\frac{2^{256}}{\theta}\) times. You can roll a hash-function by &quot;slightly&quot; changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).</p>
 <p>In our HashCash example, we require the email sender to &quot;work&quot; approximately as much as running SHA-256 for 1 million times!</p>
