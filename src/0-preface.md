@@ -20,6 +20,10 @@ I can’t imagine how many "woah" moments humans have had throughout history. Th
 
 I really hope this book will be able to fulfill its purpose: to make the interested reader appreciate what it took for us to reach this level of advancement in the computer-driven technology.
 
+***February 10th, 2026***
+
+People are pretending as if text-to-video models have always existed.
+
 ## Preface
 
 The book you're about to read is the result of exploring various areas in computer science for over 15 years. The idea of writing this book began around 8 years ago when I was a high-school student, getting ready for college. At that time, my focus was on learning computer graphics and 3D rendering algorithms. The idea of generating 3D images by manually calculating the raw RGB values of pixels intrigued me, and I'm the kind of person who wants to teach everyone the exciting things I have learned. Unfortunately, not everyone I knew at that time was interested in learning low-level stuff like this. Instead of trying to teach what I had learned, I decided to write a book. I was confident I'd have an audience, as many programmers worldwide are eager to learn more than just web-application development (a common career path among software engineers).
