@@ -764,13 +764,29 @@ There are times you want to access a website, but you don't want anyone to know 
 
 The Tor network is a smart and innovative idea, allowing people to hide their activities, and remain private, even to their proxy servers. This is done through entities known as: Onion routers.
 
-## Socks5
+## When they cut your voice
 
-Perhaps dictatorial governments are the main reason one of the coolest kind of softwares exist today: the internet anti-censorship software
+I'm writing this at midnight on March 10th, 2026, from Tehran, Iran, in the middle of one of the heaviest air attacks my country has ever seen. The war started nearly seven days ago, and the internet has been shut down since day one. The government is clearly scared of people connecting with each other, since regime change is something that has been on people's minds for a long time. Even the most sophisticated VPNs do not work, yet I, and many others, are still able to connect. Because when there is a will, there is a way! Especially if you are good with computers.
 
-Those are protocols invented by people who seek freedomof information, trying to escape limitations that governments put on the internet. Cryptography is the main reason why it has got difficult for the governments to prevent people from getting whatever information they want out of the internet.
+In this section, I'm going to discuss one of the coolest kinds of software that exist today (thanks to dictatorial governments): internet anti-censorship software.
 
-Encrypted information is impossible to analyze, and there is no way a man-in-the-middle can distinguish between someone actually opening a legit (In the government's opinion!) website and someone who is trying to break the rules.
+I'll explain the concept using the analogy of you (i.e., the client) and your friend (i.e., the server) trying to communicate through a telephone line, while bad guys try to prevent you from doing so. We'll start with the simplest ways the bad guy can cut your connection, then gradually move to more sophisticated methods, and try to mitigate them. The main rule is this: you have to make it ***costlier*** for the bad guy to cut your voice.
+
+### What if they eavesdrop?
+
+Imagine the bad guys are spying on your telephone lines and listening to what you and your friend say. Based on the content, they can, and will, decide to hang up your call. Well, in that case, the solution is simple! You and your friend communicate using encrypted messages. The spy may no longer understand what you are talking about and will have no excuse to end your call.
+
+Back in the old HTTP era, internet providers could easily eavesdrop on what you were searching for on Google and decide not to send back Google's response if they did not like what you were looking for. When HTTPS came along, they could no longer do that, because all the communication they could see between you and Google became a random stream of gibberish bytes.
+
+As a result, the only way to prevent you from searching for “that specific thing” would be to completely block access to Google. Completely blocking Google is a costly decision, so they may decide to give up on this one and simply allow you to search for whatever you want.
+
+### What if they don't let me dial at all?
+
+What if the bad guy doesn't allow to dial at all?
+
+[MARKER]
+
+Cryptography is the main reason why it has got difficult for the governments to prevent people from getting whatever information they want out of the internet. Encrypted information is impossible to analyze, and there is no way a man-in-the-middle can distinguish between someone actually opening a legit (In the government's opinion!) website and someone who is trying to break the rules.
 
 Both of those people are putting bit streams on the wires which look completely random by an external observer.
 
