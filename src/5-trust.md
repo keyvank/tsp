@@ -782,7 +782,59 @@ As a result, the only way to prevent you from searching for “that specific thi
 
 ### What if they don't let me dial at all?
 
-What if the bad guy doesn't allow to dial at all?
+The bad guy may have some kind of blacklist—numbers that you are not allowed to call. Assuming that you still have access to most numbers, you may ask a third person (i.e., a proxy) who has unlimited access to all other numbers to do the dialing for you. You dial the proxy, the proxy dials your friend, and then the proxy simply puts both telephone handsets near each other so that you can talk with your friend as if you had dialed them directly.
+
+Ah, but what if I don't want the proxy to listen to my messages? Well, that's not a serious problem thanks to modern cryptography. You can always securely exchange an encryption key with the other party and start talking privately, even if every single bit of information passing through your communication line is being eavesdropped on.
+
+### What if the bad guys detect you're proxying?
+
+When you want to use a third person as a proxy for your call, you would probably start the conversation with something like this:
+
+`Hey friend, do me a favor: dial Keyvan for me and proxy my voice!`
+
+If you put yourself in the bad guy’s shoes, you can clearly see that there is something suspicious about this call. Someone is trying to bypass your blacklist. The bad guy might get triggered when he sees someone saying a specific phrase like “Hey friend, do me a favor” and block the connection right away.
+
+A practical example is when your connection gets terminated when you try to communicate with a server using something too obvious, like the SOCKS5 protocol. That’s a kind of protocol-level filtering.
+
+Again, we’re smarter than the bad guy. The incredible fact is that once our connection with someone becomes encrypted, the bad guy may no longer be able to tell whether we are using the intermediary person as a proxy or simply talking to them directly. We just have to pretend that we are doing something normal, like having a simple encrypted conversation.
+
+For example, what if we simply start with something like:
+
+`Hey friend, what's up? Let's communicate privately! [SOMETHING ENCRYPTED]...`
+
+Then, inside the encrypted section, we include the real instruction: `Hey! Dial Keyvan for me ;)`
+
+Some protocols take this ***pretending*** idea to the extreme. For example, there is a protocol called Trojan that follows this general idea.
+
+Imagine you have a real website—for example, a blog. By *real*, I mean that when you visit the website with a browser, you actually receive legitimate content. The bad guy cannot easily recognize that something suspicious is happening on that server, because everything appears normal. In fact, he can make an HTTPS request himself and see that the server returns real content.
+
+The Trojan protocol suggests the following: let the web server secretly listen for certain clues that trigger it to become a proxy server. For example, imagine there is a password. If you somehow include this password in the body of your HTTPS request, the server will recognize you and start acting as a proxy. However, if the password is not present, the server behaves as if you simply sent a malformed or meaningless request.
+
+For example:
+
+If you send:
+
+```
+"Hey, the password is Ginger. Dial Keyvan for me ;)"
+```
+
+and the password is correct, the server might respond with something like:
+
+```
+"Alright, here is the result:"
+```
+
+But if the password is incorrect, it may respond as if it has no idea what you're talking about:
+
+```
+"What password? What the hell are you talking about?"
+```
+
+Now imagine you are the bad guy. What can you do to prevent people from connecting like this? Other than blocking all HTTPS traffic (which is certainly not practical) or massively expanding your blacklist, there are not many easy options.
+
+In other words, it becomes **much more costly** for the bad guy to block your internet access. Mission accomplished.
+
+You get the point! Again, I’m not going to explore the implementation details, since this book focuses on general ideas rather than low-level specifics. But from here, you should be able to understand how these protocols work—and maybe even design your own if your internet provider decides to restrict your access.
 
 [MARKER]
 
