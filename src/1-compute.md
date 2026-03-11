@@ -855,7 +855,11 @@ But how do we specify which part of the memory we want to use?
 
 ### A smarter state storage
 
-The solution is simple but powerful: let's assign a unique identity to each memory cell and call it its address. That way, we can reference and access only the specific parts of memory we need during each operation.
+The solution is simple but powerful: instead of feeding the entire "state" to the manipulator and letting it decide what the new state is, we let the manipulator decide which portion of the state it wants to access or change through an "address," and we feed the manipulator only the value stored at that address. This way, we can reference and access only the specific parts of memory we need during each operation.
+
+The "manipulator" part of our digital circuit will only be fed the portion of memory it intends to read (through an "address" that is sent to a memory module by the manipulator circuit itself). It can then modify the memory by outputting an "address" and a "value," which are fed back into the memory module.
+
+![Instead of feeding the entire state to the manipulator, we let it choose the portion it wants to read/modify through an address. Bold lines indicate higher number of wires needed to connect the modules together.](assets/addressable.png)
 
 Yes, what we need is an ***Addressable Memory***.
 
@@ -880,7 +884,7 @@ Now the challenging question is how to allow only a single 8-bit memory-cell to 
 
 Let's assume that the 8-bit input pins of all the memory cells within our memory are connected to the 8 input pins of the memory component. This would cause the internal value of every memory cell to be updated to the given input value on the next clock cycle. We definitely don't want that! So how can we prevent it?
 
-Remember how a register only stores its input value when a full clock cycle occurs? We can use a similar idea here. Specifically, we need to prevent the clock signal from reaching all memory cells except the one whose address matches the input address. Additionally, when the memory is in read mode, the clock signal should be completely disabled for all memory cells.
+Remember how a register only stores the inputs values within itself only when a full clock cycle occurs? We can use a similar idea here. Specifically, we need to prevent the clock signal from reaching all memory cells except the one whose address matches the input address. Additionally, when the memory is in read mode, the clock signal should be completely disabled for all memory cells.
 
 Technically, the clock signal should only reach a memory cell if: `(addr == cell_index) && write_mode`. To achieve this, simply set the input clock signal of each memory cell to: `(addr == cell_index) && write_mode && clk`
 
@@ -1028,7 +1032,7 @@ Now we're fully ready to move forward and implement our RAM design!
 
 First things first—what do we mean by ***random-access*** memory?
 
-Because in RAM, it's very efficient to read or write a value at any address, regardless of its position. The key idea is that accessing a memory cell takes the same amount of time no matter which address is used.
+Because in RAM, it's very efficient to read or write a value at any address, regardless of its position. The key idea is that accessing a memory cell takes the same amount of time no matter which address is used. RAMs are efficient even your read pattern is random!
 
 Now, compare this to how optical disks or hard drives work. These devices have to keep track of the current read/write head position, and to reach a new location, they must seek—move to the requested position relative to where they are. This makes access efficient only when reading or writing data sequentially, like going forward or backward one byte at a time.
 
@@ -1112,7 +1116,7 @@ In this section, we will discuss how we can assign meaning to numbers and bit pa
 
 Before diving into this book's design and implementation of a processor, there’s an important question we need to address. Computer programs need a place to store and manipulate temporary values—much like using a sheet of paper as a draft when solving a math problem. That’s actually one of the primary reasons computers have memory. But we just said that a "program" itself is also data stored in memory. So, ***is the memory used by the program for drafting its data the same as the memory where the program itself is stored? Or are these two separate memory spaces?***
 
-For modern computers, the answer is yes—both the program and its data reside in the same memory. This concept is often summed up by the phrase: ***code is data, and data is code***. It's one of the most brilliant and fundamental ideas that form the basis of modern computing.
+For modern computers, the answer is yes—both the program and its data reside in the same memory. This concept is often summed up by the phrase: ***code is data, and data is code***. It's one of the most brilliant and fundamental ideas that form the basis of modern computers.
 
 The implications of this design—known as the Von Neumann architecture—are profound. When a computer stores both the program and the data it operates on in the same memory, several important things become possible:
 
@@ -1136,16 +1140,20 @@ To answer the first question, we need a register to hold the current location in
 
 If the current instruction is not a jump, then the next value of the PC should simply be `PC + 1`. However, if the current instruction is a jump, then the next value of the PC is determined by that instruction. We'll dedicate a module to holding the PC and determining its next value. We’ll call this module the `InstructionPointer`.
 
-Practically speaking, the `InstructionPointer` module could first check if a jump is needed (based on the current instruction) and set the instruction pointer to the new value; otherwise, it would simply increment it.
+Practically speaking, the `InstructionPointer` module could first check if a jump is needed (based on the current instruction) and set the instruction pointer to the new value (`JNZ_Addr`); otherwise, it would simply increment it.
 
 ```
 ShouldJump = IsJNZ && (Data[DataPointer] == 0)
-InstPtr = ShouldJump ? JNZ_Addr : InstPtr + 1
+InstPtr = ShouldJump ? JNZ_Addr : (InstPtr + 1)
 ```
+
+JNZ stands for Jump if Not Zero. It is an instruction that commands the processor to jump to a specific instruction if the pointed value in data memory is not zero. Do not panic, we will discuss the JNZ instruction in the upcoming sections. For now, just assume it is some kind of flag that overwrites the PC register with a custom address (referred to as `JNZ_Addr` in the pseudo-code) instead of simply incrementing it.
+
+[MARKER]
 
 Unfortunately, since our instructions are 8 bits wide and the first bit is already being used by the decoder to detect if the instruction is a JNZ, our jumps will be limited to memory locations in the range 0-127 (instead of 0-255), as we have only 7 bits left. While we’re okay with this limitation, there are different ways to overcome it. For example, we could make our instructions wider (e.g., 16 bits), or allow some instructions to take extra arguments by performing additional memory reads. For instance, when the current instruction is JNZ, we could wait for another clock cycle and perform an extra memory read to get the memory location to jump to.
 
-That would again make the JNZ instruction multi-staged, as it would require adding extra circuitry to read the memory cell following the PC to get the target PC in the next clock cycle. Handling all of that would significantly increase the complexity of our processor, so let's keep it simple. Here is the implementation of our simplified `InstructionPointer` module:
+That would again make the JNZ instruction multi-staged, as it would require adding extra circuitry to read the memory cell following the PC to get the target PC in the next clock cycle. Handling all of that would significantly increase the complexity of our processor, so let's keep it simple and just assume we can't jump beyond instruction at slot #127. Here is the implementation of our simplified `InstructionPointer` module:
 
 ```python=
 def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
