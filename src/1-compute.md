@@ -1128,6 +1128,122 @@ An interesting perspective is that the reason you can download a compressed exec
 
 To keep our computer implementation simple, we will not follow the Von Neumann architecture. Instead, we will assume that code and data are stored in separate memory components. This has made our lives much easier, mainly because we can now read an instruction, decode it, and execute it all in a single clock cycle. If the program and data were both stored in a single memory component, the CPU would need to perform at least two memory reads to execute an instruction: one to read the instruction itself, and another in case the fetched instruction involves accessing memory. (Our current RAM doesn't allow reading from two different memory locations at the same time.) Moreover, the CPU would also require additional circuitry to determine which "stage" it is in during a cycle: Is it supposed to "read" an instruction, or execute one that it has already read and stored in a temporary buffer? We avoided all of this simply by separating the memories.
 
+### Decoder
+
+So, we assume that the program is stored in a separate 256-byte memory, where each byte represents an instruction. Since every slot in the program memory represents a single instruction and contains 8 bits of data, we can theoretically have 2⁸ = 256 different instructions. Let’s assign meanings to some of these values to make practical use of them.
+
+Here, I propose a very simple instruction set (a mapping from 8-bit values to meanings/instructions) that will make it easy for us to build a compiler that translates a programming language called Brainfuck into it. (We will explore the details of that language in future sections.)
+
+This instruction set consists of six instructions:
+
+- ***FWD***: Increases the data-pointer by 1, i.e., moves the data-pointer to the next cell.
+- ***BWD***: Decreases the data-pointer by 1, i.e., moves the data-pointer to the previous cell.
+- ***INC***: Increases the value of the current data cell by 1.
+- ***DEC***: Decreases the value of the current data cell by 1.
+- ***JNZ***: Jumps to a given address if the value in the current cell is not zero.
+- ***PRNT***: Outputs the value of the 
+
+Now, here is my proposed mapping from 8-bit patterns to these instructions:
+
+![Decoding rules of instruction](assets/decoder.png){ width=300px }
+
+If you’re wondering why I designed the opcodes of this CPU’s instruction set this way: since we have only six instructions, 3 bits are enough to represent all of them.
+
+However, the JNZ instruction requires an argument: the target address to jump to. One way to pass this argument would be to use the remaining 5 bits of the instruction. But our memory has 256 cells, and 5 bits can only represent 32 locations, leaving 224 locations unreachable, which isn’t ideal.
+
+Instead, a more efficient design is to dedicate the first bit of the 8-bit instruction to indicate whether the instruction is JNZ or something else. If the first bit indicates that it is not JNZ, the CPU can use the remaining bits to determine the exact instruction type.
+
+This approach gives us 7 bits for the jump location, allowing us to access 128 memory locations instead of just 32. This makes much more efficient use of the available space.
+
+Now, while we are okay with this limitation, there are several ways to overcome it. For example, we could make our instructions wider (e.g., 16 bits), or allow some instructions to take extra arguments by performing additional memory reads. For instance, when the current instruction is JNZ, we could wait for another clock cycle and perform an extra memory read to retrieve the memory location to jump to.
+
+However, this would make the JNZ instruction multi-staged, since it would require additional circuitry to read the memory cell following the program counter (PC) in order to obtain the target address in the next clock cycle.
+
+Handling all of that would significantly increase the complexity of our processor. Therefore, to keep things simple, we will assume that jumps cannot target instructions beyond slot #127.
+
+Perfect! Now it's time to get our hands dirty and begin by building hardware that can recognize the type of instruction after fetching it from memory. We'll call this component the `Decoder`, since it decodes the instruction. The way it works is simple: it performs several equality checks using the `MultiEquals` component we used earlier when designing the memory.
+
+The `Decoder` is composed of 5 `MultiEquals` components to distinguish between `FWD`, `BWD`, `INC`, `DEC`, and `PRNT`, as well as a single Equals module responsible for detecting whether the instruction is a `JMP`s by examining the first bit. The module outputs 6 boolean bits, indicating the type of instruction:
+
+```python=
+def Decoder(
+    circuit,
+    in_inst,
+    out_is_fwd,
+    out_is_bwd,
+    out_is_inc,
+    out_is_dec,
+    out_is_jnz,
+    out_is_prnt,
+):
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.zero(), circuit.zero(), circuit.zero()],
+        out_is_fwd,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.one(), circuit.zero(), circuit.zero()],
+        out_is_bwd,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.zero(), circuit.one(), circuit.zero()],
+        out_is_inc,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.one(), circuit.one(), circuit.zero()],
+        out_is_dec,
+    )
+    MultiEquals(
+        circuit,
+        in_inst[0:4],
+        [circuit.zero(), circuit.zero(), circuit.zero(), circuit.one()],
+        out_is_prnt,
+    )
+    Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
+```
+
+To get an idea of how this instruction set actually works, let’s look at some examples.
+
+The following program stores the number 2 in the second memory cell and the number 4 in the third memory cell:
+
+```
+0: FWD // Now we are on the second memory-cell
+1: INC
+2: INC
+3: FWD // Moving forward to the third memory-cell
+4: INC
+5: INC
+6: INC
+7: INC
+```
+
+Or, this is a program that moves the number from the first memory cell to the second one:
+
+```
+0: INC
+1: INC
+2: INC
+
+3: DEC
+4: FWD
+5: INC
+6: BWD
+7: JNZ(3)
+```
+
+In this program, we assume that the number 3 is stored in the first memory cell by initially incrementing it three times. Then, the move logic follows. In each step, we decrement the value in the first cell and add it to the second cell. This process continues as long as the value in the first cell is not zero (using the `JNZ` instruction).
+
+(Note: `JNZ(3)` means setting the program counter register to 3.)
+
+The interesting thing is that you can perform surprisingly complex tasks using such a simple instruction set. If you’re up for a challenge, try implementing a program that calculates the factorial of a number using these instructions.
+
 ### Fetching the instruction
 
 The computer we are going to implement will be very minimal. In fact, it will have only six different instructions. However, these six instructions are enough to build programs that are more than interesting. Our goal is to design a CPU with enough features to create a Brainfuck compiler that can target its instruction set. We have a whole section dedicated to describing the Brainfuck programming language and the ways you can build complex programs using it. For now, let's focus on the processor's instructions and the way they are fetched.
@@ -1147,13 +1263,11 @@ ShouldJump = IsJNZ && (Data[DataPointer] == 0)
 InstPtr = ShouldJump ? JNZ_Addr : (InstPtr + 1)
 ```
 
-JNZ stands for Jump if Not Zero. It is an instruction that commands the processor to jump to a specific instruction if the pointed value in data memory is not zero. Do not panic, we will discuss the JNZ instruction in the upcoming sections. For now, just assume it is some kind of flag that overwrites the PC register with a custom address (referred to as `JNZ_Addr` in the pseudo-code) instead of simply incrementing it.
+JNZ stands for Jump if Not Zero. It is an instruction that tells the processor to jump to a specific instruction if the value pointed to in data memory is not zero.
 
-[MARKER]
+Assuming we have a `Decoder` module that can detect whether the current instruction is `JNZ`, we can pass the `is_jnz` flag, along with the data value and the data pointer, to the `InstructionPointer` module so it can calculate the next value of the program counter.
 
-Unfortunately, since our instructions are 8 bits wide and the first bit is already being used by the decoder to detect if the instruction is a JNZ, our jumps will be limited to memory locations in the range 0-127 (instead of 0-255), as we have only 7 bits left. While we’re okay with this limitation, there are different ways to overcome it. For example, we could make our instructions wider (e.g., 16 bits), or allow some instructions to take extra arguments by performing additional memory reads. For instance, when the current instruction is JNZ, we could wait for another clock cycle and perform an extra memory read to get the memory location to jump to.
-
-That would again make the JNZ instruction multi-staged, as it would require adding extra circuitry to read the memory cell following the PC to get the target PC in the next clock cycle. Handling all of that would significantly increase the complexity of our processor, so let's keep it simple and just assume we can't jump beyond instruction at slot #127. Here is the implementation of our simplified `InstructionPointer` module:
+Here is the implementation of our simplified `InstructionPointer` module:
 
 ```python=
 def Mux1x2Byte(circuit, in_sel, in_a, in_b, out):
@@ -1200,7 +1314,7 @@ def InstructionPointer(circuit, in_clk, in_is_jnz, in_data, in_addr, out_inst_po
     return Reg8(circuit, in_clk, inst_pointer_next, out_inst_pointer, 0)
 ```
 
-Next, we will have an `InstructionMemory`, which is a 256-byte RAM that holds our program. We'll connect the `InstructionPointer` to the `InstructionMemory`, which will output the fetched instruction. This instruction is then passed to a separate module responsible for decoding it and determining what action to take.
+Next, we introduce an `InstructionMemory`, which is a 256-byte RAM that stores our program. We connect the program-counter output of the `InstructionPointer`'s outputted PC to the `InstructionMemory`, which outputs the fetched instruction. This instruction is then passed to a `Decoder` module again so it can be decoded, determining what action the processor should take next.
 
 ```python=
 def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code):
@@ -1215,12 +1329,13 @@ def InstructionMemory(circuit, in_clk, in_inst_pointer, out_inst, code):
     )
 ```
 
-Remember how we decided to separate the program and its data into different memory modules? In a similar way to how we introduced the Program Counter to track the location of the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the ***data*** memory. By default, it is initialized to zero, pointing to the first cell of memory.
+Remember how we decided to separate the program and its data into different memory modules? That means we need another pointer and memory to manage. Similar to how we introduced the Program Counter to track the current instruction, our processor will also have a register called the Data Pointer. As the name suggests, this register points to a specific cell in the ***data*** memory. By default, it is initialized to zero, pointing to the first memory cell.
 
+Unlike the `InstructionPointer`, which is automatically incremented on every clock tick, the `DataPointer` usually remains unchanged. Its value is updated only when a `FWD` or `BWD` instruction is executed, which increment or decrement the pointer, respectively.
 
-Unlike the `InstructionPointer`, which is automatically incremented on every clock tick, the `DataPointer` usually remains unchanged. Its value is only updated when a `FWD` or `BWD` instruction is executed, which increments or decrements the pointer respectively. To describe this behavior using multiplexers, we can introduce two input wires, `is_fwd` and `is_bwd`, which indicate whether the current instruction is `FWD` or `BWD`.
+To describe this behavior using multiplexers, we can introduce two input signals, `is_fwd` and `is_bwd`, which are provided by the `Decoder` module and indicate whether the current instruction is FWD or BWD.
 
-From these signals, we can derive an intermediary signal `is_fwd_bwd` that indicates whether the current instruction modifies the data pointer at all. If neither instruction is active, the data pointer should retain its previous value. We can also define a `data_pointer_next` signal that stores `data_pointer + 1` when `is_fwd` is high, and `data_pointer - 1` otherwise.
+From these signals, we can derive an intermediate signal `is_fwd_bwd` that indicates whether the current instruction modifies the data pointer at all. If neither instruction is active, the data pointer retains its previous value. We can also define a `data_pointer_next` signal that holds `data_pointer + 1` when `is_fwd` is high, and `data_pointer - 1` when is_bwd is high.
 
 ```
 IsFwdOrBwd = IsFwd | IsBwd
@@ -1228,7 +1343,7 @@ DataPtrNext = IsFwd ? (DataPtr + 1) : (DataPtr - 1)
 DataPtr = IsFwdOrBwd ? DataPtrNext : DataPtr
 ```
 
-In the Python implementation of this logic, we first precompute the incremented and decremented versions of the data pointer by adding `00000001` and `11111111` respectively. We then feed either the old value, the incremented value, or the decremented value back into the data pointer register, following the logic described above using two multiplexers.
+In the Python implementation of this logic, we first precompute the incremented and decremented versions of the data pointer by adding `0b00000001` and `0b11111111` (i.e., –1 in two’s complement) to the current data pointer, respectively. We then feed either the original value, the incremented value, or the decremented value back into the data pointer register, following the logic described above using two multiplexers.
 
 ```python=
 def DataPointer(circuit, in_clk, in_is_fwd, in_is_bwd, data_pointer):
@@ -1286,113 +1401,7 @@ def DataMemory(circuit, in_clk, in_addr, in_is_inc, in_is_dec, out_data):
     )
 ```
 
-So, what can our computer actually do? Here's a list of instructions we want our processor to support:
-
-- ***FWD***: Increases the data-pointer by 1, i.e., moves the data-pointer to the next cell.
-- ***BWD***: Decreases the data-pointer by 1, i.e., moves the data-pointer to the previous cell.
-- ***INC***: Increases the value of the current data cell by 1.
-- ***DEC***: Decreases the value of the current data cell by 1.
-- ***JNZ***: Jumps to a given address if the value in the current cell is not zero.
-- ***PRNT***: Outputs the value of the 
-
-(Note: Since our memory cells are 8 bits wide, they can hold values between 0 and 255. Increasing 255 will cause an overflow, resetting the value to 0, and decreasing 0 will cause an underflow, wrapping the value around to 255.)
-
-To get an idea of how this instruction set actually works, let's look at some examples.
-
-This is a program that stores the number 2 in the 2nd memory cell and the number 4 in the 3rd one:
-
-```
-0: FWD // Now we are on the second memory-cell
-1: INC
-2: INC
-3: FWD // Moving forward to the third memory-cell
-4: INC
-5: INC
-6: INC
-7: INC
-```
-
-Or, this is a program that moves the number from the first memory cell to the second one:
-
-```
-0: INC
-1: INC
-2: INC
-
-3: DEC
-4: FWD
-5: INC
-6: BWD
-7: JNZ(3)
-```
-
-In this program, we'll assume that the number 3 is stored in the first memory cell by initially incrementing it three times. Then, the move logic follows. In each step, we decrement the value in the first cell and add to the second cell. This process continues while the value in the first cell is not zero (using the `JNZ` instruction).
-
-(Note: `JNZ(3)` means set the program-counter register to 3.)
-
-The interesting thing is that you can perform unbelievably complex tasks using a simple instruction set like this. If you're up for a challenge, try implementing a program that calculates the factorial of a number using these instructions.
-
-### Decoder
-
-Up until now, we know what our instructions are, how they're fetched from memory, and what can be done using them. But as you know, the output of the `InstructionMemory` is simply an 8-bit number. How do we know if a number represents `FWD`, `BWD`, or other instructions? Well, we need to design a mapping from 8-bit numbers to these instructions. Here's my proposed method for how this mapping can be done:
-
-![Decoding rules of instruction](assets/decoder.png){ width=300px }
-
-If you're wondering why I designed the opcodes of the instruction set for our CPU this way: we have only six instructions, and the first thing a CPU needs to do after fetching an instruction is determine its type. A naive approach would be to prefix our instructions with at least 3 bits to specify the instruction type.
-
-However, the only instruction in our set that requires an argument is JNZ, and if we reserve 3 bits just for the instruction type, we’d only have 5 bits left for the argument (the memory address to jump to). Since our memory has 256 cells, 5 bits would only allow us to specify 32 locations for the jump, leaving 224 locations unused, which isn’t ideal.
-
-Instead, a more efficient design is to dedicate the first bit of the 8-bit instruction to indicate whether the instruction is JNZ or something else. If it’s not JNZ, the CPU can use the remaining bits to determine the exact instruction type. This gives us 7 bits for the jump location, allowing us to access 128 memory locations instead of just 32. This is a much more efficient use of the available space!
-
-Perfect! Now it's time to get our hands dirty and begin by building hardware that can recognize the type of instruction after fetching it from memory. We'll call this component the `Decoder`, since it decodes the instruction. The way it works is simple: it performs several equality checks using the `MultiEquals` component we used earlier when designing the memory.
-
-The `Decoder` is composed of 5 `MultiEquals` components to distinguish between `FWD`, `BWD`, `INC`, `DEC`, and `PRNT`, as well as a single Equals module responsible for detecting whether the instruction is a `JMP`s by examining the first bit. The module outputs 6 boolean bits, indicating the type of instruction:
-
-```python=
-def Decoder(
-    circuit,
-    in_inst,
-    out_is_fwd,
-    out_is_bwd,
-    out_is_inc,
-    out_is_dec,
-    out_is_jnz,
-    out_is_prnt,
-):
-    MultiEquals(
-        circuit,
-        in_inst[0:4],
-        [circuit.zero(), circuit.zero(), circuit.zero(), circuit.zero()],
-        out_is_fwd,
-    )
-    MultiEquals(
-        circuit,
-        in_inst[0:4],
-        [circuit.zero(), circuit.one(), circuit.zero(), circuit.zero()],
-        out_is_bwd,
-    )
-    MultiEquals(
-        circuit,
-        in_inst[0:4],
-        [circuit.zero(), circuit.zero(), circuit.one(), circuit.zero()],
-        out_is_inc,
-    )
-    MultiEquals(
-        circuit,
-        in_inst[0:4],
-        [circuit.zero(), circuit.one(), circuit.one(), circuit.zero()],
-        out_is_dec,
-    )
-    MultiEquals(
-        circuit,
-        in_inst[0:4],
-        [circuit.zero(), circuit.zero(), circuit.zero(), circuit.one()],
-        out_is_prnt,
-    )
-    Equals(circuit, in_inst[0], circuit.one(), out_is_jnz)
-```
-
-Lastly, our computing machine start working when all of these modules get together in a single place:
+Finally, our computing machine begins operating when all of these modules are brought together and properly connected. We also provide a `snapshot()` function, which allows us to inspect the internal state of the machine for debugging purposes:
 
 ```python=
 class CPU:
@@ -1457,7 +1466,14 @@ class CPU:
         self.ram = DataMemory(circuit, in_clk, data_pointer, is_inc, is_dec, data)
 ```
 
-Now, let's write a compiler/assembler that is able to convert Brainfuck codes into opcodes runnable by our Brainfuck Processor!
+Remember the `PRNT` instruction? It allows our computer to communicate with the external world! Our interface consists of two outputs from the CPU module: `out_data` and `out_ready`.
+
+* `out_data` is an 8-bit output representing the value the CPU intends to send to the outside world (for example, it could be the letter `H` in a program that prints `Hello world!`).
+* `out_ready` is a 1-bit flag indicating whether there is valid data on out_data to be written.
+
+To satisfy this interface, we simply connect the `is_prnt` output from our `Decoder` to `out_ready` and forward the output of the `DataMemory` module to `out_data`. This way, `out_data` always reflects the value at the current data pointer location, but it is only recognized as an output when the CPU is executing a `PRNT` instruction, just as intended!
+
+Now, let’s write a compiler/assembler that can convert Brainfuck code into opcodes runnable by our processor! (Don’t worry, we’ll dive deeper into that language later. For now, we just need to feed some real code into our computer to see if it actually works!)
 
 ```python=
 def compile(bf):
@@ -1466,24 +1482,26 @@ def compile(bf):
 
     for c in bf:
         if c == ">":
-            opcodes.append(0)
+            opcodes.append(0)  # FWD 00000000
         elif c == "<":
-            opcodes.append(2)
+            opcodes.append(2)  # BWD 00000010
         elif c == "+":
-            opcodes.append(4)
+            opcodes.append(4)  # INC 00000100
         elif c == "-":
-            opcodes.append(6)
+            opcodes.append(6)  # DEC 00000110
         elif c == ".":
-            opcodes.append(8)
+            opcodes.append(8)  # PRNT 00001000
         elif c == "[":
-            locs.append(len(opcodes))
+            locs.append(len(opcodes))  # Do nothing!
         elif c == "]":
-            opcodes.append(1 + (locs.pop() << 1))
+            opcodes.append(1 + (locs.pop() << 1)) # JNZ [7-BIT LOCATION]0
 
     return opcodes + [0 for _ in range(256 - len(opcodes))]
 ```
 
-Let's write a program that prints out the fibonnaci sequence and run it:
+Here, I have a working Brainfuck program that prints the Fibonacci sequence. Simply load it into the program memory and let it run. If the outputs are correct, then all parts of your computer are functioning perfectly.
+
+Notice that in each clock cycle, we check whether the `out_ready` flag is set to 1. Whenever this happens, the value in the `out_data` signal is printed. This allows the CPU to communicate with the external world!
 
 ```python=
 if __name__ == "__main__":
@@ -1512,6 +1530,8 @@ if __name__ == "__main__":
 ```
 
 Unfortunately, the CPU we just implemented is not a 100% accurate implementation of Brainfuck, the slight difference is that in standard Brainfuck, the operation `[` acts like a `JZ` (Jump if zero!) instruction, it jumps to the corresponding `]` when the data in the data-pointer is zero. In our implementation, the `[` operator is compiled to nothing, and is ignored, although this doesn't stop us for having loops!
+
+[MARKER]
 
 ## What about keyboards, monitors and etc?
 
