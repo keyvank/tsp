@@ -1496,8 +1496,7 @@ DataPtr = IsFwdOrBwd ? DataPtrNext : DataPtr
 <p>How does this help? Remember that when an interrupt occurs, the processor stops executing the current process and jumps to a special part of memory where the interrupt handler resides. What if the interrupt handler decides to switch to another process instead of returning to the previous one? That’s exactly the idea behind an <em><strong>operating system</strong></em>: to determine what the next value of the program counter should be!</p>
 <p>Interesting, right? I’ll stop here, I’m confident you now have the tools to figure out the rest!</p>
 <h2 id="brainfuck"><a class="header" href="#brainfuck">Brainfuck</a></h2>
-<p>[MARKER]</p>
-<p>Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become truly skilled in programming when you learn how to program in a strange programming language named Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language — designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to see and understand how amazing things can be built by combining really simple components.</p>
+<p>Most people say it’s crucial to learn C if you want to be a good programmer. I say you only become truly skilled in programming when you learn how to program in a strange programming language named Brainfuck. Brainfuck is a language where you can only build working programs if you have a solid engineering mindset. Created in 1993 by Urban Müller, Brainfuck is an esoteric programming language: designed mainly for fun and as a challenge. Learning to program in Brainfuck is a great way to see and understand how amazing things can be built by combining really simple components.</p>
 <p>Brainfuck is extremely minimalistic, consisting of only eight simple commands. It’s easy to learn but hard to build anything meaningful with! Despite its simplicity, it can be mathematically proven that Brainfuck is Turing-complete, which means you can theoretically build web browsers, 3D games, and all kinds of complex software with it.</p>
 <p>The processor we are going to design and implement in this chapter will be heavily inspired by this language. In fact, the CPU will have instructions almost identical to those in Brainfuck (with some slight differences). Therefore, it’s crucial to first take a quick look at the language and see how different programs can be built with it. After that, we will explore how to build hardware capable of understanding and executing Brainfuck programs.</p>
 <p>Brainfuck is a minimalistic language that works with a simple array of memory cells, each initially set to zero, and a pointer that moves along these cells. You can increase or decrease the value in the current cell, move the pointer to adjacent cells, and perform input and output operations based on the value at the pointer’s position. The language also lets you jump to other parts of your code depending on whether the value of the current cell is zero or not. This basic setup enables surprisingly powerful computation through careful manipulation of memory and control structures.</p>
@@ -1514,36 +1513,42 @@ DataPtr = IsFwdOrBwd ? DataPtrNext : DataPtr
 </tbody></table>
 </div>
 <p>Nothing explains the language better than a few examples:</p>
+<p><em><strong>Storing a value in a memory cell</strong></em></p>
 <p>Setting the value of different slots is quite easy. You just have to navigate to the target cell using the <code>&lt;&gt;</code> instructions, and then repeat <code>+</code> as many times as needed. For example, the following code sets the first memory cell to 5 and the second memory cell to 7:</p>
 <pre><code>+++++       (set cell #0 to 5)
 &gt; +++++++   (move to cell #1 and set it to 7)
 </code></pre>
-<p>The values you'll be working with in your program are not always static. Sometimes, you'll want to move an existing value from one memory cell to another. That's where the loop instructions <code>[]</code> come in handy. The code below simply decrements the source cell and increments the target cell as long as the source cell is above zero—effectively zeroing out the source cell and incrementing the target cell by the same amount:</p>
+<p><em><strong>Moving a value from one cell to another</strong></em></p>
+<p>The values you'll be working with in your program are not always static. Sometimes, you'll want to move an existing value from one memory cell to another. That's where the loop instructions <code>[]</code> come in handy. The code below simply decrements the source cell and increments the target cell as long as the source cell is above zero, effectively zeroing out the source cell and incrementing the target cell by the same amount:</p>
 <pre><code>+++         (set cell #0 to 3)
 [-&gt;+&lt;]      (move the value from cell #0 to cell #1)
 </code></pre>
-<p>Yes, the fact that the source cell becomes zero is sometimes inconvenient. What if you want to copy a value while preserving the original value of the source cell? This is typically done by decrementing the source cell while incrementing both the target cell and a <em><strong>temporary</strong></em> memory cell. You then move the value from the temporary cell back into the source cell, restoring its original value. The code would look like this (we are copying cell #0 to cell #1, using cell #2 as temporary storage):</p>
+<p><em><strong>Copying a value from one cell to another</strong></em></p>
+<p>The fact that the move operation will wipe out the source cell is sometimes inconvenient. What if you want to copy a value while preserving the original value of the source cell? This is typically done by decrementing the source cell while incrementing both the target cell and a <em><strong>temporary</strong></em> memory cell. You then move the value from the temporary cell back into the source cell, restoring its original value. The code would look like this (we are copying cell #0 to cell #1, using cell #2 as temporary storage):</p>
 <pre><code>+++         (set cell #0 to 3)
 [-&gt;+&gt;+&lt;&lt;]   (move the value in cell #0 to both cell #1 and #2)
 &gt;&gt; [-&lt;+&gt;]   (restore the value of cell #0 by moving the value in cell #2 to back cell #0)
 </code></pre>
+<p><em><strong>Adding two cells together</strong></em></p>
 <p>Now, an important point when moving or copying values is that the target cell is not necessarily zero. In this case, you are effectively adding two numbers together. (Voila! The first useful case of Brainfuck!):</p>
 <pre><code>+++         (set cell #0 to 3)
 &gt; ++++ &lt;    (set cell #1 to 4 and go back to cell #0)
 [-&gt;+&lt;]      (move the value from cell #0 to cell #1)
 </code></pre>
+<p><em><strong>Zeroing out a cell</strong></em></p>
 <p>So, what if you want to ignore the current value of the target cell and ensure it holds exactly the value from the source cell? Easy! Just clear out the target cell before performing the move. Clearing a cell is as simple as using a loop with a decrement instruction: <code>[-]</code></p>
 <pre><code>+++         (set cell #0 to 3)
 &gt; ++++ &lt;    (assume the target cell is not zero)
 &gt; [-] &lt;     (clear out the target cell)
 [-&gt;+&lt;]      (perform the move operation)
 </code></pre>
-<p>These are some very simple and primitive operations you can perform in a Brainfuck program. Things get more interesting when you start nesting loops—for example, you can implement multiplication by placing one loop inside another. We'll take a much deeper approach to implementing Brainfuck programs in the later sections.</p>
-<p>Now that you're convinced real programs can be implemented using Brainfuck, we're ready to design a minimalistic set of instructions that our processor can execute. This instruction set will be just powerful enough to allow us to write a compiler that translates Brainfuck programs into these instructions.</p>
-<p>To test whether everything works correctly, we'll use a sample Brainfuck program that calculates and outputs numbers from the Fibonacci sequence.</p>
-<h2 id="brainfuck-1"><a class="header" href="#brainfuck-1">Brainfuck</a></h2>
-<p>Before trying to build anything with Brainfuck, let's write an interpreter for this language first! The original Brainfuck machine specification has 30000 memory-cells, each storing a 8-bit byte (Unsigned integer between 0 to 255). </p>
-<p>The following code is an Brainfuck interpreter written in Python, which executes a &quot;Hello World!&quot; program written in Brainfuck.</p>
+<p>These are some very simple and primitive operations you can perform in a Brainfuck program. Things get more interesting when you start nesting loops, for example, you can implement multiplication by placing one loop inside another. We'll take a much deeper approach to implementing Brainfuck programs in the later sections.</p>
+<p>Now that you're convinced real programs can be implemented using Brainfuck, I have good news for you: Brainfuck's specification is almost identical to the instruction set we designed for our processor in the previous sections! In fact, you can directly translate each character in a Brainfuck program into an instruction for our processor. We even wrote a simple compiler that does exactly this in the previous sections!</p>
+<h2 id="a-playground"><a class="header" href="#a-playground">A playground</a></h2>
+<p>I would like us to dig deeper into Brainfuck, but it's a bit hard to try running and debugging these programs on our simulated hardware. So, let's set that processor aside and instead learn this wonderful language using an interpreter or compiler that runs on your own computer. We'll start by writing an interpreter for the language.</p>
+<p>The original Brainfuck machine specification has 30,000 memory cells, each storing an 8-bit byte (an unsigned integer between 0 and 255). First, we will initialize an array of that size. Then we'll write a while loop that increments the program counter and jumps back whenever it reaches a <code>[</code> or a <code>]</code> instruction (remember the <code>JNZ</code> instruction we had on our processor?).</p>
+<p>To determine which <code>]</code> instruction corresponds to which <code>[</code>, we'll maintain a stack.</p>
+<p>The following code is a Brainfuck interpreter written in Python, which executes a &quot;Hello World!&quot; program written in Brainfuck.</p>
 <pre><code class="language-python3=">code = '''
 ++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;
 ---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
@@ -1575,7 +1580,7 @@ while pc &lt; len(code):
 
     pc += 1
 </code></pre>
-<p>If you want to reach maximum speeds while running a Brainfuck program, it is also worth noting that Brainfuck can be directly transpiled to C, you'll just need to initialize some variables and then do these substitutions:</p>
+<p>If you want to achieve maximum speed when running a Brainfuck program, it’s worth noting that Brainfuck can be directly transpiled to C. You only need to initialize a few variables and then perform the following substitutions:</p>
 <pre><code class="language-clike">unsigned char mem[30000] = {0};
 unsigned int pc = 0;
 </code></pre>
@@ -1615,17 +1620,20 @@ for ch in bf:
     
 print('}')
 </code></pre>
-<p>In order to use this tool for running your Brainfuck programs:</p>
+<p>To use this tool for running your Brainfuck programs:</p>
 <ol>
-<li>Write your Brainfuck program in a file: <code>main.bf</code></li>
+<li>Write your Brainfuck program in a file called <code>main.bf</code>.</li>
 <li>Transpile it to C: <code>python3 bf2c.py &lt; main.bf &gt; main.c</code></li>
 <li>Compile the C program: <code>gcc main.c</code></li>
 <li>Run the program: <code>./a.out</code></li>
 </ol>
-<p>Let's try to build things with this language now!</p>
-<p><strong>Hello World!</strong></p>
-<p>Printing a string is the first thing people actually do when learning a new programming language. Surprisingly, printing stuff isn't that straightforward in an esoteric programming language like Brainfuck. Since a Brainfuck program's inputs and outputs are bytes, we'll need to work with an 8-bit character encoding (Like ASCII) in order to work with strings. </p>
-<p>The instruction <code>.</code> is responsible for outputting bytes, and it outputs the byte the program is currently pointing at. So we somehow have to put our desired ASCII code in that memory location in order to print it. Naively, this would mean we have to put a lot of <code>+</code> instructions to make the current memory cell equal with our desired ASCII character. For example, we'll need to put 72 <code>+</code> instructions in order to print a <code>H</code> character! There are ways we can optimize the process of printing a string. Since the number 72 is already in the memory, we won't need to put 69 other <code>+</code> signs in another memory location in order to print the next letter <code>E</code>, we'll just need to subtract the old character by 3 (72-3=69), and print it again! This way we can write a Brainfuck program that can print &quot;HELLO WORLD&quot; in around 160 instructions:</p>
+<p>Now let's try building some things with this language!</p>
+<h2 id="hello-brainfuck"><a class="header" href="#hello-brainfuck">Hello Brainfuck!</a></h2>
+<p>Printing a string is one of the first things people do when learning a new programming language. Surprisingly, printing text isn't that straightforward in an esoteric language like Brainfuck. Since a Brainfuck program's inputs and outputs are bytes, we need to work with an 8-bit character encoding (such as ASCII) in order to handle strings.</p>
+<p>The instruction <code>.</code> is responsible for outputting bytes, and it prints the byte stored in the memory cell that the program is currently pointing to. Therefore, we somehow need to place the desired ASCII value in that memory cell before printing it.</p>
+<p>A naïve approach would require many <code>+</code> instructions to increment the current memory cell until it reaches the ASCII value of the desired character. For example, we would need 72 <code>+</code> instructions to print the character <code>H</code>.</p>
+<p>However, there are ways to optimize this process. Once the value 72 is already in memory, we don't need to add 69 <code>+</code> instructions in another memory cell to print the next letter, <code>E</code>. Instead, we can simply subtract 3 from the current value (since 72-3=69) and print again.</p>
+<p>Using this idea, we can write a Brainfuck program that prints &quot;HELLO WORLD&quot; in roughly 160 instructions:</p>
 <pre><code>+++++++++++++++++++++++++++++++++++
 +++++++++++++++++++++++++++++++++++
 ++.---.+++++++..+++.                ; Print 'HELLO'
@@ -1635,38 +1643,30 @@ print('}')
 ++++++++.--------.+++.------.------
 --.                                 ; Print 'WORLD'
 </code></pre>
-<p>Since printing the space character (ASCII code 32) required a huge jump, we preferred generating it in a separate memory cell (By moving the cursor to the next cell, incrementing it 32 times, printing it and the moving the cursor back to its original place).</p>
-<p>From now, instead of jumping to different locations of the memory through <code>&lt;&gt;</code> instruction, for the sake of readability, we will express our will to jump to different locations of memory, by giving names to the locations in memory and using those names in our code when we want to jump.</p>
-<p>As an example, imagine this is how we have named the memory cells of our machine:</p>
+<p>Printing the space character (ASCII code 32) required a large jump in value, so we chose to generate it in a separate memory cell. To do this, we moved the cursor to the next cell, incremented it 32 times, printed it, and then moved the cursor back to its original position.</p>
+<p>From now on, instead of jumping to different memory locations using the <code>&lt;&gt;</code> instructions directly, we will improve readability by assigning names to memory locations. When we want to move to a different memory cell, we will simply refer to it by its name.</p>
+<p>For example, imagine that we have named the memory cells of our machine like this:</p>
 <pre><code>0 1 2 3 4 5 6 7 8 9 ...
     A     B   C
 </code></pre>
-<p>Imagine we would like to add the values in memory location B and C to A. Assuming we are currently on 0th memory cell, we can write the code like this:</p>
+<p>Imagine we want to add the values in memory locations B and C to A. Assuming we are currently at the 0th memory cell, we can write the code like this:</p>
 <pre><code>&gt;&gt;&gt;&gt;&gt;[-&lt;&lt;&lt;+&gt;&gt;&gt;]&gt;&gt;[-&lt;&lt;&lt;&lt;&lt;+&gt;&gt;&gt;&gt;&gt;]
 </code></pre>
-<p>As a human, it would be very hard to analyze what's happening in this code. We can make it significantly more readable by expressing it like this:</p>
+<p>As humans, it would be very difficult to analyze what is happening in this code. We can make it significantly more readable by expressing it like this:</p>
 <pre><code>B[-A+B]C[-A+C]
 </code></pre>
-<p>We can actually write a compiler that can handle all these namings and memory managements for us, and make our life easier!</p>
-<p>Zeroing out a cell: <code>[-]</code>
-Moving from A to B: <code>A[-B+A]</code>
+<p>Look how easier it gets when you describe Brainfuck algorithm using this representation:</p>
+<p>Moving from A to B: <code>A[-B+A]</code>
 Copying from A to B: <code>A[-B+T+A]T[-A+T]A</code></p>
-<p><strong>Moving a number</strong></p>
-<p>Sometimes you'll need to move a number from one memory cell to another</p>
-<p><strong>Addition</strong></p>
-<pre><code class="language-=">,&gt;,&lt;         ; Store two numbers in memory cells 0 and 1
-[-&gt;&gt;+&lt;&lt;]     ; Add the number in slot 0 to slot 2
-&gt;            ; Move to slot 1
-[-&gt;+&lt;]       ; Add the number in slot 1 to slot 2
-&gt;.           ; Move to slot 2 and print its content
-</code></pre>
-<p>Keep in mind that the program above gets ASCII characters as its input and outputs another ASCII character which its code is the sum of the input codes.</p>
+<p>We can actually write a compiler that handles all these names and memory management for us, making our lives much easier!</p>
 <h2 id="befriending-complexity"><a class="header" href="#befriending-complexity">Befriending complexity</a></h2>
-<p>As you write more complicated programs in Brainfuck, you will soon notice that the immense amount of complexity is going to become unmaintainable over time. and soon you won't be able to add more logic and features to your Brainfuck programs. That is the time when you start missing functions, classes, and all other fancy tools your favorite high-level programming language provided you for free.</p>
-<p>Brainfuck is very similar to the assembly language of a very simple CPU. So it might make sense to start explaining our programs in a higher-level language that can be translated to Brainfuck, making it easier for us to build complicated programs that can run on our CPU without losing our minds. I have decided not to guide you through the process of building a compiler, because it's a world on its own. Compilers are programs that convert strings of one language to strings of another language. It's safe to say that compilers are effectively just string manipulation programs, and even if you don't know the inner workings of a modern compiler, you probably have some clues on how a compiler works. That's why we don't discuss building a compiler in this book, because the core idea behind a compiler is simple, and what we care about in this book is merely the ideas, and not production-level implemention and optimizations.</p>
-<p>So, instead of designing a whole new language that can be translated to Brainfuck, a simpler approach would be to write a Python library for generating Brainfuck codes. The Python library will help us to split our Brainfuck applications into modules.</p>
-<p>In this framework, we expect the modules of our Brainfuck application to reside in Python functions. These functions will all accept a <code>BrainfuckGenerator</code> class as their first argument, and all other inputs/outputs of the modules will be memory locations (<code>Pointer</code>s). There will be a <code>append</code> function within the generator class, allowing the modules to spit raw Brainfuck code into the generator. Besides that, it would be good to add some memory-management functionality to the generator class, allowing the user to allocate and free memory-cells on demand, so that the user doesn't have to worry about finding memory cells that are in-use by other modules, and focus on the logic of the application instead.</p>
-<p>Here is an example of how it would look like:</p>
+<p>As you write more complicated programs in Brainfuck, you will soon notice that the immense amount of complexity becomes unmaintainable over time, and eventually you won’t be able to add more logic or features to your programs. That’s when you start missing functions, classes, and other tools that your favorite high-level programming language normally provides for free.</p>
+<p>Brainfuck is very similar to the assembly language of a very simple CPU. Because of that, it makes sense to start describing our programs in a higher-level language that can later be translated into Brainfuck. This makes it much easier to build complex programs that can run on our CPU without losing our sanity.</p>
+<p>I have decided not to guide you through the full process of building a compiler, because that topic is a world of its own. Compilers are programs that convert strings in one language into strings in another language. In essence, they are string manipulation programs. Even if you don’t know the inner workings of a modern compiler, you probably already have some intuition about how one works. For that reason, we won’t go deep into compiler construction in this book. The main goal here is to understand the core ideas, not to build production-level implementations!</p>
+<p>Instead of designing a completely new language that compiles to Brainfuck, a simpler approach is to write a Python library that generates Brainfuck code. This library will allow us to split our Brainfuck applications into modules, making them much easier to manage.</p>
+<p>In this framework, the modules of our Brainfuck application will live inside Python functions. Each function will accept a <code>BrainfuckGenerator</code> class as its first argument, while the other inputs and outputs of the module will be memory locations (Pointers).</p>
+<p>The generator class will provide an append method, allowing modules to emit raw Brainfuck code into the generator. In addition, it would be useful for the generator class to include memory management functionality, enabling users to allocate and free memory cells when needed. This way, users won’t have to worry about accidentally using memory cells that are already in use by other modules, and can instead focus on the application’s logic.</p>
+<p>Here is an example of what this might look like:</p>
 <pre><code class="language-python=">class Pointer:
     def __init__(self, pos: int):
         self.pos = pos
@@ -1698,9 +1698,9 @@ class BrainfuckGenerator:
             self.code += &quot;&lt;&quot; * (self.pos - target.pos)
         self.pos = target.pos
 </code></pre>
-<p>Our Brainfuck code generator helps us to keep track of memory locations which are being used by different modules of our Brainfuck programs and to prevent conflicts. The code generator will not let you to move to different memory locations by yourself, and you have to use to <code>move</code> function instead. The <code>move</code> function will also keep track of the current location of the data pointer and generates as many <code>&lt;</code>/<code>&gt;</code> characters as needed, when the pointer needs to be moved.</p>
-<p>The <code>alloc</code> function finds the first unused memory location and flags it as allocated. The <code>free</code> function let's the user to free the memory cell again, by removing the flag from the <code>self.allocated</code> set.</p>
-<p>Great! Now let's implement some modules. We'll start with simple ones, a module that zeroes out a memory-cell by moving into it and decrementing it until in gets 0 (<code>zoroize</code>), and a module for putting a fixed number into a memory-cell (<code>fill</code>). The <code>fill</code> module will use the <code>zeroize</code> module.</p>
+<p>Our Brainfuck code generator helps us keep track of the memory locations used by different modules in our Brainfuck programs and prevents conflicts. The generator does not allow you to move to different memory locations manually; instead, you must use the <code>move</code> function. This function keeps track of the current location of the data pointer and generates the necessary <code>&lt;</code> or <code>&gt;</code> instructions whenever the pointer needs to move.</p>
+<p>The <code>alloc</code> function finds the first unused memory location and marks it as allocated. The <code>free</code> function allows the user to release a memory cell again by removing its flag from the <code>self.allocated</code> set.</p>
+<p>Great! Now let's implement some modules. We'll start with simple ones: a module that zeroes out a memory cell by moving to it and decrementing it until it reaches 0 (<code>zeroize</code>), and a module for placing a fixed number into a memory cell (<code>fill</code>). The <code>fill</code> module will make use of the <code>zeroize</code> module.</p>
 <pre><code class="language-python=">def zeroize(bf: BrainfuckGenerator, target: Pointer):
     bf.move(target)
     bf.append('[-]')
@@ -1711,7 +1711,7 @@ def fill(bf: BrainfuckGenerator, target: Pointer, val: int):
     bf.move(target)
     bf.append('+' * val)
 </code></pre>
-<p>A more complicated example is the copy operation. As you know, we need a third memory cell in order to copy a value from a source to a destination cell. We'll use the <code>alloc</code> function in order to find an unused cell, and after we are done with it, we'll <code>free</code> it, allowing other modules to use it:</p>
+<p>A more complicated example is the <code>copy</code> operation. As you know, we need a third memory cell in order to copy a value from a source cell to a destination cell. We will use the <code>alloc</code> function to find an unused cell, and once we are finished with it, we will <code>free</code> it so that other modules can use it later.</p>
 <pre><code class="language-python=">def copy(bf: BrainfuckGenerator, src: Pointer, dst: Pointer):
     tmp = bf.alloc()
 
@@ -1740,7 +1740,7 @@ bf = BrainfuckGenerator()
 copy(bf, Pointer(5), Pointer(8))
 print(bf.code)
 </code></pre>
-<p>We can even exploit the Python <code>with</code> expressions in order to implement for loops:</p>
+<p>We can even take advantage of Python’s <code>with</code> expressions to implement for loops:</p>
 <pre><code class="language-python=">class For:
     def __init__(self, bf: BrainfuckGenerator, i: Pointer, count: Pointer):
         self.bf = bf
@@ -1756,7 +1756,7 @@ print(bf.code)
         self.bf.move(self.i)
         self.bf.append('-]')
 </code></pre>
-<p>Here is a program that prints out the letter <code>A</code> for 5 times:</p>
+<p>Here is a program that prints the letter <code>A</code> five times:</p>
 <pre><code class="language-python=">bf = BrainfuckGenerator()
 
 i = bf.alloc()
@@ -1769,6 +1769,7 @@ with For(bf, i, cnt):
     bf.move(ascii_a)
     bf.append('.')
 </code></pre>
+<p>[MARKER]</p>
 <h2 id="what-really-happens"><a class="header" href="#what-really-happens">What really happens</a></h2>
 <p>The Brainfuck CPU we created is similar to real CPUs in many ways, but it lacks many features making it impractical for any serious application. As an example, we didn’t cover how a cpu is able to interact with different hardware (our brainfuck cpu can’t), or how an operating system written for such a simple cpu would look like, or questions like that. In this section, we are going to explore some of those unclear questions you might have about your computer.</p>
 <h2 id="how-can-your-computer-interact-with-other-hardware"><a class="header" href="#how-can-your-computer-interact-with-other-hardware">How can your computer interact with other hardware?</a></h2>
