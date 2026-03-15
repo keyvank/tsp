@@ -884,4 +884,97 @@ The truth is, the Socks proxy protocol is mostly used as a mean for sending data
 Here is a simple implementation of a Socks5 server in Python:
 
 ```python=
+import socket
+import threading
+import struct
+
+BUFFER_SIZE = 4096
+
+
+def relay(src, dst):
+    try:
+        while True:
+            data = src.recv(BUFFER_SIZE)
+            if not data:
+                break
+            dst.sendall(data)
+    finally:
+        src.close()
+        dst.close()
+
+
+def handle_client(client):
+    try:
+        # SOCKS5 greeting
+        version, nmethods = client.recv(2)
+        methods = client.recv(nmethods)
+
+        # reply: version 5, no authentication
+        client.sendall(b"\x05\x00")
+
+        # SOCKS5 request
+        version, cmd, _, atyp = struct.unpack("!BBBB", client.recv(4))
+
+        if atyp == 1:  # IPv4
+            addr = socket.inet_ntoa(client.recv(4))
+        elif atyp == 3:  # domain
+            length = client.recv(1)[0]
+            addr = client.recv(length).decode()
+        elif atyp == 4:  # IPv6
+            addr = socket.inet_ntop(socket.AF_INET6, client.recv(16))
+        else:
+            client.close()
+            return
+
+        port = struct.unpack('!H', client.recv(2))[0]
+
+        if cmd != 1:  # only CONNECT supported
+            client.close()
+            return
+
+        # connect to target
+        remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        remote.connect((addr, port))
+
+        # success reply
+        reply = b"\x05\x00\x00\x01"
+        reply += socket.inet_aton("0.0.0.0")
+        reply += struct.pack("!H", 0)
+
+        client.sendall(reply)
+
+        # start relaying
+        threading.Thread(target=relay, args=(client, remote)).start()
+        threading.Thread(target=relay, args=(remote, client)).start()
+
+    except Exception:
+        client.close()
+
+
+def start_proxy(host="0.0.0.0", port=1080):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host, port))
+    server.listen(100)
+
+    print(f"SOCKS5 proxy listening on {host}:{port}")
+
+    while True:
+        client, addr = server.accept()
+        threading.Thread(target=handle_client, args=(client,)).start()
+
+
+if __name__ == "__main__":
+    start_proxy()
 ```
+
+Try it! Run it on your machine and then set your browser’s proxy to 127.0.0.1:1080. All your requests and responses will now go through this program. It’s not a very useful proxy yet, since the traffic isn’t going through a second server. It’s just an extra hop on your own machine.
+
+But you can still do interesting things with it. For example, you could track the amount of traffic passing through the proxy and log it somewhere, or impose limitations on connections when certain rules are met (which is, of course, exactly the opposite of what we were aiming to do).
+
+Now, if you run this program on another server and then set your browser’s proxy to the IP address of that server along with the port on which the proxy is running, your traffic will effectively go through another computer. If that computer is located in a network with fewer internet restrictions, you may be able to bypass those limitations.
+
+However, your internet provider can easily prevent you from making SOCKS5 requests altogether, and doing so is fairly straightforward. SOCKS5 requests have very distinctive patterns, and detecting them is quite easy.
+
+So what is the point of the SOCKS5 protocol at all if it can be easily detected and blocked? Well, you can use a SOCKS5 proxy as an interface for your browser to pass its traffic to a program running on your own machine, which then proxies your packets using a completely different protocol.
+
+![SOCKS5 is the bridge between your browser and your favorite anti-censorship software!](assets/proxy.png)
