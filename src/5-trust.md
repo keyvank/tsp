@@ -756,13 +756,36 @@ Fortunately, although you can't stop others from discovering your ownership of a
 
 ## You don't need to tell everyone you're getting private!
 
-I would like to consider a section for one of the exciting discoveries I and some of my colleagues have had in a Blockchain research lab I worked in. Here is the story: when I joined the lab in 2023, one of the first things we started to research and work on was privacy solutions on blockchains. We were brave enough to try thinking about a completely new way of achieving privacy in blockchains, but we faced a fundamental issue: the concept of privacy in cryptocurrencies depends heavily on the number of users who use the protocol. In fact, it doesn't matter how sophisticated a privacy protocol is, if there a are only a few people using it, it is useless. So, creating a totally new privacy-oriented cryptocurrency with 0 users seemed worse than just trying to make a cryptocurrency-mixing smart-contract on a popular blockchain with a VM (Like Ethereum). But, promoting the users to use that smart-contract was also hard. And there were also cases where the developers of these kind of smart-contracts got into jail (Sad story, we still live in a world where you can be arrested merely for writing open-source software! Read the story behind TornadoCash). It is also easy for the governments to just ban the usage of privacy-related smart-contracts.
+I would like to include a section about one of the exciting discoveries that my colleagues and I made in a blockchain research lab where I worked. Here is the story.
 
-The fact that there is legal uncertainty around privacy protocols makes a lot of crypto users paranoid about using them at all. People will refuse to use TornadoCash because as soon as they make a deposit to those contracts, they will go under the radar. But hey, a software with cypherpunk spirit has to be powerful enough to let you go private, ***without anyone noticing***. What if I want to use TornadoCash without shouting out to all people in the world that I'm using it? I want my enterance to a privacy protocol to be ***plausibly deniable***, that is, I want to transfer my crypto to a privacy protocol in a way so that no one can ever prove that I did this deposit. Yes, that's what we were thinking about!
+When I joined the lab in 2023, one of the first things we began researching was privacy solutions for blockchains. We were bold enough to try thinking about a completely new way of achieving privacy on blockchains, but we quickly faced a fundamental issue: the concept of privacy in cryptocurrencies depends heavily on the number of users who actually use the protocol. In fact, it doesn’t matter how sophisticated a privacy protocol is—if only a few people use it, it is essentially useless.
 
-At first it seemed like a dead-end, but it all happened at lunch time. I was discussing with my friend Hamid, and an idea came to my mind: what if we send ETH to an address that has no private-key underneath and somehow make a ZK proof proving that argument? Is there anyway at all we can make a ***provably unspendable address***? I mean yeah, I can just generate a random string, give it to you and say that if you send your ETH to this address, it would be burned. But would you believe me? You would probably think that I'm lying, and I have the private-key that results to that address. And there would be no way I could prove to you that this address I gave you is indeed random, unless we use a source of randomness we both trust. Like a third person that would spit out random values. After some thought, the solution became obvious: a cryptographic hash function is a great source of randomness!
+So creating a completely new privacy-oriented cryptocurrency with zero users seemed worse than simply trying to build a cryptocurrency-mixing smart contract on a popular blockchain with a virtual machine (like Ethereum). However, convincing users to actually use such a smart contract was also difficult. There were also cases where developers of these kinds of smart contracts ended up in jail (a sad story—we still live in a world where you can be arrested merely for writing open-source software; see the story behind Tornado Cash). Governments can also easily ban the use of privacy-related smart contracts.
 
-Imagine I tell you to send your ETH to address `0xf7Adb1...4F23` and claim that this is a random address with no private-key. You wouldn't believe me. Now imagine I hand-over to you a string, like "Hello", and you run a hash function on it: `H("Hello")` and the output of that hash function turned out to be `0xf7Adb1...4F23`. Now you can be totally sure that I indeed do not private-key to that address, because it is extremely difficult (impossible) to find a private-key such that: `PubKey(PrivKey) = H(Something)`!
+The legal uncertainty around privacy protocols makes many crypto users paranoid about using them at all. People often refuse to use Tornado Cash because as soon as they deposit funds into those contracts, they come under scrutiny. But software with a cypherpunk spirit should be powerful enough to allow you to go private **without anyone noticing**.
+
+What if I want to use Tornado Cash without announcing to the entire world that I’m using it? I want my entrance into a privacy protocol to be **plausibly deniable**. In other words, I want to transfer my crypto to a privacy protocol in such a way that no one can ever prove that I made that deposit. That was exactly what we were thinking about.
+
+At first it seemed like a dead end, but the breakthrough happened at lunchtime. I was discussing the problem with my friend Hamid when an idea came to mind: what if we sent ETH to an address that has no private key behind it and somehow created a zero-knowledge proof to demonstrate that fact? Is there any way we could create a **provably unspendable address**?
+
+I mean, sure—I could generate a random string, give it to you, and say that if you send your ETH to this address, it will be burned. But would you believe me? You would probably assume that I’m lying and that I actually possess the private key corresponding to that address. There would be no way for me to prove that the address I gave you is truly random unless we used a source of randomness that we both trust—like a third party that generates random values.
+
+After thinking about it for a while, the solution became obvious: a cryptographic hash function is an excellent source of randomness.
+
+Imagine I tell you to send your ETH to the address `0xf7Adb1...4F23` and claim that it is a random address with no private key. You wouldn’t believe me. But now imagine that I give you a string, like `"Hello"`, and you run a hash function on it: `H("Hello")`. Suppose the output of that hash function turns out to be `0xf7Adb1...4F23`. Now you can be confident that I do not possess the private key to that address, because it is extremely difficult (essentially impossible) to find a private key such that:
+
+`PubKey(PrivKey) = H(Something)`.
+
+Now imagine that the blockchain we are working with maintains a Merkle tree of all accounts that exist in the ledger. With the help of zero-knowledge proofs, we could prove that:
+
+1. There exists an account within the Merkle tree with address `A` and balance `X`.
+2. Address `A` is equal to `H(secret)`.
+
+This would give us a **Private Proof of Burn**. If we then added a new transaction type to the hosting blockchain that allows the secretly burned currency to be re-minted, we would have a plausibly deniable privacy solution built directly into the blockchain itself. The anonymity set would consist of all accounts with zero outgoing transactions—and in a mainstream blockchain there are many of them. That means a massive anonymity set from day one.
+
+We eventually published this idea as an improvement proposal for the Ethereum blockchain (although the idea could be applied to other blockchains as well). If you're curious to learn more about it, it is numbered **EIP-7503**. It hasn’t been implemented by the core developers yet, but people are still discussing it.
+
+Let’s see what happens!
 
 ## Tor network
 

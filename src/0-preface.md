@@ -173,3 +173,5 @@ pdf:
 ```
 
 The `--toc` flag generated the Table of Contents section for me automatically (Based on Markdown headers: `#`, `##`, ...), and I also had another `.pdf` file containing the cover of my book, which I concatenated with the pandoc's output. I was tracking my process by word-count.
+
+Although the books is completely human-written, I have extensively used language models to fix grammar mistakes of the content. The prompt used to edit the manuscript was a simple `fix grammar` plus the text I wanted to edit.
