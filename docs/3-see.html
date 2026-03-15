@@ -298,6 +298,16 @@ def color_of(x, y, width, height):
     return (int(r), int(g), int(b))
 </code></pre>
 <p>See what it generates, try different functions and play with it a bit. Guess how shocking it was for computer scientist back then to be able to generate vision using code. That opened doors for insane amount of creativity and the event was big enough to call it a revolution in my opinion!</p>
+<h2 id="control-over-your-screen"><a class="header" href="#control-over-your-screen">Control over your screen</a></h2>
+<p>What your operating system does to show all of those application windows and user interfaces on your screen is simply repeatedly generating the correct RGB values that represent the current state of your screen and transferring them to your monitor.</p>
+<p>On Linux systems, there is a &quot;framebuffer&quot;, which is a part of your RAM mapped to your computer screen. Your operating system (or even you!) can manage it directly. Curious how you can manipulate it yourself? Let’s try putting random bytes on your monitor’s pixel buffer and see what happens!</p>
+<ol>
+<li>Press <strong>Ctrl + Alt + F1</strong> to switch to a console that is not controlled by a window manager.
+<em>(A window manager is the software that decides what gets drawn on your screen.)</em></li>
+<li>Fetch random bytes from <code>/dev/urandom</code> and write them to your machine’s video buffer: <code>sudo dd if=/dev/urandom of=/dev/fb0</code></li>
+</ol>
+<p>Tada! You should now see random noise on your screen.</p>
+<p>It doesn’t have to be random, though!</p>
 <h2 id="emitters-vs-absorbers"><a class="header" href="#emitters-vs-absorbers">Emitters vs Absorbers</a></h2>
 <p>We are now convinced that the white color does not actually exist, and what we see and define as white is actually a combination of red, green and blue colors. Try litting a surface with red, green and blue light sources, what you will end up is white. But have you ever tried making the white color by combining red, green and blue <em><strong>paint</strong></em> colors? If you have experience in painting, you'll know that the white paint color cannot be made of other colors. In fact, by combining red, green and blue paint colors, you will end up with black! So, what is happening here? What make light sources and colored materials different?</p>
 <p>A blue light-source looks blue, because it emits electromagnetic waves in the frequency range of the blue color, whereas a blue object looks blue, because it absorbs all visible electromagnetic waves, but the bluish ones!</p>

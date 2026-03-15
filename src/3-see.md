@@ -178,6 +178,20 @@ def color_of(x, y, width, height):
 
 See what it generates, try different functions and play with it a bit. Guess how shocking it was for computer scientist back then to be able to generate vision using code. That opened doors for insane amount of creativity and the event was big enough to call it a revolution in my opinion!
 
+## Control over your screen
+
+What your operating system does to show all of those application windows and user interfaces on your screen is simply repeatedly generating the correct RGB values that represent the current state of your screen and transferring them to your monitor.
+
+On Linux systems, there is a "framebuffer", which is a part of your RAM mapped to your computer screen. Your operating system (or even you!) can manage it directly. Curious how you can manipulate it yourself? Let’s try putting random bytes on your monitor’s pixel buffer and see what happens!
+
+1. Press **Ctrl + Alt + F1** to switch to a console that is not controlled by a window manager.
+   *(A window manager is the software that decides what gets drawn on your screen.)*
+2. Fetch random bytes from `/dev/urandom` and write them to your machine’s video buffer: `sudo dd if=/dev/urandom of=/dev/fb0`
+
+Tada! You should now see random noise on your screen.
+
+It doesn’t have to be random, though!
+
 ## Emitters vs Absorbers
 
 We are now convinced that the white color does not actually exist, and what we see and define as white is actually a combination of red, green and blue colors. Try litting a surface with red, green and blue light sources, what you will end up is white. But have you ever tried making the white color by combining red, green and blue ***paint*** colors? If you have experience in painting, you'll know that the white paint color cannot be made of other colors. In fact, by combining red, green and blue paint colors, you will end up with black! So, what is happening here? What make light sources and colored materials different?
