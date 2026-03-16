@@ -885,6 +885,22 @@ if __name__ == &quot;__main__&quot;:
 <p>However, your internet provider can easily prevent you from making SOCKS5 requests altogether, and doing so is fairly straightforward. SOCKS5 requests have very distinctive patterns, and detecting them is quite easy.</p>
 <p>So what is the point of the SOCKS5 protocol at all if it can be easily detected and blocked? Well, you can use a SOCKS5 proxy as an interface for your browser to pass its traffic to a program running on your own machine, which then proxies your packets using a completely different protocol.</p>
 <p><img src="assets/proxy.png" alt="SOCKS5 is the bridge between your browser and your favorite anti-censorship software!" /></p>
+<p>Now, there are infinite ways you can implement that <strong>&quot;custom protocol&quot;</strong> part. I'll list some of them here. I won't go into the details since you probably already have good clues about how each of them can be implemented. The general idea is what you need to know:</p>
+<ol>
+<li>
+<p>The custom proxy might be a simple protocol hidden inside an HTTPS request on port 443, which from our side looks just like an ordinary web request. Since the body of HTTPS requests is encrypted, an outsider may not be able to distinguish your traffic from other HTTPS requests. There are dozens of different ways and implementations of such a protocol that you can study.</p>
+</li>
+<li>
+<p>Imagine the bad guy has completely shut down the internet and only allows you to use some kind of internal network (intranet). He provides his own &quot;eavesdropped&quot; messenger, which luckily can still be used to communicate with people outside the country. You can exploit that messenger to pass traffic to a server that is listening to the messenger on a free network. Just convert the bytes the browser sends through SOCKS5 into a base64 encoding or something similar (which the messenger allows you to transfer), read the messages on the second server, and respond accordingly. This is something people actually implemented during Iran's protests in 2022. See how creative people can get under severe limitations!</p>
+</li>
+<li>
+<p>Now imagine the intranet no longer exists either. There is still hope. If you are still able to communicate with people outside the restricted area in any way, you may still automate packet transfer and implement your own custom protocol. For example, imagine phone calls are still available. As mentioned in Chapter 2, you can transmit data using sound waves. What if you write software that encodes the packets you receive through the SOCKS5 proxy from your browser into sound, and transmit that sound through your phone line to a server listening on the other side? That server could decode what it hears and send responses back. You could literally transfer a video through your favorite messenger without feeling that you are connected through such an unusual medium.</p>
+</li>
+<li>
+<p>Here is another clever way people managed to connect to the internet during Iran's 2026 protests without transferring packets through a strange medium: the DNS protocol. DNS is probably the costliest service to block and likely the last thing the bad guy can disable. I do not yet know the exact reason, but somehow the bad guy cannot easily block DNS requests (even those going outside). For example, if you try to resolve the address <code>hello-my-dear-proxy-protocol.my-domain.com</code>, even through the bad guy's internet provider DNS server, it will still ask the nameserver of <code>my-domain.com</code> for the IP address of <code>hello-my-dear-proxy-protocol.my-domain.com</code>, even if you have zero access to <code>my-domain.com</code>. See? You were able to send something (the string <code>hello-my-dear-proxy-protocol</code>) to a server you otherwise cannot access. Now imagine placing your browser packets inside those subdomains and having your DNS server respond with response packets. Pretty cool, right? This method is known as <strong>DNS Tunnel Tool (DNSTT)</strong> in case you want to learn more.</p>
+</li>
+</ol>
+<p>A true cypherpunk will always find a way to stay connected. I hope these ideas help ensure your voice never gets cut off!</p>
 
                     </main>
 
