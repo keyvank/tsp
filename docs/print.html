@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-28c22f80.js";
+            window.path_to_searchindex_js = "searchindex-f9acc5e2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-e22e99f6.js"></script>
@@ -2016,17 +2016,119 @@ def swap_gate():
 </code></pre>
 <p>If you want to apply a single-bit gate on \(i\)th gate of a multi-bit state, you’ll have to manipulate the gate matrix using the following formula:</p>
 <p>\(I \times I \times \dots \times G \dots \times I \times I\)</p>
-<p>Here is a Python implementation which consecutively calculates Kronecker product of <code>res</code> with <code>I</code> for <code>n</code> time except when we are in the ith position, which in that case we calculate the product by <code>gate</code> (Resulting in a 2^n by 2^n matrix).</p>
-<pre><code class="language-python=">def apply_at(gate, i, n):
+<p>Here is a Python implementation which consecutively calculates Kronecker product of <code>res</code> with 2x2 identity matrix <code>I</code> for <code>n</code> time except when we are in the ith position, which in that case we calculate the product by a 2x2 <code>gate</code> (Resulting in a 2^n by 2^n matrix).</p>
+<pre><code class="language-python=">def apply_single_bit_gate_at(gate, i, n):
     assert i &lt; n
     res = [[1]]
     for j in range(n):
         if j == i:
-            res = kronecker(res, gate)
+            res = kron(res, gate)
         else:
-            res = kronecker(res, I)
+            res = kron(res, I)
     return res
 </code></pre>
+<p>Now, some of our quantum gates (E.g CNOT and HADAMARD gates) accept two qubits. So we’ll also need a function to extend those 4x4 matrices to 2^n by 2^n ones using another function <code>apply_two_adjacent_bit_gate_at</code>. This one accepts a 4x4 matrix as the <code>gate</code> and assumes you  want to apply it on two adjacent qubits <code>i</code> and <code>i+1</code> suitable for a <code>n</code> qubit quantum state.</p>
+<pre><code class="language-python=">def apply_two_adjacent_bit_gate_at(gate, i, n):
+    mats = []
+    skip = False
+    for k in range(n):
+        if skip:
+            skip = False
+            continue
+        if k == i:
+            mats.append(gate)
+            skip = True
+        else:
+            mats.append(I)
+    return kron_all(mats)
+</code></pre>
+<p>What if we want to apply a 2-qubit gate on qubits of the state that are not necessarily adjacent? There is a quantum gate named SWAP which allows you to swap the qubits of a 2-qubit state. You can somehow <em>move</em> the qubit to the correct location by periodically swaping it with its neighbor, slowly shifting it to left/right until the two desired qubits get adjacent, and then apply your gate using the <code>apply_two_adjacent_bit_gate_at</code> function, and then again putting back the moved qubit to its original location by swapping in reverse. This is how the implementation will look like:</p>
+<pre><code class="language-python=">def zeros(n, m):
+    return [[0 for _ in range(m)] for _ in range(n)]
+
+def identity(n):
+    res = zeros(n, n)
+    for i in range(n):
+        res[i][i] = 1
+    return res
+
+def matmul(a, b):
+    n, m, p = len(a), len(b), len(b[0])
+    c = zeros(n, p)
+    for i in range(n):
+        for k in range(m):
+            if a[i][k] != 0:
+                for j in range(p):
+                    c[i][j] += a[i][k] * b[k][j]
+    return c
+    
+def apply_two_bit_gate_at(gate, i, j, n):
+    if i &gt; j:
+        i, j = j, i
+
+    dim = 2**n
+
+    # Step 1: swap j down to i+1
+    U_swap = identity(dim)
+    for k in range(j-1, i, -1):
+        S = apply_two_adjacent_bit_gate_at(SWAP, k,  n)
+        U_swap = matmul(S, U_swap)
+
+    # Step 2: apply gate
+    U_gate = apply_two_adjacent_bit_gate_at(gate, i, n)
+
+    # Step 3: swap back
+    U_unswap = identity(dim)
+    for k in range(i+1, j):
+        S = apply_two_adjacent_bit_gate_at(SWAP, k, n)
+        U_unswap = matmul(S, U_unswap)
+    
+    return matmul(U_unswap, matmul(U_gate, U_swap))
+</code></pre>
+<p>Also, notice I introduced some matrix helper functions which can be used for generation, zero and identity matrices. Also, since we want a single gate matrix returned by the <code>apply_two_bit_gate_at</code> function, we are combining all of the needed matrix operations together using a matrix-multiplication function <code>matmul</code>.</p>
+<p>In order to test our quantum circuits, we will add two helper functions. The first, <code>basis_state</code>, creates basis states from their numerical representation (e.g., <code>index = 6</code> corresponds to <code>|110⟩</code>). The second function converts a basis state into a bit string (e.g., given the column vector <code>[[0],[0],[1],[0],[0],[0],[0],[0]]</code>, it returns <code>"010"</code> for a 3-qubit system).</p>
+<p>We will then create basis states, pass them through our quantum circuit, and convert the resulting state back into a bit string. This will allow us to examine the circuit outputs in a human-readable way.</p>
+<pre><code class="language-python="># Create basis state |index&gt;
+def basis_state(index, num_qubits):
+    state = [[0] for _ in range(2 ** num_qubits)]
+    state[index][0] = 1
+    return state
+
+# Bit representation of a basis state
+def basis_state_to_bitstring(state, num_qubits):
+    active_index = None
+
+    for i, amplitude in enumerate(state):
+        if amplitude[0] == 1:
+            if active_index is not None:
+                raise Exception()
+            active_index = i
+
+    if active_index is None:
+        raise Exception()
+
+    return format(active_index, f'0{num_qubits}b')
+</code></pre>
+<p>Here we will assume all eight basis-states of a 3-bit quantum state are fed into a circuit that applies CNOT on qubit 0 and 2 of the state. We will then print the binary representations of the before/after states to see if a CNOT is indeed being applied.</p>
+<pre><code class="language-python=">NUM_QUBITS = 3
+
+for i in range(8):
+    before = basis_state(i, 3)
+    print(basis_state_to_bitstring(before, NUM_QUBITS), '=&gt;', end=" ")
+    after = matmul(apply_two_bit_gate_at(CNOT, 0, 2, NUM_QUBITS), before)
+    print(basis_state_to_bitstring(after, 3))
+</code></pre>
+<p>Here is the output of the code:</p>
+<pre><code class="language-python=">000 =&gt; 000
+001 =&gt; 001
+010 =&gt; 010
+011 =&gt; 011
+100 =&gt; 101
+101 =&gt; 100
+110 =&gt; 111
+111 =&gt; 110
+</code></pre>
+<p>As you can see, the first 4 states are intact, because the MSB qubit (Which is the control qubit) is zero, which means a NOT operation should not be applied on the LSB qubit. The last 4 states are clearly showing a qubit-flip in their LSB qubit since the control qubit is 1. This shows our primitive functions are working correctly.</p>
 <h2 id="grovers-algorithm"><a class="header" href="#grovers-algorithm">Grover’s algorithm</a></h2>
 <p>Is a cool quantum computer algorithm that let’s you find an input to a function that gives out a specific output using only \(O(\sqrt{n})\) searches. In normal case, when you find to brute-force a function to find for a certain input, you’ll have to go through all possible inputs. If there are N inputs, on average, you’ll probably need to run the function N/2 times. Something like this:</p>
 <pre><code class="language-python=">N = 10000
