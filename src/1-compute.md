@@ -2176,6 +2176,56 @@ def swap_gate():
     return [[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]]
 ```
 
+Kronecker is simple: you'll just have to
+
+For example:
+
+\\[\begin{bmatrix} 1 && 0 \\\\ 0 && 2 \end{bmatrix} \times \begin{bmatrix} 1 && 2 \\\\ 3 && 4 \end{bmatrix} = \begin{bmatrix} 1 \times \begin{bmatrix} 1 && 2 \\\\ 3 && 4 \end{bmatrix} && 0 \times \begin{bmatrix} 1 && 2 \\\\ 3 && 4 \end{bmatrix} \\\\ 0 \times \begin{bmatrix} 1 && 2 \\\\ 3 && 4 \end{bmatrix} && 2 \times \begin{bmatrix} 1 && 2 \\\\ 3 && 4 \end{bmatrix} \end{bmatrix} = \begin{bmatrix} 1 && 2 && 0 && 0 \\\\ 3 && 4 && 0 && 0 \\\\ 0 && 0 && 2 && 4 \\\\ 0 && 0 && 6 && 8 \end{bmatrix}\\]
+
+```python=
+def kronecker(a, b):
+    return [[val_a * val_b for val_a in row_a for val_b in row_b]
+            for row_a in a
+            for row_b in b]
+```
+
+
+If you want to apply a single-bit gate on \\(i\\)th gate of a multi-bit state, you'll have to manipulate the gate matrix using the following formula:
+
+\\(I \times I \times \dots \times G \dots \times I \times I\\)
+
+Here is a Python implementation which consecutively calculates Kronecker product of `res` with `I` for `n` time except when we are in the ith position, which in that case we calculate the product by `gate` (Resulting in a 2^n by 2^n matrix).
+
+```python=
+def apply_at(gate, i, n):
+    assert i < n
+    res = [[1]]
+    for j in range(n):
+        if j == i:
+            res = kronecker(res, gate)
+        else:
+            res = kronecker(res, I)
+    return res
+```
+
+## Grover's algorithm
+
+Is a cool quantum computer algorithm that let's you find an input to a function that gives out a specific output using only \\(O(\sqrt{n})\\) searches. In normal case, when you find to brute-force a function to find for a certain input, you'll have to go through all possible inputs. If there are N inputs, on average, you'll probably need to run the function N/2 times. Something like this:
+
+```python=
+N = 10000
+
+for x in 0..N:
+    if f(x) == desired_y:
+        return x
+```
+
+Now what if I tell you, you can find that `x` by only doing around ~100 searches? That's what Grover's algorithm is all about: brute-forcing a function with significantly less function runs. I mean how is that possible? Well, it's like allowing other computers in parallel universes to do that search for you. But that's not real scientific explanation! Here is a better analogy:
+
+Imagine you have a set of tuning forks with different frequencies. You want to find the one with frequency \\(f\\). One way is to find your desired fork is to just take them one by one, strike them, and see if it makes the desired sound. That's a O(n) algorithm. Now a smarter approach would be to stand aside those forks, and generate a sound of frequency \\(f\\). Now, the fork with same frequency will start resonating. You can see that by eyes and find the fork. You didn't even need to strike any of them, the "answer" just popped up to your face. All you needed was shouting the frequency, and the fork just revealed itself.
+
+Now I would say quantum algorithms are somewhat similar. You propagate the "output" you are looking for as a wave, and the correct input to your function that generates the desired output will reveal itself!
+
 ## Why matrices?
 
 The term quantum computer is a bit misleading. In fact, a quantum-computer is a regular classical-computer equipped with a device that can perform operations on a quantum-state (Maybe someday, you’ll be able to connect a quantum-state to your laptop too). For example, the quantum operation could be radiating the “state” with a electromagnetic wave of some frequency. A real quantum computer doesn’t perform matrix multiplications, like what we did in our simulator! Matrices just happened to be good mathematical structures for modeling different quantum operations!
@@ -2184,4 +2234,4 @@ As previously noted, a quantum-state is somehow a probability distribution over 
 
 The state is a vector of length one. It’s length will always be one.
 
-In a quantum operation, the final result of one bit is somehow a linear combination of all other bits. That's why quantum operations are defined by matrices, because matrices are just a group of coefficient-rows that are stacked on top of each other.
+In a quantum operation, the final result of one bit is somehow a linear combination of all other bits. That's why quantum operations are defined by matrices, because matrices are just a group of coefficient-rows that are stacked on top of each other. Matrices are a simplified version of "functions". They are some sort of machines that are able to be combined with each other with some nice mathemtical properties. These little creatures are going to be used in other chapters as well.

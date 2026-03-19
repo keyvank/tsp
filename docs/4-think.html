@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -7,45 +7,59 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
-        <!-- Provide site root to javascript -->
-        <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
 
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-28c22f80.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-e22e99f6.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,87 +73,69 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
-        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-compute.html"><strong aria-hidden="true">1.</strong> Compute!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html" class="active"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li><li class="chapter-item expanded "><a href="7-unorganized.html"><strong aria-hidden="true">7.</strong> Unorganized</a></li><li class="chapter-item expanded "><a href="8-appendix-a.html"><strong aria-hidden="true">8.</strong> Appendix A</a></li></ol>
-            </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
-
-        <div id="page-wrapper" class="page-wrapper">
+        <div id="mdbook-page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
                         </label>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
                         </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
                         </button>
                     </div>
 
@@ -147,74 +143,79 @@
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
                     </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="content" class="content">
+                <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="think"><a class="header" href="#think">Think!</a></h1>
 <p><strong>Music of the chapter:</strong> <em>One is glad to be of service - By April Rain</em></p>
 <h2 id="the-game-of-life"><a class="header" href="#the-game-of-life">The Game of Life</a></h2>
-<p>The Game of Life is a very simple environment and set of rules in which creatures evolve. It was created by the famous mathematician, John Horton Conway to demonstrate, as its name suggests, how a living creature can evolve in a simple environment with simple rules. The model is straightforward. It is a two-dimensional infinite plane of squares, in which each square can be either on or off. Conway's artificial world has 4 rules:</p>
+<p>The Game of Life is a very simple environment and set of rules in which creatures evolve. It was created by the famous mathematician, John Horton Conway to demonstrate, as its name suggests, how a living creature can evolve in a simple environment with simple rules. The model is straightforward. It is a two-dimensional infinite plane of squares, in which each square can be either on or off. Conway’s artificial world has 4 rules:</p>
 <ol>
 <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
 <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
 <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
 <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
 </ol>
-<p>The state of the world in each timestamp in Conway's Game of Life is purely dependent on previous state of the game.</p>
-<hr />
+<p>The state of the world in each timestamp in Conway’s Game of Life is purely dependent on previous state of the game.</p>
+<hr>
 <p>The struggles in building artificial creatures has a long story, but the very first recorded design of a humanoid robot was done in around 1495 by the famous italian polymath, Leonardo Da Vinci.</p>
 <p>If you are here to learn about artificial intelligence algorithms, I’m afraid to say you are in the wrong place. We are mostly going to learn about biological inspired algorithms for reaching AGI, because I believe nature has the answers for most of the questions already.</p>
-<p>Long story short, interesting things can emerge as a result of many things gathering together, making “complex” system. People have written many books in this matter, in order to amaze you by the fact that intelligence can evolve by connecting many simple things to each other, but here I assume that you are already amazed and want to know how to actually build those stuff? </p>
-<p>I would like to remind you the first chapter, where we claimed that interesting things can happen when cause and effect chains of the same type are connected together. That's also the building block of a computer, a lot of logic gates connect together to cause desired behaviors. Interestingly, a human/biological brain is also similar to a logical circuits and digital computers in some ways. A lot of smaller units called neurons are connected together, leading to behaviors we typically call intelligence. There is a huge difference between a digital circuit and a biological brain though. A biological brain is made through the process of evolution, while a digital computer is carefully designed and made by a human, baked on pieces of silicone. When you design a digital computer, you exactly know what you want from it. You want it to make your life easier by running calculations and algorithms that take thousands of years when done by hand. When you do know what you exactly want from something, you can organize it into pieces, where each piece does one and only one independent thing very well, and then connect the solutions of subproblems together, solving the original problem. In case of a digital computer, the subproblems are:</p>
+<p>Long story short, interesting things can emerge as a result of many things gathering together, making “complex” system. People have written many books in this matter, in order to amaze you by the fact that intelligence can evolve by connecting many simple things to each other, but here I assume that you are already amazed and want to know how to actually build those stuff?</p>
+<p>I would like to remind you the first chapter, where we claimed that interesting things can happen when cause and effect chains of the same type are connected together. That’s also the building block of a computer, a lot of logic gates connect together to cause desired behaviors. Interestingly, a human/biological brain is also similar to a logical circuits and digital computers in some ways. A lot of smaller units called neurons are connected together, leading to behaviors we typically call intelligence. There is a huge difference between a digital circuit and a biological brain though. A biological brain is made through the process of evolution, while a digital computer is carefully designed and made by a human, baked on pieces of silicone. When you design a digital computer, you exactly know what you want from it. You want it to make your life easier by running calculations and algorithms that take thousands of years when done by hand. When you do know what you exactly want from something, you can organize it into pieces, where each piece does one and only one independent thing very well, and then connect the solutions of subproblems together, solving the original problem. In case of a digital computer, the subproblems are:</p>
 <ul>
 <li>Storing data -&gt; FlipFlop circuits</li>
 <li>Doing math -&gt; Adder circuits</li>
 <li>Running instructions -&gt; Program Counters</li>
-<li>...</li>
+<li>…</li>
 </ul>
-<p>The fact that the original solution is a combination of solutions of subproblems, means that the solution does not have a symmetric structure. By symmetric, I mean you can't expect the part that solves problem A to be also able to solve problem B. You can't expect a memory-cell to be able to add two numbers. Although they both are logical circuits that accept electrical causes as inputs and produce electrical effects as outputs (And thus they can connect to each other), they have whole entirely different structures.</p>
+<p>The fact that the original solution is a combination of solutions of subproblems, means that the solution does not have a symmetric structure. By symmetric, I mean you can’t expect the part that solves problem A to be also able to solve problem B. You can’t expect a memory-cell to be able to add two numbers. Although they both are logical circuits that accept electrical causes as inputs and produce electrical effects as outputs (And thus they can connect to each other), they have whole entirely different structures.</p>
 <p>As humans, it is difficult for us to discover and design decentralized solutions for problems, while it is easy for us to break the problem into subproblems, and find solutions for the subproblems instead.</p>
-<p>Interestingly, it's completely the way around for the nature. It's much easier for the nature to design decentralized solutions for the problems, but it's hard for it to break the problem into subproblems, and solve the original problem by solving the subproblems.</p>
+<p>Interestingly, it’s completely the way around for the nature. It’s much easier for the nature to design decentralized solutions for the problems, but it’s hard for it to break the problem into subproblems, and solve the original problem by solving the subproblems.</p>
 <p>Perhaps these are all the reasons why biological brains have very solid, symmetrical structures with complex and magical behaviors and why digital computers are very organized and easy to analyze. I would like to call biological brains and digital computers as dynamic brains and static brains respectively.</p>
-<p>Let's define a static brain as a network of gates that are static and do not change their behaviors over time. While a dynamic brain is a network of gates in which the gates themselves can change their behavior and turn into other gates. A static brain is a well organized brain designed by an intelligent creature, in which each part does exactly one thing and cannot change its original behavior when needed (E.g An AND gate cannot change into an OR gate), while a dynamic brain is a network of general-purpose gates evolved by the nature to solve more general problems (E.g. maximizing a goal, like survival, pleasure, etc).</p>
-<p>An AND gate inside a computer can only act as an AND gate. It can't change itself to an OR gate when needed. A structure like this may seem boring in the first place, since it can only do one thing and can't change its behavior over time (The neurons/gates in a biological brain can transform, leading to different behaviors). But we can actually bring some flexibility and ability to learn by adding a separate concept known as a memory, which can contain a program and an state. The static circuit's only ability is to fetch an instruction from the memory, and change the state of the system from A to B, per clock cycle. The system's ability to learn comes from it's ability to store an state.</p>
-<p>In a dynamic brain on the other hand, the learning can happen inside the connections. There isn't a separate module known as memory in a dynamic brain, but the learning happens when the connections between the neurons and the neurons themselves transform. If we are trying to build an artificial general intelligence, it might make more sense to try to mimick the brain instead of trying to fake intelligence by putting conditional codes that we ourselves have designed.</p>
+<p>Let’s define a static brain as a network of gates that are static and do not change their behaviors over time. While a dynamic brain is a network of gates in which the gates themselves can change their behavior and turn into other gates. A static brain is a well organized brain designed by an intelligent creature, in which each part does exactly one thing and cannot change its original behavior when needed (E.g An AND gate cannot change into an OR gate), while a dynamic brain is a network of general-purpose gates evolved by the nature to solve more general problems (E.g. maximizing a goal, like survival, pleasure, etc).</p>
+<p>An AND gate inside a computer can only act as an AND gate. It can’t change itself to an OR gate when needed. A structure like this may seem boring in the first place, since it can only do one thing and can’t change its behavior over time (The neurons/gates in a biological brain can transform, leading to different behaviors). But we can actually bring some flexibility and ability to learn by adding a separate concept known as a memory, which can contain a program and an state. The static circuit’s only ability is to fetch an instruction from the memory, and change the state of the system from A to B, per clock cycle. The system’s ability to learn comes from it’s ability to store an state.</p>
+<p>In a dynamic brain on the other hand, the learning can happen inside the connections. There isn’t a separate module known as memory in a dynamic brain, but the learning happens when the connections between the neurons and the neurons themselves transform. If we are trying to build an artificial general intelligence, it might make more sense to try to mimick the brain instead of trying to fake intelligence by putting conditional codes that we ourselves have designed.</p>
 <p>Unfortunately, we are not technologically advanced enough to build dynamic brains, but we can emulate a dynamic brain inside an algorithm that can run on a static brain. The dynamic gates will be imaginary entities inside a digital memory that can trigger other imaginary gates.</p>
 <h2 id="tunable-gates"><a class="header" href="#tunable-gates">Tunable gates</a></h2>
-<p>In order to have a solid and symmetric brain, which is able to learn without losing its uniform shape, we'll need cause/effect gates that are general purpose and can change their behavior.</p>
+<p>In order to have a solid and symmetric brain, which is able to learn without losing its uniform shape, we’ll need cause/effect gates that are general purpose and can change their behavior.</p>
 <p>We can model and-gate as a continuous function on floating point values! We can design a function such that returns 0 by default and approaches 1 only when both its input value are close to 1.</p>
-<p><img src="assets/gpgate.png" alt="A general-purpose gate which can switch its behavior to AND and OR based on a parameter" /></p>
+<p><img src="assets/gpgate.png" alt="A general-purpose gate which can switch its behavior to AND and OR based on a parameter"></p>
 <p>Why modelling a gate as a floating point function is beneficial for us? Because we can take derivative of a continuous function!</p>
-<p><img src="assets/neuron.png" alt="A more advanced and tunable general purpose gate, a neuron" /></p>
+<p><img src="assets/neuron.png" alt="A more advanced and tunable general purpose gate, a neuron"></p>
 <p>Once upon a time, two nobel prize winners were studying brain cells 1873</p>
 <h2 id="myserious-black-boxes"><a class="header" href="#myserious-black-boxes">Myserious black boxes</a></h2>
 <p>Neural networks seem to be blackboxes that can learn anything. It has been proven that they can see, understand or even reason about stuff. Neural Network are known to be <em>universal function approximators</em>. Given some samples of inputs/outputs of a function, neural networks may learn that function and try to predict correct outputs, given <em><strong>new inputs</strong></em>, inputs they have never seen before.</p>
-<p>Before feeding a neural network your input data, you have to convert it into numbers. You can encode them anyway you want, and then feed them to a neural network (Which will give you some other numbers), and you may again iterpret the numbers anyway you want, and you can make the network &quot;learn&quot; the way you encode/decode data and try to predict correct outputs given inputs.</p>
+<p>Before feeding a neural network your input data, you have to convert it into numbers. You can encode them anyway you want, and then feed them to a neural network (Which will give you some other numbers), and you may again iterpret the numbers anyway you want, and you can make the network “learn” the way you encode/decode data and try to predict correct outputs given inputs.</p>
 <p>Some example encodings:</p>
 <ul>
 <li>Given the location, area and age of a house, predict its price</li>
@@ -230,12 +231,12 @@
 <li>Interpolated between 0 to 1 (By calculating \(\frac{area}{area_{max}}\))</li>
 </ol>
 <p>And just like the way we design an encoding for the inputs, we may also design a decoding algorithm for our output. After that, the neural network itself will find a mapping between input/output data based on the way we encode/decode our data.</p>
-<p>Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it's much easier for a neural network to learn the location of a house given a longitude/latitude!</p>
+<p>Now, one of the most important challenges in designing neural networks that actually work, is to find a good encode/decode strategy for our data. If you encode/decode your data poorly, the network may never learn the function, no matter how big or powerful it is. For example, in case of location, it’s much easier for a neural network to learn the location of a house given a longitude/latitude!</p>
 <h2 id="a-learning-algorithm-made-by-humans"><a class="header" href="#a-learning-algorithm-made-by-humans">A learning algorithm made by humans</a></h2>
-<p>Before getting into the details of backpropagation algorithm, let's discuss the mathematical foundations of it first. If you have made it this far in this book without skipping any chapters, you are already familiar with &quot;derivatives&quot;, the code idea Newton used to invent his own perception of Physics and motion. Derivative of a function is basically a new function that gives you out the rate of change of the original function on any given point.</p>
+<p>Before getting into the details of backpropagation algorithm, let’s discuss the mathematical foundations of it first. If you have made it this far in this book without skipping any chapters, you are already familiar with “derivatives”, the code idea Newton used to invent his own perception of Physics and motion. Derivative of a function is basically a new function that gives you out the rate of change of the original function on any given point.</p>
 <p>The formal definition of derivative is something like this:</p>
 <p>\(\lim_{\epsilon \to 0}\frac{f(x+\epsilon)-f(x)}{\epsilon}\)</p>
-<p>The &quot;limit&quot; part of the definition means that \(\epsilon\) must be a very small value. Based on this definition, we can numerically estimate the derivative of any function using this piece of Python:</p>
+<p>The “limit” part of the definition means that \(\epsilon\) must be a very small value. Based on this definition, we can numerically estimate the derivative of any function using this piece of Python:</p>
 <pre><code class="language-python=">def f(x):
     return x * x
 
@@ -249,13 +250,13 @@ f_prime = deriv(f)
 
 print(f_prime(5))
 </code></pre>
-<p>Here, the <code>deriv</code> function accepts a single-parameter function and returns a new function that is its derivative (Based on the definition of derivative). The smaller the <code>eps</code> constant becomes, the more accurate our calculated derivatives will get. It's interesting that making <code>eps</code> hugely smaller doesn't make significant difference in the result of the derived function, and will only make it converge to a fixed value. In the given example, the result of <code>f_prime(5)</code> will get closer and closer to <code>10</code> as we make <code>eps</code> smaller.</p>
-<p>Now, that's not the only way to take the derivative of a function! If you try different <code>x</code>s on <code>f_prime</code>, you'll soon figure out that <code>f_prime</code> is almost exactly equal with <code>x * 2</code>. If we are sure that this is true for all <code>x</code>s, we can define a <em><strong>shortcut version</strong></em> of <code>f_prime</code> function, and avoid dealing with epsilons and fat calculations. That's a great optimization!</p>
+<p>Here, the <code>deriv</code> function accepts a single-parameter function and returns a new function that is its derivative (Based on the definition of derivative). The smaller the <code>eps</code> constant becomes, the more accurate our calculated derivatives will get. It’s interesting that making <code>eps</code> hugely smaller doesn’t make significant difference in the result of the derived function, and will only make it converge to a fixed value. In the given example, the result of <code>f_prime(5)</code> will get closer and closer to <code>10</code> as we make <code>eps</code> smaller.</p>
+<p>Now, that’s not the only way to take the derivative of a function! If you try different <code>x</code>s on <code>f_prime</code>, you’ll soon figure out that <code>f_prime</code> is almost exactly equal with <code>x * 2</code>. If we are sure that this is true for all <code>x</code>s, we can define a <em><strong>shortcut version</strong></em> of <code>f_prime</code> function, and avoid dealing with epsilons and fat calculations. That’s a great optimization!</p>
 <p>You can actually find out this <em><strong>shortcut function</strong></em> by substituting \(f(x)\) in the formal definition of derivative with the actual function. In case of \(f(x) = x^2\):</p>
 <p>\(\lim_{\epsilon \to 0}\frac{(x+\epsilon)^2-x^2}{\epsilon}=\frac{x^2+2x\epsilon+\epsilon^2-x^2}{\epsilon}=\frac{2x\epsilon + \epsilon^2}{\epsilon} = 2x + \epsilon = 2x\)</p>
-<p>Now, let's imagine we have a set of different primitive functions (Functions that we know their derivatives)</p>
+<p>Now, let’s imagine we have a set of different primitive functions (Functions that we know their derivatives)</p>
 <p>\(\frac{df(g(x))}{dx} = \frac{df(g(x))}{dg(x)} \times \frac{dg(x)}{dx}\)</p>
-<p>\(fog(x) = f'(g(x)) * g'(x)\)</p>
+<p>\(fog(x) = f’(g(x)) * g’(x)\)</p>
 <pre><code class="language-python=">def f(x):
     return x * x
 
@@ -286,10 +287,10 @@ print(g_prime(5) * f_prime(g(5)))
 <pre><code class="language-python=">def f(x, y, b):
     return sigmoid(x + y - b)
 </code></pre>
-<h2 id="worlds-tiniest-gradient-engine"><a class="header" href="#worlds-tiniest-gradient-engine">World's tiniest gradient engine!</a></h2>
-<p>I would like to dedicate a section explaining Andrej Karpathy's Micrograd, an ultra-simple gradient engine he designed from scratch which is theoritically enough for training any kind of neural network. His engine is nothing more than a single class named <code>Value</code>, which not only stores a value, but also keeps track of <em><strong>how</strong></em> that value is calculated (The operation and the operands). Here is the full code:</p>
+<h2 id="worlds-tiniest-gradient-engine"><a class="header" href="#worlds-tiniest-gradient-engine">World’s tiniest gradient engine!</a></h2>
+<p>I would like to dedicate a section explaining Andrej Karpathy’s Micrograd, an ultra-simple gradient engine he designed from scratch which is theoritically enough for training any kind of neural network. His engine is nothing more than a single class named <code>Value</code>, which not only stores a value, but also keeps track of <em><strong>how</strong></em> that value is calculated (The operation and the operands). Here is the full code:</p>
 <pre><code class="language-python=">class Value:
-    &quot;&quot;&quot; stores a single scalar value and its gradient &quot;&quot;&quot;
+    """ stores a single scalar value and its gradient """
 
     def __init__(self, data, _children=(), _op=''):
         self.data = data
@@ -322,7 +323,7 @@ print(g_prime(5) * f_prime(g(5)))
         return out
 
     def __pow__(self, other):
-        assert isinstance(other, (int, float)), &quot;only supporting int/float powers for now&quot;
+        assert isinstance(other, (int, float)), "only supporting int/float powers for now"
         out = Value(self.data**other, (self,), f'**{other}')
 
         def _backward():
@@ -380,21 +381,21 @@ print(g_prime(5) * f_prime(g(5)))
         return other * self**-1
 
     def __repr__(self):
-        return f&quot;Value(data={self.data}, grad={self.grad})&quot;
+        return f"Value(data={self.data}, grad={self.grad})"
 </code></pre>
 <p>Typically, when you have two variables <code>a</code> and <code>b</code> and you add them together in a third variable <code>c</code>, the only thing stored in <code>c</code> is the result of addition of <code>a</code> and <code>b</code>:</p>
 <pre><code class="language-python=">a = 5
 b = 6
 c = a + b
 </code></pre>
-<p>But, let's imagine a world where all values are stored within a <code>Wrapper</code> class, something like this:</p>
+<p>But, let’s imagine a world where all values are stored within a <code>Wrapper</code> class, something like this:</p>
 <pre><code class="language-python=">a = Wrapper(5)
 b = Wrapper(6)
 c = a + b
 </code></pre>
 <h2 id="tensor"><a class="header" href="#tensor">Tensor</a></h2>
 <p>If you have had experience doing machine-learning stuff, you know that there is always some tensor processing library involved (Famous examples in Python are Tensorflow and PyTorch). Tensor is a fancy word for a multi-dimensional array, and tensor libraries provide you lots of functions and tools for manipulaing tensors and applying the backpropagation algorithms on them.</p>
-<p>Tensor libraries are essential for building super-complicated neural networks. So let's implement a tensor library for ourselves!</p>
+<p>Tensor libraries are essential for building super-complicated neural networks. So let’s implement a tensor library for ourselves!</p>
 <p>A tensor can be simply modeled as a piece of data on your memory which we <em><strong>assume</strong></em> has a particular shape.</p>
 <p>As an example, consider the data: <code>[1, 2, 3, 4, 5, 6]</code>. There are multiple ways to interpret these data as multidimensional array:</p>
 <ul>
@@ -405,7 +406,7 @@ c = a + b
 <li>2x3 <code>[[1, 2, 3], [4, 5, 6]]</code></li>
 <li>1x2x3x1 <code>[[[[1], [2], [3]], [[4], [5], [6]]]]</code></li>
 </ul>
-<p>See? The data is always the same. It's just the way we interpret it that makes different shapes possible. Given on that, we can implement a tensor as a Python class, holding a list of values as its <code>data</code>, and a tuple of numbers as its shape:</p>
+<p>See? The data is always the same. It’s just the way we interpret it that makes different shapes possible. Given on that, we can implement a tensor as a Python class, holding a list of values as its <code>data</code>, and a tuple of numbers as its shape:</p>
 <pre><code class="language-python=">def shape_size(shape):
     res = 1
     for d in shape:
@@ -421,7 +422,7 @@ class Tensor:
         self.shape = shape
 </code></pre>
 <p>We can also make sure that the data and the shape are compatible by checking if <code>data</code> has same number of values as the size of the shape. (You can calculate the size of a shape by multiplying all of its dimension, as we  did in <code>shape_size</code> function)</p>
-<p>Let's first add some static methods allowing us to generate tensors with constant values:</p>
+<p>Let’s first add some static methods allowing us to generate tensors with constant values:</p>
 <pre><code class="language-python=">class Tensor:
     # ...
 
@@ -437,7 +438,7 @@ class Tensor:
     def ones(shape):
         return Tensor.const(shape, 1)
 </code></pre>
-<p>It's also very helpful to print a tensor according to its shape. We do this by first converting the tensor into a regular Python nested-list, and then simply converting it to string:</p>
+<p>It’s also very helpful to print a tensor according to its shape. We do this by first converting the tensor into a regular Python nested-list, and then simply converting it to string:</p>
 <pre><code class="language-python=">class Tensor:
     # ...
 
@@ -474,7 +475,7 @@ class Tensor:
 <p>Our algorithm:</p>
 <ul>
 <li>Add as many 1s as needed to the tensor with smaller number of dimensions so that the number of dimensions in both of them become equal. E.g. when adding a 5x1x4x2 tensor with a 3x1x2 tensor, we first reshape the second matrix to 1x3x1x2.</li>
-<li>Make sure the corresponding dimensions in both tensors are equal <em><strong>or</strong></em> at least on of them is 1. E.g it's ok to add 5x4x3x2 tensor with a 4x3x2 or a 4x1x2 tensor, but it's NOT ok to add it with a 4x2x2, because \(2 \neq 3\).</li>
+<li>Make sure the corresponding dimensions in both tensors are equal <em><strong>or</strong></em> at least on of them is 1. E.g it’s ok to add 5x4x3x2 tensor with a 4x3x2 or a 4x1x2 tensor, but it’s NOT ok to add it with a 4x2x2, because \(2 \neq 3\).</li>
 <li>Calculate the final shape by taking the maximum of corresponding dimensions.</li>
 </ul>
 <p>This will be the Python code of the mentioned algorithm:</p>
@@ -491,11 +492,11 @@ class Tensor:
             res.append(max(s1[i], s2[i]))
     return tuple(res)
 </code></pre>
-<p>Now that we have the shape of result tensor, it's time to fill it according to the operation.</p>
+<p>Now that we have the shape of result tensor, it’s time to fill it according to the operation.</p>
 <h2 id="gradient-engines"><a class="header" href="#gradient-engines">Gradient Engines</a></h2>
 <p>Our implementation of a tensor is ready, our next big step is now to implement a gradient engine. Don’t get scared by its name, a gradient engine is just a tool you can use to keep track of derivatives of you tensors, with respect to the last computation you perform on your tensors (Which typically shows you how far are the outputs of your network compared to the desired outputs)</p>
 <p>Whenever you perform an operation on two tensors, you will get a new tensor. The gradients of tensors a and b is equal with the derivative of the output tensor with respect to each input tensor.</p>
-<p>In a production scale neural-network libraries, such as Pytorch and Tensorflow, the building of computation graphs is done automatically. You can go ahead and add tensors and multiply them together using ordinary Python operators (<code>+/-/*</code>). This requires us to implement the magic functions of operators (E.g <code>__add__</code>) in a way such that the resulting tensor keeps track of it parent tensors and is able to change their gradient values when needed. For example, when performing <code>c = a + b</code>, the gradient values of <code>a</code> and <code>b</code> are both influenced by <code>c</code>, so we have to keep track of these relations somewhere. This is done automatically in fancy neural-net libraries. Here we aren't going to make our implementation complicated and prefer to keep our code simple, tolerating some unfriendliness in tensor operations syntax. In our implementation, we assume there is a abstract class named <code>Operator</code>, which all tensor operations inherit from.</p>
+<p>In a production scale neural-network libraries, such as Pytorch and Tensorflow, the building of computation graphs is done automatically. You can go ahead and add tensors and multiply them together using ordinary Python operators (<code>+/-/*</code>). This requires us to implement the magic functions of operators (E.g <code>__add__</code>) in a way such that the resulting tensor keeps track of it parent tensors and is able to change their gradient values when needed. For example, when performing <code>c = a + b</code>, the gradient values of <code>a</code> and <code>b</code> are both influenced by <code>c</code>, so we have to keep track of these relations somewhere. This is done automatically in fancy neural-net libraries. Here we aren’t going to make our implementation complicated and prefer to keep our code simple, tolerating some unfriendliness in tensor operations syntax. In our implementation, we assume there is a abstract class named <code>Operator</code>, which all tensor operations inherit from.</p>
 <pre><code class="language-python=">from abc import ABC, abstractmethod 
 
 
@@ -511,8 +512,8 @@ class Operator(ABC):
     def grad(self, inps: List[Tensor], out: Tensor) -&gt; List[Tensor]:
         pass
 </code></pre>
-<p>The <code>run</code> function performs the operation on inputs, and then gives us an output tensor. The <code>grad</code> function otherhand, calculates the gradients of <code>inps</code>, given <code>inps</code> and the gradient of the output tensor according to the network's error (<code>out_grad</code>).</p>
-<p>Let's take a look at the implementation of the <code>Add</code> operation:</p>
+<p>The <code>run</code> function performs the operation on inputs, and then gives us an output tensor. The <code>grad</code> function otherhand, calculates the gradients of <code>inps</code>, given <code>inps</code> and the gradient of the output tensor according to the network’s error (<code>out_grad</code>).</p>
+<p>Let’s take a look at the implementation of the <code>Add</code> operation:</p>
 <pre><code class="language-python=">class Add(Operator):
     def __init__(self):
         pass
@@ -540,16 +541,16 @@ class Operator(ABC):
 <p>In case of scalar values, the gradient check is something like this:</p>
 <p>[TODO]</p>
 <h2 id="language"><a class="header" href="#language">Language</a></h2>
-<p>Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn't have them before? There are 2 important</p>
+<p>Large Language Models are perhaps the most important invention of our decade (2020s). LLMs are impressive but they are still using a technology we have known and using for decades, so how we didn’t have them before? There are 2 important</p>
 <ol>
-<li>We didn't know a perfect encoding/decoding strategy for text data</li>
-<li>We didn't put enough hardware for training language models</li>
+<li>We didn’t know a perfect encoding/decoding strategy for text data</li>
+<li>We didn’t put enough hardware for training language models</li>
 </ol>
 <h2 id="gate-layers"><a class="header" href="#gate-layers">Gate layers</a></h2>
 <h2 id="computation-graphs"><a class="header" href="#computation-graphs">Computation graphs</a></h2>
 <h2 id="different-layers"><a class="header" href="#different-layers">Different layers</a></h2>
 <p><strong>Embedding</strong></p>
-<p>An embedding layer is basically a array which you can access its elements. It's often used for converting words/tokens into \(k\)-dimensional vector of numbers. An embedding layer is always put as the first layer in a network, since its inputs are integer indices to elements of a table.</p>
+<p>An embedding layer is basically a array which you can access its elements. It’s often used for converting words/tokens into \(k\)-dimensional vector of numbers. An embedding layer is always put as the first layer in a network, since its inputs are integer indices to elements of a table.</p>
 <ul>
 <li>Propagation: <code>Y=T[X]</code></li>
 <li>Backpropagation: <code>dT[X]/dX += delta</code></li>
@@ -566,13 +567,13 @@ class Operator(ABC):
 <p>Now the questions is, how can these sentences be feeded to a neural-network which can only perform numerical operations? How do we convert them into numbers?</p>
 <p>A very naive encoding for this scenario is one-hot encoding.</p>
 <h2 id="one-but-hot"><a class="header" href="#one-but-hot">One, but hot!</a></h2>
-<p>Sometimes, instead of a quantity, you would like to feed a selection among options to a neural-network (E.g a neural network that predicts the longevity of a human given his information. You can clearly see that some of the properties of a human can be quantified, like his/her age, weight and height, but some simply can't). As an example, the gender of a person is not a quantity. In such situations, you can simply assign different numbers to different options and pass those numbers to the network. You can for example assign the number 0.25 for the option <code>man</code>, and number <code>0.5</code> for the option <code>woman</code>. </p>
-<p>But is this the best way we can encode things to be fed to a network? You will soon figure out that your model will have a very hard time understanding what these numbers mean. That's also the case with real humans. Imagine I tell you property X of person A is <code>0.25</code> while for person B is <code>0.5</code>. You will probably try to interpret those numbers as a quantizable property of a human, but there really isn't a meaningful mapping between a human's gender and his gender. Neural networks are biologically inspired structures, so if it's hard for us to interpret numbers as options, there is a high chance that neural networks can't do it well too.</p>
+<p>Sometimes, instead of a quantity, you would like to feed a selection among options to a neural-network (E.g a neural network that predicts the longevity of a human given his information. You can clearly see that some of the properties of a human can be quantified, like his/her age, weight and height, but some simply can’t). As an example, the gender of a person is not a quantity. In such situations, you can simply assign different numbers to different options and pass those numbers to the network. You can for example assign the number 0.25 for the option <code>man</code>, and number <code>0.5</code> for the option <code>woman</code>.</p>
+<p>But is this the best way we can encode things to be fed to a network? You will soon figure out that your model will have a very hard time understanding what these numbers mean. That’s also the case with real humans. Imagine I tell you property X of person A is <code>0.25</code> while for person B is <code>0.5</code>. You will probably try to interpret those numbers as a quantizable property of a human, but there really isn’t a meaningful mapping between a human’s gender and his gender. Neural networks are biologically inspired structures, so if it’s hard for us to interpret numbers as options, there is a high chance that neural networks can’t do it well too.</p>
 <p>There is a better way for feeding these kind of information to a neural network, instead of mapping the property to a single number and pass that number through a single neuron to our network, we can have one neuron per option, each specifying the presence of that option in the sample data. In case of our example, assuming we have 2 different genders, we will have two inputs, each input specifying man<em><strong>ness</strong></em> and woma<em><strong>ness</strong></em> of the data sample.</p>
-<p>It's one-hot! One of the inputs is hot (1) and the others are cold (0). It turns our that, networks trained this way perform much better than when the option is encoded as a random, unmeaningfull number. There is also another benefit training a network like this: Imagine a data sample where the man-ness and woman-ness properties are both <code>0.5</code>. The network will be able to make some sense of it!</p>
-<p>Ok, getting back to our example of a language-model, we can use one-hot encodings to encode each word of our sentence as a number. Assuming our model is able to predict the next word of a 10-word sentence, where each word is an option among 20 possible options, our model should accept \(10 \times 20\) numbers as input. That's already a big number. The English language alone has approximately 170k words (According to Oxford English Dictionary), probably without considering many of the slangs and internet words! Imagine having to feed 170k numbers for every word you have in a sentence! This is obviously impractical.</p>
-<p>Although one-hot encoding works perfectly when the options are limited, it doesn't work in cases where we have millions of options (E.g a word in a language model). So we have to come up with a different solution.</p>
-<p>Let's get back to our dummy solution, where we assigned a number to each word. Let's modify this method a bit: instead of mapping a word to a single number, let's map them to multiple numbers, but in a smart way! Each of the numbers assigned to the words will have a certain meaning. The 1st dimension could specify if the word is a verb or a name, the 2nd dimension could specify if it has a positive or a negative feeling, the 3rd can specify if it's about moving or staying still and so on. This is known as a word-embedding. A mapping between words to \(k\) dimensional numbers. Feeding a a neural networks this way saves a lot of neurons for us. We'll only have to pass \(k\) numbers per each word!</p>
+<p>It’s one-hot! One of the inputs is hot (1) and the others are cold (0). It turns our that, networks trained this way perform much better than when the option is encoded as a random, unmeaningfull number. There is also another benefit training a network like this: Imagine a data sample where the man-ness and woman-ness properties are both <code>0.5</code>. The network will be able to make some sense of it!</p>
+<p>Ok, getting back to our example of a language-model, we can use one-hot encodings to encode each word of our sentence as a number. Assuming our model is able to predict the next word of a 10-word sentence, where each word is an option among 20 possible options, our model should accept \(10 \times 20\) numbers as input. That’s already a big number. The English language alone has approximately 170k words (According to Oxford English Dictionary), probably without considering many of the slangs and internet words! Imagine having to feed 170k numbers for every word you have in a sentence! This is obviously impractical.</p>
+<p>Although one-hot encoding works perfectly when the options are limited, it doesn’t work in cases where we have millions of options (E.g a word in a language model). So we have to come up with a different solution.</p>
+<p>Let’s get back to our dummy solution, where we assigned a number to each word. Let’s modify this method a bit: instead of mapping a word to a single number, let’s map them to multiple numbers, but in a smart way! Each of the numbers assigned to the words will have a certain meaning. The 1st dimension could specify if the word is a verb or a name, the 2nd dimension could specify if it has a positive or a negative feeling, the 3rd can specify if it’s about moving or staying still and so on. This is known as a word-embedding. A mapping between words to \(k\) dimensional numbers. Feeding a a neural networks this way saves a lot of neurons for us. We’ll only have to pass \(k\) numbers per each word!</p>
 <p>Our language model was getting 10 words as an input and could predict the next word as an output. Imagine we train it and works very well. What will happen if we want to predict the next word of a 3 word sentence? For sure we can’t just put those 3 word on the first three input gates of our network and expect the output to be the fourth word. It is trained to only spit out the 11th word. In fact, the input/ouputs of language models are not like that. A language model of n inputs typically has also n outputs. And each output assumes the input has a certain length:</p>
 <h2 id="all-you-need-is-attention"><a class="header" href="#all-you-need-is-attention">All you need is attention!</a></h2>
 <p>If you have heard of GPT style language models (The most famous one being ChatGPT) the letters GPT stand for Generatice Pretrained Transformer. Here I’m going to talk about a revolutionary neural-network architecture named Transformer, which was first introduced by X scientists in a paper titled: “All you need is attention”</p>
@@ -593,32 +594,32 @@ class Operator(ABC):
 <li>k (<code>[num_tokens, head_size]</code>) is multiplied with q^-1 (<code>[head_size, num_tokens]</code>) giving out a <code>[num_tokens, num_tokens]</code> tensor, telling us how related each word is with other words.</li>
 <li>The upper-triangle of the matrix is zeroed out, so that the tokens cannot cheat.</li>
 <li>A softmax layer is applied to convert the importance-matrix into a probability distribution. Now we have a <code>[num_tokens, num_tokens]</code> vector where sum of each row is 0.</li>
-<li>The result is then multiplied with the v vector, allowing the most important tokens to send their &quot;message&quot; to the next attention layers. The output is a <code>[num_tokens, head_size]</code> tensor.</li>
+<li>The result is then multiplied with the v vector, allowing the most important tokens to send their “message” to the next attention layers. The output is a <code>[num_tokens, head_size]</code> tensor.</li>
 </ol>
 </li>
-<li>Multiple attention-heads with different parameters are applied giving us <code>num_heads</code> number of <code>[num_tokens, head_size]</code> tensors. By putting them besides each other, we'll get a <code>[num_tokens, embedding_degree]</code> tensor.</li>
+<li>Multiple attention-heads with different parameters are applied giving us <code>num_heads</code> number of <code>[num_tokens, head_size]</code> tensors. By putting them besides each other, we’ll get a <code>[num_tokens, embedding_degree]</code> tensor.</li>
 <li>The <code>[num_tokens, embedding_degree]</code> tensor is projected into another <code>[num_tokens, embedding_degree]</code> tensor through a linear layer.</li>
 <li>The output is added with the previous layer, resulting with another <code>[num_tokens, embedding_degree]</code> tensor, to kind of give the next layer the opportunity to access the original data and attentioned data at the same time.</li>
-<li>The output is normalized. Let's call the result <code>add_atten_norm</code>.</li>
-<li>The output is mapped to a <code>[num_tokens, 4*embedding_degree]</code> and again mapped to <code>[num_tokens, embedding_degree]</code> through 2 linear layers (This is the somehow the place where &quot;thinking&quot; processes happens).</li>
+<li>The output is normalized. Let’s call the result <code>add_atten_norm</code>.</li>
+<li>The output is mapped to a <code>[num_tokens, 4*embedding_degree]</code> and again mapped to <code>[num_tokens, embedding_degree]</code> through 2 linear layers (This is the somehow the place where “thinking” processes happens).</li>
 <li>The output is added to <code>add_atten_norm</code>, normalized again, and then passed to the next layer.</li>
 </ol>
 </li>
 <li>The output is normalized.</li>
 <li>The <code>[num_tokens, embedding_degree]</code> tensor is mapped to a <code>[num_tokens, vocab_size]</code> tensor through a linear layer.</li>
-<li>The result is softmaxed, resulting to a <code>[num_tokens, vocab_size]</code> probability distribution. Each telling you the probability of each token being the next token for each possible sentence-length. (There are <code>num_tokens</code> possible sentence-lengths, so we'll have <code>num_tokens</code> probability distributions)</li>
+<li>The result is softmaxed, resulting to a <code>[num_tokens, vocab_size]</code> probability distribution. Each telling you the probability of each token being the next token for each possible sentence-length. (There are <code>num_tokens</code> possible sentence-lengths, so we’ll have <code>num_tokens</code> probability distributions)</li>
 <li>Based on the sentence-length, we will decide which row to select, which will give us a <code>[vocab_size]</code> tensor. We will choose a token among most probable tokens and print it.</li>
 <li>We will add the new word to the input, giving us a new input. We will go through the process all over again, getting a new token each time. The text will get completed little by little.</li>
 </ol>
 <p><strong>MatMul</strong></p>
-<p>Let's say we have \(n\) neurons in a layer, each accepting the outputs of the \(m\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!</p>
-<p>Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron's input is the weighed sum of all outputs of previous neurons.</p>
+<p>Let’s say we have \(n\) neurons in a layer, each accepting the outputs of the \(m\) neurons in the previous layer. The neurons in the next layer are each calculating a weighed sum of all the neurons in the previous layer. Looking closely, you can see that the operation is not very different with a simple matrix multiplication!</p>
+<p>Matrix multiplication is the most primitive layer used in neural networks. You use a matrix-multiplication layer when you have a layer of neurons where each neuron’s input is the weighed sum of all outputs of previous neurons.</p>
 <ul>
 <li>Propagation: <code>Y=MX</code></li>
 <li>Backpropagation: <code>dY/dM += X</code> and <code>dY/dX += M</code></li>
 </ul>
 <p><strong>ReLU</strong></p>
-<p>ReLU is an activation function to provide non-linearty in a Neural-Network. It's a better alternative for vanilla sigmoid function, since the sigmoid function's closeness to zero can decrease the training speed a lot.</p>
+<p>ReLU is an activation function to provide non-linearty in a Neural-Network. It’s a better alternative for vanilla sigmoid function, since the sigmoid function’s closeness to zero can decrease the training speed a lot.</p>
 <ul>
 <li>Propagation: <code>Y=X if X &gt; 0 else 0</code></li>
 <li>Backpropagation: <code>dY/dX += 1 if X &gt; 0 else 0</code></li>
@@ -643,55 +644,54 @@ class Operator(ABC):
 </ul>
 <h2 id="language-1"><a class="header" href="#language-1">Language</a></h2>
 <h2 id="vision"><a class="header" href="#vision">Vision</a></h2>
-<hr />
+<hr>
 <h2 id="our-path-towards-artificial-general-intelligence"><a class="header" href="#our-path-towards-artificial-general-intelligence">Our path towards Artificial General Intelligence</a></h2>
 <p>Here we are going to talk about a philosophical approach of building consciousness in computers.</p>
-<p>So we have been doing years and years of research on things so called Artificial Intelligence and Machine Learning, but what I'm talking about here is Artificial General Intelligence, something more than a multilayer regression model used for classifying and prediction.
-Perhaps the reason we have had a giant progress in development of Machine Learning models is all about money. These things are useful in the world we live in, we can build self-driving cars, smart recommender systems and ...
-We can't just build a business out of a human-level intelligent system. (Edit: When I wrote this paragraph, LLMs were not as sophisticated as they are today! Things are very different now)</p>
+<p>So we have been doing years and years of research on things so called Artificial Intelligence and Machine Learning, but what I’m talking about here is Artificial General Intelligence, something more than a multilayer regression model used for classifying and prediction.
+Perhaps the reason we have had a giant progress in development of Machine Learning models is all about money. These things are useful in the world we live in, we can build self-driving cars, smart recommender systems and …
+We can’t just build a business out of a human-level intelligent system. (Edit: When I wrote this paragraph, LLMs were not as sophisticated as they are today! Things are very different now)</p>
 <h2 id="learning-is-not-enough-genetic-matters"><a class="header" href="#learning-is-not-enough-genetic-matters">Learning is not enough, genetic matters</a></h2>
 <p>You can try teaching Kant Philosophy or General Theory of Relativity to your dog, but I bet it would be disappointing. The mere ability to learn is not enough, the way a brain is wired matters, and that only changes through what we call evolution.</p>
-<h2 id="biological-simulation-isnt-the-right-path"><a class="header" href="#biological-simulation-isnt-the-right-path">Biological simulation isn't the right path</a></h2>
-<p>Although researching on biological side of things could be helpful, but doing it excessively could </p>
+<h2 id="biological-simulation-isnt-the-right-path"><a class="header" href="#biological-simulation-isnt-the-right-path">Biological simulation isn’t the right path</a></h2>
+<p>Although researching on biological side of things could be helpful, but doing it excessively could</p>
 <h2 id="we-are-so-close-to-agi"><a class="header" href="#we-are-so-close-to-agi">We are so close to AGI!</a></h2>
-<p>You can hear people saying that our computers can't even simulate the brain of a bee.
-Humans are smart, nature is dumb, the only thing that is making nature superior than us in engineering self-aware creatures is its vast ability to experiment different random things. Nature can create amazing stuff, but nature is not good at optimizing things. Think of it this way: </p>
+<p>You can hear people saying that our computers can’t even simulate the brain of a bee.
+Humans are smart, nature is dumb, the only thing that is making nature superior than us in engineering self-aware creatures is its vast ability to experiment different random things. Nature can create amazing stuff, but nature is not good at optimizing things. Think of it this way:</p>
 <h2 id="the-environment"><a class="header" href="#the-environment">The Environment</a></h2>
 <p>You want your lovely artificial creature to learn and do amazing things by himself? The first step is to give him the opportunity to do so! How can you expect a chatbot to magically understand the concept of self-awareness without giving it the chance to explore the world and distinguish himself with others?
-Humans are impressive and amazing, but the environment that was complex (yet not overly complicated) and creative enough that gave organisms the opportunity to evolve to the level of human mind is just brilliant. It's not about how to build a brain, but more about how to build an appropriate <strong>environment</strong> where a brain can evolve.</p>
-<h2 id="lets-act-like-a-god"><a class="header" href="#lets-act-like-a-god">Let's act like a God</a></h2>
-<p>The very first thing we need for creation of a self-aware creature, is a <em><strong>goal</strong></em>. Simplest form of a goal is <em><strong>survival</strong></em>, which simply means, to exist. In order to make existence a goal, we need to put concepts and things which harms the existence of that creature. We can make the creature dependent on some concept and intentionally take it away from him. Let's call that concept:</p>
-<p><em>Look, but don't touch. Touch, but don't taste. Taste, but don't swallow...</em></p>
-<h2 id="we-cant-afford-infinite-randomness"><a class="header" href="#we-cant-afford-infinite-randomness">We can't afford infinite randomness</a></h2>
-<p>The infinite monkey theorem states that a single monkey randomly hitting the keys of a keyboard for an infinite amount of time can write any given text, even complete works of Shakespear. But our computer resources, as opposed to the atoms in our universe, is limited. So we can't build intelligence by bruteforcing simulated atoms in a simulated world!</p>
-<h2 id="death-genes-weapon-for-survival"><a class="header" href="#death-genes-weapon-for-survival">Death, gene's weapon for survival</a></h2>
+Humans are impressive and amazing, but the environment that was complex (yet not overly complicated) and creative enough that gave organisms the opportunity to evolve to the level of human mind is just brilliant. It’s not about how to build a brain, but more about how to build an appropriate <strong>environment</strong> where a brain can evolve.</p>
+<h2 id="lets-act-like-a-god"><a class="header" href="#lets-act-like-a-god">Let’s act like a God</a></h2>
+<p>The very first thing we need for creation of a self-aware creature, is a <em><strong>goal</strong></em>. Simplest form of a goal is <em><strong>survival</strong></em>, which simply means, to exist. In order to make existence a goal, we need to put concepts and things which harms the existence of that creature. We can make the creature dependent on some concept and intentionally take it away from him. Let’s call that concept:</p>
+<p><em>Look, but don’t touch. Touch, but don’t taste. Taste, but don’t swallow…</em></p>
+<h2 id="we-cant-afford-infinite-randomness"><a class="header" href="#we-cant-afford-infinite-randomness">We can’t afford infinite randomness</a></h2>
+<p>The infinite monkey theorem states that a single monkey randomly hitting the keys of a keyboard for an infinite amount of time can write any given text, even complete works of Shakespear. But our computer resources, as opposed to the atoms in our universe, is limited. So we can’t build intelligence by bruteforcing simulated atoms in a simulated world!</p>
+<h2 id="death-genes-weapon-for-survival"><a class="header" href="#death-genes-weapon-for-survival">Death, gene’s weapon for survival</a></h2>
 <p>There is no reason for a cell, organism or creature to get old and die, as soon as in some part of its code, it is programmed to restore itself by consuming the materials around him (aka food). But most of the animals die (There are some exceptions, some kind of Marjan in Japan never dies by aging), why that happens?
 Paradoxically, the death phenomenon can be an important reason why human-level intelligence exists!
 Only the genes who die after sometime, will survive.
 The population will boom in an unexpected way and that could lead to the extinction of that specy.</p>
 <p>Charles Darwin was always wondering why depression exists.</p>
 <h2 id="consciousness-is-a-loop"><a class="header" href="#consciousness-is-a-loop">Consciousness is a loop</a></h2>
-<p>There are several evidences supporting the idea, that consciousness is the result of a loop in our nervous system, created during the evolution. Simple creatures do not have it, and the loop gets stronger and stronger when we reach to homo-sapiens. A loop in the input/output gateways of our brain make the &quot;thinking of thinking&quot; phenomenon possible.</p>
-<p>People with schizophrenia cannot distinguish between feedback inputs and environmental inputs, so they may hear sounds, that do not exist in real world, driving them crazy.  Thinking is like talking without making sounds, and redirecting it back to your brain without hearing it. A healthy brain would expect to hear a sound whenever it talks. Whenever this expectation is somehow broken, the brain cannot recognize if the voice it is hearing is external or it is somebody else inside his brain. It is kind of brain's failure in removing its own voice's echo.</p>
+<p>There are several evidences supporting the idea, that consciousness is the result of a loop in our nervous system, created during the evolution. Simple creatures do not have it, and the loop gets stronger and stronger when we reach to homo-sapiens. A loop in the input/output gateways of our brain make the “thinking of thinking” phenomenon possible.</p>
+<p>People with schizophrenia cannot distinguish between feedback inputs and environmental inputs, so they may hear sounds, that do not exist in real world, driving them crazy.  Thinking is like talking without making sounds, and redirecting it back to your brain without hearing it. A healthy brain would expect to hear a sound whenever it talks. Whenever this expectation is somehow broken, the brain cannot recognize if the voice it is hearing is external or it is somebody else inside his brain. It is kind of brain’s failure in removing its own voice’s echo.</p>
 <h2 id="how-to-experiment-self-awareness"><a class="header" href="#how-to-experiment-self-awareness">How to experiment self-awareness?</a></h2>
-<p><em>In an experiment known as the &quot;rouge test,&quot; mothers wiped a bit of rouge on the noses of their children and placed them in front of a mirror. Before 15 months, children look at the reflection and see a red spot on the nose in the mirror, but they don't realize that the red spot is on their own nose. When children are between 15 and 24 months, they begin to realize that the reflection they see is their own, and they either point to the red nose or try to wipe away the rouge. In other words, they understand that the reflection in the mirror is more than a familiar face–it is their own face.</em></p>
+<p><em>In an experiment known as the “rouge test,” mothers wiped a bit of rouge on the noses of their children and placed them in front of a mirror. Before 15 months, children look at the reflection and see a red spot on the nose in the mirror, but they don’t realize that the red spot is on their own nose. When children are between 15 and 24 months, they begin to realize that the reflection they see is their own, and they either point to the red nose or try to wipe away the rouge. In other words, they understand that the reflection in the mirror is more than a familiar face–it is their own face.</em></p>
 <h2 id="last-step-abstract-thinking"><a class="header" href="#last-step-abstract-thinking">Last step, abstract thinking</a></h2>
-<p>Your creature is now able to find food, escape from dangers, communicate with others and be self-aware. Congratulations! You just built a dog! So what's next? What makes homo-sapiens different with ordinary mammals? People say its our ability to think about things that do not exist. 
-Abstract Thinking isn't a MUST in our world to survive (That's why most animals can't write poems or do math in order to survive), but having it happened to be extremely helpful. Abstract Thinking helped us to unite under the name of </p>
+<p>Your creature is now able to find food, escape from dangers, communicate with others and be self-aware. Congratulations! You just built a dog! So what’s next? What makes homo-sapiens different with ordinary mammals? People say its our ability to think about things that do not exist.
+Abstract Thinking isn’t a MUST in our world to survive (That’s why most animals can’t write poems or do math in order to survive), but having it happened to be extremely helpful. Abstract Thinking helped us to unite under the name of</p>
 <h2 id="evolution-is-decentralized"><a class="header" href="#evolution-is-decentralized">Evolution is decentralized</a></h2>
 <p>Humans have always had the dream of replicating themselves by building creatures that have the intellectualual abilities of a human (Or even beyond). You can see how much we fantasize about human-made intelligence in the books, paintings, movies and etc.</p>
-<hr />
-
+<hr>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                             <a rel="prev" href="3-see.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
                             <a rel="next prefetch" href="5-trust.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
                         <div style="clear: both"></div>
@@ -701,16 +701,21 @@ Abstract Thinking isn't a MUST in our world to survive (That's why most animals 
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                     <a rel="prev" href="3-see.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
                     <a rel="next prefetch" href="5-trust.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
 
         </div>
 
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -719,15 +724,16 @@ Abstract Thinking isn't a MUST in our world to survive (That's why most animals 
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
+
 
 
     </div>

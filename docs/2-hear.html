@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -7,45 +7,59 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
-        <!-- Provide site root to javascript -->
-        <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
 
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-28c22f80.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-e22e99f6.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,87 +73,69 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
-        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-compute.html"><strong aria-hidden="true">1.</strong> Compute!</a></li><li class="chapter-item expanded "><a href="2-hear.html" class="active"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li><li class="chapter-item expanded "><a href="7-unorganized.html"><strong aria-hidden="true">7.</strong> Unorganized</a></li><li class="chapter-item expanded "><a href="8-appendix-a.html"><strong aria-hidden="true">8.</strong> Appendix A</a></li></ol>
-            </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
-
-        <div id="page-wrapper" class="page-wrapper">
+        <div id="mdbook-page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
                         </label>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
                         </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
                         </button>
                     </div>
 
@@ -147,81 +143,92 @@
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
                     </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="content" class="content">
+                <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="hear"><a class="header" href="#hear">Hear!</a></h1>
 <p><strong>Music of the chapter:</strong> <em>Giorgio by Moroder - By Daft Punk</em></p>
 <h2 id="human-senses"><a class="header" href="#human-senses">Human senses</a></h2>
-<p>Before starting this chapter, I'm expecting you to understand that human brains are biologically evolved computers. They are massive networks of interconnected cause/effect gates, which can dynamically change their behavior (Unlike a silicon computer gate, which has a fixed behavior over time) to learn stuff. These interconnected gates excite each other through electrical impulses. Electrical impulses are the language with which our neurons talk with each other. So, in order to sense something from the external world, some kind of translation is needed, and that's why we have <strong>Senses</strong>.</p>
-<p>Regular computers have sensors too. For example, we can think of a keyboard as a computer’s way of sensing the world. It allows humans to communicate with it, much like ears and eyes allow a human to receive input from the world around them, including other people. It's interesting to know that there are 6 different kinds of ways a human brain can make sense of the external world. Here is a brief list:</p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Organ</th><th>Stimulus</th><th>Stimulator</th></tr></thead><tbody>
+<p>Before starting this chapter, I’m expecting you to understand that human brains are biologically evolved computers. They are massive networks of interconnected cause/effect gates, which can dynamically change their behavior (Unlike a silicon computer gate, which has a fixed behavior over time) to learn stuff. These interconnected gates excite each other through electrical impulses. Electrical impulses are the language with which our neurons talk with each other. So, in order to sense something from the external world, some kind of translation is needed, and that’s why we have <strong>Senses</strong>.</p>
+<p>Regular computers have sensors too. For example, we can think of a keyboard as a computer’s way of sensing the world. It allows humans to communicate with it, much like ears and eyes allow a human to receive input from the world around them, including other people. It’s interesting to know that there are 6 different kinds of ways a human brain can make sense of the external world. Here is a brief list:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Organ</th><th>Stimulus</th><th>Stimulator</th></tr>
+</thead>
+<tbody>
 <tr><td>Sight</td><td>Eyes</td><td>Light</td><td>Physical self</td></tr>
 <tr><td>Hearing</td><td>Ears</td><td>Sound</td><td>Larynx</td></tr>
 <tr><td>Balance</td><td>Inner-ears</td><td>Acceleration</td><td>?!</td></tr>
 <tr><td>Smell</td><td>Nose</td><td>Chemical substances</td><td>Sweat</td></tr>
 <tr><td>Taste</td><td>Tongue</td><td>Chemical substances</td><td>?!</td></tr>
 <tr><td>Touch</td><td>Skin</td><td>Position/Motion/Temperature</td><td>Touch/Hit</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>We used to refer to the human senses as the five main senses, but there are also less obvious types of sensory inputs. For example, there’s something like a gyroscope in your inner ear that allows you to sense rotation and movement through space. This is what lets you feel the acceleration of a car even when your eyes are closed. Similarly, different kinds of pain or bodily sensations can also be considered sensory inputs. The key point is that your brain’s neurons are not only connected to each other, but also to various peripheral systems. These peripherals enable you to function as a complete, integrated human system.</p>
-<p>Human brains need to communicate with each other to maximize their evolutionary goals, but they aren't directly wired together. (Imagine if they were actually connected by wires—an interesting question would be: would they then become a single brain? A single &quot;person&quot;?) So, what's the solution? How can a conscious piece of meat, trapped inside a hard skull, communicate with other brains?</p>
+<p>Human brains need to communicate with each other to maximize their evolutionary goals, but they aren’t directly wired together. (Imagine if they were actually connected by wires—an interesting question would be: would they then become a single brain? A single “person”?) So, what’s the solution? How can a conscious piece of meat, trapped inside a hard skull, communicate with other brains?</p>
 <p>Much like the regular computers in your home, human brains also have external auxiliary hardware connected to them, primarily designed to perceive input from other computers—or, in this case, other humans. The eyes, ears, nose, tongue, and skin are examples of input devices connected to the brain, allowing it to sense the effects of the external world.</p>
 <p>In addition, there are organs connected to the brain that enable it to produce various outputs or effects in the world. Some examples include generating sound, giving a smile, or even producing attractive scents for mating!</p>
-<p>The brain's internal language is the flow of electricity through dendrites and axons. Different parts of the brain communicate with each other via electrical signals. However, for a brain to connect with the external world and transmit data to another brain, a series of cause-and-effect conversions is required. Messages must be transformed into some other form of signal that can travel through the environment, and then be converted back into electrical signals upon reaching the receiving brain.</p>
-<p>Imagine you're designing a communication system for human-like creatures that allows them to exchange information through their environment. How would you do it? That's right—the most obvious method is sound: one creature produces vibrations (speech), and another perceives them (hearing). This process is what we know as speaking and listening.</p>
+<p>The brain’s internal language is the flow of electricity through dendrites and axons. Different parts of the brain communicate with each other via electrical signals. However, for a brain to connect with the external world and transmit data to another brain, a series of cause-and-effect conversions is required. Messages must be transformed into some other form of signal that can travel through the environment, and then be converted back into electrical signals upon reaching the receiving brain.</p>
+<p>Imagine you’re designing a communication system for human-like creatures that allows them to exchange information through their environment. How would you do it? That’s right—the most obvious method is sound: one creature produces vibrations (speech), and another perceives them (hearing). This process is what we know as speaking and listening.</p>
 <p>This chapter explores one of the most effective mediums of human communication: sound. Voices, music, and auditory signals have not only shaped human interaction, but also inspired the foundations of modern communication systems.</p>
-<p>Today, humans are no longer the only entities that can produce and perceive sound—computers can do it too! You hear digital sounds and voices every day, whether it's a song playing on your laptop, or the sound your phone makes when you press a key. Computers can generate sounds, and more impressively, they can also &quot;hear&quot; them. These sounds don't even have to be mechanical. Your computer, for instance, communicates with your Wi-Fi router using &quot;electromagnetic sounds.&quot;</p>
+<p>Today, humans are no longer the only entities that can produce and perceive sound—computers can do it too! You hear digital sounds and voices every day, whether it’s a song playing on your laptop, or the sound your phone makes when you press a key. Computers can generate sounds, and more impressively, they can also “hear” them. These sounds don’t even have to be mechanical. Your computer, for instance, communicates with your Wi-Fi router using “electromagnetic sounds.”</p>
 <p>In fact, programming a computer to generate and interpret sound is one of the most exciting and creative things you can do as an engineer.</p>
 <p>We’ll begin by exploring the history of sound, starting with the earliest inventions that enabled us to record audio. The good news is that sound waves—the basic building blocks of any sound—can be generated quite easily by a computer. That’s because sound is, at its core, a mechanical disturbance that propagates through the air. There are many ways to convert alternating electrical signals in a wire into mechanical vibrations. And guess what kind of output computers are great at producing? Electrical signals! (Not all human senses are this easy to simulate—smell and taste, for example, are still challenging to reproduce with current technology.)</p>
 <p>Along the way, we’ll also take a brief detour into music theory. In fact, understanding music is a fun and intuitive way to start learning about sound. As you progress through this chapter, you’ll discover how you can compose a Beethoven symphony by writing a program that outputs nothing but numbers. Musical notes are like the LEGO pieces of our minds. Putting the right ones in the right order can influence human emotion—evoking sadness, joy, excitement, fear, wonder, and more. Learning how to create music will not only deepen your appreciation for sound, but also make you a better programmer. After all, programming is also about assembling the right pieces in the right sequence to create something meaningful.</p>
-<p>Once you’re comfortable generating sound, we’ll shift our focus to how a computer can &quot;hear.&quot; You’ll learn that a single sound can actually be a combination of many simpler, &quot;primitive&quot; sounds—and that we can break down complex audio into these basic components. Just like humans, computers can be trained to detect specific primitive sounds within a more complicated mix. We use this principle to build systems that allow computers to communicate with each other through sound.</p>
+<p>Once you’re comfortable generating sound, we’ll shift our focus to how a computer can “hear.” You’ll learn that a single sound can actually be a combination of many simpler, “primitive” sounds—and that we can break down complex audio into these basic components. Just like humans, computers can be trained to detect specific primitive sounds within a more complicated mix. We use this principle to build systems that allow computers to communicate with each other through sound.</p>
 <h2 id="history-of-vibration"><a class="header" href="#history-of-vibration">History of vibration</a></h2>
-<p>Thomas Alva Edison—some people think of him as a villain who stole Tesla’s ideas. We're not here to judge. Regardless of the controversy, he was an inventor whose creations had a significant impact on history and inspired many. In this piece, I want to talk about one of his inventions that I personally find both primitive and impressive: the Phonograph (nowadays often referred to as the Gramophone), the first human invention capable of recording and replaying sound.</p>
+<p>Thomas Alva Edison—some people think of him as a villain who stole Tesla’s ideas. We’re not here to judge. Regardless of the controversy, he was an inventor whose creations had a significant impact on history and inspired many. In this piece, I want to talk about one of his inventions that I personally find both primitive and impressive: the Phonograph (nowadays often referred to as the Gramophone), the first human invention capable of recording and replaying sound.</p>
 <p>Sound itself is the result of mechanical waves traveling through the air. In a vacuum, where air (the medium) is absent, sound cannot travel. Humans can produce sound because they have an organ—the larynx—that vibrates the air. These vibrations eventually reach the eardrums of another person, causing them to move in a specific pattern. To record and replay sound, we must capture these air movements and then recreate them in the same way. Phonographs offer a mechanical approach to this problem.</p>
-<p>Phonographs, as defined by Wikipedia, are devices that can record and reproduce sound. The idea behind them is both clever and elegant. Imagine a needle on a rotating disk. The needle is connected to something similar to a loudspeaker, which vibrates when someone speaks nearby. As the needle vibrates, it engraves grooves or varying depths into the disk. Over time, as the disk rotates, these grooves represent the air's movement—the sound—captured over that period.</p>
-<p>Here’s what makes the phonograph fascinating: after recording, you can place the needle back at the starting position and play it again. This time, instead of engraving, the needle follows the previously cut grooves, causing it to vibrate. This vibration transfers to the loudspeaker, which in turn vibrates the surrounding air. The air vibrations reach our eardrums, which convert the movement into electrical signals understood by our brain—and voilà, we hear the sound again. This reveals something profound: any arbitrary sound can be encoded as a stream of numbers. In the case of the phonograph, the &quot;numbers&quot; are the depths of the grooves engraved into the disk during the original recording.</p>
+<p>Phonographs, as defined by Wikipedia, are devices that can record and reproduce sound. The idea behind them is both clever and elegant. Imagine a needle on a rotating disk. The needle is connected to something similar to a loudspeaker, which vibrates when someone speaks nearby. As the needle vibrates, it engraves grooves or varying depths into the disk. Over time, as the disk rotates, these grooves represent the air’s movement—the sound—captured over that period.</p>
+<p>Here’s what makes the phonograph fascinating: after recording, you can place the needle back at the starting position and play it again. This time, instead of engraving, the needle follows the previously cut grooves, causing it to vibrate. This vibration transfers to the loudspeaker, which in turn vibrates the surrounding air. The air vibrations reach our eardrums, which convert the movement into electrical signals understood by our brain—and voilà, we hear the sound again. This reveals something profound: any arbitrary sound can be encoded as a stream of numbers. In the case of the phonograph, the “numbers” are the depths of the grooves engraved into the disk during the original recording.</p>
 <p>Phonographs were an early mechanical solution to the challenge of recording and replaying audio. Eventually, people learned to encode sound as electrical signals and invented electrical speakers, which could convert those signals back into air movement. The way an electric speaker works is surprisingly straightforward. It’s essentially an electromagnet—a magnet whose field is generated by electrical current flowing through a coil—placed near a permanent magnet attached to a flexible diaphragm. When electric current flows through the coil, the resulting magnetic field either attracts or repels the nearby magnet (depending on the voltage’s polarity), causing the diaphragm to move. When the current stops, the magnetic field disappears, and the diaphragm returns to its resting position. This is a direct conversion of electrical signals into mechanical vibrations—in other words, sound.</p>
-<p><img src="assets/speaker.png" alt="An electrical speaker is basically a magnetic plate which can be pulled and pushed given a voltage" /></p>
+<p><img src="assets/speaker.png" alt="An electrical speaker is basically a magnetic plate which can be pulled and pushed given a voltage"></p>
 <p>The system surprisingly works in reverse too! (Remember how a phonograph could both record and play music?) Vibrations in the air can cause the magnet—connected to the diaphragm—to move, which in turn induces an electrical current in the coil. Eureka! You can convert sound into a stream of voltages on one side, transmit it through a wire, and play it back on the other side. This is a very basic explanation of how a simple telephone works.</p>
 <p>One important detail is that the electrical current generated during recording is very weak and not strong enough to move the magnet and diaphragm on the receiving end. The solution is to amplify the signal along the way.</p>
-<p>A similar principle applies to phonographs. The vibration applied to the phonograph needle alone isn't strong enough to vibrate the surrounding air and produce audible sound. Instead, the vibration is routed to a mechanical loudspeaker, where it is somehow intensified before reaching our ears.</p>
-<p>(If you're curious about how the amplification process works, stay tuned for Chapter 6!)</p>
-<p><img src="assets/telephone.png" alt="When the person on left talks, the magnetic plane vibrates, the vibrations impose electrical current in the coil, which will traverse in the wire, and after being amplified, it causes the plate on the other side to vibrate" /></p>
+<p>A similar principle applies to phonographs. The vibration applied to the phonograph needle alone isn’t strong enough to vibrate the surrounding air and produce audible sound. Instead, the vibration is routed to a mechanical loudspeaker, where it is somehow intensified before reaching our ears.</p>
+<p>(If you’re curious about how the amplification process works, stay tuned for Chapter 6!)</p>
+<p><img src="assets/telephone.png" alt="When the person on left talks, the magnetic plane vibrates, the vibrations impose electrical current in the coil, which will traverse in the wire, and after being amplified, it causes the plate on the other side to vibrate"></p>
 <p>When people speak, a neural process triggers a mechanical response—specifically, the vibration of the larynx. This vibration causes the surrounding air to vibrate as well, creating a wave that travels through the air and reaches the ears of others. In this way, neural activity in one brain leads to neural activity in another, effectively linking minds.</p>
-<p>This process forms the basis of a meta-computer we call &quot;society.&quot; Human communication acts like neural transistors, enabling the construction of complex systems—essentially large-scale cognitive networks—that are capable of doing remarkably sophisticated and sometimes unexpected things.</p>
+<p>This process forms the basis of a meta-computer we call “society.” Human communication acts like neural transistors, enabling the construction of complex systems—essentially large-scale cognitive networks—that are capable of doing remarkably sophisticated and sometimes unexpected things.</p>
 <h2 id="selective-hearing"><a class="header" href="#selective-hearing">Selective hearing</a></h2>
-<p>We are now convinced that what we perceive as audio is nothing but a stream of intensities. This intensity can take different forms: mechanical (like the depth of the groove in a gramophone disk), electrical (alternating voltage in a wire), electromagnetic (a disturbance that can travel even through the vacuum of space), or simply a number in a computer. From now on, let's refer to these streams of intensities as signals.</p>
+<p>We are now convinced that what we perceive as audio is nothing but a stream of intensities. This intensity can take different forms: mechanical (like the depth of the groove in a gramophone disk), electrical (alternating voltage in a wire), electromagnetic (a disturbance that can travel even through the vacuum of space), or simply a number in a computer. From now on, let’s refer to these streams of intensities as signals.</p>
 <p>The main question is: why is something as simple as a signal—a single stream of alternating air pressure—such a perfect medium for humans (or even computers) to communicate with each other? The answer lies in our incredible ability to selectively focus on what’s important to us.</p>
-<p>Imagine you're at a party, and everyone is dancing to loud music. There's a lot of noise, yet you can still hear what your friend is saying. That’s remarkable because sound is a single signal—a single stream of intensities. The loud music and your friend's voice are combined into that same signal.</p>
-<p>The reason you can still make sense of your friend’s voice in a noisy environment is similar to how you can recognize the taste of an energy drink inside a cocktail—even when it contains many ingredients and is “loud” in flavor. This is because we have specialized receptors that detect different primitive elements of a sensory experience, whether it's hearing or tasting. In the case of taste, the primitive elements might be sweetness, sourness, bitterness, etc. Each specific taste is a unique combination of these basic flavors. But what are the primitive elements of an audio signal?</p>
+<p>Imagine you’re at a party, and everyone is dancing to loud music. There’s a lot of noise, yet you can still hear what your friend is saying. That’s remarkable because sound is a single signal—a single stream of intensities. The loud music and your friend’s voice are combined into that same signal.</p>
+<p>The reason you can still make sense of your friend’s voice in a noisy environment is similar to how you can recognize the taste of an energy drink inside a cocktail—even when it contains many ingredients and is “loud” in flavor. This is because we have specialized receptors that detect different primitive elements of a sensory experience, whether it’s hearing or tasting. In the case of taste, the primitive elements might be sweetness, sourness, bitterness, etc. Each specific taste is a unique combination of these basic flavors. But what are the primitive elements of an audio signal?</p>
 <p>The answer to this is one of the most incredible and important discoveries in engineering. In 1822, French mathematician Joseph Fourier, in his work on the flow of heat, claimed that any function or signal can be expressed as the sum of a series of sine and cosine terms. This means we can treat pure sine waves as the primitive elements of signals. Fourier also introduced a method to decompose any signal into its sine components—what we now call the Fourier Transform.</p>
-<p>If you record someone speaking and decompose the recording into its sine components, you'll find that most of the energy lies within a specific frequency range. Different people speak in different frequency ranges. So, theoretically, if one person speaks in one range and someone else in another, our brain can distinguish between them—even if they speak at the same time!</p>
+<p>If you record someone speaking and decompose the recording into its sine components, you’ll find that most of the energy lies within a specific frequency range. Different people speak in different frequency ranges. So, theoretically, if one person speaks in one range and someone else in another, our brain can distinguish between them—even if they speak at the same time!</p>
 <p>However, if their frequency ranges are too similar, it becomes difficult for the brain to separate the voices. This is why the human larynx has evolved in such a way that most people have distinct vocal frequency ranges.</p>
 <h2 id="let-your-computer-speak"><a class="header" href="#let-your-computer-speak">Let your computer speak!</a></h2>
 <p>Enough talking. As I always say, the best way to understand something is to explain it to a computer. In this section, we will learn how you can shake the magnetic plate of the speaker on your computer and use that to create different sounds. As we mentioned earlier, sound can be represented as a stream of intensities. This stream can be stored or generated by a computer as well. Computers generally come with hardware that can take a stream of data as input and smoothly apply it to the magnetic coil of a speaker, causing it to move back and forth. This movement vibrates the nearby air, allowing the computer to produce sound on its own. So, our first step is to find a way to send this data stream to your hardware.</p>
@@ -230,15 +237,15 @@
 <p>Since <code>pacat</code> can accept any data as input, we can try passing non-audio data to it too, just to see what happens! For example, try giving the random data generated by <code>/dev/urandom</code> to <code>pacat</code>:</p>
 <pre><code>cat /dev/urandom | pacat
 </code></pre>
-<p>You'll hear random noise! It might be fun to hear the voice of the Linux kernel:</p>
+<p>You’ll hear random noise! It might be fun to hear the voice of the Linux kernel:</p>
 <pre><code>sudo cat /boot/vmlinuz | pacat
 </code></pre>
-<p>Random noise is boring. Now it's the time to generate sounds that actually make sense to our brain. For the beginning, we are going to write a program that can generate sounds of different frequencies. This will become a playground for our experiments and will help us to understand the concepts much better. Throughout this chapter, we'll be generating waves of different frequencies, combining them, manipulating them in weird waves and then hear how it sounds! Let out journey begin!</p>
+<p>Random noise is boring. Now it’s the time to generate sounds that actually make sense to our brain. For the beginning, we are going to write a program that can generate sounds of different frequencies. This will become a playground for our experiments and will help us to understand the concepts much better. Throughout this chapter, we’ll be generating waves of different frequencies, combining them, manipulating them in weird waves and then hear how it sounds! Let out journey begin!</p>
 <p>The formal definition of a wave with frequency \(f\), is something like this:</p>
 <p>\(sin(2\pi ft)\)</p>
-<p>\(t\) is the variable of time in seconds, and \(f\) is the frequency. Plot this function and you'll see that the function oscillates between -1 and 1, for exactly \(f\) times during 1 second.</p>
-<p><img src="assets/sine.png" alt="sin(2.pi.5t) does 5 full cycles in 1 second" />{ width=250px }</p>
-<p>Since \(t\) is a real number, there are infinite possible values for it (Even in a limited range like \([0,1]\)). We can't apply infinite different voltages to our magnetic plate in a finite time. A solution is to increase \(t\) with an fixed number, and take a <strong>sample</strong> out of the function. How fast we take samples from our function determines our <em><strong>sampling rate</strong></em>. A sampling rate of 100 means that we are taking 100 samples per second. In order to reach sampling rate of 100, we have to increase \(t\) by 0.001 everytime we take a new sample. The sampling rate should be high enough so that we are able to generate a wide range of frequencies, otherwise it'll become useless. A sampling-rate of around ~40000 is enough to be able to generate sounds that are hearable by a human.</p>
+<p>\(t\) is the variable of time in seconds, and \(f\) is the frequency. Plot this function and you’ll see that the function oscillates between -1 and 1, for exactly \(f\) times during 1 second.</p>
+<p><img src="assets/sine.png" alt="sin(2.pi.5t) does 5 full cycles in 1 second">{ width=250px }</p>
+<p>Since \(t\) is a real number, there are infinite possible values for it (Even in a limited range like \([0,1]\)). We can’t apply infinite different voltages to our magnetic plate in a finite time. A solution is to increase \(t\) with an fixed number, and take a <strong>sample</strong> out of the function. How fast we take samples from our function determines our <em><strong>sampling rate</strong></em>. A sampling rate of 100 means that we are taking 100 samples per second. In order to reach sampling rate of 100, we have to increase \(t\) by 0.001 everytime we take a new sample. The sampling rate should be high enough so that we are able to generate a wide range of frequencies, otherwise it’ll become useless. A sampling-rate of around ~40000 is enough to be able to generate sounds that are hearable by a human.</p>
 <p>A very standard sampling-rate for sounds is 44100. <code>pacat</code> uses it by default too. The next step is to substitute the \(t\) variable with \(\frac{n}{44100}\) where \(n\) is the sample number: \(sin(2\pi f\frac{n}{44100})\), then we should just create a loop in which the value of \(n\) by 1 (Effectively causing the value of \(t\) increases by \(\frac{1}{44100}\))</p>
 <pre><code class="language-python=">import sys
 import struct
@@ -247,7 +254,7 @@ import math
 
 # Send sound sample to stdout as a 16-bit signed integer
 def put(x):
-    sys.stdout.buffer.write(struct.pack(&quot;h&quot;, int(x * 32767)))
+    sys.stdout.buffer.write(struct.pack("h", int(x * 32767)))
 
 
 sample_rate = 44100  # Rate per second
@@ -266,7 +273,7 @@ for _ in range(sample_rate * length):
     t += step
 </code></pre>
 <p><code>put(x)</code> function is getting a floating point value \(-1 \leq x \leq 1\) as its input and putting a signed short integer between \(-32768 \leq s \leq 32767\) into the stdout. It is the main gate which allows us to convert an electrical cause to a mechanical effect, by vibrating a magnetic plate in your computer!</p>
-<p>Redirect your script's output to the <code>pacat</code> program and hear the voice of your program:</p>
+<p>Redirect your script’s output to the <code>pacat</code> program and hear the voice of your program:</p>
 <pre><code class="language-bash">pacat &lt;(python3 music.py)
 </code></pre>
 <h2 id="frequency-combos"><a class="header" href="#frequency-combos">Frequency combos!</a></h2>
@@ -276,7 +283,7 @@ for _ in range(sample_rate * length):
     b = math.sin(t * 2 * math.pi * 660) * 0.5
     return a + b
 </code></pre>
-<p>We are multiplying <code>a</code> and <code>b</code> by <code>0.5</code> so that the output value remains between -1 and 1, otherwise the value of <code>a + b</code> may go below -1 or above 1, which doesn't make sense to our audio device. When you apply a coefficient to a signal, the sound will remain the same, only the energy/intensity of it (Its volume), will decrease/increase! Here we are halving the volume of our original sine function so that some space remains for the other sine component.</p>
+<p>We are multiplying <code>a</code> and <code>b</code> by <code>0.5</code> so that the output value remains between -1 and 1, otherwise the value of <code>a + b</code> may go below -1 or above 1, which doesn’t make sense to our audio device. When you apply a coefficient to a signal, the sound will remain the same, only the energy/intensity of it (Its volume), will decrease/increase! Here we are halving the volume of our original sine function so that some space remains for the other sine component.</p>
 <p>If you hear this function, you will actually notice that it consists of two sounds. Your brain can successfully decompose the output wave into two sounds, and this is amazing! The reason that you can recognize the 440Hz and 660Hz sound in the output of this script is the same reason you can hear your friend in a loud room full of noise, your brain is able to decouple sounds with different frequencies.</p>
 <h2 id="invent-your-sound-pallete"><a class="header" href="#invent-your-sound-pallete">Invent your sound pallete!</a></h2>
 <p>Now that we are able to generate sounds of different frequencies, I want you to do an experiment. Try generating frequencies that are of the form \(2^nf\). E.g. try hearing these frequencies: \(440, 880, 1760, 3520, \dots\)</p>
@@ -293,12 +300,12 @@ for _ in range(sample_rate * length):
 <p>In the code above, we are generating different frequencies through time. We start with 440Hz, and we double the frequency every 1 second.</p>
 <p>Hear them carefully, and then compare how they sound when their frequency is doubled. Try a different coefficient. Generate sounds that are of the form: \(1.5^nf\): \(440, 660, 990, 1485, \dots\)</p>
 <p>We can discover something very strange and important here. Sounds that are generated when the frequency is doubled each time, are very similar to each other (At least, to our brain). While in the second experiment, sounds seem to be different with each other. If the sounds that are generated in the first experiment are similar, then what makes them different?</p>
-<p>Let's try another experiment (This time without coding!). Play one of your favorite musics and try to sing on it. Try to sing on it with lower and higher pitches. Even though you have changed your voice, your singing still &quot;fits&quot; the song. By singing on a song with higher pitch, you are not actually shifting your frequency by some number, but you will actually multiplying it by a power of two. A man and woman with totally different frequency ranges can both sing on the same song, but both of the singings will &quot;fit&quot; on the song, as long as the frequencies are multiplies of powers of 2. I think it's now safe two say, frequencies that are doubled (Or halved) every time, have same feelings.</p>
-<p>Let's start with 300Hz. We calculate powers of two multiplied by the base frequency. Here is what we get:</p>
+<p>Let’s try another experiment (This time without coding!). Play one of your favorite musics and try to sing on it. Try to sing on it with lower and higher pitches. Even though you have changed your voice, your singing still “fits” the song. By singing on a song with higher pitch, you are not actually shifting your frequency by some number, but you will actually multiplying it by a power of two. A man and woman with totally different frequency ranges can both sing on the same song, but both of the singings will “fit” on the song, as long as the frequencies are multiplies of powers of 2. I think it’s now safe two say, frequencies that are doubled (Or halved) every time, have same feelings.</p>
+<p>Let’s start with 300Hz. We calculate powers of two multiplied by the base frequency. Here is what we get:</p>
 <p><code>..., 37.5Hz, 75Hz, 150Hz, 300Hz, 600Hz, 1200Hz, 2400Hz, ...</code></p>
-<p>Although there areLet's agree that they are all basically the same &quot;sound&quot;, and let's put a name on them. Let's call them <strong>sound number 1</strong> or S1.</p>
-<p>Whatever frequency we take from the range 300Hz-600Hz, there will also exist the corresponding &quot;same-feeling&quot; sound in ranges 75-150, 150-300, 600-1200, 1200-2400 and etc.</p>
-<p>Conversely, we can also conclude that any random frequncy have an corresponding &quot;same-feeling&quot; frequency in 300Hz-600Hz range. In order to find its same-feeling frequency, we just need to halve/double it, until it gets between 300Hz-600Hz. (E.g. let's start with 1500Hz, we halve it 2 times and we get 375Hz which exists in the range, so 375Hz is the equivalent same-feeling sound of 1500Hz). We know there are infinite number of frequencies between 300Hz-600Hz. A single S1 is not enough for creating beautiful pieces of music. We could only build Morse codes out of the single sounds! So let's discover and define other sounds in the same range.</p>
+<p>Although there areLet’s agree that they are all basically the same “sound”, and let’s put a name on them. Let’s call them <strong>sound number 1</strong> or S1.</p>
+<p>Whatever frequency we take from the range 300Hz-600Hz, there will also exist the corresponding “same-feeling” sound in ranges 75-150, 150-300, 600-1200, 1200-2400 and etc.</p>
+<p>Conversely, we can also conclude that any random frequncy have an corresponding “same-feeling” frequency in 300Hz-600Hz range. In order to find its same-feeling frequency, we just need to halve/double it, until it gets between 300Hz-600Hz. (E.g. let’s start with 1500Hz, we halve it 2 times and we get 375Hz which exists in the range, so 375Hz is the equivalent same-feeling sound of 1500Hz). We know there are infinite number of frequencies between 300Hz-600Hz. A single S1 is not enough for creating beautiful pieces of music. We could only build Morse codes out of the single sounds! So let’s discover and define other sounds in the same range.</p>
 <p>Imagine we define S2 as a sound that is in the middle of two S1s. Given that the self-feeling sounds are repeated in a loop, here is what we should expect:</p>
 <pre><code>S1 - 75Hz
 S2 - ?Hz
@@ -310,7 +317,7 @@ S1 - 600Hz
 S2 - ?Hz
 S1 - 1200Hz
 </code></pre>
-<p>What is the definition of middle? Let's say, \(C\) is in the middle of \(A\) and \(B\), when the distance between \(C\) and \(A\) is equal with the distance between \(C\) and \(B\). How is <em>distance</em> defined in case of frequencies? As a first guess, we can take the average of two S1 frequencies in order to find the S2 frequency.</p>
+<p>What is the definition of middle? Let’s say, \(C\) is in the middle of \(A\) and \(B\), when the distance between \(C\) and \(A\) is equal with the distance between \(C\) and \(B\). How is <em>distance</em> defined in case of frequencies? As a first guess, we can take the average of two S1 frequencies in order to find the S2 frequency.</p>
 <pre><code>S1 - 75Hz
 S2 - (75 + 150)/2 = 112.5Hz
 S1 - 150Hz
@@ -322,7 +329,7 @@ S2 - (600 + 1200)/2 = 900Hz
 S1 - 1200Hz
 </code></pre>
 <p>As you can see in the calculations, you can get other S2 sounds by multiplying/dividing any S2 sound by powers of 2, just like what happened with S1. So the derived S2 frequencies are all valid and all same in terms of their feelings.</p>
-<p>This is not the only way one can define the &quot;middle&quot; frequency here. Imagine instead of taking the average, we multiply the numbers, and take their square-root instead. This is called an &quot;multiplicative&quot; average, or a geometric mean (As opposed to an arithmetic-mean that we used in the first example):</p>
+<p>This is not the only way one can define the “middle” frequency here. Imagine instead of taking the average, we multiply the numbers, and take their square-root instead. This is called an “multiplicative” average, or a geometric mean (As opposed to an arithmetic-mean that we used in the first example):</p>
 <p>\(m=\sqrt{ab}\)</p>
 <p>We know that the frequencies are doubled in each iteration, so \(b=2a\). Substituting this in the equation we get: \(m=\sqrt{2a^2}=a\sqrt{2}\)</p>
 <pre><code>S1 - 75Hz
@@ -335,17 +342,17 @@ S1 - 600Hz
 S2 - 600 x sqrt(2) = 848.52Hz
 S1 - 1200Hz
 </code></pre>
-<p>As you can see, both of these definitions of &quot;middle&quot; give us valid sounds (By valid, I mean they are frequencies that are same-feeling), that indeed are in the middle of the S1 frequncies. The first definition of &quot;middle&quot; gives us numbers that have same arithmetic distance with the S1 frequencies (\(m-a=b-m\)), while in the second definition, the results are numbers that have same multiplicative distance with the S1 frequencies (\(\frac{m}{a}=\frac{b}{m}\)). Unfortunately, each of these defintions of middle is giving us different middle frequencies.</p>
-<p>So, the million dollar question is, which one is the more appropriate defintion of &quot;middle&quot; here?</p>
-<p>Let's look to those numbers again, this time without considering the middle frequencies. Take 3 consecutive S1s in a row. (E.g <code>300Hz 600Hz 1200Hz</code>). By definition, if we take 3 consecutive sounds, the second one is in the middle of the first and third sound. If we forget about our artificial middle frequencies and take a stream of S1s as our reference sounds, are the middle frequencies the artithmetic or the geometric mean of the other frequencies? </p>
-<p>Let's say our 3 consecutive sounds are \(2^ka\), \(2^{k+1}a\) and \(2^{k+2}a\). How can we calculate the middle frequency if we only had the values for the first and the third frequency? Let's try both artithmetic and geometric means.</p>
+<p>As you can see, both of these definitions of “middle” give us valid sounds (By valid, I mean they are frequencies that are same-feeling), that indeed are in the middle of the S1 frequncies. The first definition of “middle” gives us numbers that have same arithmetic distance with the S1 frequencies (\(m-a=b-m\)), while in the second definition, the results are numbers that have same multiplicative distance with the S1 frequencies (\(\frac{m}{a}=\frac{b}{m}\)). Unfortunately, each of these defintions of middle is giving us different middle frequencies.</p>
+<p>So, the million dollar question is, which one is the more appropriate defintion of “middle” here?</p>
+<p>Let’s look to those numbers again, this time without considering the middle frequencies. Take 3 consecutive S1s in a row. (E.g <code>300Hz 600Hz 1200Hz</code>). By definition, if we take 3 consecutive sounds, the second one is in the middle of the first and third sound. If we forget about our artificial middle frequencies and take a stream of S1s as our reference sounds, are the middle frequencies the artithmetic or the geometric mean of the other frequencies?</p>
+<p>Let’s say our 3 consecutive sounds are \(2^ka\), \(2^{k+1}a\) and \(2^{k+2}a\). How can we calculate the middle frequency if we only had the values for the first and the third frequency? Let’s try both artithmetic and geometric means.</p>
 <p>\(m_a=\frac{2^ka+2^{k+2}a}{2}=\frac{2^k(a+4a)}{2}=5\times 2^{k-1}a\)</p>
 <p>\(m_g=\sqrt{2^ka \times 2^{k+2}a}=2^{k+1}a\)</p>
-<p>Obviously, geometric mean is the natural definition of &quot;middle&quot; in a raw stream of S1 frequencies, so it makes a lot of sense to define middle as the geometric mean.</p>
+<p>Obviously, geometric mean is the natural definition of “middle” in a raw stream of S1 frequencies, so it makes a lot of sense to define middle as the geometric mean.</p>
 <p>Good to mention that another bug also happens when we try to define middle frequencies with arithmetic means. Although S2 resides in the middle of two S1s, S1s do not reside in the middle of S2s! \(\frac{112.5 + 225}{2} \neq 150\). This does not happen when we use geometric means: \(\sqrt{106.06 \times 212.13}=150\).</p>
-<p>Fortunately, we have been able to find a way to halve frequency ranges and create new same-feeling sounds out of them! But are 2 sounds enough for making a song? Well, we don't have to stop here. We can still find the middle of a S1 and a S2 and define a new S3 sound. The middle of the gap between an S2 and the next S1 can also define a new S4 sound. We can build infinitely many sounds just by halving the frequency gaps!</p>
-<p><img src="assets/pallete.png" alt="Musical notes are the colors of music!" />{width=250px}</p>
-<p>Enough explanation. Given that you now know how same-feeling sounds are derived, let's talk about the standard frequencies that are used in the music we hear everyday. Just like how we defined a base frequency S1 for deriving new sounds, music composers also defined a base frequency (That is 440Hz) and derived the other sounds out of it. They called their base frequency <strong>A</strong>, splitted the gap between two consecutive <strong>A</strong>s into 12 different sounds (Probably because 12 was big enough to make big variations of music and small enough so that the sounds remain distinguishable for human ears) and named the 11 other derived sounds as <code>A# B C C# D D# E F F# G G#</code>. How can you take 12 sounds out of a base frequency? New sounds can be derived by multiplying the previous sound by \(\sqrt[12]2 \simeq 1.05946\). Starting from \(A\) sound, if you do this 12 times, you get back to the next same-feeling A sound again, because \(\sqrt[12]2^{12}=2\).</p>
+<p>Fortunately, we have been able to find a way to halve frequency ranges and create new same-feeling sounds out of them! But are 2 sounds enough for making a song? Well, we don’t have to stop here. We can still find the middle of a S1 and a S2 and define a new S3 sound. The middle of the gap between an S2 and the next S1 can also define a new S4 sound. We can build infinitely many sounds just by halving the frequency gaps!</p>
+<p><img src="assets/pallete.png" alt="Musical notes are the colors of music!">{width=250px}</p>
+<p>Enough explanation. Given that you now know how same-feeling sounds are derived, let’s talk about the standard frequencies that are used in the music we hear everyday. Just like how we defined a base frequency S1 for deriving new sounds, music composers also defined a base frequency (That is 440Hz) and derived the other sounds out of it. They called their base frequency <strong>A</strong>, splitted the gap between two consecutive <strong>A</strong>s into 12 different sounds (Probably because 12 was big enough to make big variations of music and small enough so that the sounds remain distinguishable for human ears) and named the 11 other derived sounds as <code>A# B C C# D D# E F F# G G#</code>. How can you take 12 sounds out of a base frequency? New sounds can be derived by multiplying the previous sound by \(\sqrt[12]2 \simeq 1.05946\). Starting from \(A\) sound, if you do this 12 times, you get back to the next same-feeling A sound again, because \(\sqrt[12]2^{12}=2\).</p>
 <pre><code>A = 440Hz
 A# = 440 * 1.05946 = 466.16
 B = 440 * 1.05946^2 = 493.88
@@ -378,7 +385,7 @@ F_SHARP = 739.99
 G = 783.99        # Sol
 G_SHARP = 830.61
 </code></pre>
-<p>We can have a chain of <code>if</code>s in order to play different notes at different times. Here is an example that goes through the musical notes in a C major scale (We'll have a quick look into the theory of music and scales soon):</p>
+<p>We can have a chain of <code>if</code>s in order to play different notes at different times. Here is an example that goes through the musical notes in a C major scale (We’ll have a quick look into the theory of music and scales soon):</p>
 <pre><code class="language-python="># Play Do, Re, Mi, Fa, Sol, La, Si!
 def f(t):
     if t &lt; 0.2:
@@ -408,11 +415,11 @@ def f(t):
     f = SONG[note_index]
     return math.sin(t * 2 * math.pi * f) if f else 0
 </code></pre>
-<p>We are now ready to synthesize our first melody: let's go ahead and play Twinkle Twinkle Little Star:</p>
+<p>We are now ready to synthesize our first melody: let’s go ahead and play Twinkle Twinkle Little Star:</p>
 <pre><code class="language-python=">SONG = [C, C, G, G, A * 2, A * 2, G, SILENCE, F, F, E, E, D, D, C]
 </code></pre>
 <p>(Note: the reason we are multiplying <code>A</code> by two is that we want the version of <code>A</code> with higher pitch (Or the <code>A</code> note on the next <em><strong>octave</strong></em>), remember the same feeling sounds? We discussed that if you multiply a note by a power of two, you will get the same sound, but in a higher pitch, so effectively, <code>A * 2</code> is still <code>A</code>!)</p>
-<p>Ok, there is a small problem here, the subsequent notes which have same frequency are connecting together. <code>[C, C]</code> doesn't sound like two independent <code>C</code>s, but it sounds like a long-lasting <code>C</code>. Here is a quick solution:</p>
+<p>Ok, there is a small problem here, the subsequent notes which have same frequency are connecting together. <code>[C, C]</code> doesn’t sound like two independent <code>C</code>s, but it sounds like a long-lasting <code>C</code>. Here is a quick solution:</p>
 <pre><code class="language-python=">DURATION = 0.5  # Seconds
 WIDTH = 0.8  # 80% of the note is filled with sound, the rest is silence
 
@@ -427,15 +434,15 @@ def f(t):
 </code></pre>
 <p>Here we are silencing the last 20% of the note duration with silence. This makes it possible for us to distinguish between the notes! Try different <code>WIDTH</code>s to see the difference.</p>
 <h2 id="yins-and-yangs"><a class="header" href="#yins-and-yangs">Yins and Yangs</a></h2>
-<p>Years ago when I was a high-school student, once our Chemistry teacher wanted take an oral quiz from us. He randomly chose a student, brought him to the blackboard and asked him an unusual question. Why does a proton has positive electrical charge, while an electron has negative electrical charge? Why isn't it the other way round?</p>
+<p>Years ago when I was a high-school student, once our Chemistry teacher wanted take an oral quiz from us. He randomly chose a student, brought him to the blackboard and asked him an unusual question. Why does a proton has positive electrical charge, while an electron has negative electrical charge? Why isn’t it the other way round?</p>
 <p>The question has a fairly simple answer, negativity and positivity are merely names assigned to these primitive particles, so that we can analyze their behaviors. The question is like asking why humans with male reproductive systems are called men, while humans with female reproductive systems are called women?</p>
 <p>Genders and electrical charges are not the only dualities in our universe. In fact, we have infinite concepts in our unverse that has duals. Good and bad, happiness and sadness, light and dark, love and hate, forward and backward, angel and devil, heaven and hell, or even zeros and ones in our computers, they are all examples of dualities.</p>
 <p>In many of these duals, one thing refers to the presence of something while the other things refers to the absence of that thing. In context of zeros and  ones, we can say one refers to existence of some quantity while zero defines absence of it.</p>
-<p>Duals are interestingly two sides of a single coin. A single side cannot exist alone: it can only have a meaning when the other side also exists. That holds true for all other duals. Happiness wouldn't exist if there wasn't any sadness. Positive numbers wouldn't exist if there weren't any negative numbers (If we didn't have negative numbers, our algebra would become bugos).</p>
-<p>You can see that many of these interesting phenomena emerge when we try to pull &quot;numbness&quot; from two sides and break it into into two <em><strong>meaninful pieces</strong></em>.</p>
+<p>Duals are interestingly two sides of a single coin. A single side cannot exist alone: it can only have a meaning when the other side also exists. That holds true for all other duals. Happiness wouldn’t exist if there wasn’t any sadness. Positive numbers wouldn’t exist if there weren’t any negative numbers (If we didn’t have negative numbers, our algebra would become bugos).</p>
+<p>You can see that many of these interesting phenomena emerge when we try to pull “numbness” from two sides and break it into into two <em><strong>meaninful pieces</strong></em>.</p>
 <p>Some of these halvenings are conceptual, meaning that they are not something emerged in our universe like protons and electrons, or women and men. And example is negative and positive numbers, or real and imaginary numbers. We can somehow argue that negative and positive numbers are things that exist even if our universe does not exist.</p>
 <p>And some of them are reflections of these conceptual Yin and Yangs. The fact that some living creatures have genders only emerged after millions of years of evolution. In fact many living creatures did not have genders and they split into two only after evolution decided to mimick duality, maybe because duality is good.</p>
-<p>You might wonder why I'm saying all this. Well, I thought thinking about duals could be a good starting point for understanding why melodies have feelings in themselves. Why do some of them bring joy, while the other bring sadness?</p>
+<p>You might wonder why I’m saying all this. Well, I thought thinking about duals could be a good starting point for understanding why melodies have feelings in themselves. Why do some of them bring joy, while the other bring sadness?</p>
 <h2 id="recipes-of-feelings"><a class="header" href="#recipes-of-feelings">Recipes of feelings!</a></h2>
 <p>Play these two frequency combos with your synthesizer, and think about how you feel about them. If you were supposed two attribute the happy/sad feelings to these sounds, how would you do it?</p>
 <p>The first one is a sound composed of three frequencies <code>A</code>, <code>C_SHARP</code>, and <code>E</code>, known as a A-major triad:</p>
@@ -457,13 +464,13 @@ def f(t):
 <pre><code class="language-python=">A_MAJOR = [A, B, C_SHARP, D, E, F_SHARP, G_SHARP]
 A_MINOR = [A, B, C, D, E, F, G]
 </code></pre>
-<p>Just like the frequency combos, it's very probable that you'll find the <code>A_MAJOR</code> sequence happy and confident, while the <code>A_MINOR</code> one has a bit of confusion and probably sadness.</p>
+<p>Just like the frequency combos, it’s very probable that you’ll find the <code>A_MAJOR</code> sequence happy and confident, while the <code>A_MINOR</code> one has a bit of confusion and probably sadness.</p>
 <p>If you are already excited about the way a simple note sequence might feel, you might want to try these two:</p>
 <pre><code>A_MINOR_HARMONIC = [A, B, C, D, E, F, G_SHARP]
 A_MINOR_MELODIC = [A, B, C, D, E, F_SHARP, G_SHARP]
 </code></pre>
-<p>The feelings of both of them are very similar to the <code>A_MINOR</code> sequence, but they have even more confusion, one might even say that these sequences have some kind of &quot;magical&quot; feelings.</p>
-<p>You can keep going and expanding the sequences by appending the same notes that are in the next octaves. It's easier to catch the feelings of the sequences this way:</p>
+<p>The feelings of both of them are very similar to the <code>A_MINOR</code> sequence, but they have even more confusion, one might even say that these sequences have some kind of “magical” feelings.</p>
+<p>You can keep going and expanding the sequences by appending the same notes that are in the next octaves. It’s easier to catch the feelings of the sequences this way:</p>
 <pre><code class="language-python=">def next_octave(m):
     return [n * 2 for n in m]
 
@@ -473,8 +480,8 @@ SONG += next_octave(A_MINOR_MELODIC)
 SONG += next_octave(next_octave(A_MINOR_MELODIC))
 </code></pre>
 <p>Now, think of these note not as sequences, but as ingredients which you can use for making melodies. Choose a sequence and cook a melody by picking notes only from that sequence. You will have a melody which can have a happy, sad, confusing or even a more complicated feeling! These sequences, or note-ingredients are what is called by musicians as <em><strong>musical scales</strong></em>. We just explored A-major and A-minor scales.</p>
-<p>Now tell me, what is the musical scale of the Twinkle Twinkle Little Star melody we synthesized earlier? Wrong! Although the musical notes that are used in this song are the notes of the A-minor scale, it has a happy feeling, it has a &quot;major&quot; feeling! So what has happened?</p>
-<p>To understand what is happening, let's first play the expanded version of A-minor scale again, but this time, we'll cut the first two notes in the resulting sequence:</p>
+<p>Now tell me, what is the musical scale of the Twinkle Twinkle Little Star melody we synthesized earlier? Wrong! Although the musical notes that are used in this song are the notes of the A-minor scale, it has a happy feeling, it has a “major” feeling! So what has happened?</p>
+<p>To understand what is happening, let’s first play the expanded version of A-minor scale again, but this time, we’ll cut the first two notes in the resulting sequence:</p>
 <pre><code class="language-python=">A_MINOR = [A, B, C, D, E, F, G]
 SONG = A_MINOR
 SONG += next_octave(A_MINOR)
@@ -482,7 +489,7 @@ SONG += next_octave(next_octave(A_MINOR))
 SONG = SONG[2:]
 </code></pre>
 <p>Weird, it seems like that the location of the sequence from which we start our sequence has strong effects in the way the melody feels!</p>
-<p>The truth is, the resulting sound is not in the A-minor scale anymore. Although it has a major feeling, it's not an A-major (You can compare them). It is a C-major!</p>
+<p>The truth is, the resulting sound is not in the A-minor scale anymore. Although it has a major feeling, it’s not an A-major (You can compare them). It is a C-major!</p>
 <pre><code class="language-python=">C_MAJOR = [C, D, E, F, G, A * 2, B * 2]
 </code></pre>
 <p>What is pattern that makes <code>A_MAJOR</code> and <code>C_MAJOR</code> have same feelings, although using different notes? The truth lies in that ratio the frequecy is increasing!</p>
@@ -527,9 +534,9 @@ def major(starting_note):
 </code></pre>
 <p>Now you can make musical scales on the fly!</p>
 <h2 id="chords"><a class="header" href="#chords">Chords</a></h2>
-<p>Our ears are wonderful. They can distinguish between different frequencies and notes, even when they are mixed up with each other. It might be worth noting that this isn't true for our eyes. Our eyes can't distinguish between the yellow color, and the mixture of red and green colors! (Yes, they are different, and this unfortunate fact isn't that bad: it has made it much easier for us to build color display! More on this in the next chapter)</p>
-<p>So if the ears are able to make sense of &quot;frequency mixtures&quot;, why not trying to bake new sounds by mixing different frequencies with each other? It'll be like mixing different colors with each other and making new colors!</p>
-<p>In the world of music, these mixtures are often referred as &quot;chords&quot;. Chords are simply just mixtures of different notes that exist in a certain musical scale. Musicians have found ways to make up chords that feel nice and good. Let's explore a few of them. I would like to start with <em>triads</em> (We already explored the A-major and A-minor triads if you remember): these are chords that are made of 3 different notes. Just like how we categorize musical scales as majors and minors, some triad chords are also categorized in this way too.</p>
+<p>Our ears are wonderful. They can distinguish between different frequencies and notes, even when they are mixed up with each other. It might be worth noting that this isn’t true for our eyes. Our eyes can’t distinguish between the yellow color, and the mixture of red and green colors! (Yes, they are different, and this unfortunate fact isn’t that bad: it has made it much easier for us to build color display! More on this in the next chapter)</p>
+<p>So if the ears are able to make sense of “frequency mixtures”, why not trying to bake new sounds by mixing different frequencies with each other? It’ll be like mixing different colors with each other and making new colors!</p>
+<p>In the world of music, these mixtures are often referred as “chords”. Chords are simply just mixtures of different notes that exist in a certain musical scale. Musicians have found ways to make up chords that feel nice and good. Let’s explore a few of them. I would like to start with <em>triads</em> (We already explored the A-major and A-minor triads if you remember): these are chords that are made of 3 different notes. Just like how we categorize musical scales as majors and minors, some triad chords are also categorized in this way too.</p>
 <p>Given a starting note, here are some of the triads you can make:</p>
 <pre><code class="language-python=">def major_triad(root):
     return [root, root * (HALF_STEP ** 4), root * (HALF_STEP ** 7)]
@@ -544,7 +551,7 @@ def augmented_triad(root):
     return [root, root * (HALF_STEP ** 4), root * (HALF_STEP ** 8)]
 </code></pre>
 <p>As you expect, minor and major triads have sad and happy feelings, but we have two new patterns here too: diminished and augmented triads somehow sound mysterious, disturbing and some people say melancholic!</p>
-<p>Now, you may want to use chords in your music to go above building pure melodies. Not all chords are going to &quot;fit&quot; to the musical-scale your are using in your music! Here is how you can make triads that will sound nice and fit your music: start with a root note in the scale, and also pick the third and fifth notes. E.g in scale of A-major, here are the triads you can use:</p>
+<p>Now, you may want to use chords in your music to go above building pure melodies. Not all chords are going to “fit” to the musical-scale your are using in your music! Here is how you can make triads that will sound nice and fit your music: start with a root note in the scale, and also pick the third and fifth notes. E.g in scale of A-major, here are the triads you can use:</p>
 <ul>
 <li><strong>A</strong> B <strong>C#</strong> D <strong>E</strong> F# G#</li>
 <li>A <strong>B</strong> C# <strong>D</strong> E <strong>F#</strong> G#</li>
@@ -554,7 +561,7 @@ def augmented_triad(root):
 <li>A B C# D E <strong>F#</strong> G# <strong>A</strong> B <strong>C#</strong></li>
 <li>A B C# D E F# <strong>G#</strong> A <strong>B</strong> C# <strong>D</strong></li>
 </ul>
-<p>Let's automate this and write a function that can generate the triad chords of a given scale for us on the fly:</p>
+<p>Let’s automate this and write a function that can generate the triad chords of a given scale for us on the fly:</p>
 <pre><code class="language-python=">def triads(scale):
     # The scale is repeated twice to avoid overflows!
     notes = scale + next_octave(scale)
@@ -570,7 +577,7 @@ def augmented_triad(root):
     i = scale.index(note)
     return [scale[i], scale[i+2], scale[i+4]]
 </code></pre>
-<p>Now let's substitute the notes in the Twinkle Twinkle Little Star with their corresponding triads, and play the triad notes simultanously on every note. We'll define a new function <code>combo</code> to make it easier for us to play a note-combination given a list of frequencies:</p>
+<p>Now let’s substitute the notes in the Twinkle Twinkle Little Star with their corresponding triads, and play the triad notes simultanously on every note. We’ll define a new function <code>combo</code> to make it easier for us to play a note-combination given a list of frequencies:</p>
 <pre><code class="language-python=">def combo(t, freqs):
     return sum([
         math.sin(t * 2 * math.pi * f) for f in freqs
@@ -585,8 +592,8 @@ def f(t):
 <p>Our toolset is almost enough for generating random pieces that feel somewhat good to our ears. Given we now have some knowledge on musical scales and feelings, we may even inject our desired feelings to these pieces.</p>
 <p>Our brief journey in theory of music has now ended. In the next sections, we are mostly going to study more on the waves themselves.</p>
 <h2 id="storing-melodies"><a class="header" href="#storing-melodies">Storing melodies</a></h2>
-<p>It's a shame to limit your synthesizer to the Twinkle Twinkle Little Star melody. You perhaps are more interesed in synthesizing the sound of your favorite music, so perhaps you want your synth to be able to play and synthesize some sort of a standardized format for storing melodies. This way, you'll be able to compose a lot of other melodies which people have made and published over the internet for you! There actually is a very commonly used format for exactly that purpose named MIDI. MIDI (Or Musical Instrument Digital Interface), as defined in Wikipedia: <em><strong>is a file format that provides a standardized way for music sequences to be saved, transported, and opened in other systems</strong></em>. You might challenge yourself to write a MIDI parser and interpreter for your synth, but MIDI is a pretty complicated format, and one might need to read a enormous document before he can implemenet it, so I decided to start with something simpler:</p>
-<p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it's a relatively simple format. The RTTTL version of the StarWars theme is something like this:</p>
+<p>It’s a shame to limit your synthesizer to the Twinkle Twinkle Little Star melody. You perhaps are more interesed in synthesizing the sound of your favorite music, so perhaps you want your synth to be able to play and synthesize some sort of a standardized format for storing melodies. This way, you’ll be able to compose a lot of other melodies which people have made and published over the internet for you! There actually is a very commonly used format for exactly that purpose named MIDI. MIDI (Or Musical Instrument Digital Interface), as defined in Wikipedia: <em><strong>is a file format that provides a standardized way for music sequences to be saved, transported, and opened in other systems</strong></em>. You might challenge yourself to write a MIDI parser and interpreter for your synth, but MIDI is a pretty complicated format, and one might need to read a enormous document before he can implemenet it, so I decided to start with something simpler:</p>
+<p>There is a simple file format developed by mobile phone manufacturer Nokie for storing ringtones, named RTTTL. We are going to implement a RTTTL parser since it’s a relatively simple format. The RTTTL version of the StarWars theme is something like this:</p>
 <pre><code>StarWars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6
 </code></pre>
 <p>A RTTTL file is composed of 3 sections, separated by <code>:</code>. Here is the description of each section:</p>
@@ -601,7 +608,7 @@ def f(t):
 </li>
 <li>And at last we have another comma separated list of notes: e.g: <code>32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6</code>
 <ul>
-<li>For each note, we first have its duration (As number of beats). If there isn't any, then the default one is used.</li>
+<li>For each note, we first have its duration (As number of beats). If there isn’t any, then the default one is used.</li>
 <li>Then comes the note</li>
 <li>If there is a <code>.</code> after the note, it means you should multiply the duration with <code>1.5</code></li>
 <li>And then comes the octave (Otherwide, the default octave is used)</li>
@@ -611,31 +618,31 @@ def f(t):
 <p>Here is a function that accepts a RTTTL script and returns a list of notes:</p>
 <pre><code class="language-python=">def parse_rtttl(rtttl: str):
     NOTES = {
-        &quot;p&quot;: 0,
-        &quot;a&quot;: A,
-        &quot;a#&quot;: A_SHARP,
-        &quot;b&quot;: B,
-        &quot;c&quot;: C,
-        &quot;c#&quot;: C_SHARP,
-        &quot;d&quot;: D,
-        &quot;d#&quot;: D_SHARP,
-        &quot;e&quot;: E,
-        &quot;f&quot;: F,
-        &quot;f#&quot;: F_SHARP,
-        &quot;g&quot;: G,
-        &quot;g#&quot;: G_SHARP,
+        "p": 0,
+        "a": A,
+        "a#": A_SHARP,
+        "b": B,
+        "c": C,
+        "c#": C_SHARP,
+        "d": D,
+        "d#": D_SHARP,
+        "e": E,
+        "f": F,
+        "f#": F_SHARP,
+        "g": G,
+        "g#": G_SHARP,
     }
-    name, params, body = tuple(rtttl.split(&quot;:&quot;))
-    params = {p.split(&quot;=&quot;)[0]: int(p.split(&quot;=&quot;)[1]) for p in params.split(&quot;,&quot;)}
-    notes = body.split(&quot;,&quot;)
+    name, params, body = tuple(rtttl.split(":"))
+    params = {p.split("=")[0]: int(p.split("=")[1]) for p in params.split(",")}
+    notes = body.split(",")
     res = []
     for note in notes:
         dur, name, dotted, oct = re.match(
-            r&quot;(\d*)([a-gA-GpP#]{1,2})(\.?)(\d*)&quot;, note
+            r"(\d*)([a-gA-GpP#]{1,2})(\.?)(\d*)", note
         ).groups()
         freq = NOTES[name]
-        dur = int(dur) if dur else params[&quot;d&quot;]
-        oct = int(oct) if oct else params[&quot;o&quot;]
+        dur = int(dur) if dur else params["d"]
+        oct = int(oct) if oct else params["o"]
         if dotted:
             dur += dur // 2
         res.append((freq, dur))
@@ -647,12 +654,12 @@ Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#
 </code></pre>
 <h2 id="more-than-sines"><a class="header" href="#more-than-sines">More than Sines!</a></h2>
 <p>After playing some melodies by generating different frequencies in a sequence, you might nag that the notes are very pure, emotionless, and not at all close to what we hear when we press a key on a piano, and you are right. We are generating pure sine-waves, meaning that what we hear contains only a single frequency. If you analyze the sound coming out of a musical instrument, you will notice that not only it contains frequencies other than the main frequency, but also the strength of those frequencies change over time.</p>
-<p>It's not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.</p>
-<p>As an example, imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn't have speakers with enough precision for generating sound with needing smoother movement of the speaker's magnetic plate. All they could do was to sharply pull and push the magnetic plate!</p>
+<p>It’s not easy to generate a piano sound using pure sine frequencies, but there are other ways we can oscillate a loud-speaker, letting us to get more creative and generate sounds that are more interesting and weird.</p>
+<p>As an example, imagine sharp jumpings to -1 and +1 instead of smoothly going up and down like a sine wave. This will make a square wave that feels very differently. Square-waves have vintage feeling, since the game consoles back then didn’t have speakers with enough precision for generating sound with needing smoother movement of the speaker’s magnetic plate. All they could do was to sharply pull and push the magnetic plate!</p>
 <h2 id="sounds-as-gates"><a class="header" href="#sounds-as-gates">Sounds as gates</a></h2>
-<p>Engineering is all about making new things, by gluing already existing things together. When synthesizing a sound, the &quot;things&quot; that are being glued together are math functions that produce intensity samples given time. Let's call these functions <em><strong>samplers</strong></em>. </p>
+<p>Engineering is all about making new things, by gluing already existing things together. When synthesizing a sound, the “things” that are being glued together are math functions that produce intensity samples given time. Let’s call these functions <em><strong>samplers</strong></em>.</p>
 <p>So far, we have been putting all of the sound sampling logic inside a single <code>f</code> function. In case <code>f</code> was simply generating a sine wave, any change on the frequency of the wave would need direct changes in the definition of the <code>f</code> function. A nicer, more engineer-friendly (!) approach would be to define some <em><strong>primitive samplers</strong></em> and provide toolings for combining them together and making new samplers (Like chapter 1, where we defined transistors as primitive elements and started building logic gates and more complex circuits on top of them). In case of producing sound samples, periodic functions like sine-wave generators are basic enough to be considered <em><strong>primitive</strong></em>. Since these functions are kind of oscillating your speaker, we call them <em><strong>oscillators</strong></em>!</p>
-<p>Unfortunately there isn't a single sine-wave oscillator since sine-wave oscillators with different frequencies are different and thus sound different. Creating a new function for each of the frequencies is neither practical nor smart, so, thanks to Python we are able to define a function that is able to get a frequency as an input and return a sampler function as its output!</p>
+<p>Unfortunately there isn’t a single sine-wave oscillator since sine-wave oscillators with different frequencies are different and thus sound different. Creating a new function for each of the frequencies is neither practical nor smart, so, thanks to Python we are able to define a function that is able to get a frequency as an input and return a sampler function as its output!</p>
 <p>As an example, here is a sampler-creator function that accepts a frequency as its input and returns a sine-wave sampler as its output:</p>
 <pre><code class="language-python">import math
 
@@ -661,7 +668,7 @@ def Sine(freq):
         return math.sin(2 * math.pi * freq * t)
     return out
 </code></pre>
-<p><img src="assets/sinewave.png" alt="Sine wave with frequency 3.0" />{ width=250px }</p>
+<p><img src="assets/sinewave.png" alt="Sine wave with frequency 3.0">{ width=250px }</p>
 <p>Now, <code>f</code> can be defined by the output of an oscillator like <code>Sine</code>:</p>
 <pre><code class="language-python=">f = Sine(440.0)
 </code></pre>
@@ -677,23 +684,23 @@ def Square(freq):
             return -1
     return out
 </code></pre>
-<p><img src="assets/squarewave.png" alt="Square wave with frequency 3.0" />{ width=250px }</p>
+<p><img src="assets/squarewave.png" alt="Square wave with frequency 3.0">{ width=250px }</p>
 <p><em><strong>Sawtooth</strong></em></p>
 <pre><code class="language-python">def Sawtooth(freq):
     def out(t):
         return 2*(t*freq - math.floor(1/2 + t*freq))
     return out
 </code></pre>
-<p><img src="assets/sawtoothwave.png" alt="Sawtooth wave with frequency 3.0" />{ width=250px }</p>
+<p><img src="assets/sawtoothwave.png" alt="Sawtooth wave with frequency 3.0">{ width=250px }</p>
 <p><em><strong>Triangle</strong></em></p>
 <pre><code class="language-python">def Triangle(freq):
     def out(t):
         return 2*abs(t*freq - math.floor(1/2 + t*freq))
     return out
 </code></pre>
-<p><img src="assets/triangularwave.png" alt="Triangular wave with frequency 3.0" />{ width=250px }</p>
+<p><img src="assets/triangularwave.png" alt="Triangular wave with frequency 3.0">{ width=250px }</p>
 <h3 id="the-gates"><a class="header" href="#the-gates">The gates</a></h3>
-<p>In our model of a synthesizer, we assumed that there are some set of <em><strong>primitive</strong></em> samplers, which we can pick as a starting point for building more complicated samplers, thus now we kind of need sampler generators which will accept other samplers as their input. Let's start with a simple example: imagine we want to synthesize a sine wave which has a lower volume compared to the original <code>Sine</code> sampler. We can either create a completely new sampler like <code>LowVolumeSine</code>, or create a general-purpose volume-decaying sampler named <code>Gain</code>, which will accept a sampler as input and returns a new one in which the samples are scaled by some constant:</p>
+<p>In our model of a synthesizer, we assumed that there are some set of <em><strong>primitive</strong></em> samplers, which we can pick as a starting point for building more complicated samplers, thus now we kind of need sampler generators which will accept other samplers as their input. Let’s start with a simple example: imagine we want to synthesize a sine wave which has a lower volume compared to the original <code>Sine</code> sampler. We can either create a completely new sampler like <code>LowVolumeSine</code>, or create a general-purpose volume-decaying sampler named <code>Gain</code>, which will accept a sampler as input and returns a new one in which the samples are scaled by some constant:</p>
 <pre><code class="language-python=">def Gain(inp, s):
     def out(t):
         return inp(t) * s
@@ -749,7 +756,7 @@ def Square(freq):
 <p>Hearing all these compositions of different oscillators, you may still notice that the sounds are far from being pleasant to your ears, and one of the main reasons is that the intensity of those sounds is constant in time, while in real-world, a note gets loud with a delay, and will smoothly lose its intensity as time passes. One way we can bring such effect in our simulation is to actually manipulate the volume of our oscillator through time.</p>
 <p>One of those methods, known as ADSR (Attack, Delay, Sustain, Release), assumes that a musical note starts with a volume of 0, quickly reaches its peak volume and then quickly gets down to relatively quieter volume, stays there for a longer time and then starts decreasing its intensity until it reaches zero.</p>
 <p>These timings might be different for different instruments, and they do not neccessarrily change linearly. For the sake of simplicity, we will assume the changes all happen in a linear fashion. Here is a graph:</p>
-<p><img src="assets/adsr.png" alt="Example of an ADSR where Attack=0.1s Decay=0.3s Sustain=0.5s Release=0.1s" />{ width=250px }</p>
+<p><img src="assets/adsr.png" alt="Example of an ADSR where Attack=0.1s Decay=0.3s Sustain=0.5s Release=0.1s">{ width=250px }</p>
 <p>Fortunately, applying an ADSR effect is as simple as multiplying the ADSR function with the oscillator function!</p>
 <pre><code class="language-python">def Adsr(sampler, a_dur, d_dur, s_dur, r_dur, a_level, s_level):
     def f(t):
@@ -769,7 +776,7 @@ def Square(freq):
     return f
 </code></pre>
 <h2 id="macro-music-language"><a class="header" href="#macro-music-language">Macro Music Language</a></h2>
-<p>Macro Music Language (MML) is a very old and deprecated music description language for storing melodies on computers. MML was originally designed to be used in video games back in 70s, so you probably can't find a lot of software that can play MML files, though I chose to introduce and implement this format since it's fairly simple to implement and there are plenty of music available in this format which you can test your synthesizer with, and unlike RTTTL, it may contain multiple lines of melodies which are played in parallel. Here is a brief spec of this language:</p>
+<p>Macro Music Language (MML) is a very old and deprecated music description language for storing melodies on computers. MML was originally designed to be used in video games back in 70s, so you probably can’t find a lot of software that can play MML files, though I chose to introduce and implement this format since it’s fairly simple to implement and there are plenty of music available in this format which you can test your synthesizer with, and unlike RTTTL, it may contain multiple lines of melodies which are played in parallel. Here is a brief spec of this language:</p>
 <p>A MML music consists of commands.</p>
 <ul>
 <li><code>cdefgab</code> the notes. You may get the sharp/flat versions of them by appending <code>#</code>/<code>-</code> respectively. You may also specify the duration as a fraction of the whole note. E.g <code>a2</code> is a half-note and <code>b#8</code> is an eighth note. If a duration is not specified, a default duration is used. If a <code>.</code> appears after the note duration, the duration should be multiplied by 1.5.</li>
@@ -777,7 +784,7 @@ def Square(freq):
 <li><code>o</code> followed by a number, selects the octave.</li>
 <li><code>&gt;</code>, <code>&lt;</code> used for going to the next/previous octave.</li>
 <li><code>l</code> sets the default duration for note, as a fraction of the whole note. E.g <code>l8</code> sets the default duration to 1/8 of a whole note.</li>
-<li><code>v</code> follewed by a number, sets the volume of the instrument. </li>
+<li><code>v</code> follewed by a number, sets the volume of the instrument.</li>
 <li><code>t</code> followed by a number, sets the tempo in beats per minute.</li>
 </ul>
 <p>A MML music may be composed of several lines of melodies which should be played all at the same time. These lines of melodies are separated using <code>&amp;</code>.</p>
@@ -791,7 +798,7 @@ def ComposeMML(mml, instrument):
     ])
 </code></pre>
 <h2 id="frequency-modulation"><a class="header" href="#frequency-modulation">Frequency Modulation</a></h2>
-<p>One of the interesting sounds you can try to generate is the sound of a siren. A siren is a device that can generate a loud sound, with alternating frequency. The frequency is alternated itself in a sine pattern. Assuming the sound's frequency alternates between \(f_1\) and \(f_2\), we can calculate frequency, by time, as follows:</p>
+<p>One of the interesting sounds you can try to generate is the sound of a siren. A siren is a device that can generate a loud sound, with alternating frequency. The frequency is alternated itself in a sine pattern. Assuming the sound’s frequency alternates between \(f_1\) and \(f_2\), we can calculate frequency, by time, as follows:</p>
 <p>\(f=f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}\)</p>
 <p>We already know altering the intensity of a sound is as simple as applying a coefficient to its sampler function. If you multiply the above function with an oscillator, its volume will alternate. Knowing that we can generate sine wave with frequency \(f\) with \(sin(2.\pi.f)\), you may conclude that the sound of a siren can be modeled by substituting \(f\) with the alternating \(f\) formula:</p>
 <p>\(sin(2.\pi.(f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}))\)</p>
@@ -805,34 +812,34 @@ def ComposeMML(mml, instrument):
 <h2 id="sound-is-data"><a class="header" href="#sound-is-data">Sound is data</a></h2>
 <h2 id="electromagnetism"><a class="header" href="#electromagnetism">Electromagnetism</a></h2>
 <p>Sounds are the result of vibrating air propagating through space. Sound is a kind of wave. When you disturb a still water from some point, the disturbance will start propagating from that point. A cause on a point will have effects on points far from the original point. Just like water (Or any other liquid), waves can be propagated through gases too. Waves are a very important mean of communication. Humans mainly use sound waves for communication. They disturb the air by vibrating their larynx, and the diturbance will propagate in air until it reaches the ears of the listener. Computers can communicate through sound too. Using what you have learnt so far, you can write programs that can encode data as sound and send it through the air to another computer.</p>
-<p>Since the sounds we make are propagated through air, without air, we won't able to speak with each other. If you put two people in a vacum space, all they'll see is their friend's lips moving without hearing anything! That's why astronomers communicate through walkie-talkies with each other!</p>
-<p>World is a strange place, besides particles and materials, there are non-mechanical things too. Even wondered what prevents two magnets with same poles to get close to each other? If you try to get them close, you'll feel there is &quot;something&quot; in between them, but there actually is nothing. It turns out that moving that &quot;thing&quot; (As the result of moving the magnet), can disturb the area around it too, just like when you move inside water.</p>
-<p>Here's another way to think about it: Imagine your entire body is floating in the water in a swimming pool. Assume that the water is completely still, and it will remain so as long as you also remain still and don't move any part of your body. A very slight movement of your hand will create a disturbance in the water (in this case, the water represents the context). Your hand's disturbance will start propagating and reach all parts of the pool. The effect is not immediate, and it will take some time for the motion to reach other areas of the pool. If you start vibrating your hand with some frequency, you will soon see that a slighter vibration (with the same frequency) will begin happening in other parts of the water. The farther the destination point, the more time it takes for the motion to reach, and the less powerful the vibration will be. The very same thing happens in the air. We are all floating in a pool of air, and any movement in the air will have effects on the way air moves. That's why we can communicate with each other. In this case, the context is &quot;air.&quot;</p>
+<p>Since the sounds we make are propagated through air, without air, we won’t able to speak with each other. If you put two people in a vacum space, all they’ll see is their friend’s lips moving without hearing anything! That’s why astronomers communicate through walkie-talkies with each other!</p>
+<p>World is a strange place, besides particles and materials, there are non-mechanical things too. Even wondered what prevents two magnets with same poles to get close to each other? If you try to get them close, you’ll feel there is “something” in between them, but there actually is nothing. It turns out that moving that “thing” (As the result of moving the magnet), can disturb the area around it too, just like when you move inside water.</p>
+<p>Here’s another way to think about it: Imagine your entire body is floating in the water in a swimming pool. Assume that the water is completely still, and it will remain so as long as you also remain still and don’t move any part of your body. A very slight movement of your hand will create a disturbance in the water (in this case, the water represents the context). Your hand’s disturbance will start propagating and reach all parts of the pool. The effect is not immediate, and it will take some time for the motion to reach other areas of the pool. If you start vibrating your hand with some frequency, you will soon see that a slighter vibration (with the same frequency) will begin happening in other parts of the water. The farther the destination point, the more time it takes for the motion to reach, and the less powerful the vibration will be. The very same thing happens in the air. We are all floating in a pool of air, and any movement in the air will have effects on the way air moves. That’s why we can communicate with each other. In this case, the context is “air.”</p>
 <p>Now, there exists a more unusual kind of context in which waves can occur. We can assume that space is filled with some kind of unknown matter that gets distorted when magnets/electrons move through it. This is the context where electromagnetic waves can propagate. This is the context which our cell-phones, wireless networks, gps satellites, remote controls communicate through. The disturbances in this medium are propagates with speed of light, and that’s one of the reasons why we building our computers to communicate through sounds ( which propagate through air, with a speed of 300ms, a lot less than the speed of light)</p>
 <p>Metals are also isolated environments in which certain kind of waves can propagate. Imagine having two wires, connected to a power source with a voltage of 5V. Assume we slowly decrease the voltage to 0. The fact is, the effect is not immediate, and the decrease in voltage will reach the end of the wire with some delay!</p>
 <p>Einstein claimed that there can’t be anything faster than light [TODO]</p>
 <p>If you even remove the sun from the solar system, the earth will keep orbiting around the missing sun for about 7 minutes, [TODO]</p>
-<p>Heinrich Hertz, the German physicist, was the first to prove the existence of electromagnetic waves (that's why the unit of frequency is Hertz). James Clerk Maxwell (we'll learn more about his work in the next chapters) predicted the existence of such waves even before Hertz. However, Hertz was the first to show that they truly exist. He accomplished this by capturing the transmitted waves through an antenna he built himself. It's amusing to know that Hertz believed his invention was worthless and had no use, as he said:</p>
-<p>&quot;It's of no use whatsoever... this is just an experiment that proves Maestro Maxwell was right—we have these mysterious electromagnetic waves that we cannot see with the naked eye. But they are there.&quot;</p>
-<p>It's challenging to imagine our world nowadays without his invention. Hertz's story is a good example that demonstrates the potential and impact of studying seemingly useless science in our lives.</p>
-<p>Hertz's transmitter and antenna were straightforward, and you can build one yourself if you're curious enough.</p>
-<p>Although your computer can generate electromagnetic waves in specific frequency ranges (such as WiFi and Bluetooth), unfortunately, it's not possible to generate arbitrary electromagnetic waves. I always wished there was a way to generate electromagnetic waves by putting wave samples on a wave generator hardware (just like what we do with audio). There are good reasons why manufacturers have not included hardware for that in your computer. If you could generate arbitrary waves, you could interfere with many government-controlled facilities, including national television and radio.</p>
+<p>Heinrich Hertz, the German physicist, was the first to prove the existence of electromagnetic waves (that’s why the unit of frequency is Hertz). James Clerk Maxwell (we’ll learn more about his work in the next chapters) predicted the existence of such waves even before Hertz. However, Hertz was the first to show that they truly exist. He accomplished this by capturing the transmitted waves through an antenna he built himself. It’s amusing to know that Hertz believed his invention was worthless and had no use, as he said:</p>
+<p>“It’s of no use whatsoever… this is just an experiment that proves Maestro Maxwell was right—we have these mysterious electromagnetic waves that we cannot see with the naked eye. But they are there.”</p>
+<p>It’s challenging to imagine our world nowadays without his invention. Hertz’s story is a good example that demonstrates the potential and impact of studying seemingly useless science in our lives.</p>
+<p>Hertz’s transmitter and antenna were straightforward, and you can build one yourself if you’re curious enough.</p>
+<p>Although your computer can generate electromagnetic waves in specific frequency ranges (such as WiFi and Bluetooth), unfortunately, it’s not possible to generate arbitrary electromagnetic waves. I always wished there was a way to generate electromagnetic waves by putting wave samples on a wave generator hardware (just like what we do with audio). There are good reasons why manufacturers have not included hardware for that in your computer. If you could generate arbitrary waves, you could interfere with many government-controlled facilities, including national television and radio.</p>
 <p>Waves are waves, whether mechanical or electromagnetic; they all share very similar traits. The most important and useful feature of a wave is its ability to transfer data.</p>
-<p>Studying waves and how you can utilize them to connect people together is a fascinating topic in both computer and electrical engineering. As I always say, experimenting is the best way to learn. So, throughout the next sections, we are going to experiment with waves using an easy-to-generate kind of wave. We know that it's not possible to generate electromagnetic waves with your computer, and we have also seen how easy it is to generate sound waves. Therefore, we will stick to sound waves and try to transfer different kinds of data between computers through sounds!</p>
+<p>Studying waves and how you can utilize them to connect people together is a fascinating topic in both computer and electrical engineering. As I always say, experimenting is the best way to learn. So, throughout the next sections, we are going to experiment with waves using an easy-to-generate kind of wave. We know that it’s not possible to generate electromagnetic waves with your computer, and we have also seen how easy it is to generate sound waves. Therefore, we will stick to sound waves and try to transfer different kinds of data between computers through sounds!</p>
 <h2 id="distribute-sound-radio-stations"><a class="header" href="#distribute-sound-radio-stations">Distribute sound, radio stations</a></h2>
 <p>Sound is the primary medium of communication for humans, but unfortunately, speaking becomes ineffective when your audience is far away, and the reason is that sound waves lose energy as they propagate in the space.
-The world was a very different place before the invention of telecommunication technologies. The only way you could communicate with your beloved ones (Who were far away), was to send them physical letters. In the best case, your letter could be delivered in the time it took to transfer a physical object from you to your destination (Which was not very fast obviously). There are faster things in universe by which you can transfer messages of course, light is an example. Lights are also waves, just like sounds, but unfortunately we can't &quot;hear&quot; electromagnetic waves, so we can't use them directly, as a medium of &quot;verbal&quot; communication. We can try to design an intermediary language for translating sentences to visual effects and vice versa. The simplest example of such protocol, is some coding technique known as Morse codes.</p>
+The world was a very different place before the invention of telecommunication technologies. The only way you could communicate with your beloved ones (Who were far away), was to send them physical letters. In the best case, your letter could be delivered in the time it took to transfer a physical object from you to your destination (Which was not very fast obviously). There are faster things in universe by which you can transfer messages of course, light is an example. Lights are also waves, just like sounds, but unfortunately we can’t “hear” electromagnetic waves, so we can’t use them directly, as a medium of “verbal” communication. We can try to design an intermediary language for translating sentences to visual effects and vice versa. The simplest example of such protocol, is some coding technique known as Morse codes.</p>
 <p>Invented in the 1830s by an American artist, Samuel Morse (Yes, sometimes artists are pioneers of technology), Morse code is a method for encoding/decoding latin-alphabet letters into a series of signals (Electrical or visual). It is worth noting that Morse-codes are designed in a way such that the most frequent letters in latin-alphabet have shorter signal representations.</p>
-<p><img src="assets/morse.png" alt="International Morse-codes" />{ width=250px }</p>
+<p><img src="assets/morse.png" alt="International Morse-codes">{ width=250px }</p>
 <h2 id="hearing-with-your-computer"><a class="header" href="#hearing-with-your-computer">Hearing with your computer</a></h2>
-<p>PulseAudio's <code>pacat</code> program lets you to put raw audio samples on your computer's speakers. On the other hand, there is another program <code>parec</code> which allows you to record audio samples. <code>pacat</code> puts whatever it gets through stdin on your computer's speaker, while <code>parec</code> puts audio samples it gets through your computer's microphone on stdout. Using these commands together you can record and play audio:</p>
+<p>PulseAudio’s <code>pacat</code> program lets you to put raw audio samples on your computer’s speakers. On the other hand, there is another program <code>parec</code> which allows you to record audio samples. <code>pacat</code> puts whatever it gets through stdin on your computer’s speaker, while <code>parec</code> puts audio samples it gets through your computer’s microphone on stdout. Using these commands together you can record and play audio:</p>
 <pre><code>parec &gt; record.wav
 pacat &lt; record.wav
 </code></pre>
-<p>Another interesting thing to experiment is to pipe the the <code>parec</code>'s output into <code>pacat</code>. Spoiler alert! Your voice will be echoed:</p>
+<p>Another interesting thing to experiment is to pipe the the <code>parec</code>’s output into <code>pacat</code>. Spoiler alert! Your voice will be echoed:</p>
 <pre><code>parec | pacat
 </code></pre>
-<p>Now let's try to pass the <code>parec</code>'s input through a filter that we'll write in Python, and hear its output via <code>pacat</code>:</p>
+<p>Now let’s try to pass the <code>parec</code>’s input through a filter that we’ll write in Python, and hear its output via <code>pacat</code>:</p>
 <p><code>parec | python3 filter.py | pacat</code></p>
 <p>Here is a simple filter that allows only half of the samples to go through (<code>filter.py</code>):</p>
 <pre><code class="language-python">import sys, struct
@@ -841,7 +848,7 @@ def get():
     return struct.unpack('h', sys.stdin.buffer.read(2))[0] / 32767
 
 def put(x):
-    sys.stdout.buffer.write(struct.pack(&quot;h&quot;, int(x * 32767)))
+    sys.stdout.buffer.write(struct.pack("h", int(x * 32767)))
 
 while True:
     get() # Skip one sample
@@ -855,7 +862,7 @@ while True:
 <p>\(out[i] = in[1.5i]\)</p>
 <p>Unfortunately, all kinds of digital signals which we process in a computer are discrete, meaning that they are sequences of numbers, the result of sampling the signal over a fixed interval, and you don’t directly have the signal in between two intervals. Although we don’t have the signal data between two intervals, we can predict them with a good accuracy! A very simple prediction model assumes that the distance between two consecutive samples goes through a line!</p>
 <p>In other words, you can assume that \(inp[5.5] \simeq \frac{inp[5] + inp[6]}{2}\)</p>
-<p>So far, we have had done a lot of experiments using the <code>pacat</code> command, and now it's the time to see what can be done if we allow other computers to receive wave-samples. We have learnt to compose sounds, now its time to decompose them! Putting samples on your computer’s speaker allows you to make disturbance in the air around your computer’s speaker. The disturbance, as seen in the previous sections, will propagate in the space finally reach your ears and you will hear it. Computers can hear those disturbances too, through microphones. Using these two devices together you can build protocols with which computers can talk with each othrr, without any wire connection.</p>
+<p>So far, we have had done a lot of experiments using the <code>pacat</code> command, and now it’s the time to see what can be done if we allow other computers to receive wave-samples. We have learnt to compose sounds, now its time to decompose them! Putting samples on your computer’s speaker allows you to make disturbance in the air around your computer’s speaker. The disturbance, as seen in the previous sections, will propagate in the space finally reach your ears and you will hear it. Computers can hear those disturbances too, through microphones. Using these two devices together you can build protocols with which computers can talk with each othrr, without any wire connection.</p>
 <p>The disturbance doesn’t necessarily need to happen in the air, for example you can basically build devices that can disturb the water in a pool in one side and build a device to detect and listen to the disturbances in the other side of the pool. Using these two, two computers may communicate with each other through water waves!</p>
 <p>In real world, what your computer is generating is an electrical signal that is given to a speaker. You can connect the exact same wire to other things too. In fact:</p>
 <ul>
@@ -865,7 +872,7 @@ while True:
 <li>Connect that wire to a light-emitter within a optical fiber cable, and the data will propagate through visible light.</li>
 </ul>
 <h2 id="fourier-transform"><a class="header" href="#fourier-transform">Fourier Transform</a></h2>
-<p>Fourier-Transform is a method/algorithm by which you can extract frequencies within a wave-form. Remember we could generate sounds that were compositions of two sine-waves with different frequencies? When hearing those sounds, your brain is able to successfully recognize the presence of two different frequencies in what it hears, and that is actually why we are able to understand what someone is saying in a crowded environment with a lot of noise. Our brain is able to focus on a certain frequency (Which is the frequency-range of your friend's larynx). If our brains are able to decompose sounds by their frequency, it's reasonable to think that computers can do that too. Fourier-Transform is the answer. Given a list of signal samples, it will tell you what frequencies are present in that signal. Here is an example:</p>
+<p>Fourier-Transform is a method/algorithm by which you can extract frequencies within a wave-form. Remember we could generate sounds that were compositions of two sine-waves with different frequencies? When hearing those sounds, your brain is able to successfully recognize the presence of two different frequencies in what it hears, and that is actually why we are able to understand what someone is saying in a crowded environment with a lot of noise. Our brain is able to focus on a certain frequency (Which is the frequency-range of your friend’s larynx). If our brains are able to decompose sounds by their frequency, it’s reasonable to think that computers can do that too. Fourier-Transform is the answer. Given a list of signal samples, it will tell you what frequencies are present in that signal. Here is an example:</p>
 <pre><code class="language-python">import cmath  # Math for complex numbers
 import math
 import matplotlib.pyplot as plt
@@ -910,8 +917,8 @@ freqs = get_freqs(samples)
 plt.plot(freqs)
 plt.show()
 </code></pre>
-<p><img src="assets/fft.png" alt="The FFT result of a signal composed of 5 different sine frequencies" /></p>
-<p>Assuming our sample-rate is \(2^n\), the \(get_freqs\) function will get an array of size \(2^n\) (The signal samples), and will return an array of size \(2^{n-1}\). The \(i\)th element of this array tells your the presence of a sine wave with \(i\)Hz frequency in your input signal. Don't believe it? We can do an experiment, we can actually loop over the frequencies, generate the sinusoids according to their phase and magnitude, and then reconstruct the original frequency:</p>
+<p><img src="assets/fft.png" alt="The FFT result of a signal composed of 5 different sine frequencies"></p>
+<p>Assuming our sample-rate is \(2^n\), the \(get_freqs\) function will get an array of size \(2^n\) (The signal samples), and will return an array of size \(2^{n-1}\). The \(i\)th element of this array tells your the presence of a sine wave with \(i\)Hz frequency in your input signal. Don’t believe it? We can do an experiment, we can actually loop over the frequencies, generate the sinusoids according to their phase and magnitude, and then reconstruct the original frequency:</p>
 <pre><code class="language-python=">N = 32768
 samples = [sampler(t / N) for t in range(N)]
 fft_result = fft(samples)
@@ -923,32 +930,32 @@ for freq, val in enumerate(fft_result):
     for i in range(N):
         res[i] += magn * math.cos(2 * math.pi * freq * i / N + phase) / N * 2
 </code></pre>
-<p>Although the code above verifies the fact that the FFT algorithm really works, it's very inefficient (The computation complexity is \(O(n^2)\) because of the nested loops). In fact, you can use the FFT algorithm itself (Which is of order \(O(n.log(n))\)) in order to get back from the frequency-domain into the original signal:</p>
+<p>Although the code above verifies the fact that the FFT algorithm really works, it’s very inefficient (The computation complexity is \(O(n^2)\) because of the nested loops). In fact, you can use the FFT algorithm itself (Which is of order \(O(n.log(n))\)) in order to get back from the frequency-domain into the original signal:</p>
 <pre><code class="language-python=">def ifft(x):
     fft_conj = fft([n.conjugate() for n in x])
     return [n.conjugate() / len(x) for n in fft_conj]
 </code></pre>
-<p>The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency \(f\), you need to at least have \(2f\) samples of that signal (E.g you can't recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).</p>
-<p><img src="assets/nyquist.png" alt="An example of undersampling, the sampled signal seems to be a sine wave wit lower frequency" /></p>
-<p>Humans are able to hear sounds with frequencies as high as around 20000Hz, that's why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).</p>
+<p>The reason that the output array has half of the number of elements in the input array comes back to the fact that, in order to be able to recognize a signal of frequency \(f\), you need to at least have \(2f\) samples of that signal (E.g you can’t recognize a 20000Hz frequency in a signal, if your sample-rate is 30000).</p>
+<p><img src="assets/nyquist.png" alt="An example of undersampling, the sampled signal seems to be a sine wave wit lower frequency"></p>
+<p>Humans are able to hear sounds with frequencies as high as around 20000Hz, that’s why the typical sample-rate for audio files is something around twice of 20000. (A sample-rate of 44100 is pretty popular!).</p>
 <h2 id="dummiest-modulation-algorithm-ever-dmae"><a class="header" href="#dummiest-modulation-algorithm-ever-dmae">Dummiest Modulation Algorithm Ever (DMAE)</a></h2>
-<p>Assuming that we can generate waves of a single frequency in one machine, and recognize the existence of that exact frequency in another machine, let's try to design an algorithm to transfer data through audio, by encoding the bits into sound waves on one sides, and decoding them, converting back the audio waves into bits on other side (The encoding/decoding parts are usually referred as Modulation and Demodulation).</p>
-<p>Let's start by simply generating a sine wave of frequency \(f_d\) (Data frequency) when we want to transmit a 1, and avoid generating it when we want to transmit a 0. On the other computer, we will listen to the sound samples and perform a fourier transform on them. Whenever we recognize a \(f_d\) frequency, we will output a 1, and otherwise a 0. Obviously, we have to agree on a fixed time interval by which bits are sent, otherwise we wont know how many consecutive 0s (Or 1s) are meant to be received in case the receiver is the presence/absence of \(f_d\) is being detected for a long period of time.</p>
+<p>Assuming that we can generate waves of a single frequency in one machine, and recognize the existence of that exact frequency in another machine, let’s try to design an algorithm to transfer data through audio, by encoding the bits into sound waves on one sides, and decoding them, converting back the audio waves into bits on other side (The encoding/decoding parts are usually referred as Modulation and Demodulation).</p>
+<p>Let’s start by simply generating a sine wave of frequency \(f_d\) (Data frequency) when we want to transmit a 1, and avoid generating it when we want to transmit a 0. On the other computer, we will listen to the sound samples and perform a fourier transform on them. Whenever we recognize a \(f_d\) frequency, we will output a 1, and otherwise a 0. Obviously, we have to agree on a fixed time interval by which bits are sent, otherwise we wont know how many consecutive 0s (Or 1s) are meant to be received in case the receiver is the presence/absence of \(f_d\) is being detected for a long period of time.</p>
 <p>As an extra feature, we would like to let the other machine know whenever we have finished sending our data. Right know, we will probably stop generating any sound when there are no more bits to be sent. The receiver machine is not able to know whether we are out of bits, or we are just sending a lot of 0 bits. A simple solution to that problem is to include another frequency \(f_e\) in our generated signal, which is only generated when there are data to be sent.</p>
-<p><img src="assets/modulation.png" alt="Transferring bits through three signals" /></p>
+<p><img src="assets/modulation.png" alt="Transferring bits through three signals"></p>
 <p>In this case, the receiver will only accept bits when the \(f_e\) frequency is also present in the received signal (Besides presence or absence of data frequency).</p>
-<h2 id="noises-noises-everywhere"><a class="header" href="#noises-noises-everywhere">Noises, noises everywhere...</a></h2>
+<h2 id="noises-noises-everywhere"><a class="header" href="#noises-noises-everywhere">Noises, noises everywhere…</a></h2>
 <p>Unfortunately, the air is full of noises, if you start speaking while two computers are transmitting data through audio, the disruption may corrupt data, leading unwanted data to be sent on the destination computer. Even the echo/reflections of the sound in the environment may have negative effects (Remember, all waves share similar traits, reflections happen for electromagnetic waves too)</p>
 <p>There are methods and algorithms by which you can detect and correct errors in data transfers.</p>
 <p>For the sake of simplicity, we won’t discuss error correction. We will try to provide an effective way for error detection, and ask the sender computer to resend the data in case it detects errors.</p>
-<p>If you have some knowledge of data-structures, you probably have heard of hash-functions, which are building blocks of hashmaps and hashsets. Hash function are function that get inputs of arbitrary size and give out outputs of fixed size. The special thing about a hash-function is that a slight change in their input has massive effect on their output, and it's hard (And almost impossible, in case we are speaking about crypto-graphically secure hash function, discussed in chapter 5) to find an appropriate input that result in a specific output.</p>
-<p>Hash functions (Atleast the idea behind them!) can be useful for detecting errors that happen on data transfers. It's simple, just append the hash of the data to the data you are going to send. The receiver will cut the postfix for you, hash the data and will then check if the hash matches with the postfix. If there is a mismatch, then either the data or the hash itself has got curropted, and the receiver may ask the sender to retransmit the data. (The request to re-send the packet can be carried through the same communication medium we used for sending the data. Packets may also have numerical identifier, so that the receiver can tell the sender exactly which packet got a hash mismatch)</p>
-<p>Now, imagine the sender transfers gigabytes of data and the receiver detects an error (It's very very probable when transferring large pieces of data). Isn't it overkill to ask the sender to send the entire data again? Of course not. A better idea is to chunk the data into smaller pieces and detect the errors and ask for retransmission of the smaller parts. In fact, that's the main reason why data in our modern networking infrastructures is sent through <em><strong>packets</strong></em>, </p>
-<p>The method described for detecting errors is very inefficient and is not what really happens inside our networks, but the idea is almost the same. After applying the mentioned idea to our sound modulator/demodulator software, we'll have a very error-prone communication medium. Try sending a computer image through sound, it'll probably take hours but it'll work perfectly!</p>
+<p>If you have some knowledge of data-structures, you probably have heard of hash-functions, which are building blocks of hashmaps and hashsets. Hash function are function that get inputs of arbitrary size and give out outputs of fixed size. The special thing about a hash-function is that a slight change in their input has massive effect on their output, and it’s hard (And almost impossible, in case we are speaking about crypto-graphically secure hash function, discussed in chapter 5) to find an appropriate input that result in a specific output.</p>
+<p>Hash functions (Atleast the idea behind them!) can be useful for detecting errors that happen on data transfers. It’s simple, just append the hash of the data to the data you are going to send. The receiver will cut the postfix for you, hash the data and will then check if the hash matches with the postfix. If there is a mismatch, then either the data or the hash itself has got curropted, and the receiver may ask the sender to retransmit the data. (The request to re-send the packet can be carried through the same communication medium we used for sending the data. Packets may also have numerical identifier, so that the receiver can tell the sender exactly which packet got a hash mismatch)</p>
+<p>Now, imagine the sender transfers gigabytes of data and the receiver detects an error (It’s very very probable when transferring large pieces of data). Isn’t it overkill to ask the sender to send the entire data again? Of course not. A better idea is to chunk the data into smaller pieces and detect the errors and ask for retransmission of the smaller parts. In fact, that’s the main reason why data in our modern networking infrastructures is sent through <em><strong>packets</strong></em>,</p>
+<p>The method described for detecting errors is very inefficient and is not what really happens inside our networks, but the idea is almost the same. After applying the mentioned idea to our sound modulator/demodulator software, we’ll have a very error-prone communication medium. Try sending a computer image through sound, it’ll probably take hours but it’ll work perfectly!</p>
 <h2 id="telephone-revolution"><a class="header" href="#telephone-revolution">Telephone revolution</a></h2>
-<p>When talking about the invention of telephone, many people will give all the credit to the Scottish-born inventor, Alexander Graham-Bell, while just like many other inventions, telephone has a long history too, which includes several names. Graham-Bell was not the first one who had the idea of building a device which could transmit voice through a wire. One of the notable people who worked on a similar idea was a German inventor named Johann Philipp Reis, who invented the Reis telephone, 15 years before Graham-Bell. Unfortunately, Reis died before he could be credited for the invention of telephone. </p>
-<p>Reis considered his invention as a device for transmitting music, so he termed his microphone the 'singing station'. Very similar to a phonograph, the Reis telephone was based on a vibrating needle that could increase/decrease electrical resistance between two contacts, which could lead to generation of a electrical disturbance/signal, traveling through a wire. It's very interesting to know that phonographs was invented after telephone (1877)!</p>
-<p>In a phonograph, the vibrations made on the needle was causing mechanical effects on a spinning disk. In the Reis'es telephone, those vibrations were causing electrical effects in a wire. Both of these effects could be later/farther be played by a receiver through a speaker. In case of a telephone, the receiver would just amplify those electrical effects, causing vibration in the air, restoring the sound.</p>
+<p>When talking about the invention of telephone, many people will give all the credit to the Scottish-born inventor, Alexander Graham-Bell, while just like many other inventions, telephone has a long history too, which includes several names. Graham-Bell was not the first one who had the idea of building a device which could transmit voice through a wire. One of the notable people who worked on a similar idea was a German inventor named Johann Philipp Reis, who invented the Reis telephone, 15 years before Graham-Bell. Unfortunately, Reis died before he could be credited for the invention of telephone.</p>
+<p>Reis considered his invention as a device for transmitting music, so he termed his microphone the ‘singing station’. Very similar to a phonograph, the Reis telephone was based on a vibrating needle that could increase/decrease electrical resistance between two contacts, which could lead to generation of a electrical disturbance/signal, traveling through a wire. It’s very interesting to know that phonographs was invented after telephone (1877)!</p>
+<p>In a phonograph, the vibrations made on the needle was causing mechanical effects on a spinning disk. In the Reis’es telephone, those vibrations were causing electrical effects in a wire. Both of these effects could be later/farther be played by a receiver through a speaker. In case of a telephone, the receiver would just amplify those electrical effects, causing vibration in the air, restoring the sound.</p>
 <p>Alec Reeves - inventor of pcm 1930s</p>
 <p>James Russel - 1978 - store music on optical</p>
 <p>Hdd 1956 IBM</p>
@@ -960,13 +967,13 @@ for freq, val in enumerate(fft_result):
 <li>The number of pixels our cameras can capture in a fixed area is limited</li>
 <li>The frames we capture per second in a video-camera is limited</li>
 <li>The audio samples we capture in a microphone is limited</li>
-<li>...</li>
+<li>…</li>
 </ul>
-<p>These limitations cause interesting phenomena: have you ever seen video recording of helicopter rotor blades? Or anything that spins very fast? In some of those recording you may see the blades spinning very slowly, or not spinning at all, or even spinning in reverse! This happens due to the fact that we are limited in the number of frames we're capturing per second. Suppose it takes 10 milliseconds for our camera to take a new frame, and it also takes exactly 10 milliseconds for the spinning object to do a full spin. When the camera takes the new frame, the spinner has already made a full rotation and is back in its original position, so it looks as if it has not spinned at all. Now, slightly increase the rotation speed of the spinner, the spinner will start moving, but very slowly. Decrease the rotation speed and now it looks as if it's spinning in reverse!</p>
-<p>It's interesting to know that human eyes do not have &quot;frame-rates&quot;. They don't work like video-cameras. Whatever you perceive with your eye stays in your brain for a very short period of time, even if you move your eyes and look at something else, the previous thing you were looking at is still there, but it is just fader. It turns out that pictures take around 1/16 seconds to completely fade away from your eyes, even if you stop looking at them, which somehow means, what you see is the <em><strong>average picture</strong></em> of what you were looking at in the previous 1/16 seconds. Thus if you look at a spinning blade directly through your eyes, you will see something blurry, instead of perceiving it as if it's not rotating, like a video camera.</p>
+<p>These limitations cause interesting phenomena: have you ever seen video recording of helicopter rotor blades? Or anything that spins very fast? In some of those recording you may see the blades spinning very slowly, or not spinning at all, or even spinning in reverse! This happens due to the fact that we are limited in the number of frames we’re capturing per second. Suppose it takes 10 milliseconds for our camera to take a new frame, and it also takes exactly 10 milliseconds for the spinning object to do a full spin. When the camera takes the new frame, the spinner has already made a full rotation and is back in its original position, so it looks as if it has not spinned at all. Now, slightly increase the rotation speed of the spinner, the spinner will start moving, but very slowly. Decrease the rotation speed and now it looks as if it’s spinning in reverse!</p>
+<p>It’s interesting to know that human eyes do not have “frame-rates”. They don’t work like video-cameras. Whatever you perceive with your eye stays in your brain for a very short period of time, even if you move your eyes and look at something else, the previous thing you were looking at is still there, but it is just fader. It turns out that pictures take around 1/16 seconds to completely fade away from your eyes, even if you stop looking at them, which somehow means, what you see is the <em><strong>average picture</strong></em> of what you were looking at in the previous 1/16 seconds. Thus if you look at a spinning blade directly through your eyes, you will see something blurry, instead of perceiving it as if it’s not rotating, like a video camera.</p>
 <p>Another kind of aliasing effect happens when you try to take a picture of something with a lot of alternations, like a net!</p>
-<hr />
-<p>If your video-camera is able to capture 60 frames per second, you can't tell if the blade is spinning at:</p>
+<hr>
+<p>If your video-camera is able to capture 60 frames per second, you can’t tell if the blade is spinning at:</p>
 <ul>
 <li>0 RPS, or 60 RPS in reverse</li>
 <li>10 RPS, or 50 RPS in reverse</li>
@@ -974,19 +981,19 @@ for freq, val in enumerate(fft_result):
 <li>29 RPS, or 31 RPS in reverse</li>
 <li>Generally: \(n\) RPS, or \(60-n\) RPS in reverse</li>
 </ul>
-<p>If you don't believe this, here is a proof:</p>
+<p>If you don’t believe this, here is a proof:</p>
 <ul>
 <li>We know that the camera captures a new frame every \(\frac{1}{60}\) seconds.</li>
-<li>Let's assume the blade spins at speed 15 RPS. Thus the blade does a complete rotation every \(\frac{1}{15}=\frac{4}{60}\) seconds. This means that, when a frame is taken, the blade has gone \(\frac{1}{4}\) rotation.</li>
-<li>Let's assume the blade spins at speed 45 RPS. Thus the blade does a complete rotation every \(\frac{1}{45}=\frac{\frac{4}{3}}{60}\) seconds. This means that, when a frame is taken, the blade has gone \(\frac{3}{4}\) rotation. This also looks like as if the blade has rotated in reverse for \(\frac{1}{4}\) rotation!</li>
+<li>Let’s assume the blade spins at speed 15 RPS. Thus the blade does a complete rotation every \(\frac{1}{15}=\frac{4}{60}\) seconds. This means that, when a frame is taken, the blade has gone \(\frac{1}{4}\) rotation.</li>
+<li>Let’s assume the blade spins at speed 45 RPS. Thus the blade does a complete rotation every \(\frac{1}{45}=\frac{\frac{4}{3}}{60}\) seconds. This means that, when a frame is taken, the blade has gone \(\frac{3}{4}\) rotation. This also looks like as if the blade has rotated in reverse for \(\frac{1}{4}\) rotation!</li>
 </ul>
 <p>This is definitely some kind of data-loss! Unless you are completely sure that the blade does not rotate in reverse, or you are sure that it does not spin faster than 30 RPS. Extracting a general rule out of this: <em><strong>If you are sure that the blade you are capturing a video of spins no faster than \(n\) RPS, then, in order to accurately tell the speed and direction of the spin speed through video, your video camera has to capture at least as fast as \(2n\) frames per second.</strong></em>. Formally speaking, the sampling rate (Here, the samples are frames) should be at least twice of the maximum frequency. This is known as the <em><strong>Nyquist rate</strong></em> and is one of the most fundamental facts of a beautiful category of science known as Information Theory.</p>
-<hr />
-<p><em><strong>Zeno's paradox</strong></em></p>
-<p>Zeno's paradoxes are a series of arguments made by greek philosopher Zeno, which tries to illustrate the problematic concept of <em><strong>Infinite divisibilty</strong></em> in space and time. All of these paradoxes are actually trying to tell us the same thing (If we are not being strict)</p>
+<hr>
+<p><em><strong>Zeno’s paradox</strong></em></p>
+<p>Zeno’s paradoxes are a series of arguments made by greek philosopher Zeno, which tries to illustrate the problematic concept of <em><strong>Infinite divisibilty</strong></em> in space and time. All of these paradoxes are actually trying to tell us the same thing (If we are not being strict)</p>
 <p>Here is one of those paradoxes which you may have heard of before:</p>
 <p>Suppose Atalanta wishes to walk a path. Before she can reach to the destination, she must get half-way there, and before reaching to that point she must go \(\frac{1}{4}\) of the way, and before that \(\frac{1}{8}\) of the way, and so on. Seems like, she has to perform an infinite number of tasks in order to move, which Zeno believes is impossible</p>
-<hr />
+<hr>
 <p>Humans love to store and copy. If you can copy or store something, you can transfer it. You can write your thoughts on a letter and then give it to your lover to read</p>
 <p>Humans dream: being able to share their past experience to the present and future. To the people that are not near them. To people in the future even after they physically die, because life has evolved in a way to keep you alive as long as possible, sometimes the conceptual version of you, and not the physical you. That’s probably why people proudly compromise their lives for something they believe in, because it will make them eternal. Life is strange.</p>
 
@@ -995,11 +1002,11 @@ for freq, val in enumerate(fft_result):
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                             <a rel="prev" href="1-compute.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
                             <a rel="next prefetch" href="3-see.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
                         <div style="clear: both"></div>
@@ -1009,16 +1016,21 @@ for freq, val in enumerate(fft_result):
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                     <a rel="prev" href="1-compute.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
                     <a rel="next prefetch" href="3-see.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
 
         </div>
 
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -1027,15 +1039,16 @@ for freq, val in enumerate(fft_result):
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
+
 
 
     </div>
