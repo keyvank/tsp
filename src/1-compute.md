@@ -2113,7 +2113,7 @@ class QuantumState:
         self.values[0] = 1 + 0j
 
     def is_unitary(self):
-        return math.isclose(abs(sum(map(lambda v: v * v, self.values))), 1)
+        return math.isclose(sum(map(lambda v: abs(v) ** 2, self.values)), 1)
 
     def apply(self, gate):
         res = []
@@ -2125,7 +2125,7 @@ class QuantumState:
         dice = random.random()
         accum = 0
         for i, p in enumerate(self.values):
-            accum += abs(p * p)
+            accum += abs(p) ** 2
             if dice < accum:
                 s = bin(i)[2:]
                 while len(s) < self.bits:
@@ -2345,6 +2345,60 @@ Now what if I tell you, you can find that `x` by only doing around ~100 searches
 Imagine you have a set of tuning forks with different frequencies. You want to find the one with frequency \\(f\\). One way is to find your desired fork is to just take them one by one, strike them, and see if it makes the desired sound. That's a O(n) algorithm. Now a smarter approach would be to stand aside those forks, and generate a sound of frequency \\(f\\). Now, the fork with same frequency will start resonating. You can see that by eyes and find the fork. You didn't even need to strike any of them, the "answer" just popped up to your face. All you needed was shouting the frequency, and the fork just revealed itself.
 
 Now I would say quantum algorithms are somewhat similar. You propagate the "output" you are looking for as a wave, and the correct input to your function that generates the desired output will reveal itself!
+
+```python=
+def hadamard_all(n):
+    return kron_all([HADAMARD] * n)
+
+def grover_oracle(target_index, n):
+    dim = 2 ** n
+    O = identity(dim)
+    O[target_index][target_index] = -1
+    return O
+
+def diffusion(n):
+    dim = 2 ** n
+    D = [[2 / dim for _ in range(dim)] for _ in range(dim)]
+    for i in range(dim):
+        D[i][i] -= 1
+    return D
+
+def grover_search(target, n):
+    qs = QuantumState(n)
+    qs.apply(hadamard_all(n))
+    qs.apply(grover_oracle(target, n))
+    qs.apply(diffusion(n))
+    return qs
+
+NUM_QUBITS = 3
+TARGET = 5  # |101>
+
+qs = grover_search(TARGET, NUM_QUBITS)
+
+print("Final amplitudes:")
+for i, v in enumerate(qs.values):
+    print(format(i, f'0{NUM_QUBITS}b'), ":", round(v.real, 3))
+
+print("\nSampling:")
+print(qs.sample(10000))
+```
+
+Output:
+
+```
+Final amplitudes:
+000 : 0.177
+001 : 0.177
+010 : 0.177
+011 : 0.177
+100 : 0.177
+101 : 0.884
+110 : 0.177
+111 : 0.177
+
+Sampling:
+{'101': 7815, '000': 324, '110': 310, '011': 289, '111': 285, '010': 322, '001': 329, '100': 326}
+```
 
 ## Why matrices?
 
