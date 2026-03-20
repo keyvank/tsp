@@ -1961,7 +1961,21 @@ with For(bf, i, cnt):
     bf.append('.')
 ```
 
-[MARKER]
+See how easy it is getting? The more you organize stuff into modules and the more abstractions you make, the easier it gets to describe any kind of logic in a weird, unimaginably hard to maintain language like Brainfuck.
+
+## An art project
+
+
+I have always dreamed of writing something extraordinarily complicated using the Brainfuck language. When a computer scientist says, you can absolutely do any type of computation using Brainfuck, it really means something, but you won't believe it unless you see it in action. That's why I was thinking of writing something as complicated as a 3D renderer using this language, and call it an art project. Because, it really is art! Just imagine how a bunch of `<>[]+-` characters can, in theory, be used to generate a photo-realistic render of a 3D scene! And if we do this, we can claim the stupidly simple processor we created in previous sections is in fact able to run something like a 3D game too!
+
+I did really start writing a ray-tracer for this language, named it BFRT (Brainfuck Ray Tracer) but never finished it. It is extremely difficult to be honest, specially if you lose passion along the way, but indeed possible. But maybe you are more brave than me and can finish what I started, and if you really do it, your work is truly a masterpiece that will amaze a lot of programmers! If you don't have any idea what a ray-tracer is and how it works, don't worry, we'll discuss it in chapter 3. But don't forget to get back to this section and give a second thought on trying this challenge!
+
+Here are some of my findings in this journey:
+
+* You are not alone, a lot of people have tried implementing complicated stuff using Brainfuck. Some of those insane people have even created an algorithm library for this language, so that you don't have to think about things like how to calculate equality of two memory cells as a boolean, or how to implement something like an if block, and prevent you from reinventing the wheel. Just search for "Brainfuck algorithms" and you'll find those!
+* You might wonder, well, you'll at least need floating-point operations to be able to do something like 3D rendering and since Brainfuck only gives you increment/decrementing of values up to 255, this is just impossible. And yes, that actually is the most challenging part of the project. It looks impossible but hey, aren't all these "floating-point" stuff also made of a bunch of simple AND/OR/NOT operations? And I can show you how those operations look like in that langauge. So what prevents you to implement your own IEEE 754 floating-point module in Brainfuck? Floating point numbers are stored as bytes in the end. A float32 number can be stored in 4 memory-cells of the Brainfuck environment. And just like how things like adding/multiplying/dividing floating-point numbers using bare transistors, it is indeed possible to describe them using Brainfuck programs too. In the end though, I decided not to implement IEEE-754 and instead represent floating point numbers as decimals (Integers under the hood, but with an imaginary dot in the middle of the number) This way, a floating-point multiplication is nothing but the regular integer multiplication, shifted to right to lose some of the digits from the right side. (E.g, imagine we want to multiply 12.34 by 56.78. We would simply calculate 1234*5678, and then put dot before the last 4 digits (700.6652), and ignore the last 2 floating point digits, 700.66)
+* After having floating-point operations, the next big challenges are having
+
 
 ## Let's talk in Gerber
 
