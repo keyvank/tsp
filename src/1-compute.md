@@ -1973,8 +1973,29 @@ I did really start writing a ray-tracer for this language, named it BFRT (Brainf
 Here are some of my findings in this journey:
 
 * You are not alone, a lot of people have tried implementing complicated stuff using Brainfuck. Some of those insane people have even created an algorithm library for this language, so that you don't have to think about things like how to calculate equality of two memory cells as a boolean, or how to implement something like an if block, and prevent you from reinventing the wheel. Just search for "Brainfuck algorithms" and you'll find those!
-* You might wonder, well, you'll at least need floating-point operations to be able to do something like 3D rendering and since Brainfuck only gives you increment/decrementing of values up to 255, this is just impossible. And yes, that actually is the most challenging part of the project. It looks impossible but hey, aren't all these "floating-point" stuff also made of a bunch of simple AND/OR/NOT operations? And I can show you how those operations look like in that langauge. So what prevents you to implement your own IEEE 754 floating-point module in Brainfuck? Floating point numbers are stored as bytes in the end. A float32 number can be stored in 4 memory-cells of the Brainfuck environment. And just like how things like adding/multiplying/dividing floating-point numbers using bare transistors, it is indeed possible to describe them using Brainfuck programs too. In the end though, I decided not to implement IEEE-754 and instead represent floating point numbers as decimals (Integers under the hood, but with an imaginary dot in the middle of the number) This way, a floating-point multiplication is nothing but the regular integer multiplication, shifted to right to lose some of the digits from the right side. (E.g, imagine we want to multiply 12.34 by 56.78. We would simply calculate 1234*5678, and then put dot before the last 4 digits (700.6652), and ignore the last 2 floating point digits, 700.66)
-* After having floating-point operations, the next big challenges are having
+* You might wonder, well, you'll at least need floating-point operations to be able to do something like 3D rendering and since Brainfuck only gives you increment/decrementing of values up to 255, this is just impossible. And yes, that actually is the most challenging part of the project. It looks impossible but hey, aren't all these "floating-point" stuff also made of a bunch of simple AND/OR/NOT operations? And I can show you how those operations look like in that langauge. So what prevents you to implement your own IEEE 754 floating-point module in Brainfuck? Floating point numbers are stored as bytes in the end. A float32 number can be stored in 4 memory-cells of the Brainfuck environment. And just like how things like adding/multiplying/dividing floating-point numbers using bare transistors, it is indeed possible to describe them using Brainfuck programs too. In the end though, I decided not to implement IEEE-754 and instead represent floating point numbers as decimals (Integers under the hood, but with an imaginary dot in the middle of the number) This way, floating-point additions will be no different than integer additions, and floating-point multiplication is nothing but the regular integer multiplication, shifted to right to lose some of the digits from the right side. (E.g, imagine we want to multiply 12.34 by 56.78. We would simply calculate 1234*5678, and then put dot before the last 4 digits (700.6652), and ignore the last 2 floating point digits, 700.66). The division operation would has a different story.
+* In order to implement floating-point division, look for algorithms that will allow you to calculate floating-point reciprocals. This way, division will become a multiplication: a/b=a*(1/b)
+* After having floating-point basic operations, the only remaining math operation that you will need in order to render a simple scene is the square-root calculation for floating point numbers.
+* Try writing "unit-test"s for each operation you'll implement. Since brainfuck programs are massive junks of random-looking characters, it becomes very important to handle complexitiy and keep your system maintainable. Specially, make sure your floating-point operations all work as expected.
+
+Now even if you successfully implement a working ray-tracer in Brainfuck, it may actually take an entire year (Or even more!) to render a single frame of a very simple scene with a small resolution, practically useless. But that's not the point. The point is that you've proven yourself that you are able to build whatever you want in an insanely limited environment like Brainfuck. And the journey will give you complexitiy-management skill and mindset that is beneficial for you as an engineer.
+
+## FPGAs
+
+Although CPUs are general purpose and can perform whatever computation you can ever imagine, sometimes it makes more sense to build specialized hardware for some applications. Not all algorithms need the fancy set of instructions your CPU provides. In fact, many of the computationally intensive application only require simple math operations. Algorithms performing image generation/manipulation are of the examples. That's why computer nowadays have an specialized processors called GPUs, which used to take of what you see on your monitos (GPUs today are not limiting themselves on graphical computations and are being used for many kinds of heavy computation)
+GPUs are basically a bulk of processors which have simple instruction sets and they are really good in accelerating algorithms that are known to be **embarrassingly parallel**. An algorithm is embarrassingly parallel if you can divide it into chunks that can be processed by independent processors without any memory-sharing and interactions between the processors. These algorithms are so easily parallelizable, that it would be embarrasing for a programmer to be proud of parallelizing them!
+
+Now there are times where you need something even simpler that a GPU (Well, GPUs are not that simple to be fair). E.g. imagine you need a device that is only able to perform multiplications, and it needs to do billions of them per second. Any CPU or GPU would be an overkill for such an application.
+
+Unfortunately, it would be very costly to design and manufacture a completely new electronic board whenever you need specialized hardware. Instead of doing that, let's get smart and thing of an electronic circuit that can transform into arbitrary circuit without physical changes in its circuitry. Well, such infrastructures do exist and they are called Field-Programmable-Gate-Arrays!
+
+Before getting to the details of the FPGAs, I would like you to think about the way something like a FPGA can work for a bit. The title itself is guiding you to the answer. It has something to do with "gates" that are "programmable", maybe, unlike a regular logic gate such as AND/OR/NOT, a programmable gate is a gate that can be configured to become whatever gate you like. Try to build a programmable gate yourself, which accepts two inputs and gives out one output, and can transform to different gates when we tune it.
+
+(Hint: You can use memory-cells for storing the chosen functionality of your programmable gate, and put your configuration in it through some extra input pins)
+
+This way, "programming" a gate, would mean to put the right values inside the gate's memory-cells.
+
+Here is a popular design of a programmable gate among FPGAs. They are also known as Configurable Logic Gates (Or CLBs).
 
 
 ## Let's talk in Gerber
@@ -2010,26 +2031,6 @@ X0Y0D03*
 M02*
 ```
 
-## FPGAs
-
-Although CPUs are general purpose and can perform whatever computation you can ever imagine, sometimes it makes more sense to build specialized hardware for some applications. Not all algorithms need the fancy set of instructions your CPU provides. In fact, many of the computationally intensive application only require simple math operations. Algorithms performing image generation/manipulation are of the examples. That's why computer nowadays have an specialized processors called GPUs, which used to take of what you see on your monitos (GPUs today are not limiting themselves on graphical computations and are being used for many kinds of heavy computation)
-GPUs are basically a bulk of processors which have simple instruction sets and they are really good in accelerating algorithms that are known to be **embarrassingly parallel**. An algorithm is embarrassingly parallel if you can divide it into chunks that can be processed by independent processors without any memory-sharing and interactions between the processors. These algorithms are so easily parallelizable, that it would be embarrasing for a programmer to be proud of parallelizing them!
-
-Now there are times where you need something even simpler that a GPU (Well, GPUs are not that simple to be fair). E.g. imagine you need a device that is only able to perform multiplications, and it needs to do billions of them per second. Any CPU or GPU would be an overkill for such an application.
-
-Unfortunately, it would be very costly to design and manufacture a completely new electronic board whenever you need specialized hardware. Instead of doing that, let's get smart and thing of an electronic circuit that can transform into arbitrary circuit without physical changes in its circuitry. Well, such infrastructures do exist and they are called Field-Programmable-Gate-Arrays!
-
-Before getting to the details of the FPGAs, I would like you to think about the way something like a FPGA can work for a bit. The title itself is guiding you to the answer. It has something to do with "gates" that are "programmable", maybe, unlike a regular logic gate such as AND/OR/NOT, a programmable gate is a gate that can be configured to become whatever gate you like. Try to build a programmable gate yourself, which accepts two inputs and gives out one output, and can transform to different gates when we tune it.
-
-(Hint: You can use memory-cells for storing the chosen functionality of your programmable gate, and put your configuration in it through some extra input pins)
-
-This way, "programming" a gate, would mean to put the right values inside the gate's memory-cells.
-
-Here is a popular design of a programmable gate among FPGAs. They are also known as Configurable Logic Gates (Or CLBs).
-
-## CHIP-8
-
-## Operating Systems
 
 
 ## Other ways to compute?

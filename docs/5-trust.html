@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -7,59 +7,45 @@
 
 
         <!-- Custom HTML head -->
-
+        
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="favicon-8114d1fc.png">
-        <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-2459343d.css">
-        <link rel="stylesheet" href="css/chrome-ae938929.css">
-        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-        <!-- Provide site root and default themes to javascript -->
-        <script>
-            const path_to_root = "";
-            const default_light_theme = "light";
-            const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-f9acc5e2.js";
-        </script>
-        <!-- Start loading toc.js asap -->
-        <script src="toc-e22e99f6.js"></script>
     </head>
-    <body>
-    <div id="mdbook-help-container">
-        <div id="mdbook-help-popup">
-            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
-            <div>
-                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
-                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
-                <p>Press <kbd>?</kbd> to show this help</p>
-                <p>Press <kbd>Esc</kbd> to hide this help</p>
-            </div>
-        </div>
-    </div>
-    <div id="mdbook-body-container">
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -73,69 +59,87 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            const html = document.documentElement;
+            var html = document.querySelector('html');
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add("js");
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
 
-        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
-                sidebar_toggle.checked = false;
             }
-            if (sidebar === 'visible') {
-                sidebar_toggle.checked = true;
-            } else {
-                html.classList.remove('sidebar-visible');
-            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
-        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
-            <!-- populated by js -->
-            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
-            <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
-            </noscript>
-            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="0-preface.html">Intro</a></li><li class="chapter-item expanded "><a href="1-compute.html"><strong aria-hidden="true">1.</strong> Compute!</a></li><li class="chapter-item expanded "><a href="2-hear.html"><strong aria-hidden="true">2.</strong> Hear!</a></li><li class="chapter-item expanded "><a href="3-see.html"><strong aria-hidden="true">3.</strong> See!</a></li><li class="chapter-item expanded "><a href="4-think.html"><strong aria-hidden="true">4.</strong> Think!</a></li><li class="chapter-item expanded "><a href="5-trust.html" class="active"><strong aria-hidden="true">5.</strong> Trust!</a></li><li class="chapter-item expanded "><a href="6-fly.html"><strong aria-hidden="true">6.</strong> Fly!</a></li><li class="chapter-item expanded "><a href="7-unorganized.html"><strong aria-hidden="true">7.</strong> Unorganized</a></li><li class="chapter-item expanded "><a href="8-appendix-a.html"><strong aria-hidden="true">8.</strong> Appendix A</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <div id="mdbook-page-wrapper" class="page-wrapper">
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="mdbook-menu-bar-hover-placeholder"></div>
-                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
                         </label>
-                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
                         </button>
-                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
                         </button>
                     </div>
 
@@ -143,38 +147,33 @@
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                            <i id="print-button" class="fa fa-print"></i>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="mdbook-search-wrapper" class="hidden">
-                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
-                        <div class="search-wrapper">
-                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
-                            <div class="spinner-wrapper">
-                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
-                            </div>
-                        </div>
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
-                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
-                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
-                        <ul id="mdbook-searchresults">
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="mdbook-content" class="content">
+                <div id="content" class="content">
                     <main>
                         <h1 id="trust"><a class="header" href="#trust">Trust!</a></h1>
 <p><strong>Music of the chapter:</strong> <em>Secret - By The Pierces</em></p>
@@ -182,20 +181,20 @@
 When they think of something, they are not aware that their mind is isolated from other minds. They think other humans know what they are thinking of. Months pass, and they start to see themselves, as a physical self, in the mirror or by looking at their organs. Babies don’t lie, because they are not aware of concept of lying and the fact that their mind is isolated and they can have “secrets”.</p>
 <p>Humans have their own reasons to lie. Evolution has led us to learn lying, and hiding what we know from others. Because perhaps lying is sometimes vital for survival, and those humans who couldn’t lie, couldn’t survive as well. Evolution made us liars, and we should thank nature for that.</p>
 <p>Despite its goodness, lying brings distrust. Humans can not build teams and do great stuff without having a solid foundation of trust. You might wonder why evolution has made humans untrustable, when civilization and progress can be made only in a trusted environment? Not completely sure about this, but this is my own personal guess: negative and unethical behaviors are very advanced forms of intelligence. Emergence of bad behavior is the first step of a huge intellectual progress. You can have a big group of animals (Or even stones), who happily live together, because bad behavior has not evolved in them. This might seem nice at first, but it will quickly get boring for the mother nature, because without distrust, there will be no need for more advanced forms of intelligence.</p>
-<p>How do you trust someone as a human? The most naive way for us humans to trust other people is to remind ourselves of the history of their interactions with us. We can’t read their minds, but we can at least predict and guess how they are going to treat us in the future by analyzing their past behaviors. In order to remember the history of someone, we need to recognize that person. As a human, we normally recognize others by looking at their face (Or hearing their voice, or even their smell).</p>
+<p>How do you trust someone as a human? The most naive way for us humans to trust other people is to remind ourselves of the history of their interactions with us. We can't read their minds, but we can at least predict and guess how they are going to treat us in the future by analyzing their past behaviors. In order to remember the history of someone, we need to recognize that person. As a human, we normally recognize others by looking at their face (Or hearing their voice, or even their smell).</p>
 <p>Humans show different behaviors to different people. They may not talk to an stranger they way talk to their friend, as an example. It is some form of intelligence to show different behavior to different people. Not all of the species are able to to so. A bacteria for example, cannot recognize its sibling bacterias. Bacterias may have a common strategy to behave with other bacterias, either to trust all of them by default, or consider the worst case in its interactions.</p>
-<p>Being able to recognize your friend is definitely something that helps the evolution of mind, so it now might seem obvious that why some species have started to be different with each other in terms of looks. Knowing that people recognize, predict and judge others’ behaviors by their looks, speeches and the history they have with them, opens a lot of ways to hack it. Knowing all this, <em><strong>people started to take advantage of other people, by putting masks</strong></em>.</p>
+<p>Being able to recognize your friend is definitely something that helps the evolution of mind, so it now might seem obvious that why some species have started to be different with each other in terms of looks. Knowing that people recognize, predict and judge others' behaviors by their looks, speeches and the history they have with them, opens a lot of ways to hack it. Knowing all this, <em><strong>people started to take advantage of other people, by putting masks</strong></em>.</p>
 <p>This chapter is all about secrets, honesty and trust, and also about facts, dishonesty and distrust.</p>
-<p>One of the ingredients of a civilized nation, is the ability to send messages to people, even when they aren’t near you. That’s why humans invented writing. They started to send messages without speaking, by putting symbols on a piece of paper. That was the start of all of the problems, because now you can’t see the face of the writer. How can you know that a message you have received on a letter, is really sent by your friend, or someone that has bad faith (E.g. your enemy)?</p>
+<p>One of the ingredients of a civilized nation, is the ability to send messages to people, even when they aren't near you. That's why humans invented writing. They started to send messages without speaking, by putting symbols on a piece of paper. That was the start of all of the problems, because now you can't see the face of the writer. How can you know that a message you have received on a letter, is really sent by your friend, or someone that has bad faith (E.g. your enemy)?</p>
 <p><strong>Signatures</strong></p>
-<p>I would like to define signature as a more general term: a signature is something that is special to someone/something. Your face, your voice, the way you speak, your fingerprint, your handwriting are all examples of signatures. They are special to you, and it’s hard to find someone other than you that has the exact same handwriting or face or etc. Therefore, they are an important ingredient of trust. If you know your friend’s handwriting well, you can catch a faker/pretender easily, because most probably he can’t fake your friend’s handwriting very well.</p>
-<p>A signature doesn’t solve all of the problems. Sometimes you might need to say something to a friend but do not want anybody else to hear it. In a face to face communication, this might be fixed easily (At some level!). You both can go into a private room, and make sure nobody else is nearby. But how can you do this when your message is on a piece of paper, and you don’t want to carry the message yourself, but you want a middle man to send it for you. How can you be sure that someone won’t read the letter in the middle of the way?</p>
-<p>These questions are all discussed and answered in a vast field of science called Cryptography. Cryptography has a long history. Historians claim that the first use of cryptography started sometime around 1900 BC in ancient Egypt. Though the interesting thing is that, the use of cryptographic symbols back then was for people’s own amusement (You know, it’s fun to break codes and solve riddles). So it was somewhat a kind of art and literature, and not serious attempts in secret communication.</p>
-<p>Substitution ciphers were probably the most popular way of coding the messages among ancient people. In a substituion cipher, there is a fixed one-to-one mapping that tells you which character to use instead of a character in the original message. As an example, let’s say our mapping simply maps a character to its next character in the English alphabet (This is an example of a Caesar cipher). So the coded version of “hello” would be: “ifmmp”. Though this is a very simple mapping and can be easilly hacked (Someone can just try different number of character shifts until something meaningful comes out of the text).</p>
-<p>A harder to crack version of a substitution cipher uses random character mappings. This method was sophisticated and seemingly-secure enough that people used it for thousands of years, until an Arab mathematician named Al-Kindi surprisingly showed that it’s easy to crack (Sometime around AD 800). He invented a method called frequency analysis. In this method, we first count the number of times each letter happens in large amounts of text (From books and etc), and then build a frequency graph out of it, which shows us which letters are most/least used in the target alphabet. We then do the same thing with the cipher text, and then try to find the mapping with the help of frequency data. As an example, doing frequency analysis on the English alphabet shows us that the E (11.16%), A (8.49%) and R (7.58%) letters are the most widely used characters in English texts, while the Q (0.1962%), J (0.1965%) and Z (0.2722%) are the least used ones. By doing the frequency analysis on the target text (If the encrypted text is large enough!), if we figure out that the letter K is the most common encrypted letter, you can know with a high probability that K is the encoded version of E or A. His discovery is known to be the most important cryptanalytic advance until World War II.</p>
+<p>I would like to define signature as a more general term: a signature is something that is special to someone/something. Your face, your voice, the way you speak, your fingerprint, your handwriting are all examples of signatures. They are special to you, and it's hard to find someone other than you that has the exact same handwriting or face or etc. Therefore, they are an important ingredient of trust. If you know your friend's handwriting well, you can catch a faker/pretender easily, because most probably he can't fake your friend's handwriting very well.</p>
+<p>A signature doesn't solve all of the problems. Sometimes you might need to say something to a friend but do not want anybody else to hear it. In a face to face communication, this might be fixed easily (At some level!). You both can go into a private room, and make sure nobody else is nearby. But how can you do this when your message is on a piece of paper, and you don't want to carry the message yourself, but you want a middle man to send it for you. How can you be sure that someone won't read the letter in the middle of the way?</p>
+<p>These questions are all discussed and answered in a vast field of science called Cryptography. Cryptography has a long history. Historians claim that the first use of cryptography started sometime around 1900 BC in ancient Egypt. Though the interesting thing is that, the use of cryptographic symbols back then was for people's own amusement (You know, it's fun to break codes and solve riddles). So it was somewhat a kind of art and literature, and not serious attempts in secret communication.</p>
+<p>Substitution ciphers were probably the most popular way of coding the messages among ancient people. In a substituion cipher, there is a fixed one-to-one mapping that tells you which character to use instead of a character in the original message. As an example, let's say our mapping simply maps a character to its next character in the English alphabet (This is an example of a Caesar cipher). So the coded version of &quot;hello&quot; would be: &quot;ifmmp&quot;. Though this is a very simple mapping and can be easilly hacked (Someone can just try different number of character shifts until something meaningful comes out of the text).</p>
+<p>A harder to crack version of a substitution cipher uses random character mappings. This method was sophisticated and seemingly-secure enough that people used it for thousands of years, until an Arab mathematician named Al-Kindi surprisingly showed that it's easy to crack (Sometime around AD 800). He invented a method called frequency analysis. In this method, we first count the number of times each letter happens in large amounts of text (From books and etc), and then build a frequency graph out of it, which shows us which letters are most/least used in the target alphabet. We then do the same thing with the cipher text, and then try to find the mapping with the help of frequency data. As an example, doing frequency analysis on the English alphabet shows us that the E (11.16%), A (8.49%) and R (7.58%) letters are the most widely used characters in English texts, while the Q (0.1962%), J (0.1965%) and Z (0.2722%) are the least used ones. By doing the frequency analysis on the target text (If the encrypted text is large enough!), if we figure out that the letter K is the most common encrypted letter, you can know with a high probability that K is the encoded version of E or A. His discovery is known to be the most important cryptanalytic advance until World War II.</p>
 <p>Al-Kindi proposed that we can make frequency analysis methods less effective by using polyalphabetic substititutions. So far we have been describing monoalphabetic substitutions, which means, single characters are encrypted to single character. In a polyalplabetic substitution cipher, multiple letters are substituted with multiple letters. In order to apply frequency analysis attack on a 2-by-2 polyalphabetic substitution cipher, we have to calculate frequencies of aa, ab, ac, .., zx, zy, zz. Analysis gets much harder when the length of mappings is increased.</p>
-<p>Discovering the fact that a polyalphabetic substitution cipher is hard to decode (Even with frequency analysis methods), was a huge progress in cryptography. But there is a problem: in order to encrypt and decrypt using n-character to n-character polyalphabetic substitution ciphers, we have to create a unique n-character to n-character mapping, and both the encryptor and decryptor should have a copy of it (Let’s call this mapping the <em><strong>secret key</strong></em>). Assuming our target alphabet has \(\alpha\) letters, and we want to substitute \(n\) characters per block, our mapping should have \(\alpha^n\) entries. In case of English language (Without ponctuation marks), we have 26 character. Let’s say we would like to use 5-character to 5-character ciphers for encryptions, then our code-book would need to have \(26^5 = 11881376\) entries, which is already a very giant secret key for a very weak encryption/decryption algorithm.</p>
-<p>Let’s analyze the problem by using more primitive pieces of data as our source texts. Imagine we are working with binary strings. In a binary string, smallest piece of information is stored inside a bit, which can be either 0 or 1. Our alphabet has 2 characters in a binary string so \(\alpha=2\). Now let’s say we want to use a monoalphabetic cipher for encrypting/decrypting the string. so we should create a 1-bit to 1-bit mapping for our encryption algorithm. There are only two ways we can build such a mapping!</p>
+<p>Discovering the fact that a polyalphabetic substitution cipher is hard to decode (Even with frequency analysis methods), was a huge progress in cryptography. But there is a problem: in order to encrypt and decrypt using n-character to n-character polyalphabetic substitution ciphers, we have to create a unique n-character to n-character mapping, and both the encryptor and decryptor should have a copy of it (Let's call this mapping the <em><strong>secret key</strong></em>). Assuming our target alphabet has \(\alpha\) letters, and we want to substitute \(n\) characters per block, our mapping should have \(\alpha^n\) entries. In case of English language (Without ponctuation marks), we have 26 character. Let's say we would like to use 5-character to 5-character ciphers for encryptions, then our code-book would need to have \(26^5 = 11881376\) entries, which is already a very giant secret key for a very weak encryption/decryption algorithm.</p>
+<p>Let's analyze the problem by using more primitive pieces of data as our source texts. Imagine we are working with binary strings. In a binary string, smallest piece of information is stored inside a bit, which can be either 0 or 1. Our alphabet has 2 characters in a binary string so \(\alpha=2\). Now let's say we want to use a monoalphabetic cipher for encrypting/decrypting the string. so we should create a 1-bit to 1-bit mapping for our encryption algorithm. There are only two ways we can build such a mapping!</p>
 <p>\(enc_1(0) = 0 \
 enc_1(1) = 1\)</p>
 <p>And:</p>
@@ -204,7 +203,7 @@ enc_2(1) = 0\)</p>
 <p>This cipher is very easy to crack. All you have to do as an attacker is to read the cipher text, if it already means something, you have successfully decrypted it, otherwise just swap the bits (I.e change zeros to ones and vice versa), and then, if the source text has some meaningful information and a 1bit-to-1bit encryption algorithm is used, you will get the source text!</p>
 <p>So far, we have seen that our secret keys in this scheme have 2 entries. Can we somehow compress this?</p>
 <p>Instead of storing the entries for each bit (Which takes 2 bits), we can use a single bit, telling us if we should swap the bits or not!</p>
-<p>Let’s switch to a polyalphabetic cipher, mapping 2 character to 2 characters each time now. There exist 4 possible substitution mappings now:</p>
+<p>Let's switch to a polyalphabetic cipher, mapping 2 character to 2 characters each time now. There exist 4 possible substitution mappings now:</p>
 <p>\(enc_1(00) = 00 \
 enc_1(01) = 01 \
 enc_1(10) = 10 \
@@ -231,10 +230,10 @@ enc_4(11) = 00\)</p>
 <p>Some properties of a random string:</p>
 <ul>
 <li>The number of each letter is equal with other letters (In case of a binary string, the number of 1s is equal with 0s)</li>
-<li>…</li>
+<li>...</li>
 </ul>
 <h2 id="xor-is-the-answer-to-everything"><a class="header" href="#xor-is-the-answer-to-everything">XOR is the answer to everything</a></h2>
-<p>We can now conclude that, we don’t need to store a mapping of size \(2^n\) (\(\alpha=2\) since we are working with binary strings) in order to encrypt/decrypt binary texts. We just need to store a key of size \(n\) bits, which shows us, for each bit, whether we should swap the corresponding bit or not.</p>
+<p>We can now conclude that, we don't need to store a mapping of size \(2^n\) (\(\alpha=2\) since we are working with binary strings) in order to encrypt/decrypt binary texts. We just need to store a key of size \(n\) bits, which shows us, for each bit, whether we should swap the corresponding bit or not.</p>
 <p>Generating the an \(n\) bit key for a n-character to n-character encryption algorithm is as easy as throwing a coin for \(n\) times and fortunately, <strong>we all trust the coin flips already!</strong></p>
 <p>Although this method can be mathematically proven to be secure (In fact, the method has a name: the one-time padding algorithm), it is not practical, and the reason is that, the keys are not reusable.
 Suppose we have two messages \(m_1\) and \(m_2\), and a key \(k\) which we’ll use for encrypting both messages:</p>
@@ -245,7 +244,7 @@ Suppose we have two messages \(m_1\) and \(m_2\), and a key \(k\) which we’ll 
 <p>If you take the xor of a number with itself, they will cancel-out each other and you will get zero, so the \(k \oplus k\) part is removed from the equation and what you get is basically the sum of messages, which means: \(M_1 \oplus M_2 = m_1 \oplus m_2\), which is definitely a dangerous leak.</p>
 <p>To show the importance of the leak, let’s say we want to encrypt two images using this method.</p>
 <p>By adding the encrypted images together, you will get a new image which is leaking a lot of information on what the encrypted messages contain.</p>
-<p><img src="assets/cipheraddition.png" alt="Adding two ciphertexts with same keys reveals the secret!"></p>
+<p><img src="assets/cipheraddition.png" alt="Adding two ciphertexts with same keys reveals the secret!" /></p>
 <p>So, the obvious fact here is that, the one-time padding only works if both parties have access to an infinitely large shared random string, otherwise, they will have to exchange a new key every time they want to communicate, and the size of the key should be equal with the size of the message they want to send, which is impractical. In fact, the messages \(M_1\) and \(M_2\) are only obfuscated when the keys used to encrypt them are different:</p>
 <p>\(M_1 = m_1 \oplus k_1\)</p>
 <p>\(M_2 = m_2 \oplus k_2\)</p>
@@ -262,20 +261,20 @@ Suppose we have two messages \(m_1\) and \(m_2\), and a key \(k\) which we’ll 
 <h2 id="signatures"><a class="header" href="#signatures">Signatures</a></h2>
 <p>Finite-field elements that we just build are not the only strange kind of group elements besides regular numbers. Matrices exist too, you can define addition and multiplication operations on grids of numbers, and it will behave just as regular numbers.</p>
 <p>There is also one very weird kind of group that mathematicians have discovered,</p>
-<hr>
+<hr />
 <p>When introducing finite-field, we saw that the algebraic rules that are valid on regular numbers can be valid on other made-up things too! This is not limited to numbers modulo a prime. For example, matrices are also made-up mathematical things that behave very simular to numbers: \((AB)C=A(BC)\) and \(A(B+C)=AB+AC\) and so on.</p>
 <p>Making up other things that behave just like regular numbers is fun. One of the most exciting mathematical inventions that ended-up similar to numbers are <em><strong>points that reside on an elliptic curve</strong></em>.</p>
 <p>An elliptic-curve is a curve that is defined with a polynomial equation like this:</p>
 <p>\(y^2=x^3+\dots\)</p>
 <p>For example:</p>
 <p>\(y^2=x^3+7\)</p>
-<p>By “points”, we mean the sets of \((x,y)\) pairs that make the curve equation hold true. E.g, \((1,2\sqrt{2})\) and \((1,-2\sqrt{2})\) are valid points on the curve.</p>
-<p>A smart man once assumed that these points are “things” that can be added together, just like numbers. So he had to invent an addition rule that preserves typical rules that apply when working with actual numbers. He had to design the addition rule such that: \((P_1+P_2)+P_3=P_1+(P_2+P_3)\)</p>
+<p>By &quot;points&quot;, we mean the sets of \((x,y)\) pairs that make the curve equation hold true. E.g, \((1,2\sqrt{2})\) and \((1,-2\sqrt{2})\) are valid points on the curve.</p>
+<p>A smart man once assumed that these points are &quot;things&quot; that can be added together, just like numbers. So he had to invent an addition rule that preserves typical rules that apply when working with actual numbers. He had to design the addition rule such that: \((P_1+P_2)+P_3=P_1+(P_2+P_3)\)</p>
 <p>Here is what he did: if you pick two points \(P_1\) and \(P_2\), and connect them through a straight line, the line will most probably hit the curve again in an extra point \(P_3\) (Unless the line is completely vertical). Notice that this happens because there is a \(x^3\) component within our equation! If we had a \(x^4\) there, the line could intersect with the curve in two additional points instead of one!</p>
 <p>The smart man made an brilliant assumption: if you add points that reside on a straight line together, the result will be <em><strong>some imaginary point</strong></em> that behaves like a zero. So, in case the line intersects with the curve in three points: \(P_1+P_2+P_3=P_{zero}\)</p>
-<p>What do I mean by “behaves like a zero”? Just like the regular 0, When you add the zero-point to a point, it should leave it untouched, so: \(P + P_{zero} = P\). For some curves (Like the one we are discussing here) the zero-point does not really exist (I.e you can find a \((x,y)\) pair that acts like a zero-point), so we have to make it up, and pretend it always existed! (Very similar to our approach with imaginary numbers!)</p>
-<p>As previously noted, when the line you draw is parallel to the vertical axis, it only intersects with the line in 2 points, which means: \(P_1+P_2=P_zero\). By moving one of the points to the right hand side, we’ll get: \(P_2=-P_1\). This means that, you can get the negative of a point by drawing a vertical line passing from that point and finding the intersection.</p>
-<p>Also, in the case which the line intersects with 3 points, we can move the third point to the right hand side and then we’ll have: \(P_1+P_2=-P_3\). This, together with the method we discovered for finding the negative of a point, gives us a complete method for adding two points. We’ll just need to draw a line between the points we are going to add, find the third intersection, and the negate it by finding the mirrored point, as illustrated below:</p>
+<p>What do I mean by &quot;behaves like a zero&quot;? Just like the regular 0, When you add the zero-point to a point, it should leave it untouched, so: \(P + P_{zero} = P\). For some curves (Like the one we are discussing here) the zero-point does not really exist (I.e you can find a \((x,y)\) pair that acts like a zero-point), so we have to make it up, and pretend it always existed! (Very similar to our approach with imaginary numbers!)</p>
+<p>As previously noted, when the line you draw is parallel to the vertical axis, it only intersects with the line in 2 points, which means: \(P_1+P_2=P_zero\). By moving one of the points to the right hand side, we'll get: \(P_2=-P_1\). This means that, you can get the negative of a point by drawing a vertical line passing from that point and finding the intersection.</p>
+<p>Also, in the case which the line intersects with 3 points, we can move the third point to the right hand side and then we'll have: \(P_1+P_2=-P_3\). This, together with the method we discovered for finding the negative of a point, gives us a complete method for adding two points. We'll just need to draw a line between the points we are going to add, find the third intersection, and the negate it by finding the mirrored point, as illustrated below:</p>
 <p>[IMG]</p>
 <pre><code class="language-python">P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 
@@ -291,7 +290,7 @@ def egcd(a, b):
 def modinv(a):
     g, x, y = egcd(a, P)
     if g != 1:
-        raise Exception("modular inverse does not exist")
+        raise Exception(&quot;modular inverse does not exist&quot;)
     else:
         return x % P
 
@@ -331,9 +330,9 @@ class Point:
 
     def __str__(self):
         if self.is_zero():
-            return "Point(Inf)"
+            return &quot;Point(Inf)&quot;
         else:
-            return f"Point({self.x}, {self.y})"
+            return f&quot;Point({self.x}, {self.y})&quot;
 
     def __repr__(self):
         return str(self)
@@ -350,48 +349,48 @@ G = Point(
 print((G + G) + G == G + (G + G))
 </code></pre>
 <h2 id="electronic-cash-revolution"><a class="header" href="#electronic-cash-revolution">Electronic Cash revolution</a></h2>
-<p>You may already know that I am from Iran, a mysterious country under plenty of sanctions, withholding me from doing any financial activity with people outside our isolated world. We don’t have international credit-cards in Iran, and our banking system is completely isolated from the rest of the world (At least when I’m writing this book!). As a young, passionate programmer, spending his teenage years working on “open-source” projects, I was dreaming of getting donations for the work I was publishing online, but I couldn’t find any way I could accept money from people on the internet. I couldn’t even have something like a PayPal account, it was like a dead-end for me, but you know the end of the story, I found about Bitcoin. I don’t remember exactly if I myself looked for an “uncontrollable” (Permissionless?) way of receiving money and found Bitcoin as a result, or a Bitcoin company popped onto my eyes while surfing the internet, anyways, Bitcoin was a saviour for me.</p>
+<p>You may already know that I am from Iran, a mysterious country under plenty of sanctions, withholding me from doing any financial activity with people outside our isolated world. We don't have international credit-cards in Iran, and our banking system is completely isolated from the rest of the world (At least when I'm writing this book!). As a young, passionate programmer, spending his teenage years working on &quot;open-source&quot; projects, I was dreaming of getting donations for the work I was publishing online, but I couldn't find any way I could accept money from people on the internet. I couldn't even have something like a PayPal account, it was like a dead-end for me, but you know the end of the story, I found about Bitcoin. I don't remember exactly if I myself looked for an &quot;uncontrollable&quot; (Permissionless?) way of receiving money and found Bitcoin as a result, or a Bitcoin company popped onto my eyes while surfing the internet, anyways, Bitcoin was a saviour for me.</p>
 <p>Cryptography was once all about encryption and authentication. It was until recently when mankind started to wonder if he can use computers to build some kind of currency that is not controlled by anyone. Many people might wonder why someone might need something like Bitcoin? Bitcoin helped me, a innocent boy, to escape the limitations I had in my country and transact money with people on the Internet. Bitcoin has been useful for me, and for me, this single usecase is enough to say that Bitcoin is awesome and is already solving problems. If you are a privileged person and have not ever faced problems like this, here might be some reasons why you might need a decentralized currency:</p>
 <ul>
-<li>Privacy - You don’t want your government to track every small financial activity you are doing</li>
-<li>Control over your money - You don’t want your government to be able to block your money anytime it wants.</li>
-<li>Transaction fees - You don’t want to pay excessive transaction fees</li>
+<li>Privacy - You don't want your government to track every small financial activity you are doing</li>
+<li>Control over your money - You don't want your government to be able to block your money anytime it wants.</li>
+<li>Transaction fees - You don't want to pay excessive transaction fees</li>
 <li>Fault tolerance - You want a payment system that is stable and is available 24/7</li>
 </ul>
 <p>We need P2P technologies like Bitcoin to stay safe against governments that are (Or may become) evil (And of course, escape from limitations that are unfair!).</p>
-<p>If you read about the history of electronic currencies, you already know that Bitcoin is not the first project that brought the concept on the table. There have been many different attempts by different people to build elecronic payment systems that do not rely on a centralized party. Why they failed and Bitcoin succeeded is that those prior projects were not able to solve a very important problem of such systems, and Bitcoin did. Instead of getting into the details, let’s try to model a electronic currency from the ground up, given our limited knowledge, and discover the problem ourselves!</p>
-<p>Since you already know some asymmetric cryptography and understand how digital signatures work, let’s assume we have a few servers that are connected to each other in a network (Internet perhaps?), and are running the same software. The software is a simple key-value store, mapping public-keys to balances. If a public-key does not exist in the database, we assume the balance of that public-key is 0. Creating an account in such system does not need any interaction, you just need to generate a new private-key in your local machine, and whenever you want to know how much money you have (Which is 0 by default), you will just need to query one of those servers.</p>
-<p>Transacting money in such system is as easy as creating a message, in which you clarify who you are (I.e. your public-key), how much and whome you are sending money to (I.e. destination public-key), and then signing the message with your private-key. When those servers receive and read your message, they’ll try to validate and process your transaction, and update the balance sheet accordingly.</p>
+<p>If you read about the history of electronic currencies, you already know that Bitcoin is not the first project that brought the concept on the table. There have been many different attempts by different people to build elecronic payment systems that do not rely on a centralized party. Why they failed and Bitcoin succeeded is that those prior projects were not able to solve a very important problem of such systems, and Bitcoin did. Instead of getting into the details, let's try to model a electronic currency from the ground up, given our limited knowledge, and discover the problem ourselves!</p>
+<p>Since you already know some asymmetric cryptography and understand how digital signatures work, let's assume we have a few servers that are connected to each other in a network (Internet perhaps?), and are running the same software. The software is a simple key-value store, mapping public-keys to balances. If a public-key does not exist in the database, we assume the balance of that public-key is 0. Creating an account in such system does not need any interaction, you just need to generate a new private-key in your local machine, and whenever you want to know how much money you have (Which is 0 by default), you will just need to query one of those servers.</p>
+<p>Transacting money in such system is as easy as creating a message, in which you clarify who you are (I.e. your public-key), how much and whome you are sending money to (I.e. destination public-key), and then signing the message with your private-key. When those servers receive and read your message, they'll try to validate and process your transaction, and update the balance sheet accordingly.</p>
 <p>The transactions also include a unique identifier, so that the servers can recognize if a transatcion is already processed and should not be processed again.</p>
 <p>The system works nicely, until someone tries to confuse the network by spending his money twice.</p>
-<p>Let’s say we have Alice, Bob and Charlie in the network, each having 5 coins according to the balance sheet. Charlie creates two transactions, sending 3 coins to Alice in one, and sending 3 coins to Bob in the other transactions. Obviously, the servers can only process one of those transaction and not both of them, since Charlie doesn’t have sufficient fund.</p>
+<p>Let's say we have Alice, Bob and Charlie in the network, each having 5 coins according to the balance sheet. Charlie creates two transactions, sending 3 coins to Alice in one, and sending 3 coins to Bob in the other transactions. Obviously, the servers can only process one of those transaction and not both of them, since Charlie doesn't have sufficient fund.</p>
 <p>This means the network will have two possible states after hearing those two transactions:</p>
 <ul>
 <li>State #1 Alice: 8 - Bob: 5 - Charlie: 2</li>
 <li>State #2 Alice: 5 - Bob: 8 - Charlie: 2</li>
 </ul>
-<p>Charlie can buy a product from both Alice and Bob by sending the same 3 coins to them, effectively spending his coins twice. The problem arises due to the fact that the servers in our network can not agree on the state. Some servers may stop in the #1 state and some in #2, and both states are indeed valid. This problem is known as the Double-Spending problem, and the reason it happens is that the servers can’t decide which transaction occurred first.</p>
+<p>Charlie can buy a product from both Alice and Bob by sending the same 3 coins to them, effectively spending his coins twice. The problem arises due to the fact that the servers in our network can not agree on the state. Some servers may stop in the #1 state and some in #2, and both states are indeed valid. This problem is known as the Double-Spending problem, and the reason it happens is that the servers can't decide which transaction occurred first.</p>
 <p>The classic approach in solving the double-spending problem is to have a central authority deciding the order of transactions. Imagine writing two cheques for Alice and Bob, spending 3 of your coins (While you only have 5). If they go to the bank and try to cash out the cheque at the exact same time, only one of the cheques will pass, since there is a single server somewhere, timestamping the transactions as they happen, disallowing a transaction to happen in case of insufficient balance.</p>
-<p>The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state, without needing a centralized authority. As its inventor describe Bitcoin, Proof-of-Work is a decentralized method for “timestamping” transactions.</p>
+<p>The main innovation behind Bitcoin was its creative solution to the Double-Spending problem, which is called Proof-of-Work. Through Proof-of-Work, the servers in the network could agree only on a single state, without needing a centralized authority. As its inventor describe Bitcoin, Proof-of-Work is a decentralized method for &quot;timestamping&quot; transactions.</p>
 <h2 id="the-most-precious-spam-fighter"><a class="header" href="#the-most-precious-spam-fighter">The most precious spam-fighter!</a></h2>
 <p>Back in 1997, Adam Back, a british cryptographer and cypherpunk, invented something called HashCash. HashCash was a method people could use to fight with denial-of-service attacks (Excessive number of requests trying to get a service down). The idea was to require users to solve a moderately hard puzzle before allowing them to use the service. The solution could also be used as a spam filter (Imagine recipients only accept a mail in their inbox when a solved HashCash puzzle is attached to the mail). HashCash was assuming that we can make the life of attackers/spammers much harder, by requiring them to put significant computation resources for every request/email they make.</p>
-<p>The puzzle was to find certain inputs for a hash function such that the output is below a threshold. I can’t explain this better than a piece of Python code:</p>
+<p>The puzzle was to find certain inputs for a hash function such that the output is below a threshold. I can't explain this better than a piece of Python code:</p>
 <pre><code class="language-python">import hashlib
 
 
 def h(inp):
-    return int.from_bytes(hashlib.sha256(inp).digest(), byteorder="little")
+    return int.from_bytes(hashlib.sha256(inp).digest(), byteorder=&quot;little&quot;)
 
 
 MAX_VAL = 2 &lt;&lt; 256 - 1
 THRESHOLD = MAX_VAL // 10000000
 
-MY_EMAIL = b"Hey, I'm not trying to spam you! :)"
+MY_EMAIL = b&quot;Hey, I'm not trying to spam you! :)&quot;
 
 i = 0
 while True:
-    if h(MY_EMAIL + i.to_bytes(8, "little")) &lt; THRESHOLD:
-        print("Nonce:", i)
+    if h(MY_EMAIL + i.to_bytes(8, &quot;little&quot;)) &lt; THRESHOLD:
+        print(&quot;Nonce:&quot;, i)
         break
     i += 1
 
@@ -403,18 +402,18 @@ while True:
 <li>If you want to get a \(\leq 3\), you must approximately roll the dice for \(\frac{6}{3}=2\) timess.</li>
 <li>If you want to get a \(\leq 6\), you must approximately roll the dice for \(\frac{6}{6}=1\) timess.</li>
 </ul>
-<p>The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \(0\) to \(2^{256}-1\). In order to get an output below \(\theta\), you will need to try different inputs (Roll the dice) for \(\frac{2^{256}}{\theta}\) times. You can roll a hash-function by “slightly” changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).</p>
-<p>In our HashCash example, we require the email sender to “work” approximately as much as running SHA-256 for 1 million times!</p>
+<p>The same is true with hash functions. Hash functions are analogous to giant dices. As an exmaple the SHA-256 hash function generates outputs between \(0\) to \(2^{256}-1\). In order to get an output below \(\theta\), you will need to try different inputs (Roll the dice) for \(\frac{2^{256}}{\theta}\) times. You can roll a hash-function by &quot;slightly&quot; changing its input (In the HashCash example, we append a small piece of data to the original data and randomly change it until we get our desired output).</p>
+<p>In our HashCash example, we require the email sender to &quot;work&quot; approximately as much as running SHA-256 for 1 million times!</p>
 <h2 id="chaining-proofs-of-work"><a class="header" href="#chaining-proofs-of-work">Chaining proofs of work!</a></h2>
 <p>Satoshi Nakamoto discovered a interesting fact about proof-of-work puzzles. After solving a proof-of-work puzzle, you can append some more data to the whole thing and try to solve the proof of work puzzle again for the new data.</p>
 <p>Suppose we first find \(nonce_0\) such that: \(H(data_0 | nonce_0) &lt; \theta\). We then append \(data_1\) to the hash of old data and find \(nonce_1\) such that \(H(H(data_0 | nonce_0) | data_1 | nonce_1) &lt; \theta\)</p>
 <p>Solving a proof-of-work puzzle on \(H(data_0 | nonce_0) | data_1\), not only proves that you have worked hard on commiting to \(data_1\), but also shows that you have put equal amount of work to also commit on \(data_0\), for one more time, and that is because altering \(data_0\) not only invalidates the first proof-of-work, but also the second proof-of-work. Assuming that it takes 1 minute to find an appropriate nonce for a piece of data, altering \(data_0\) would invalidate both \(nonce_0\) and \(nonce_1\), meaning that you should find the values for \(nonce_0\) and \(nonce_1\) again, requiring you two solve 2 proof-of-work puzzles, spending two minutes of your CPU time. The longer the chain is, the harder it becomes to alter older data.</p>
 <h2 id="proof-of-work-on-financial-transactions"><a class="header" href="#proof-of-work-on-financial-transactions">Proof-of-Work on financial transactions</a></h2>
-<p>Here is the main innovation of Bitcoin: Let’s solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted.</p>
+<p>Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted.</p>
 <h2 id="making-proof-of-work-work-less"><a class="header" href="#making-proof-of-work-work-less">Making Proof-of-Work work less!</a></h2>
 <p>Without any doubt, using an incentivized Proof of Work as a way to bring consensus to a public payment network is a revolutionary idea, but there are some obstacles in this method that had been annoying some people, making them wonder if there are any better ideas.</p>
 <p>The biggest problem of PoW is its excessive use of energy. Bitcoin (As of 2023) is consuming about 127 TWh per year, and this surely may seem unacceptable by engineers. So people started to play with PoW and try to make it consume less. Part of the reason PoW functions consume a lot of energy is that, people have built specialized hardware for calculating a SHA-256 hash (Known as Application-Specific Integrated Circuit, or ASICs), which is much faster and cheaper than a regular computer, and consumes way more energy. It makes much more sense and profit for people to use these devices instead of wasting their full-featured computers which are designed to do general-purpose computations. So people thought, if we somehow redesign a new hash function, so that building a ASIC for it is almost the same as building a full-featured computer, we may remove the incentive for people to build specialized hardware for it, thus</p>
-<p>The earliest ideas in this regard were proposing to make the PoW hash function more dependent on RAM, by requiring a lot of memory to be consumed while generating the hash. Such a hash-function will require a big RAM, and RAMs are surely slow and complicated stuff. Algorithms that do memory operations more often suffer from the memory-access delays. The CPU in this case will be mostly idle, waiting for the memory to return the result. In this case, building a specialized hardware doesn’t give you a lot of speed-up, since the memory will be the bottleneck. This makes people to prefer computers over ASICs, leading to overall less usage of energy.</p>
+<p>The earliest ideas in this regard were proposing to make the PoW hash function more dependent on RAM, by requiring a lot of memory to be consumed while generating the hash. Such a hash-function will require a big RAM, and RAMs are surely slow and complicated stuff. Algorithms that do memory operations more often suffer from the memory-access delays. The CPU in this case will be mostly idle, waiting for the memory to return the result. In this case, building a specialized hardware doesn't give you a lot of speed-up, since the memory will be the bottleneck. This makes people to prefer computers over ASICs, leading to overall less usage of energy.</p>
 <p>Ready to build a hash function that consumes a lot of memory? Here is a made-up example that is also very inefficient:</p>
 <pre><code class="language-python3">import hashlib
 
@@ -427,89 +426,89 @@ def memory_consuming_hash(x):
     return hashlib.sha256(data).digest()
 
 
-print(memory_consuming_hash(b"123"))
+print(memory_consuming_hash(b&quot;123&quot;))
 </code></pre>
-<p>The hash function starts with a list containing the input data. It then goes through a big loop, adding to the list the hash of the last element in the list. Finally, all the items in the list are concatenated with each other and hashed. The reason we are reversing the list before hashing is that, we want to prevent the hasher from simultanously trying to calculate the hash of final input, throwing away the old data (We purposefully want the hasher to memorize everything, otherwise our hash function isn’t really memory intensive). If we didn’t reverse it, the attacker could simply rewrite the code in a better way so that it requires very small amount of memory.</p>
+<p>The hash function starts with a list containing the input data. It then goes through a big loop, adding to the list the hash of the last element in the list. Finally, all the items in the list are concatenated with each other and hashed. The reason we are reversing the list before hashing is that, we want to prevent the hasher from simultanously trying to calculate the hash of final input, throwing away the old data (We purposefully want the hasher to memorize everything, otherwise our hash function isn't really memory intensive). If we didn't reverse it, the attacker could simply rewrite the code in a better way so that it requires very small amount of memory.</p>
 <p>The proposed hash function is completely made-up, very inefficient and might be insecure. Designing memory-intensive hash functions is a broad topic to discuss, but it explains you the core idea.</p>
 <h2 id="proof-of-work-as-a-agi-test"><a class="header" href="#proof-of-work-as-a-agi-test">Proof-of-Work as a AGI test</a></h2>
 <p>I once read someone on X (formerly Twitter) proposing a really interesting test for language models to see whether they’ve achieved AGI-level creativity and intelligence. The idea was to train a model only on data before 2009, before Bitcoin even existed, and then ask it to design a solution for the double-spending problem. If the model independently discovers Proof-of-Work (or some similar mechanism), we could arguably claim that AGI has been achieved! The idea was so clever and compelling that I decided to dedicate a paragraph to it in this book.</p>
 <h2 id="proof-of-stake"><a class="header" href="#proof-of-stake">Proof of Stake</a></h2>
 <p>Bitcoin had an intellectual community back then (It still has!). There were a lot of people talking about ways they can improve Bitcoin in public forums and chat-rooms. One of the revolutionary ideas which was shared as a topic on Bitcointalk was: to expect different hardness of the PoW puzzle from different people, based on their balance. Those with less coins have to work on harder problems, and those with a lot of coins are only required to solve a simple Proof-of-Work puzzle!</p>
-<p>If you remember in previous sections, a typical Proof-of-Work puzzle expected you to try, on average, \(\frac{H_{max}}{\theta}\) different nonces in order to find the appropriate nonce. Here we are going to make the puzzle easier for people with more coins. So we somehow have to reduce \(\theta\) in case of a higher stake and reduce it for lower stakes. One way we can handle this is by multiplying \(\theta\) with \(\frac{S_{user}}{S_{total}}\). (Where \(S_{user}\) is this user’s stake and \(S_{total}\) is the sum of stakings of all users). This way, the average number of nonce trials needed wiil become \(\frac{H_{max}}{\theta \times \frac{S_{user}}{S_{total}}}\). The higher user’s stake is, the closer the fraction becomes to 1, maximizing the possible theta. When the stake of user approaches to zero, the fraction becomes 0 too (Resulting to a smaller theta and a harder puzzle).</p>
+<p>If you remember in previous sections, a typical Proof-of-Work puzzle expected you to try, on average, \(\frac{H_{max}}{\theta}\) different nonces in order to find the appropriate nonce. Here we are going to make the puzzle easier for people with more coins. So we somehow have to reduce \(\theta\) in case of a higher stake and reduce it for lower stakes. One way we can handle this is by multiplying \(\theta\) with \(\frac{S_{user}}{S_{total}}\). (Where \(S_{user}\) is this user's stake and \(S_{total}\) is the sum of stakings of all users). This way, the average number of nonce trials needed wiil become \(\frac{H_{max}}{\theta \times \frac{S_{user}}{S_{total}}}\). The higher user's stake is, the closer the fraction becomes to 1, maximizing the possible theta. When the stake of user approaches to zero, the fraction becomes 0 too (Resulting to a smaller theta and a harder puzzle).</p>
 <p>The idea discussed above was of the earliest ideas of a Proof-of-Stake consensus algorithm. It really brings in some kind of PoS in the first look but, unfortunately, people with hardware advantages can still take advantage and win all of the blocks. The discussed algorithm is a step towards PoS, but it is not a pure PoS, as it inherits the most weaknesses of a PoW algorithm.</p>
-<p>People thought more and more on the nature of a PoS algorithm, and they decided that an ideal PoS algorithm should have nothing to do with a PoW puzzle, but it only has to perform an election between the stakers. The higher you stake, the more chance you will have to win the next block. In order to perform an election in a computer, you will need some <em><strong>source-of-randomness</strong></em>. Let’s suppose we have a source of randomness, which gives us values between \(0&lt;r&lt;1\).</p>
+<p>People thought more and more on the nature of a PoS algorithm, and they decided that an ideal PoS algorithm should have nothing to do with a PoW puzzle, but it only has to perform an election between the stakers. The higher you stake, the more chance you will have to win the next block. In order to perform an election in a computer, you will need some <em><strong>source-of-randomness</strong></em>. Let's suppose we have a source of randomness, which gives us values between \(0&lt;r&lt;1\).</p>
 <p>Assuming we have \(n\) stakers (Sorted in descending order) \(S_1, S_2, \dots, S_n\), where \(S_T\) is the sum of all staked amounts, we know that \(\frac{S_1}{S_T} + \frac{S_2}{S_T} + \dots + \frac{S_n}{S_T} = 1\). Thus, if we put these stakers on a ribbon, the length of the ribbon will become 1. Now, assuming \(r\) is a random number between 0 and 1, if we mark the corresponding location of \(r\) on the ribbon, it will go inside one of the stakers. We can consider that staker to be the one who is able to generate the next block!</p>
-<p>The million dollar question in this method is, who decides the value of \(r\)? Obviously, we can’t rely on single party to decide the random number \(r\) for the whole network. The members of the network can not verify if the number provided by the centralized entity is indeed random, or it has purposefully chosen in a way to maximize his own profit.</p>
+<p>The million dollar question in this method is, who decides the value of \(r\)? Obviously, we can't rely on single party to decide the random number \(r\) for the whole network. The members of the network can not verify if the number provided by the centralized entity is indeed random, or it has purposefully chosen in a way to maximize his own profit.</p>
 <p>An interesting method for deciding the random number here is by using a hash function. If you divide the output of a hash function by its maximum value, you will get a floating point number between 0 and 1, which pretty much looks like a uniformly distributed random value. The input given to the hash function can be obtained from the blockchain itself! We can use the hash of last block to get the random value \(r\) used to elect the winner of the next block!</p>
 <p>Unfortunately, this method can be easily exploited by an attacker: Imagine the attacker is elected to produce the block \(n\). Now, since the random value of the next block is dependent on the hash of previous block (I.e \(r_{n+1}=h(b_n)\)), the attacker has full control on the value of \(r_{n+1}\). He can alter the block \(b_n\) in a way so that he is elected again for generating the next block! Altering the block can be done in various ways, for example, the attacker can put a dummy transaction in block \(b_n\), sending some funds to himself. The attacker can alter the hash of the block, by simply trying different possible amount values in that transaction. This way, the attacker may win all of the blocks, in case he successfully finds appropriate amount values, making the block have the desired hash value.</p>
-<p>Isn’t this familiar? That’s literally what we were doing in Proof-of-Work! The only difference is that here instead of trying different nonce values, we are trying different amount values in our dummy transaction. The more hardware we have, the higher chance we can win the blocks in the network. We can claim that our proposed PoS algorithm is still a PoW in its heart!</p>
+<p>Isn't this familiar? That's literally what we were doing in Proof-of-Work! The only difference is that here instead of trying different nonce values, we are trying different amount values in our dummy transaction. The more hardware we have, the higher chance we can win the blocks in the network. We can claim that our proposed PoS algorithm is still a PoW in its heart!</p>
 <p>If you look carefully to all these alternative methods, you will see that the source of the problem comes from the fact that the members are able to replay the election process by simply changing some value in previous blocks. If we somehow take this power from the members, and allow the members to generate a random value only once, the problem is solved!</p>
-<h2 id="trust-me-its-random"><a class="header" href="#trust-me-its-random">Trust me, it’s random!</a></h2>
+<h2 id="trust-me-its-random"><a class="header" href="#trust-me-its-random">Trust me, it's random!</a></h2>
 <p>[TODO]</p>
-<h2 id="its-time-to-commit"><a class="header" href="#its-time-to-commit">It’s time to commit</a></h2>
-<p>Now you probably have an accurate intitution on how cryptographic hash functions work (If you are convinced that the Proof-of-Work algorithm really works). But it’s also good to know the formal definition of a cryptographic hash function. A cryptographic hash function is a function that is:</p>
+<h2 id="its-time-to-commit"><a class="header" href="#its-time-to-commit">It's time to commit</a></h2>
+<p>Now you probably have an accurate intitution on how cryptographic hash functions work (If you are convinced that the Proof-of-Work algorithm really works). But it's also good to know the formal definition of a cryptographic hash function. A cryptographic hash function is a function that is:</p>
 <ol>
-<li>Collision-resistant: It’s hard to find a pair of \(x\) and \(y\) where \(H(x)=H(y)\).</li>
-<li>Preimage-resistant: Given \(y\), it’s hard to find \(x\) where \(H(x)=y\).</li>
-<li>Second-perimage-resistant: Given \(H(x_1)=y\), it’s hard to find \(x_2\) where \(H(x_2)=y\).</li>
+<li>Collision-resistant: It's hard to find a pair of \(x\) and \(y\) where \(H(x)=H(y)\).</li>
+<li>Preimage-resistant: Given \(y\), it's hard to find \(x\) where \(H(x)=y\).</li>
+<li>Second-perimage-resistant: Given \(H(x_1)=y\), it's hard to find \(x_2\) where \(H(x_2)=y\).</li>
 </ol>
 <p>Besides generating proofs of work, there are other interesting things you can do with hash functions. In general, cryptographic hash functions let you to commit to a secret value, and reveal it later.</p>
 <h2 id="cryptographic-games"><a class="header" href="#cryptographic-games">Cryptographic games</a></h2>
-<p>A useful example is when you want to play the Rock/Paper/Scissors with your friend over phone. You can agree to shout out your choice simulatanously, but there is always the chance that your friend may hear your choice and make his choice based on that, always winning the game. What if you guys want to play Rock/Paper/Scissors over physical letters? It’ll become much harder to prevent cheatings! Cryptographic hash functions come handy here:</p>
+<p>A useful example is when you want to play the Rock/Paper/Scissors with your friend over phone. You can agree to shout out your choice simulatanously, but there is always the chance that your friend may hear your choice and make his choice based on that, always winning the game. What if you guys want to play Rock/Paper/Scissors over physical letters? It'll become much harder to prevent cheatings! Cryptographic hash functions come handy here:</p>
 <ol>
 <li>Alice chooses his option \(a\), but instead of revealing \(a \in {R, P, S}\), she reveals \(H(a)\).</li>
 <li>Just like Alice, Bob chooses \(b \in {R, P, S}\), and reveals \(H(b)\).</li>
 <li>Now both Alice and Bob know that their opponent has made his choice and commited to it, so they can reveal their choices.</li>
-<li>They both will check if their opponent’s choice matches with their commited value (If it doesn’t, it means the opponent is cheating).</li>
+<li>They both will check if their opponent's choice matches with their commited value (If it doesn't, it means the opponent is cheating).</li>
 <li>If everything is alright, winner is determined according to \(a\) and \(b\).</li>
 </ol>
-<p>There is a hack to this approach. Since the options are very limited, both Alice and Bob can pre-compute a table of all possible choices and their respective hashes. Then they’ll be able to know their opponent’s movement based on their commited value. We can prevent this by introducing an extra random value appended to the input of the hash function, known as a <em>salt</em>. (It’s dangerous to directly store the passwords of the users in a web-application’s database. It’s also dangerous to store hashes of the passwords, since many users choose weak passwords and attackers may build pre-computed tables by trying many different popular passwords, just like what an attacker can do in the Rock/Paper/Scissors game we just designed, so you have probably seen that a random salt is added to the user’s password before applying the hash function. The salt is stored on the database for later verifications).</p>
-<p>It’s nice to remember: Whenever you are designing a cryptographic protocol and would like to prevent attacks based on precomputed-tables, adding a salt is a efficient and good solution.</p>
+<p>There is a hack to this approach. Since the options are very limited, both Alice and Bob can pre-compute a table of all possible choices and their respective hashes. Then they'll be able to know their opponent's movement based on their commited value. We can prevent this by introducing an extra random value appended to the input of the hash function, known as a <em>salt</em>. (It's dangerous to directly store the passwords of the users in a web-application's database. It's also dangerous to store hashes of the passwords, since many users choose weak passwords and attackers may build pre-computed tables by trying many different popular passwords, just like what an attacker can do in the Rock/Paper/Scissors game we just designed, so you have probably seen that a random salt is added to the user's password before applying the hash function. The salt is stored on the database for later verifications).</p>
+<p>It's nice to remember: Whenever you are designing a cryptographic protocol and would like to prevent attacks based on precomputed-tables, adding a salt is a efficient and good solution.</p>
 <p>The following Python code will let you to generate commitments for participating in a cryptographic Rock/Paper/Scissors game:</p>
 <pre><code class="language-python">import random, hashlib
 
-choice = input("Choice? (R/P/S)")
-assert choice in ["R", "P", "S"]
+choice = input(&quot;Choice? (R/P/S)&quot;)
+assert choice in [&quot;R&quot;, &quot;P&quot;, &quot;S&quot;]
 
 # Generate a random 16 letter alphanumeric salt
-salt = "".join(random.choice("0123456789ABCDEF") for i in range(16))
+salt = &quot;&quot;.join(random.choice(&quot;0123456789ABCDEF&quot;) for i in range(16))
 
-commit = hashlib.sha256((choice + salt).encode("ascii")).hexdigest()
+commit = hashlib.sha256((choice + salt).encode(&quot;ascii&quot;)).hexdigest()
 
-print("Salt (Reveal it later!):", salt)
-print("Commit:", commit)
+print(&quot;Salt (Reveal it later!):&quot;, salt)
+print(&quot;Commit:&quot;, commit)
 
 # Reveal choice and salt later
 </code></pre>
 <p>After both you and your opponent have got the commitments of each other, you may now reveal your choices and respective salts. The following Python3 program may be used for finding the winner:</p>
 <pre><code class="language-python">import hashlib
 
-alice_choice = input("Alice choice? ")
-alice_salt = input("Alice salt? ")
-alice_commit = input("Alice commitment? ")
+alice_choice = input(&quot;Alice choice? &quot;)
+alice_salt = input(&quot;Alice salt? &quot;)
+alice_commit = input(&quot;Alice commitment? &quot;)
 
-if alice_choice not in ["R", "P", "S"]:
-    print("Alice has made an invalid move!")
+if alice_choice not in [&quot;R&quot;, &quot;P&quot;, &quot;S&quot;]:
+    print(&quot;Alice has made an invalid move!&quot;)
 
 if (
     alice_commit
-    != hashlib.sha256((alice_choice + alice_salt).encode("ascii")).hexdigest()
+    != hashlib.sha256((alice_choice + alice_salt).encode(&quot;ascii&quot;)).hexdigest()
 ):
-    print("Alice is cheating!")
+    print(&quot;Alice is cheating!&quot;)
 
-bob_choice = input("Bob choice? ")
-bob_salt = input("Bob salt? ")
-bob_commit = input("Bob commitment? ")
+bob_choice = input(&quot;Bob choice? &quot;)
+bob_salt = input(&quot;Bob salt? &quot;)
+bob_commit = input(&quot;Bob commitment? &quot;)
 
-if bob_choice not in ["R", "P", "S"]:
-    print("Bob has made an invalid move!")
+if bob_choice not in [&quot;R&quot;, &quot;P&quot;, &quot;S&quot;]:
+    print(&quot;Bob has made an invalid move!&quot;)
 
-if bob_commit != hashlib.sha256((bob_choice + bob_salt).encode("ascii")).hexdigest():
-    print("Bob is cheating!")
+if bob_commit != hashlib.sha256((bob_choice + bob_salt).encode(&quot;ascii&quot;)).hexdigest():
+    print(&quot;Bob is cheating!&quot;)
 
 # Winner may now be determined based on alice_choice and bob_choice!
-print("Alice:", alice_choice)
-print("Bob:", bob_choice)
+print(&quot;Alice:&quot;, alice_choice)
+print(&quot;Bob:&quot;, bob_choice)
 </code></pre>
 <h2 id="commiting-to-a-set-of-values"><a class="header" href="#commiting-to-a-set-of-values">Commiting to a set of values</a></h2>
 <p>Not only you can commit to a single value, but you can commit to multiple values, and later prove and reveal the existence of a certain value in the set. Here is a silly cryptographic game where commiting to a set of values might be useful. Imagine I have chosen a number between 0 to 1000, and I want you to make 20 guesses on what my number is. You may take 20 random guesses and commit to it by taking the hash of a comma seperated string, containing all of your guesses. You can then reveal your guesses and I can check:</p>
@@ -517,17 +516,12 @@ print("Bob:", bob_choice)
 <li>If you really have only chosen 20 numbers, and not more (Just split the comma-seperated string by <code>,</code> and check its length)</li>
 <li>If your guess list includes my number</li>
 </ol>
-<p>Now, there is problem. What if the guess list is very large? (Imagine millions of numbers). You have to reveal all of my guesses, otherwise I can’t check if your commitment matches your numbers. Is there any way I can prove existence of a certain number in my list, without revealing all other numbers I have in the list? (Both for privacy and performance reasons). There is!</p>
+<p>Now, there is problem. What if the guess list is very large? (Imagine millions of numbers). You have to reveal all of my guesses, otherwise I can't check if your commitment matches your numbers. Is there any way I can prove existence of a certain number in my list, without revealing all other numbers I have in the list? (Both for privacy and performance reasons). There is!</p>
 <p>Binary trees are your best friend, any time you want to optimize the space-efficiency or computation-efficiency of something related to computer science!</p>
-<p><img src="assets/merkle.png" alt="Making a tree out of the values you want to commit on!"></p>
+<p><img src="assets/merkle.png" alt="Making a tree out of the values you want to commit on!" /></p>
 <h2 id="inventing-a-new-math"><a class="header" href="#inventing-a-new-math">Inventing a new math</a></h2>
-<p>The math we are used to, is all about different operations you can perform on numbers. You can add them, subtract them, multiply them or divide them by each other. These operations (If you are not really into math) only make sense if the operands are number. For example, you can’t add an apple to an orange, it’s meaningless, because the definition of addition is meaningless in case of fruits. But let’s assume it’s possible, and try to invent some new kind of math for fruits. Imagine the fruits we are working with in our new math are: Apple, Orange and Banana. There are 9 different possibilies when fruits are added together (\(3 \times 3\)), and since the result of adding two fruits is also a fruit, there will be a total of \(3^9\) ways we can invent the \(+\) operation on fruits. Here is an example:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>A</th><th>B</th><th>A + B</th></tr>
-</thead>
-<tbody>
+<p>The math we are used to, is all about different operations you can perform on numbers. You can add them, subtract them, multiply them or divide them by each other. These operations (If you are not really into math) only make sense if the operands are number. For example, you can't add an apple to an orange, it's meaningless, because the definition of addition is meaningless in case of fruits. But let's assume it's possible, and try to invent some new kind of math for fruits. Imagine the fruits we are working with in our new math are: Apple, Orange and Banana. There are 9 different possibilies when fruits are added together (\(3 \times 3\)), and since the result of adding two fruits is also a fruit, there will be a total of \(3^9\) ways we can invent the \(+\) operation on fruits. Here is an example:</p>
+<div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A + B</th></tr></thead><tbody>
 <tr><td>Apple</td><td>Apple</td><td>Orange</td></tr>
 <tr><td>Apple</td><td>Orange</td><td>Orange</td></tr>
 <tr><td>Apple</td><td>Banana</td><td>Apple</td></tr>
@@ -537,17 +531,11 @@ print("Bob:", bob_choice)
 <tr><td>Banana</td><td>Apple</td><td>Apple</td></tr>
 <tr><td>Banana</td><td>Orange</td><td>Orange</td></tr>
 <tr><td>Banana</td><td>Banana</td><td>Banana</td></tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
-<p>Unfortunately, the math we have just invented on fruits does not obey some of the properties we are used to when adding numbers. For example, you might expect that \(Orange + Banana\) is equal with \(Banana + Orange\), but in our new, randomly invented math, that’s not the case. There are other missing features too, for example: \((Apple + Orange) + Banana\) is not equal with \(Apple + (Orange + Banana)\)! Try to redesign the \(+\) operation, so that we have the mentioned properties in our fruit-math too.</p>
+<p>Unfortunately, the math we have just invented on fruits does not obey some of the properties we are used to when adding numbers. For example, you might expect that \(Orange + Banana\) is equal with \(Banana + Orange\), but in our new, randomly invented math, that's not the case. There are other missing features too, for example: \((Apple + Orange) + Banana\) is not equal with \(Apple + (Orange + Banana)\)! Try to redesign the \(+\) operation, so that we have the mentioned properties in our fruit-math too.</p>
 <p>Here is an example of a fruit-math that perfectly obeys the mentioned laws:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>A</th><th>B</th><th>A + B</th></tr>
-</thead>
-<tbody>
+<div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A + B</th></tr></thead><tbody>
 <tr><td>Apple</td><td>Apple</td><td>Apple</td></tr>
 <tr><td>Apple</td><td>Orange</td><td>Orange</td></tr>
 <tr><td>Apple</td><td>Banana</td><td>Banana</td></tr>
@@ -557,16 +545,10 @@ print("Bob:", bob_choice)
 <tr><td>Banana</td><td>Apple</td><td>Banana</td></tr>
 <tr><td>Banana</td><td>Orange</td><td>Apple</td></tr>
 <tr><td>Banana</td><td>Banana</td><td>Orange</td></tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
-<p>Let’s make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that’s ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be \(3^9\) different possible defintions for \(\times\). If we start with a random table, we will lose some of the properties \(\times\) operator has on regular numbers. In case of regular numbers, we know that \(a \times b\) is equal with \(b \times a\). There is also one very unique and important property that we have on regular numbers. \(a \times (b + c)\) is equal with \(a \times b + a \times c\). Try to design \(\times\) operator on fruits so that it obeys these properties too. You will probably reach to a table like this:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>A</th><th>B</th><th>A * B</th></tr>
-</thead>
-<tbody>
+<p>Let's make our fruit-math more interesting. Addition is not the only operation we can do on numbers. We can do multiplications too. Just like additions, multiplication of fruits is also meaningless (Even more meaningless than addition!), but that's ok, just like what we did with the addition operator, we can also design a table for multiplication. There will be \(3^9\) different possible defintions for \(\times\). If we start with a random table, we will lose some of the properties \(\times\) operator has on regular numbers. In case of regular numbers, we know that \(a \times b\) is equal with \(b \times a\). There is also one very unique and important property that we have on regular numbers. \(a \times (b + c)\) is equal with \(a \times b + a \times c\). Try to design \(\times\) operator on fruits so that it obeys these properties too. You will probably reach to a table like this: </p>
+<div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A * B</th></tr></thead><tbody>
 <tr><td>Apple</td><td>Apple</td><td>Apple</td></tr>
 <tr><td>Apple</td><td>Orange</td><td>Apple</td></tr>
 <tr><td>Apple</td><td>Banana</td><td>Apple</td></tr>
@@ -576,18 +558,12 @@ print("Bob:", bob_choice)
 <tr><td>Banana</td><td>Apple</td><td>Apple</td></tr>
 <tr><td>Banana</td><td>Orange</td><td>Banana</td></tr>
 <tr><td>Banana</td><td>Banana</td><td>Orange</td></tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
-<p>Since there are limited number of addition/multiplication tables that obey math rules we are used to, we can conclude that there are very few varities of math we can design for Apples, Bananas and Oranges. One clever way to easily extract new fruit-maths is to use substitute the fruits in our current tables with another permutation of fruits (E.g. change Apple-&gt;Banana, Banana-&gt;Orange and Orange-&gt;Apple). But who are we going to fool! These tables are still somehow equal with the first table, and we haven’t really invented a new math! There is even a scientific word for it, the tables generated this way are actually isomorph with each other, or in other words, there exists a mapping for the elements in the first table, that migrates us to the second table!</p>
+<p>Since there are limited number of addition/multiplication tables that obey math rules we are used to, we can conclude that there are very few varities of math we can design for Apples, Bananas and Oranges. One clever way to easily extract new fruit-maths is to use substitute the fruits in our current tables with another permutation of fruits (E.g. change Apple-&gt;Banana, Banana-&gt;Orange and Orange-&gt;Apple). But who are we going to fool! These tables are still somehow equal with the first table, and we haven't really invented a new math! There is even a scientific word for it, the tables generated this way are actually isomorph with each other, or in other words, there exists a mapping for the elements in the first table, that migrates us to the second table!</p>
 <p>Strangely, out of \(3^9.3^9\) possible ways we can invent a math for fruits (Assuming we want to fill the addition and multiplication tables), only few of them are valid and behave as expected, and all of those valid maths are isomorph with each other, meaning that effectively, we only have a single kind of math, in case we have 3 number of elements! Mathematicians refer these kind of maths as: <em><strong>Finite-fields</strong></em></p>
 <p>Now imagine we use substitute Apples, Oranges and Bananas with numbers under 3 (0, 1, 2), respectively (Obviously, we will get an isomorph). Here is how the addition and multiplication tables will look like:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>A</th><th>B</th><th>A + B</th></tr>
-</thead>
-<tbody>
+<div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A + B</th></tr></thead><tbody>
 <tr><td>0</td><td>0</td><td>0</td></tr>
 <tr><td>0</td><td>1</td><td>1</td></tr>
 <tr><td>0</td><td>2</td><td>2</td></tr>
@@ -597,15 +573,8 @@ print("Bob:", bob_choice)
 <tr><td>2</td><td>0</td><td>2</td></tr>
 <tr><td>2</td><td>1</td><td>0</td></tr>
 <tr><td>2</td><td>2</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>A</th><th>B</th><th>A * B</th></tr>
-</thead>
-<tbody>
+</tbody></table>
+</div><div class="table-wrapper"><table><thead><tr><th>A</th><th>B</th><th>A * B</th></tr></thead><tbody>
 <tr><td>0</td><td>0</td><td>0</td></tr>
 <tr><td>0</td><td>1</td><td>0</td></tr>
 <tr><td>0</td><td>2</td><td>0</td></tr>
@@ -615,17 +584,16 @@ print("Bob:", bob_choice)
 <tr><td>2</td><td>0</td><td>0</td></tr>
 <tr><td>2</td><td>1</td><td>2</td></tr>
 <tr><td>2</td><td>2</td><td>1</td></tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
 <p>Strangely, we can see that the addition/multiplication tables are basically just modular addition/multiplication! (I.e addition and multiplication modulo 3).</p>
 <h2 id="making-things-hard"><a class="header" href="#making-things-hard">Making things hard</a></h2>
-<p>Now, let’s discuss one of the most fundamental assumptions that made modern cryptography possible. I would like to start with a simple equation. Find \(x\) such that:</p>
+<p>Now, let's discuss one of the most fundamental assumptions that made modern cryptography possible. I would like to start with a simple equation. Find \(x\) such that:</p>
 <p>\(3^x = 243\)</p>
-<p>Finding the correct value of \(x\) in such an equation is not going to be difficult. You’ll just need to take the logarithm of the right hand side of the equation, and you’ll have the correct \(x\). You’ll basically divide the right hand side by \(3\), until it gets \(1\). \(x\) is the number of times you have done the division.</p>
-<p>Let’s change the equation a little bit, by switching to a made-up mathematics (E.g mathematics defined on numbers modulo 19) that we discussed earlier! Here is the new equation, try to solve it:</p>
+<p>Finding the correct value of \(x\) in such an equation is not going to be difficult. You'll just need to take the logarithm of the right hand side of the equation, and you'll have the correct \(x\). You'll basically divide the right hand side by \(3\), until it gets \(1\). \(x\) is the number of times you have done the division.</p>
+<p>Let's change the equation a little bit, by switching to a made-up mathematics (E.g mathematics defined on numbers modulo 19) that we discussed earlier! Here is the new equation, try to solve it:</p>
 <p>\(3^x \mod 19 = 4\)</p>
-<p>Unfortunately, this equation is not as simple to solve as the previous one. We discussed how addition and multiplication can be done on our made-up math, but we didn’t discuss how we can divide two numbers! So, our best bet is to try to brute-force the problem, by trying all different \(x\)s:</p>
+<p>Unfortunately, this equation is not as simple to solve as the previous one. We discussed how addition and multiplication can be done on our made-up math, but we didn't discuss how we can divide two numbers! So, our best bet is to try to brute-force the problem, by trying all different \(x\)s:</p>
 <ul>
 <li>\(3^0 \mod 19 = 1\)</li>
 <li>\(3^1 \mod 19 = 3\)</li>
@@ -643,7 +611,7 @@ print("Bob:", bob_choice)
 <li>\(3^{13} \mod 19 = 14\)</li>
 <li>\(3^{14} \mod 19 = 4\)</li>
 </ul>
-<p>Voila! The solution is \(x=14\)! Let’s not stop here and keep trying higher \(x\)s:</p>
+<p>Voila! The solution is \(x=14\)! Let's not stop here and keep trying higher \(x\)s:</p>
 <ul>
 <li>\(3^{15} \mod 19 = 12\)</li>
 <li>\(3^{16} \mod 19 = 17\)</li>
@@ -654,9 +622,9 @@ print("Bob:", bob_choice)
 <li>\(3^{21} \mod 19 = 8\)</li>
 <li>\(\dots\)</li>
 </ul>
-<p>After \(3^{18}\), we’ll see that the results are repeating again. It looks like a cycle! In fact, you can start with any number under 19, after multiplying it by 3 for 18 times, you’ll get back to that number again!</p>
+<p>After \(3^{18}\), we'll see that the results are repeating again. It looks like a cycle! In fact, you can start with any number under 19, after multiplying it by 3 for 18 times, you'll get back to that number again!</p>
 <p>\(a \times 3^{18} \mod 19 = a\)</p>
-<p>Let’s try a different modulus this time. For example, let’s try 23. This time, you’ll see that the cycle happens after 22 iterations. It seems like that:</p>
+<p>Let's try a different modulus this time. For example, let's try 23. This time, you'll see that the cycle happens after 22 iterations. It seems like that:</p>
 <p>\(3^{m-1} \mod m = 1\)</p>
 <p>But that is not the case! Try 25:</p>
 <ul>
@@ -682,33 +650,33 @@ print("Bob:", bob_choice)
 <li>\(3^{19} \mod 25 = 17\)</li>
 <li>\(3^{20} \mod 25 = 1\)</li>
 </ul>
-<p>Our prediction didn’t work out, the cycle happened after 20 iterations! In fact, after trying different examples, we’ll soon figure that our prediction is true only when the modulus is a prime number! So, how can we predict the cycle length in case of a non-prime modulus?</p>
-<p>Swiss mathematician, Leonhard Euler, designed a formula for that purpose in 1763. It’s also known as Euler’s totient function, and is defined as below:</p>
+<p>Our prediction didn't work out, the cycle happened after 20 iterations! In fact, after trying different examples, we'll soon figure that our prediction is true only when the modulus is a prime number! So, how can we predict the cycle length in case of a non-prime modulus?</p>
+<p>Swiss mathematician, Leonhard Euler, designed a formula for that purpose in 1763. It's also known as Euler's totient function, and is defined as below: </p>
 <p>\(\varphi (m)=p_{1}^{k_{1}-1}(p_{1}{-}1),p_{2}^{k_{2}-1}(p_{2}{-}1)\cdots p_{r}^{k_{r}-1}(p_{r}{-}1)\)</p>
 <p>(Assuming \(m=p_1^{k_1}p_2^{k_2}p_3^{k_3} \cdots p_r^{k_r}\))</p>
-<p>He also stated, in the Euler’s theorem, that:</p>
+<p>He also stated, in the Euler's theorem, that:</p>
 <p>\(a^{\varphi(m)} \equiv 1 {\pmod {m}}\)</p>
-<p>So, in the previous example, we know that \(25=5^2\), therefore, \(\varphi(25)=5^{2-1}(5-1)=20\), so if we start with some random number \(a\) and multiply by itself for 20 times, we’ll get back to the original number!</p>
+<p>So, in the previous example, we know that \(25=5^2\), therefore, \(\varphi(25)=5^{2-1}(5-1)=20\), so if we start with some random number \(a\) and multiply by itself for 20 times, we'll get back to the original number!</p>
 <h2 id="a-mathematical-private-mailbox"><a class="header" href="#a-mathematical-private-mailbox">A mathematical private mailbox</a></h2>
 <p>Now, using the facts mentioned above, we would like to design a public-key cryptography system. In such cryptographic protocol, one can encrypt a message \(a\) by calculating \(A=a^e\) (Where \(e\) is an encryption key, which is public for everyone), and the receiver can decrypt it by calculating \(a=A^d\).</p>
-<p>Let’s forget about the generalized form of totient function and only focus on composite numbers of form \(m=pq\). In this case, the output of the totient function is \(\varphi(m)=(p-1)(q-1)\) which means:</p>
+<p>Let's forget about the generalized form of totient function and only focus on composite numbers of form \(m=pq\). In this case, the output of the totient function is \(\varphi(m)=(p-1)(q-1)\) which means:</p>
 <p>\(a^{(p-1)(q-1)} = 1\)</p>
 <p>(You might first think that \(e=p-1\) and \(d=q-1\) are practical candidates for \(e\) and \(d\), but they are not, since the right hand side of the equation above is \(1\) instead of \(a\))</p>
 <p>Therefore:</p>
 <p>\(a^{(p-1)(q-1) + 1} = a\)</p>
-<p>We need to find \(e\) \(d\) such that for every \(a\): \((a^e)^d=a\). In fact, \(ed\) should be equal with \((p-1)(q-1)+1\). Finding such numbers isn’t too difficult, but we are not going to discuss that.</p>
-<p>Now let’s say Bob calculate \(e\) and \(d\) gives the number \(e\) to Alice and keeps \(d\) for himself. Let’s say Alice has a message \(a\) which wants to send to Bob, but doesn’t want anyone but Bob to read it. Instead of \(a\), she can send \(A=a^e\) to Bob. Upon receiving, Bob can calculate \(a=A^d\), and get the original message back.</p>
+<p>We need to find \(e\) \(d\) such that for every \(a\): \((a^e)^d=a\). In fact, \(ed\) should be equal with \((p-1)(q-1)+1\). Finding such numbers isn't too difficult, but we are not going to discuss that.</p>
+<p>Now let's say Bob calculate \(e\) and \(d\) gives the number \(e\) to Alice and keeps \(d\) for himself. Let's say Alice has a message \(a\) which wants to send to Bob, but doesn't want anyone but Bob to read it. Instead of \(a\), she can send \(A=a^e\) to Bob. Upon receiving, Bob can calculate \(a=A^d\), and get the original message back.</p>
 <h2 id="diffie-hellman"><a class="header" href="#diffie-hellman">Diffie-Hellman</a></h2>
-<p>We have two people who want to send a physical letter to each other. They can send their letters through a postman (Who unfortunately is very nosy!). They don’t want the postman to read the letter. Sender and receiver both have a lock and its key that can put on the box. They can’t send their keys to each other! How can the sender send privately send the letter?</p>
+<p>We have two people who want to send a physical letter to each other. They can send their letters through a postman (Who unfortunately is very nosy!). They don't want the postman to read the letter. Sender and receiver both have a lock and its key that can put on the box. They can't send their keys to each other! How can the sender send privately send the letter?</p>
 <ol>
 <li>The sender puts the letter in the box and locks it and sends it to the receiver.</li>
 <li>The receiver locks the box with his key too, and sends it back to the sender.</li>
 <li>The sender opens his own lock and sends it back to the receiver.</li>
 <li>The receiver may now open the box and read the letter.</li>
 </ol>
-<p><img src="assets/lock.png" alt="The box can be locked with two locks at the same time, needed both parties to remove their locks in order to open the box"></p>
+<p><img src="assets/lock.png" alt="The box can be locked with two locks at the same time, needed both parties to remove their locks in order to open the box" /></p>
 <h2 id="stealth-addresses"><a class="header" href="#stealth-addresses">Stealth addresses!</a></h2>
-<p>The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn’t want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private).</p>
+<p>The Diffie-Hellman key-exchange algorithm allows you to calculate a shared-secret between two parties, even when someone is eavesdropping your communication line. Now instead of two people, imagine there are many people participating in a similar scheme, each having their own public-key. Assume on of them wants to send a message to another one in the network, but doesn't want other people in the network to know who he wants to talk with. As a first step, the sender should broadcast his message to everyone, instead of routing it to his desired destination (Because others will know with whom the sender is communicating, even though the messages are all encrypted and private). </p>
 <ul>
 <li>Bob generates a key \(m\) (Master private key), and computes \(M = g^m\) (Master public key), where \(g\) is a commonly-agreed generator point for the elliptic curve.</li>
 <li>Alice generates an ephemeral key \(r\), and publishes the ephemeral public key \(R = g^r\).</li>
@@ -729,18 +697,12 @@ print("Bob:", bob_choice)
 <li>\(a \times b=c\)</li>
 </ol>
 <p>Obviously, since the first and second equations are just quadratic equations, they have two roots, which are zero and one. Knowing the different possible values for a and b we can write a table for it.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>a</th><th>b</th><th>c</th></tr>
-</thead>
-<tbody>
+<div class="table-wrapper"><table><thead><tr><th>a</th><th>b</th><th>c</th></tr></thead><tbody>
 <tr><td>0</td><td>0</td><td>0</td></tr>
 <tr><td>1</td><td>0</td><td>0</td></tr>
 <tr><td>0</td><td>1</td><td>0</td></tr>
 <tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
 <p>You can see that the table is identical with a logical and gate. We can do OR gates too, the last constraint needs to be:</p>
 <p>\((1-a) \times (1-b)=(1-c)\)</p>
@@ -765,10 +727,10 @@ print("Bob:", bob_choice)
 <p>Now, if \(a\) is not zero, \(z\) has no choice but to be zero in order to satisfy the second constraint. If \(z\) is 0, then \(tmp\) should be set to inverse of \(a\) in order to satisfy the first constraint. Inverse of \(a\) exists, since \(a\) is not zero. If \(a\) is zero, then the first constraint is reduced to \(z=1\).</p>
 <h2 id="computer-programs-inside-polynomials"><a class="header" href="#computer-programs-inside-polynomials">Computer programs inside polynomials</a></h2>
 <h2 id="anonymous-transactions"><a class="header" href="#anonymous-transactions">Anonymous transactions</a></h2>
-<p>Satoshi wanted Bitcoin to become a more private form of transferring money. He claimed bitcoin provides some form of <strong>pseudo-anonimity</strong> too, but bitcoin ended up even less private than conventional bank transfers! This happened because bitcoin, and all the transactions happening in it, has no choice but to be public, otherwise it couldn’t be decentralized.</p>
-<p>In bitcoin, it’s the pub-keys that are transferring value with each other, and not human identities. It is indeed very hard to find out who controls a public-key, but the problem is, as soon as a public-key gets related to an actual identity in the real world, the money will get easily traceable afterwards. The creation of this relation is as simple as depositing your cryptocurrency to an exchange, in which you have disclosed your identity by going through KYC procedures. In fact, one of the only ways you can prevent others from finding the mapping between your public-key and your real-world identity, is to trade your crypto directly with others in-person, instead of using a crypto exchange as an intermediary.</p>
-<p>Fortunately, although you can’t stop others from discovering your ownership of a certain public-key, there are ways you can make it hard for others to understand the interactions between different public-keys within a public blockchain.</p>
-<h2 id="you-dont-need-to-tell-everyone-youre-getting-private"><a class="header" href="#you-dont-need-to-tell-everyone-youre-getting-private">You don’t need to tell everyone you’re getting private!</a></h2>
+<p>Satoshi wanted Bitcoin to become a more private form of transferring money. He claimed bitcoin provides some form of <strong>pseudo-anonimity</strong> too, but bitcoin ended up even less private than conventional bank transfers! This happened because bitcoin, and all the transactions happening in it, has no choice but to be public, otherwise it couldn't be decentralized.</p>
+<p>In bitcoin, it's the pub-keys that are transferring value with each other, and not human identities. It is indeed very hard to find out who controls a public-key, but the problem is, as soon as a public-key gets related to an actual identity in the real world, the money will get easily traceable afterwards. The creation of this relation is as simple as depositing your cryptocurrency to an exchange, in which you have disclosed your identity by going through KYC procedures. In fact, one of the only ways you can prevent others from finding the mapping between your public-key and your real-world identity, is to trade your crypto directly with others in-person, instead of using a crypto exchange as an intermediary.</p>
+<p>Fortunately, although you can't stop others from discovering your ownership of a certain public-key, there are ways you can make it hard for others to understand the interactions between different public-keys within a public blockchain.</p>
+<h2 id="you-dont-need-to-tell-everyone-youre-getting-private"><a class="header" href="#you-dont-need-to-tell-everyone-youre-getting-private">You don't need to tell everyone you're getting private!</a></h2>
 <p>I would like to include a section about one of the exciting discoveries that my colleagues and I made in a blockchain research lab where I worked. Here is the story.</p>
 <p>When I joined the lab in 2023, one of the first things we began researching was privacy solutions for blockchains. We were bold enough to try thinking about a completely new way of achieving privacy on blockchains, but we quickly faced a fundamental issue: the concept of privacy in cryptocurrencies depends heavily on the number of users who actually use the protocol. In fact, it doesn’t matter how sophisticated a privacy protocol is—if only a few people use it, it is essentially useless.</p>
 <p>So creating a completely new privacy-oriented cryptocurrency with zero users seemed worse than simply trying to build a cryptocurrency-mixing smart contract on a popular blockchain with a virtual machine (like Ethereum). However, convincing users to actually use such a smart contract was also difficult. There were also cases where developers of these kinds of smart contracts ended up in jail (a sad story—we still live in a world where you can be arrested merely for writing open-source software; see the story behind Tornado Cash). Governments can also easily ban the use of privacy-related smart contracts.</p>
@@ -777,7 +739,7 @@ print("Bob:", bob_choice)
 <p>At first it seemed like a dead end, but the breakthrough happened at lunchtime. I was discussing the problem with my friend Hamid when an idea came to mind: what if we sent ETH to an address that has no private key behind it and somehow created a zero-knowledge proof to demonstrate that fact? Is there any way we could create a <strong>provably unspendable address</strong>?</p>
 <p>I mean, sure—I could generate a random string, give it to you, and say that if you send your ETH to this address, it will be burned. But would you believe me? You would probably assume that I’m lying and that I actually possess the private key corresponding to that address. There would be no way for me to prove that the address I gave you is truly random unless we used a source of randomness that we both trust—like a third party that generates random values.</p>
 <p>After thinking about it for a while, the solution became obvious: a cryptographic hash function is an excellent source of randomness.</p>
-<p>Imagine I tell you to send your ETH to the address <code>0xf7Adb1...4F23</code> and claim that it is a random address with no private key. You wouldn’t believe me. But now imagine that I give you a string, like <code>"Hello"</code>, and you run a hash function on it: <code>H("Hello")</code>. Suppose the output of that hash function turns out to be <code>0xf7Adb1...4F23</code>. Now you can be confident that I do not possess the private key to that address, because it is extremely difficult (essentially impossible) to find a private key such that:</p>
+<p>Imagine I tell you to send your ETH to the address <code>0xf7Adb1...4F23</code> and claim that it is a random address with no private key. You wouldn’t believe me. But now imagine that I give you a string, like <code>&quot;Hello&quot;</code>, and you run a hash function on it: <code>H(&quot;Hello&quot;)</code>. Suppose the output of that hash function turns out to be <code>0xf7Adb1...4F23</code>. Now you can be confident that I do not possess the private key to that address, because it is extremely difficult (essentially impossible) to find a private key such that:</p>
 <p><code>PubKey(PrivKey) = H(Something)</code>.</p>
 <p>Now imagine that the blockchain we are working with maintains a Merkle tree of all accounts that exist in the ledger. With the help of zero-knowledge proofs, we could prove that:</p>
 <ol>
@@ -785,24 +747,24 @@ print("Bob:", bob_choice)
 <li>Address <code>A</code> is equal to <code>H(secret)</code>.</li>
 </ol>
 <p>This would give us a <strong>Private Proof of Burn</strong>. If we then added a new transaction type to the hosting blockchain that allows the secretly burned currency to be re-minted, we would have a plausibly deniable privacy solution built directly into the blockchain itself. The anonymity set would consist of all accounts with zero outgoing transactions—and in a mainstream blockchain there are many of them. That means a massive anonymity set from day one.</p>
-<p>We eventually published this idea as an improvement proposal for the Ethereum blockchain (although the idea could be applied to other blockchains as well). If you’re curious to learn more about it, it is numbered <strong>EIP-7503</strong>. It hasn’t been implemented by the core developers yet, but people are still discussing it.</p>
+<p>We eventually published this idea as an improvement proposal for the Ethereum blockchain (although the idea could be applied to other blockchains as well). If you're curious to learn more about it, it is numbered <strong>EIP-7503</strong>. It hasn’t been implemented by the core developers yet, but people are still discussing it.</p>
 <p>Let’s see what happens!</p>
 <h2 id="tor-network"><a class="header" href="#tor-network">Tor network</a></h2>
 <p>Tor is a famous piece of software, but its usage is interpreted differently around the world. As someone living in a free country, Tor is mostly a tool for achieving privacy on the internet: to be able to surf around the internet without anyone knowing who you are. On the other hand, in a country with restricted internet, Tor is known as a tool for circumventing censorships!</p>
-<p>There are times you want to access a website, but you don’t want anyone to know you have accessed it. Tor is different from a simple proxy. In case of a simple proxy, the proxy server knows the IP address of the requester, and knows the IP address that the requester wants to connect with (Although the data transferred between those two cannot be understood by the proxy thanks to the magic of cryptography). So, any kind of proxy leaks your identity, at least to the proxy server, which is not guaranteed not to be an evil!</p>
+<p>There are times you want to access a website, but you don't want anyone to know you have accessed it. Tor is different from a simple proxy. In case of a simple proxy, the proxy server knows the IP address of the requester, and knows the IP address that the requester wants to connect with (Although the data transferred between those two cannot be understood by the proxy thanks to the magic of cryptography). So, any kind of proxy leaks your identity, at least to the proxy server, which is not guaranteed not to be an evil!</p>
 <p>The Tor network is a smart and innovative idea, allowing people to hide their activities, and remain private, even to their proxy servers. This is done through entities known as: Onion routers.</p>
 <h2 id="when-they-cut-your-voice"><a class="header" href="#when-they-cut-your-voice">When they cut your voice</a></h2>
-<p>I’m writing this at midnight on March 10th, 2026, from Tehran, Iran, in the middle of one of the heaviest air attacks my country has ever seen. The war started nearly seven days ago, and the internet has been shut down since day one. The government is clearly scared of people connecting with each other, since regime change is something that has been on people’s minds for a long time. Even the most sophisticated VPNs do not work, yet I, and many others, are still able to connect. Because when there is a will, there is a way! Especially if you are good with computers.</p>
-<p>In this section, I’m going to discuss one of the coolest kinds of software that exist today (thanks to dictatorial governments): internet anti-censorship software.</p>
-<p>I’ll explain the concept using the analogy of you (i.e., the client) and your friend (i.e., the server) trying to communicate through a telephone line, while bad guys try to prevent you from doing so. We’ll start with the simplest ways the bad guy can cut your connection, then gradually move to more sophisticated methods, and try to mitigate them. The main rule is this: you have to make it <em><strong>costlier</strong></em> for the bad guy to cut your voice.</p>
+<p>I'm writing this at midnight on March 10th, 2026, from Tehran, Iran, in the middle of one of the heaviest air attacks my country has ever seen. The war started nearly seven days ago, and the internet has been shut down since day one. The government is clearly scared of people connecting with each other, since regime change is something that has been on people's minds for a long time. Even the most sophisticated VPNs do not work, yet I, and many others, are still able to connect. Because when there is a will, there is a way! Especially if you are good with computers.</p>
+<p>In this section, I'm going to discuss one of the coolest kinds of software that exist today (thanks to dictatorial governments): internet anti-censorship software.</p>
+<p>I'll explain the concept using the analogy of you (i.e., the client) and your friend (i.e., the server) trying to communicate through a telephone line, while bad guys try to prevent you from doing so. We'll start with the simplest ways the bad guy can cut your connection, then gradually move to more sophisticated methods, and try to mitigate them. The main rule is this: you have to make it <em><strong>costlier</strong></em> for the bad guy to cut your voice.</p>
 <h3 id="what-if-they-eavesdrop"><a class="header" href="#what-if-they-eavesdrop">What if they eavesdrop?</a></h3>
 <p>Imagine the bad guys are spying on your telephone lines and listening to what you and your friend say. Based on the content, they can, and will, decide to hang up your call. Well, in that case, the solution is simple! You and your friend communicate using encrypted messages. The spy may no longer understand what you are talking about and will have no excuse to end your call.</p>
-<p>Back in the old HTTP era, internet providers could easily eavesdrop on what you were searching for on Google and decide not to send back Google’s response if they did not like what you were looking for. When HTTPS came along, they could no longer do that, because all the communication they could see between you and Google became a random stream of gibberish bytes.</p>
+<p>Back in the old HTTP era, internet providers could easily eavesdrop on what you were searching for on Google and decide not to send back Google's response if they did not like what you were looking for. When HTTPS came along, they could no longer do that, because all the communication they could see between you and Google became a random stream of gibberish bytes.</p>
 <p>As a result, the only way to prevent you from searching for “that specific thing” would be to completely block access to Google. Completely blocking Google is a costly decision, so they may decide to give up on this one and simply allow you to search for whatever you want.</p>
-<h3 id="what-if-they-dont-let-me-dial-at-all"><a class="header" href="#what-if-they-dont-let-me-dial-at-all">What if they don’t let me dial at all?</a></h3>
+<h3 id="what-if-they-dont-let-me-dial-at-all"><a class="header" href="#what-if-they-dont-let-me-dial-at-all">What if they don't let me dial at all?</a></h3>
 <p>The bad guy may have some kind of blacklist—numbers that you are not allowed to call. Assuming that you still have access to most numbers, you may ask a third person (i.e., a proxy) who has unlimited access to all other numbers to do the dialing for you. You dial the proxy, the proxy dials your friend, and then the proxy simply puts both telephone handsets near each other so that you can talk with your friend as if you had dialed them directly.</p>
-<p>Ah, but what if I don’t want the proxy to listen to my messages? Well, that’s not a serious problem thanks to modern cryptography. You can always securely exchange an encryption key with the other party and start talking privately, even if every single bit of information passing through your communication line is being eavesdropped on.</p>
-<h3 id="what-if-the-bad-guys-detect-youre-proxying"><a class="header" href="#what-if-the-bad-guys-detect-youre-proxying">What if the bad guys detect you’re proxying?</a></h3>
+<p>Ah, but what if I don't want the proxy to listen to my messages? Well, that's not a serious problem thanks to modern cryptography. You can always securely exchange an encryption key with the other party and start talking privately, even if every single bit of information passing through your communication line is being eavesdropped on.</p>
+<h3 id="what-if-the-bad-guys-detect-youre-proxying"><a class="header" href="#what-if-the-bad-guys-detect-youre-proxying">What if the bad guys detect you're proxying?</a></h3>
 <p>When you want to use a third person as a proxy for your call, you would probably start the conversation with something like this:</p>
 <p><code>Hey friend, do me a favor: dial Keyvan for me and proxy my voice!</code></p>
 <p>If you put yourself in the bad guy’s shoes, you can clearly see that there is something suspicious about this call. Someone is trying to bypass your blacklist. The bad guy might get triggered when he sees someone saying a specific phrase like “Hey friend, do me a favor” and block the connection right away.</p>
@@ -816,24 +778,24 @@ print("Bob:", bob_choice)
 <p>The Trojan protocol suggests the following: let the web server secretly listen for certain clues that trigger it to become a proxy server. For example, imagine there is a password. If you somehow include this password in the body of your HTTPS request, the server will recognize you and start acting as a proxy. However, if the password is not present, the server behaves as if you simply sent a malformed or meaningless request.</p>
 <p>For example:</p>
 <p>If you send:</p>
-<pre><code>"Hey, the password is Ginger. Dial Keyvan for me ;)"
+<pre><code>&quot;Hey, the password is Ginger. Dial Keyvan for me ;)&quot;
 </code></pre>
 <p>and the password is correct, the server might respond with something like:</p>
-<pre><code>"Alright, here is the result:"
+<pre><code>&quot;Alright, here is the result:&quot;
 </code></pre>
-<p>But if the password is incorrect, it may respond as if it has no idea what you’re talking about:</p>
-<pre><code>"What password? What the hell are you talking about?"
+<p>But if the password is incorrect, it may respond as if it has no idea what you're talking about:</p>
+<pre><code>&quot;What password? What the hell are you talking about?&quot;
 </code></pre>
 <p>Now imagine you are the bad guy. What can you do to prevent people from connecting like this? Other than blocking all HTTPS traffic (which is certainly not practical) or massively expanding your blacklist, there are not many easy options.</p>
 <p>In other words, it becomes <strong>much more costly</strong> for the bad guy to block your internet access. Mission accomplished.</p>
 <p>You get the point! Again, I’m not going to explore the implementation details, since this book focuses on general ideas rather than low-level specifics. But from here, you should be able to understand how these protocols work—and maybe even design your own if your internet provider decides to restrict your access.</p>
 <p>[MARKER]</p>
-<p>Cryptography is the main reason why it has got difficult for the governments to prevent people from getting whatever information they want out of the internet. Encrypted information is impossible to analyze, and there is no way a man-in-the-middle can distinguish between someone actually opening a legit (In the government’s opinion!) website and someone who is trying to break the rules.</p>
+<p>Cryptography is the main reason why it has got difficult for the governments to prevent people from getting whatever information they want out of the internet. Encrypted information is impossible to analyze, and there is no way a man-in-the-middle can distinguish between someone actually opening a legit (In the government's opinion!) website and someone who is trying to break the rules.</p>
 <p>Both of those people are putting bit streams on the wires which look completely random by an external observer.</p>
 <p>Anti-filtering software are typically software that proxy your internet traffic through a third computer, a computer that is accessible by you, and has access to the free internet. So, instead of directly communicating with the target computer (Which is black-listed by your government and all the incoming/outgoing data from/to that computer is blocked) you will ask someone else to do it for you and return you the result. There are internet protocols exactly designed for that purpose. The simplest one of them is a protocol named Socks (If you know what Socks is, chances are you are living in an awful country!)</p>
 <p>The socks protocol, although very simple, is easily detectable by internet providers. Because in Socks protocol, you shout out, in plain text, that you are using Socks5 and asking the other computer to proxy the traffic for you.</p>
 <p>Many browsers and operating systems allow you to set socks proxies and natively support it. But, if Socks is so obvious and easy target for internet blockers, why is it so popular across anti-filter software?</p>
-<p>The truth is, the Socks proxy protocol is mostly used as a mean for sending data from you browser to a exectuable on your own computer (Fortunately, governments can’t restrict the processes in your computer from communicating with each other!), and that executable might simply be a internet usage tracker, or an anti-filter software that uses an entirely different and more sophisticated protocol for proxying your traffic!</p>
+<p>The truth is, the Socks proxy protocol is mostly used as a mean for sending data from you browser to a exectuable on your own computer (Fortunately, governments can't restrict the processes in your computer from communicating with each other!), and that executable might simply be a internet usage tracker, or an anti-filter software that uses an entirely different and more sophisticated protocol for proxying your traffic!</p>
 <p>Here is a simple implementation of a Socks5 server in Python:</p>
 <pre><code class="language-python=">import socket
 import threading
@@ -861,10 +823,10 @@ def handle_client(client):
         methods = client.recv(nmethods)
 
         # reply: version 5, no authentication
-        client.sendall(b"\x05\x00")
+        client.sendall(b&quot;\x05\x00&quot;)
 
         # SOCKS5 request
-        version, cmd, _, atyp = struct.unpack("!BBBB", client.recv(4))
+        version, cmd, _, atyp = struct.unpack(&quot;!BBBB&quot;, client.recv(4))
 
         if atyp == 1:  # IPv4
             addr = socket.inet_ntoa(client.recv(4))
@@ -888,9 +850,9 @@ def handle_client(client):
         remote.connect((addr, port))
 
         # success reply
-        reply = b"\x05\x00\x00\x01"
-        reply += socket.inet_aton("0.0.0.0")
-        reply += struct.pack("!H", 0)
+        reply = b&quot;\x05\x00\x00\x01&quot;
+        reply += socket.inet_aton(&quot;0.0.0.0&quot;)
+        reply += struct.pack(&quot;!H&quot;, 0)
 
         client.sendall(reply)
 
@@ -902,19 +864,19 @@ def handle_client(client):
         client.close()
 
 
-def start_proxy(host="0.0.0.0", port=1080):
+def start_proxy(host=&quot;0.0.0.0&quot;, port=1080):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
     server.listen(100)
 
-    print(f"SOCKS5 proxy listening on {host}:{port}")
+    print(f&quot;SOCKS5 proxy listening on {host}:{port}&quot;)
 
     while True:
         client, addr = server.accept()
         threading.Thread(target=handle_client, args=(client,)).start()
 
 
-if __name__ == "__main__":
+if __name__ == &quot;__main__&quot;:
     start_proxy()
 </code></pre>
 <p>Try it! Run it on your machine and then set your browser’s proxy to 127.0.0.1:1080. All your requests and responses will now go through this program. It’s not a very useful proxy yet, since the traffic isn’t going through a second server. It’s just an extra hop on your own machine.</p>
@@ -922,20 +884,20 @@ if __name__ == "__main__":
 <p>Now, if you run this program on another server and then set your browser’s proxy to the IP address of that server along with the port on which the proxy is running, your traffic will effectively go through another computer. If that computer is located in a network with fewer internet restrictions, you may be able to bypass those limitations.</p>
 <p>However, your internet provider can easily prevent you from making SOCKS5 requests altogether, and doing so is fairly straightforward. SOCKS5 requests have very distinctive patterns, and detecting them is quite easy.</p>
 <p>So what is the point of the SOCKS5 protocol at all if it can be easily detected and blocked? Well, you can use a SOCKS5 proxy as an interface for your browser to pass its traffic to a program running on your own machine, which then proxies your packets using a completely different protocol.</p>
-<p><img src="assets/proxy.png" alt="SOCKS5 is the bridge between your browser and your favorite anti-censorship software!"></p>
-<p>Now, there are infinite ways you can implement that <strong>“custom protocol”</strong> part. I’ll list some of them here. I won’t go into the details since you probably already have good clues about how each of them can be implemented. The general idea is what you need to know:</p>
+<p><img src="assets/proxy.png" alt="SOCKS5 is the bridge between your browser and your favorite anti-censorship software!" /></p>
+<p>Now, there are infinite ways you can implement that <strong>&quot;custom protocol&quot;</strong> part. I'll list some of them here. I won't go into the details since you probably already have good clues about how each of them can be implemented. The general idea is what you need to know:</p>
 <ol>
 <li>
 <p>The custom proxy might be a simple protocol hidden inside an HTTPS request on port 443, which from our side looks just like an ordinary web request. Since the body of HTTPS requests is encrypted, an outsider may not be able to distinguish your traffic from other HTTPS requests. There are dozens of different ways and implementations of such a protocol that you can study.</p>
 </li>
 <li>
-<p>Imagine the bad guy has completely shut down the internet and only allows you to use some kind of internal network (intranet). He provides his own “eavesdropped” messenger, which luckily can still be used to communicate with people outside the country. You can exploit that messenger to pass traffic to a server that is listening to the messenger on a free network. Just convert the bytes the browser sends through SOCKS5 into a base64 encoding or something similar (which the messenger allows you to transfer), read the messages on the second server, and respond accordingly. This is something people actually implemented during Iran’s protests in 2022. See how creative people can get under severe limitations!</p>
+<p>Imagine the bad guy has completely shut down the internet and only allows you to use some kind of internal network (intranet). He provides his own &quot;eavesdropped&quot; messenger, which luckily can still be used to communicate with people outside the country. You can exploit that messenger to pass traffic to a server that is listening to the messenger on a free network. Just convert the bytes the browser sends through SOCKS5 into a base64 encoding or something similar (which the messenger allows you to transfer), read the messages on the second server, and respond accordingly. This is something people actually implemented during Iran's protests in 2022. See how creative people can get under severe limitations!</p>
 </li>
 <li>
 <p>Now imagine the intranet no longer exists either. There is still hope. If you are still able to communicate with people outside the restricted area in any way, you may still automate packet transfer and implement your own custom protocol. For example, imagine phone calls are still available. As mentioned in Chapter 2, you can transmit data using sound waves. What if you write software that encodes the packets you receive through the SOCKS5 proxy from your browser into sound, and transmit that sound through your phone line to a server listening on the other side? That server could decode what it hears and send responses back. You could literally transfer a video through your favorite messenger without feeling that you are connected through such an unusual medium.</p>
 </li>
 <li>
-<p>Here is another clever way people managed to connect to the internet during Iran’s 2026 protests without transferring packets through a strange medium: the DNS protocol. DNS is probably the costliest service to block and likely the last thing the bad guy can disable. I do not yet know the exact reason, but somehow the bad guy cannot easily block DNS requests (even those going outside). For example, if you try to resolve the address <code>hello-my-dear-proxy-protocol.my-domain.com</code>, even through the bad guy’s internet provider DNS server, it will still ask the nameserver of <code>my-domain.com</code> for the IP address of <code>hello-my-dear-proxy-protocol.my-domain.com</code>, even if you have zero access to <code>my-domain.com</code>. See? You were able to send something (the string <code>hello-my-dear-proxy-protocol</code>) to a server you otherwise cannot access. Now imagine placing your browser packets inside those subdomains and having your DNS server respond with response packets. Pretty cool, right? This method is known as <strong>DNS Tunnel Tool (DNSTT)</strong> in case you want to learn more.</p>
+<p>Here is another clever way people managed to connect to the internet during Iran's 2026 protests without transferring packets through a strange medium: the DNS protocol. DNS is probably the costliest service to block and likely the last thing the bad guy can disable. I do not yet know the exact reason, but somehow the bad guy cannot easily block DNS requests (even those going outside). For example, if you try to resolve the address <code>hello-my-dear-proxy-protocol.my-domain.com</code>, even through the bad guy's internet provider DNS server, it will still ask the nameserver of <code>my-domain.com</code> for the IP address of <code>hello-my-dear-proxy-protocol.my-domain.com</code>, even if you have zero access to <code>my-domain.com</code>. See? You were able to send something (the string <code>hello-my-dear-proxy-protocol</code>) to a server you otherwise cannot access. Now imagine placing your browser packets inside those subdomains and having your DNS server respond with response packets. Pretty cool, right? This method is known as <strong>DNS Tunnel Tool (DNSTT)</strong> in case you want to learn more.</p>
 </li>
 </ol>
 <p>A true cypherpunk will always find a way to stay connected. I hope these ideas help ensure your voice never gets cut off!</p>
@@ -945,11 +907,11 @@ if __name__ == "__main__":
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                             <a rel="prev" href="4-think.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                                <i class="fa fa-angle-left"></i>
                             </a>
 
                             <a rel="next prefetch" href="6-fly.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                                <i class="fa fa-angle-right"></i>
                             </a>
 
                         <div style="clear: both"></div>
@@ -959,21 +921,16 @@ if __name__ == "__main__":
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                     <a rel="prev" href="4-think.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                        <i class="fa fa-angle-left"></i>
                     </a>
 
                     <a rel="next prefetch" href="6-fly.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                        <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
-        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
-        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
-        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
-        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
-        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -982,16 +939,15 @@ if __name__ == "__main__":
         </script>
 
 
-        <script src="elasticlunr-ef4e11c1.min.js"></script>
-        <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-c2a407aa.js"></script>
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="clipboard-1626706a.min.js"></script>
-        <script src="highlight-abc7f01d.js"></script>
-        <script src="book-a0b12cfe.js"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-
 
 
     </div>
