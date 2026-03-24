@@ -754,6 +754,15 @@ In bitcoin, it's the pub-keys that are transferring value with each other, and n
 
 Fortunately, although you can't stop others from discovering your ownership of a certain public-key, there are ways you can make it hard for others to understand the interactions between different public-keys within a public blockchain.
 
+## Smart contracts
+
+UTXO/account
+When Satoshi invented Bitcoin, his main goal was making a system suitable for payments, but he made a quite dynamic approach to payments. When you hen you want to spend a UTXO in Bitcoin, 
+
+## TornadoCash
+
+
+
 ## You don't need to tell everyone you're getting private!
 
 I would like to include a section about one of the exciting discoveries that my colleagues and I made in a blockchain research lab where I worked. Here is the story.

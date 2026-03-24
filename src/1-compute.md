@@ -1549,6 +1549,12 @@ The original Brainfuck language has an instruction for reading an 8-bit input fr
 
 This approach allows your CPU to both read from and write to the external world, completing the basic model of a working computer.
 
+### When you hate wires
+
+A computer screen/monitor is effectively a grid of pixels, which their color is determined by a computer through a hardware interface. Your screen may have millions of pixels, but if you look at the port by which your screen is connected to your computer, you may only see a few wires. This means something important: the pixel data are fed to your monitor "serially". Whenever a new frame to be shown on your screen is ready, your computer will start transferring each pixel through that port to your monitor, which is effectively a whole computer on its own that can understand the raw pixel data transferred to it and set the color of each pixel under its control according to it.
+
+Now, look closer, logically speaking each pixel on your screen should have been somehow be connected to the screen's main board in order to be controlled, but you won't see that many wires connected to your pixel-array either. So what's happening here? How is the value of each individual pixel set, if there isn't an independent wires for each pixel? The answer lies in a simple trick we use in everyday life too: e.g when you try to distribute question sheets in a classroom during a test. You don't need to go to every student and give him his sheet one-by-one, it's inefficient. You'll just give the student in the front a group of sheets and they will just pick one and pass the rest to the student behind them. Each pixel is in practice also a register that stores the RGB components of the pixels, and the pixels are all conneced to each other. When you feed the very first pixel a value, it will store that value in itself, and spit out the old value to the next pixel. These values will all get shifted in a domino-like effect. Now, if you have 2000-pixels and feed the very first pixel 2000 values in each clock cycle (Yes, your processor is not the only component that has a clock signal), you can effectively set all of these pixels your desired values, and you won't need 2000 wires, since your only endpoint to input the pixel values will be the first pixel. The values for last pixel is fed first and the value for the first pixel is fed last! The registers that are chained together with such a structure are called shift registers, and this is in fact a very useful design pattern seen in a lot of hardware.
+
 ## Poking your processor
 
 I know, I know. Although our basic computer model can compute correctly and handle input and output, it still leaves many questions unanswered. Perhaps the most important question right now is this: imagine my computer is busy running a computationally heavy algorithm. It doesn’t have an `INP` instruction anywhere in its code, but it still wants to detect if the user pressed a key on the keyboard and respond accordingly.
@@ -1980,7 +1986,7 @@ Here are some of my findings in this journey:
 
 Now even if you successfully implement a working ray-tracer in Brainfuck, it may actually take an entire year (Or even more!) to render a single frame of a very simple scene with a small resolution, practically useless. But that's not the point. The point is that you've proven yourself that you are able to build whatever you want in an insanely limited environment like Brainfuck. And the journey will give you complexitiy-management skill and mindset that is beneficial for you as an engineer.
 
-## FPGAs
+## One circuit to rule them all
 
 Although CPUs are general purpose and can perform whatever computation you can ever imagine, sometimes it makes more sense to build specialized hardware for some applications. Not all algorithms need the fancy set of instructions your CPU provides. In fact, many of the computationally intensive application only require simple math operations. Algorithms performing image generation/manipulation are of the examples. That's why computer nowadays have an specialized processors called GPUs, which used to take of what you see on your monitos (GPUs today are not limiting themselves on graphical computations and are being used for many kinds of heavy computation)
 GPUs are basically a bulk of processors which have simple instruction sets and they are really good in accelerating algorithms that are known to be **embarrassingly parallel**. An algorithm is embarrassingly parallel if you can divide it into chunks that can be processed by independent processors without any memory-sharing and interactions between the processors. These algorithms are so easily parallelizable, that it would be embarrasing for a programmer to be proud of parallelizing them!
@@ -1991,12 +1997,19 @@ Unfortunately, it would be very costly to design and manufacture a completely ne
 
 Before getting to the details of the FPGAs, I would like you to think about the way something like a FPGA can work for a bit. The title itself is guiding you to the answer. It has something to do with "gates" that are "programmable", maybe, unlike a regular logic gate such as AND/OR/NOT, a programmable gate is a gate that can be configured to become whatever gate you like. Try to build a programmable gate yourself, which accepts two inputs and gives out one output, and can transform to different gates when we tune it.
 
-(Hint: You can use memory-cells for storing the chosen functionality of your programmable gate, and put your configuration in it through some extra input pins)
+You can use memory-cells for storing the chosen functionality of your programmable gate, and put your configuration in it through some extra input pins. This way, "programming" a gate, would mean to put the right values inside the gate's memory-cells. Here is a popular design of a programmable gate among FPGAs. They are also known as Configurable Logic Gates (Or CLBs).
 
-This way, "programming" a gate, would mean to put the right values inside the gate's memory-cells.
+Now imagine we have a 2D grid of those cells on a board. Obviously, these gates need to be connected with each other in order to do their job, and you can't just consider a fixed way of connecting those gates to each other since every circuit is different. Just like how the logic of the gates need to be configurable, the way the outputs of these gates are fed to input of other gates need to also be configurable. You need to somehow dynamically "route" these values in your grid of gates. There is a cool way this can be done. Imagine buses of wires going through your configurable-gates in a grid-like structure, and assume there are some "stations" in points where buses collide with each other. These stations are the structures that decide a wire within a bus is routed to which wire in which bus, and just like how you configure a CLB by storing something in its respective register, you can configure these routings by putting data in those routing components. Now that would be a lot of registers to set in order for your custom circuit to work and you may assume you will need thousands of wires coming out of your FPGA board in order to set those registers. But that's not the case. Do you remember how we avoided having millions of wires in order to set the values of pixels in a computer screen? In a FPGA we can also connect those register to each other as a shift-register chain, and try to configure the entire set of registers by feeding in the values of those registers to the very first register.
 
-Here is a popular design of a programmable gate among FPGAs. They are also known as Configurable Logic Gates (Or CLBs).
+Now just imagine how challenging and cool would it be to design a software that allows you to:
 
+1. Describe a custom hardware
+2. List all the logic gates needed and decide the most efficient places to put them in a 2D grid
+3. Decide the best and most efficient way the inputs/outputs of these gates can be connected with each other
+4. Finalize the values that must reside in the FPGA's registers that would reflect the design
+5. Convert those values to a serially injectable values and feed them into the FPGA according to the way those shift-registers are chaned together
+
+I'm sure that based on things we have learned so far you can completely imagine how you can build a simplified software that does all this in an inefficient way, but that's fine. We don't care about the details, only the core idea!
 
 ## Let's talk in Gerber
 
@@ -2030,7 +2043,6 @@ D100*
 X0Y0D03*
 M02*
 ```
-
 
 
 ## Other ways to compute?
