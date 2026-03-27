@@ -335,7 +335,65 @@ Solving a proof-of-work puzzle on \\(H(data_0 | nonce_0) | data_1\\), not only p
 
 ## Proof-of-Work on financial transactions
 
-Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted.
+Here is the main innovation of Bitcoin: Let's solve proof-of-work puzzles on batches of transactions, and give more priority to those transactions that more work has been done on them! If we apply the chaining trick here too, the older transactions will become harder and harder to be reverted. Let's see and an example in code. We first define two functions which allow us to do proof-of-work on arbitrary pieces of data (aka "blocks")
+
+```python=
+MAX_VAL = 2 << 256 - 1
+THRESHOLD = MAX_VAL // 100000
+
+def is_valid_block(block: bytes):
+    return h(block) < THRESHOLD
+
+def mine(block: bytes):
+    nonce = 0
+    while True:
+        if is_valid_block(block + nonce.to_bytes(8, "little")):
+            return nonce.to_bytes(8, "little")
+        nonce += 1
+```
+
+The `is_valid_block` function is a criteria for a block to be valid. It simply checks if the hash of the block is below a threshold. In order to make a block's hash below the threshold, we introduce a function which tries adding different "nonce"s to that piece of data and return the nonce that satisfies the condition. Now let's chain some blocks which contain financial data together:
+
+```python=
+block_1 = "Alice sent Bob 1 BTC, Charlie sent David 2 BTC".encode()
+nonce_1 = (88356).to_bytes(8, "little")  # mine(block_1)
+block_1_hash = h(block_1 + nonce_1)
+if block_1_hash >= THRESHOLD:
+    print("Block 1 invalid!")
+
+block_2 = f"Previous hash: {block_1_hash}, David sent Alice 0.5 BTC, Edward sent Charlie 0.2 BTC".encode()
+nonce_2 = (275643).to_bytes(8, "little")  # mine(block_2)
+block_2_hash = h(block_2 + nonce_2)
+if block_2_hash >= THRESHOLD:
+    print("Block 2 invalid!")
+
+block_3 = f"Previous hash: {block_2_hash}, Nothing happened!".encode()
+nonce_3 = (65352).to_bytes(8, "little")  # mine(block_3)
+block_3_hash = h(block_3 + nonce_3)
+if block_3_hash >= THRESHOLD:
+    print("Block 3 invalid!")
+```
+
+
+As you can see, `block_1` `block_2` and `block_3` all contain transactions that happen in the network. Practically, those transactions should be structured data which contain real cryptographic signatures, but for simplicity we just assume strings. You can see that I've already found correct nonces and put them in the code for all these three blocks, but finding those takes on average ~100000 hash runs, so it requires computational "work". Now here is the thing: try changing the content of `block_2` with something else. E.g, remove the Edward's transaction: `block_2 = f"Previous hash: {block_1_hash}, David sent Alice 0.5 BTC".encode()`. If you rerun the code, you'll see that not only the block 2 has got invalidated, its subsequent block which is block 3 has also got invalidated! So, in order to change the content within block 2, not only you'll have to run the mine function on block 2, but also on block 3, and that's because the hash of block 2 has appeared in the content of block 3. Now imagine the block "chain" has over thousands of blocks and mining each block requires 1 minute of computation. Changing the block 500 levels behind the tip requires 500 minutes of computational work. So the more blocks are built on top of a block, the harder it gets to change the content of that block.
+
+Now here's what happens in practice: in the actual Bitcoin network, the mining process is actually rewarding. All bitcoin nodes in a network have agreed to consider some Bitcoins for the one who has found the correct nonce for a block. In fact, they allow anyone who builds a "block" to put an extra transaction in the block which says: `f"Generate 50 BTC for {miner_address}"` and still consider the block valid. So a competetion will happen on generating the blocks, and the competetion is actually so intense that has it actually takes you years of work on a laptop to find correct nonce (The nonce is found in 10-minute timeframe only because there are a LOT of computers over the world who are trying hard to find that nonce), so just imagine how hard would it be to edit the contents of the block 10 levels behind the tip!
+
+There is also one other rule in the network which completes the puzzle. Miner's will give up on working on a block `i` as soon as someone else finds correct nonce for that block and start working on the next block `i+1`. So when a block is found, the collective computational power of all bitcoin miners over the world will start working on block `i+1`, and the collective computational power of those who are still working on block `i` with a different content will just be so tiny that can't compete with those working on the tip, so it makes more sense for them to give up block `i`'s reward and start working on the tip, so that there is still a chance they could win.
+
+## Bitcoin as a platform
+
+Bitcoin is safe because the collective computational power of miners working on the bitcoin blocks is so big that people can't revert or edit transactions happening in them.
+
+[MARKER]
+
+Bitcoin’s scripting was enough, but people started to wonder, what if we want to build custom “tokens” that are transferable, just like Bitcoin but doesn’t have all those consensus complexities? Do we really need to implement a whole new Bitcoin suite of software from scratch in order to have a new coin? That’s not a great idea. What if there are too few users mining our new coin? There should certainly be a smarter way to create new coins without having to worry about double-spending attacks every time! And the answer is simple: instead of looking into Bitcoin as a cryptocurrency, think of it as a platform which can host other “tokens” too. Bitcoin is fundamentally a ledger of balances, so why only store Bitcoin balances into it? Why not let people introduce their own coins and store balances for other coins too? And those tokens will automatically inherit all security guarantees of the hosting currency. If people are not able to double-spend Bitcoin, they won’t be able to double-spend your weird meme cryptocurrency as well, even if no one is really using it.
+So cryptocurrency started to introduce this concept of hosting sub-currencies within a currency through a technique known as “colored coins”. Imagine you have 1000000 satoshis in your wallet. Now you tell everyone that all the satoshis that are sourced from this particlar wallet are also CAT coins. If everyone just pretend that this is true, the satoshis will have extra value since people will treat those satoshis differently. And just like that you can introduce a new coin!
+This is certainly not the best way to do this though
+
+UTXO/account
+When Satoshi invented Bitcoin, his main goal was making a system suitable for payments, but he made a quite dynamic approach to payments. When you hen you want to spend a UTXO in Bitcoin, 
+
 
 ## Making Proof-of-Work work less!
 
@@ -753,11 +811,6 @@ Satoshi wanted Bitcoin to become a more private form of transferring money. He c
 In bitcoin, it's the pub-keys that are transferring value with each other, and not human identities. It is indeed very hard to find out who controls a public-key, but the problem is, as soon as a public-key gets related to an actual identity in the real world, the money will get easily traceable afterwards. The creation of this relation is as simple as depositing your cryptocurrency to an exchange, in which you have disclosed your identity by going through KYC procedures. In fact, one of the only ways you can prevent others from finding the mapping between your public-key and your real-world identity, is to trade your crypto directly with others in-person, instead of using a crypto exchange as an intermediary.
 
 Fortunately, although you can't stop others from discovering your ownership of a certain public-key, there are ways you can make it hard for others to understand the interactions between different public-keys within a public blockchain.
-
-## Smart contracts
-
-UTXO/account
-When Satoshi invented Bitcoin, his main goal was making a system suitable for payments, but he made a quite dynamic approach to payments. When you hen you want to spend a UTXO in Bitcoin, 
 
 ## TornadoCash
 

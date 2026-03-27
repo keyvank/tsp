@@ -22,7 +22,7 @@ I really hope this book will be able to fulfill its purpose: to make the interes
 
 ***February 10th, 2026***
 
-People are pretending as if text-to-video models have always existed.
+People are pretending as if text-to-video models have always existed. (I can't believe I have )
 
 ## Preface
 
@@ -42,8 +42,7 @@ After expanding my knowledge by learning all these new concepts, I felt it was t
 
 If you enjoy what I'm writing and would like to support my work, I would appreciate crypto donations! I attempted to distribute my work through computer programming publishers, but the consensus was that tutorials covering a wide range of unrelated topics wouldn't sell well. Therefore, I have decided to continue TSP as an open-source hobby project!
 
-- Bitcoin: `bc1qjvcsjt57des7j4runchxalksueqlxgadx7fwll`
-- Ethereum: `0x1a34a6763f55887444ffbd8f8d4fae8197478675`
+- Ethereum: `0x372abb165e3283c4e71ce68efba2934fea5bff45` (`keyvank.eth`)
 
 Also, I'm thinking of allowing anyone to contribute in writing and editing of this book, so feel free to submit your shiny PRs!
 
@@ -74,6 +73,12 @@ There is a famous quote, attributed to Albert Einstein, which says: 'You do not 
 Computers give you the ability to test and experiment stuff without actually owning the physical version of them. You can literally simulate an atomic bomb in your computer and throw it in your imaginary world to see what happens. You can simulate a rocket that travels to Mars, as a tiny step, towards your dream of opening a space company. You can describe a 3D environment, and try to understand how it feels to be there, by putting your imaginary eyes in there and calculating what it will perceive, as a computer image. Computers let you to experiment anything you can ever imagine without spending anything other than some of your time and talent.
 
 The Super Programmer is going to show you "what can be done", and not "how can be done". You are not going to learn data-structure and algorithms here, but you are going to learn how you can embrace your creativity by using simple tools you already know. Thus in many parts of this book, we are going to apply the simplest and least-efficient solutions possible, because it's a better way to learn new things.
+
+[MARKER]
+
+There is a saying from Steve Yegge, the American computer programmer and blogger: "If you are not 100% sure whether you know how compilers work, then you don't know how ther work", and that's actually pretty true. ***However***, The Super Programmer is not about things you have a little clue on how they work, but it's more about things you *probably* have absolutely no idea how they work. A compiler for example, is nothing more than a function that gets a string and returns a new string, so even a beginner programmer who has just learned how to manipulate and generate strings may be able to write a really inefficient, and barely working piece of code that can be called a interpreter/compiler (I did something like that when I was 11 years old). He knows the "starting point" even though his knowledge is very inaccurate and shallow, but try asking a beginner how the 3D images of a game is generated, and unless he has some intense math background, he will just consider it to be magic. The Super Programmer is mostly about gathering all of those "aha" moments for you in a single place to pre-seed your computer-science explorations.
+
+[MARKER]
 
 Some might argue that not all software engineers will ever need to learn any of the topics taught in this book. That's partially true. As an average programmer, you are not going to use any of these knowledge in your everyday work. Even if you do, you are probably not going to get creative and make anything substantially new out of them. Since the book is about the old technology, most of the topics discussed in this book are already studied and developed as much as they could be.
 
