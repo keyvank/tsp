@@ -1999,6 +1999,17 @@ Before getting to the details of the FPGAs, I would like you to think about the 
 
 You can use memory-cells for storing the chosen functionality of your programmable gate, and put your configuration in it through some extra input pins. This way, "programming" a gate, would mean to put the right values inside the gate's memory-cells. Here is a popular design of a programmable gate among FPGAs. They are also known as Configurable Logic Gates (Or CLBs).
 
+![A configurable gate that can take 4 inputs and produce 1 output, determined by the configuration stored in its look-up table (LUT).](assets/configurablegate.png)
+
+When people visualize CLB blocks on a board, they usually have four sides, with each side having one input and one output. The CLB component we just discussed can only produce a single output. We can place four CLB components within a CLB block so that each output can be a function of all four inputs.
+
+\\(o_1=f_1(i_1,i_2,i_3,i_4)\\)
+\\(o_2=f_2(i_1,i_2,i_3,i_4)\\)
+\\(o_3=f_3(i_1,i_2,i_3,i_4)\\)
+\\(o_4=f_4(i_1,i_2,i_3,i_4)\\)
+
+![A CLB block with 4 inputs and 4 outputs. Notice how these blocks can be perfectly tiled together, aligning their inputs and outputs on each side.](assets/clb.png)
+
 Now imagine we have a 2D grid of those cells on a board. Obviously, these gates need to be connected with each other in order to do their job, and you can't just consider a fixed way of connecting those gates to each other since every circuit is different. Just like how the logic of the gates need to be configurable, the way the outputs of these gates are fed to input of other gates need to also be configurable. You need to somehow dynamically "route" these values in your grid of gates. There is a cool way this can be done. Imagine buses of wires going through your configurable-gates in a grid-like structure, and assume there are some "stations" in points where buses collide with each other. These stations are the structures that decide a wire within a bus is routed to which wire in which bus, and just like how you configure a CLB by storing something in its respective register, you can configure these routings by putting data in those routing components. Now that would be a lot of registers to set in order for your custom circuit to work and you may assume you will need thousands of wires coming out of your FPGA board in order to set those registers. But that's not the case. Do you remember how we avoided having millions of wires in order to set the values of pixels in a computer screen? In a FPGA we can also connect those register to each other as a shift-register chain, and try to configure the entire set of registers by feeding in the values of those registers to the very first register.
 
 Now just imagine how challenging and cool would it be to design a software that allows you to:
