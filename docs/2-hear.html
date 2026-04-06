@@ -796,6 +796,19 @@ def ComposeMML(mml, instrument):
 <p>We already know altering the intensity of a sound is as simple as applying a coefficient to its sampler function. If you multiply the above function with an oscillator, its volume will alternate. Knowing that we can generate sine wave with frequency \(f\) with \(sin(2.\pi.f)\), you may conclude that the sound of a siren can be modeled by substituting \(f\) with the alternating \(f\) formula:</p>
 <p>\(sin(2.\pi.(f_1 + (f_2-f_1)\frac{sin(t) + 1}{2}))\)</p>
 <p>Try to generate and play this sound. It will sound weird, not at all like a siren. But why?</p>
+<p>If you want to understand why this weird sound happens, try plotting the formula we came up with.</p>
+<p>[IMG]</p>
+<p>It looks strange, right? Just multiplying the frequency function by \(2\pi t\) doesn’t really work—and that actually makes sense. If the frequency (f) is constant, everything is fine. The input to the sine function just keeps increasing, so you get a normal wave.</p>
+<p>But if the frequency changes over time, things break. The input to the sine can sometimes go <em>backward</em> instead of always moving forward. That’s a problem, because a sine wave doesn’t make sense if its input decreases—time should always move forward.</p>
+<p>So instead of changing the input directly, what we really want to change is how fast time moves forward. That “speed” is the frequency, and it should always stay positive.</p>
+<p>What we’re trying to get is just a sine wave that smoothly shifts between high and low pitch—like a siren.</p>
+<p>The correct way to do this is:
+\(\cos\left(2\pi \int f(t),dt\right)\)</p>
+<p>For example:</p>
+<p>\(f(t) = f\)</p>
+<p>\(f(t) = f_{\text{base}} + f_{\text{alt}} \cos(t)\)</p>
+<p>The reason we use an integral is simple: we need to keep track of everything the frequency has done up to time (t). So we add up all the past values of (f(t)), and use that as the input to the sine.</p>
+<p>If you plot just that inside part (the integral), it becomes much clearer what’s going on.</p>
 <p>[TODO: Frequency modulation]</p>
 <p>How can we emulate an ear in a computer</p>
 <p>\(X_k=\sum\limits_{n=0}^{N-1}{x_n.e^{-i2\pi kn/N}}\)</p>

@@ -381,18 +381,87 @@ Now here's what happens in practice: in the actual Bitcoin network, the mining p
 
 There is also one other rule in the network which completes the puzzle. Miner's will give up on working on a block `i` as soon as someone else finds correct nonce for that block and start working on the next block `i+1`. So when a block is found, the collective computational power of all bitcoin miners over the world will start working on block `i+1`, and the collective computational power of those who are still working on block `i` with a different content will just be so tiny that can't compete with those working on the tip, so it makes more sense for them to give up block `i`'s reward and start working on the tip, so that there is still a chance they could win.
 
+## Vanilla KV Stores
+
+Blockchains are one of the coolest types of software you can build from scratch. Implementing one teaches you a lot of things, especially about how data is stored and managed.
+
+One of the most interesting parts of building a Bitcoin-inspired system is handling storage. If you look at Bitcoin Core, you’ll notice it doesn’t rely on traditional databases (SQL or NoSQL). Instead, it mostly uses simple persistent key-value (KV) stores.
+
+Because of that, you need to learn how to safely update the state of the blockchain. Updates should be atomic (they either fully happen or not at all) and reversible (in case you need to roll back a block).
+
+I’ve implemented this kind of system many times out of personal interest, and I’d like to share the model I use for handling it.
+
 ## Bitcoin as a platform
 
 Bitcoin is safe because the collective computational power of miners working on the bitcoin blocks is so big that people can't revert or edit transactions happening in them.
 
 [MARKER]
 
-Bitcoin’s scripting was enough, but people started to wonder, what if we want to build custom “tokens” that are transferable, just like Bitcoin but doesn’t have all those consensus complexities? Do we really need to implement a whole new Bitcoin suite of software from scratch in order to have a new coin? That’s not a great idea. What if there are too few users mining our new coin? There should certainly be a smarter way to create new coins without having to worry about double-spending attacks every time! And the answer is simple: instead of looking into Bitcoin as a cryptocurrency, think of it as a platform which can host other “tokens” too. Bitcoin is fundamentally a ledger of balances, so why only store Bitcoin balances into it? Why not let people introduce their own coins and store balances for other coins too? And those tokens will automatically inherit all security guarantees of the hosting currency. If people are not able to double-spend Bitcoin, they won’t be able to double-spend your weird meme cryptocurrency as well, even if no one is really using it.
-So cryptocurrency started to introduce this concept of hosting sub-currencies within a currency through a technique known as “colored coins”. Imagine you have 1000000 satoshis in your wallet. Now you tell everyone that all the satoshis that are sourced from this particlar wallet are also CAT coins. If everyone just pretend that this is true, the satoshis will have extra value since people will treat those satoshis differently. And just like that you can introduce a new coin!
-This is certainly not the best way to do this though
+## Coins with custom locks
 
-UTXO/account
-When Satoshi invented Bitcoin, his main goal was making a system suitable for payments, but he made a quite dynamic approach to payments. When you hen you want to spend a UTXO in Bitcoin, 
+Although Bitcoin is the first truly widespread decentralized cryptocurrency, its way of accounting is weird and not so obvious. As a software engineer, You would expect a financial system like bitcoin to have some kind of database that maps addresses to balances, but that’s not the case for Bitcoin. Bitcoin keeps track of its user’s coins through a concept known as UTXOs. Instead of assuming a balance for each bitcoin public key, we keep track of unspent coins with specific Bitcoin value that are tagged with a public key as their owner. These coins can be splitted and merged together, creating new coins with new owners. Remember how Bitcoin considered a reward for those who mine blocks? The miners are those who create the root UTXOs, UTXOs that do not have a parent. There are good reasons why Satoshi decided to do Bitcoin’s accounting this way:
+
+1. Avoid spending twice by mistake
+2. Easier when doing mass transactions
+
+[EXPLAIN BITCOIN SCRIPTS]
+
+## Your brand new token hosted by Bitcoin
+
+Bitcoin’s scripting was sufficient for a lot of usecases, but people began to wonder: what if we want to build custom “tokens” that are transferable, just like Bitcoin, but without all those consensus complexities? Do we really need to implement an entirely new Bitcoin software suite from scratch just to create a new coin? That’s not a great idea. What if there are too few users mining our new coin? There must be a smarter way to create new coins without having to worry about double-spending attacks every time.
+
+The answer is simple: instead of viewing Bitcoin purely as a cryptocurrency, think of it as a platform that can host other “tokens” as well. Bitcoin is fundamentally a ledger of balances, so why only store Bitcoin balances in it? Why not allow people to introduce their own coins and store balances for those too? These tokens would automatically inherit all the security guarantees of the underlying currency. If people cannot double-spend Bitcoin, they also won’t be able to double-spend your meme cryptocurrency—even if no one is really using it.
+
+This idea led to the concept of hosting sub-currencies within a currency through a technique known as “colored coins.” Imagine you have 1,000,000 satoshis in your wallet. Now you tell everyone that all the satoshis originating from this particular wallet are also CAT coins. If everyone agrees to treat this as true, those satoshis gain additional value because people handle them differently. Just like that, you’ve introduced a new coin.
+
+Of course, this is not the most robust way to do it.
+
+So Vitalik Buterin thought: why make things complicated? Let’s embed an entire virtual machine (VM) within a blockchain. And that’s how Ethereum was born. A VM is essentially software that simulates an abstract processor with its own instruction set. Vitalik designed the Ethereum Virtual Machine (EVM), which defines instructions that Ethereum nodes can execute.
+
+This instruction set supports typical operations a regular processor can perform—basic arithmetic, loops, and more. In addition to temporary memory, it allows programs deployed on the blockchain to maintain persistent key-value storage, enabling them to keep track of state over time.
+
+Traditionally, a blockchain only tracks balances for each account. Ethereum extends this by allowing each account (specifically, smart contracts) to also maintain its own independent key-value storage, in addition to its balance.
+
+Ethereum introduced the concept of assigning blockchain addresses to programs stored on the blockchain. Just as real users have Ethereum addresses controlled by private keys, Ethereum allows programs to control addresses as well. This means a program can receive ETH just like a user can. The key difference is that when an address controlled by a program receives ETH, its code is automatically executed.
+
+That code determines what happens to the funds. If an exception occurs during execution, the transaction is reverted and the funds are not accepted. Otherwise, the program decides how to handle the money.
+
+Some examples include:
+
+Multisignature wallets
+Rock-paper-scissors games
+Scalability solutions
+Lightning network
+Plasma cash
+
+## Scale
+
+Blockchain transactions are expensive. For every transaction you make, kilobytes of data must be stored not just on one computer, but on thousands of computers around the world (recall that cryptocurrencies are decentralized systems). You can’t simply assume that node runners are willing to sacrifice their precious hard disk space for meaningless data, so they need to “get” something in return for every byte they store.
+
+Even if they don’t receive direct payment for storing your data, the system must at least prevent spam. Otherwise, attackers could flood nodes’ disk space by sending large numbers of tiny transactions across the network. For this reason, transaction fees are a mandatory part of any blockchain system.
+
+Unfortunately, fees are the enemy of scalability. What if I want to make thousands of legitimate microtransactions per second? What if I want to pay a video streamer $0.0001 per millisecond of video I watch? Do I really have to store all those transactions on the blockchain?
+
+That approach would quickly overwhelm blockchains, potentially generating gigabytes of data per second. Clearly, we cannot assume infinite storage or take node runners’ resources for granted.
+
+Even if storage were unlimited, it would still be impossible to validate an enormous number of transactions per second in a decentralized system. However, there are some clever techniques that allow blockchains to scale. I’d like to discuss a few of them—not to turn you into a blockchain engineer, but because these ideas are elegant and interesting, and worth exploring in a book like this.
+
+Let’s start with one of the earliest approaches: Bitcoin’s traditional HTLC (Hashed Time-Locked Contract). Here’s a real-world analogy:
+
+Imagine the blockchain is a bank. You and your friend want to transact frequently, but you don’t want to visit the bank every time you make a small payment and incur a fee. At the same time, you still want the security and enforceability that the bank provides.
+
+Here’s a clever solution:
+
+Suppose you and your friend each deposit $50 into the bank (for a total of $100) and sign a contract stating that $50 belongs to Alice and $50 belongs to Bob. Since both of you have signed it, either of you can present this contract to the bank, which can verify the signatures and distribute the funds accordingly.
+
+Now imagine you both sign a new contract stating that $49 belongs to you and $51 belongs to your friend. This effectively represents you paying your friend $1—but without going to the bank or paying any fees.
+
+These contracts include timestamps, and naturally, the contract with the latest timestamp is considered the valid one. But how does the bank know whether a submitted contract is the most recent? What prevents Alice from submitting an older contract (where she still had $50) and reclaiming money she already paid to Bob?
+
+The solution is this: the bank does not process withdrawals immediately. Instead, it introduces a delay (say, one week) and notifies the other party when a withdrawal request is made.
+
+During this delay, the other party can submit a newer contract if one exists. This proves that the original submitter attempted to cheat by presenting an outdated agreement. As a penalty, the bank can punish the dishonest party—for example, by confiscating their entire balance and awarding it to the other party.
+
 
 
 ## Making Proof-of-Work work less!

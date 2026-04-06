@@ -900,6 +900,31 @@ We already know altering the intensity of a sound is as simple as applying a coe
 
 Try to generate and play this sound. It will sound weird, not at all like a siren. But why?
 
+If you want to understand why this weird sound happens, try plotting the formula we came up with.
+
+[IMG]
+
+It looks strange, right? Just multiplying the frequency function by \\(2\pi t\\) doesn’t really work—and that actually makes sense. If the frequency (f) is constant, everything is fine. The input to the sine function just keeps increasing, so you get a normal wave.
+
+But if the frequency changes over time, things break. The input to the sine can sometimes go *backward* instead of always moving forward. That’s a problem, because a sine wave doesn’t make sense if its input decreases—time should always move forward.
+
+So instead of changing the input directly, what we really want to change is how fast time moves forward. That “speed” is the frequency, and it should always stay positive.
+
+What we’re trying to get is just a sine wave that smoothly shifts between high and low pitch—like a siren.
+
+The correct way to do this is:
+\\(\cos\left(2\pi \int f(t),dt\right)\\)
+
+For example:
+
+\\(f(t) = f\\)
+
+\\(f(t) = f_{\text{base}} + f_{\text{alt}} \cos(t)\\)
+
+The reason we use an integral is simple: we need to keep track of everything the frequency has done up to time (t). So we add up all the past values of (f(t)), and use that as the input to the sine.
+
+If you plot just that inside part (the integral), it becomes much clearer what’s going on.
+
 [TODO: Frequency modulation]
 
 How can we emulate an ear in a computer
